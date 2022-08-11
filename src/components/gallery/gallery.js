@@ -812,7 +812,7 @@
                 :full-slide="true"
                 :initial-slide="source.slide"
                 :preview="source.preview"
-  ></bbn-slideshow>
+                :keyboard="true"/>
 </div>
                 `,
         props: {

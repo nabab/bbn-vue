@@ -204,6 +204,14 @@
       itemClickable: {
         type: Boolean,
         default: false
+      },
+      /**
+       * Enables keyboard navigation
+       * @prop {Boolean} [false] keyboard
+       */
+      keyboard: {
+        type: Boolean,
+        default: false
       }
     },
     data(){
@@ -477,22 +485,32 @@
        * @fires startAutoPlay
        */
       prev(){
-        let idx = this.currentIndex;
-        if ( (idx > 0) && this.items[idx-1] ){
-          if ( !this.items[idx-1].animation ){
-            let slide = this.getRef('slide' + (idx-1).toString());
-            if ( slide ){
+        let idx = this.currentIndex,
+            isFirst = idx === 0;
+        if (isFirst && !this.loop) {
+          return;
+        }
+        if (!isFirst || this.loop) {
+          let nextIdx = isFirst ? (this.items.length - 1) : (idx - 1);
+          if (!this.items[nextIdx].animation) {
+            let slide = this.getRef('slide' + nextIdx);
+            if (slide) {
               slide.style.animationName = 'bbn-slideshow-effect-slide_from_right';
             }
           }
-          this.currentIndex--;
+          this.currentIndex = nextIdx;
+          this.$nextTick(() => {
+            setTimeout(() => {
+              let slide2 = this.getRef('slide' + nextIdx);
+              if (!this.items[nextIdx].animation && !!slide2) {
+                slide2.style.animationName = '';
+              }
+            }, 500);
+          });
         }
-        if ( this.loop &&  idx === 0 ){
-          this.currentIndex = this.items.length - 1;
-        }
-        if ( this.autoPlay ){
+        if (this.autoPlay) {
           this.stopAutoPlay();
-          this.$nextTick(()=>{
+          this.$nextTick(() => {
             this.startAutoPlay();
           });
         }
@@ -505,25 +523,34 @@
        */
       next(){
         let idx = this.currentIndex;
-        if ( this.summary ){
+        if (this.summary){
           idx--;
         }
-        if ( idx < (this.items.length -1) && this.items[idx+1] ){
-
-          if ( !this.items[idx+1].animation ){
-            let slide = this.getRef('slide' + (idx-1).toString());
-            if ( slide ){
+        let isLast = idx === (this.items.length - 1);
+        if (isLast && !this.loop) {
+          return;
+        }
+        if (!isLast || this.loop) {
+          let nextIdx = isLast ? 0 : (idx + 1);
+          if (!this.items[nextIdx].animation) {
+            let slide = this.getRef('slide' + nextIdx);
+            if (slide) {
               slide.style.animationName = 'bbn-slideshow-effect-slide_from_left';
             }
           }
-          this.currentIndex++;
+          this.currentIndex = nextIdx;
+          this.$nextTick(() => {
+            setTimeout(() => {
+              let slide2 = this.getRef('slide' + nextIdx);
+              if (!this.items[nextIdx].animation && !!slide2) {
+                slide2.style.animationName = '';
+              }
+            }, 500)
+          });
         }
-        if ( this.loop && (idx === (this.items.length - 1)) ){
-          this.currentIndex = 0;
-        }
-        if( this.autoPlay ){
+        if (this.autoPlay) {
           this.stopAutoPlay();
-          this.$nextTick(()=>{
+          this.$nextTick(() => {
             this.startAutoPlay();
           });
         }
