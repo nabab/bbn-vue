@@ -643,7 +643,7 @@
       init(){
         this.originalSource = [];
         // Adding bbns-widget from the slot.
-        let slot = this.$slots.default();
+        let slot = this.$slots.default ? this.$slots.default() : null;
         if (slot) {
           for (let node of slot) {
             if (
@@ -686,7 +686,7 @@
        * @return {Boolean | Array}
        */
       setCurrentSlots(){
-        let slot = this.$slots.default();
+        let slot = this.$slots.default ? this.$slots.default() : null;
         this.currentSlots = slot ? slot.filter(node => {
           return !!node.tag;
         }) : [];

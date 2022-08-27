@@ -339,7 +339,7 @@
        * @return {Boolean}
        */
       hasFooter(){
-        let foot = this.$slots.footer();
+        let foot = this.$slots.footer ? this.$slots.footer() : null;
         return foot && foot.length;
       },
       canCancel(){
@@ -355,7 +355,7 @@
       currentClass(){
         let st = this.componentClass.join(' ');
         if (this.isInit) {
-          if (!this.window && (this.hasFooter || this.realButtons.length || this.footer) && (this.scrollable || this.fullSize) ){
+          if (!this.window && (this.hasFooter || this.realButtons.length || this.fixedFooter) && (this.scrollable || this.fullSize) ){
             st += ' bbn-flex-height';
           }
           if ( this.scrollable || this.fullSize ){
@@ -818,8 +818,8 @@
        * 
        */
       init(){
-        if ( this.$options.propsData.script ){
-          this.$el.dataset.script = this.$options.propsData.script;
+        if ( this.script ){
+          this.$el.dataset.script = this.script;
         }
         //this.originalData = bbn.fn.extend(true, {}, this.getData());
         this.$nextTick(() => {

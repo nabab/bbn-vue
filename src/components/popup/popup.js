@@ -133,7 +133,7 @@
        * @return {Boolean}
        */
       showPopup() {
-        return this.items.length > 0;
+        return this.numPopups > 0;
       }
     },
     methods: {
@@ -194,7 +194,7 @@
           if (!d.uid) {
             d.uid = 'bbn-popup-' + bbn.fn.timestamp().toString() + '-' + bbn.fn.randomString(4, 6);
           }
-          d.index = this.items.length;
+          d.index = this.numPopups;
           this.items.push(d);
           //this.makeWindows();
           return d.uid;
@@ -277,7 +277,7 @@
               if (!d.uid) {
                 d.uid = 'bbn-popup-' + bbn.fn.timestamp().toString();
               }
-              d.index = this.items.length;
+              d.index = this.numPopups;
               this.items.push(d);
               this.makeWindows();
             }
@@ -339,7 +339,7 @@
        */
       close(idx, force) {
         if (idx === undefined) {
-          idx = this.items.length - 1;
+          idx = this.numPopups - 1;
         }
         let win = this.getWindow(idx);
         if (win && !force) {
@@ -563,9 +563,9 @@
        * @return {Object|Boolean}
        */
       getWindow(idx) {
-        if (this.popups.length) {
+        if (this.numPopups) {
           if (idx === undefined) {
-            idx = this.popups.length - 1;
+            idx = this.numPopups - 1;
           }
           if (this.popups[idx]) {
             //return bbn.vue.getChildByKey(this.$children[0], this.popups[idx].uid);

@@ -14,6 +14,7 @@
           throw new Error("bbn is not initialized")
         }
       }
+
       bbn.vue.fullComponent = bbn.fn.extend(true, {}, bbn.vue.basicComponent, bbn.vue.inputComponent, bbn.vue.eventsComponent);
       let cfg2 = bbn.fn.extend(cfg, {
         mixins: mixins,

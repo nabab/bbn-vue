@@ -57,10 +57,11 @@
          * @param  {Boolean}   full 
          * @param  {Number}    level 
          */
-        exportComponent(full, level){
+        exportComponent(full, level) {
+          let name = this.getComponentName();
           let lv = level || 0;
-          let st = bbn.fn.repeat('  ', lv) + '<' + this.ctx.$options._componentTag;
-          bbn.fn.iterate(this.ctx.$options.propsData, (a, n) => {
+          let st = bbn.fn.repeat('  ', lv) + '<' + name;
+          bbn.fn.iterate(this.props, (a, n) => {
             if (n === 'value') {
               st += ' v-model=""';
             }
@@ -80,7 +81,7 @@
               }
             });
           }
-          st += bbn.fn.repeat('  ', lv) + '</' + this.ctx.$options._componentTag + '>' + "\n";
+          st += bbn.fn.repeat('  ', lv) + '</' + name + '>' + "\n";
           return st;
         }
       },
@@ -89,13 +90,14 @@
        * @event created
        * @memberof basicComponent
        */
-      beforeMount(){
-        if (!this.ctx) {
-          return
+      beforeMount() {
+        let name = this.getComponentName();
+        if (!name) {
+          return null;
         }
 
-        if (this.ctx.$options.name && !this.componentClass.includes(this.ctx.$options.name)){
-          this.componentClass.push(this.ctx.$options.name);
+        if (!this.componentClass.includes(name)) {
+          this.componentClass.push(name);
         }
       },
       watch: {

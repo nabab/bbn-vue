@@ -112,7 +112,6 @@
         type: Object,
         default(){
           return {
-            tag: 'span'
           }
         }
       },
@@ -270,7 +269,7 @@
       appComponent(){
         return bbn.fn.extend({
           render(props, context) {
-            return Vue.h(`Vue.h${props.level}`, context.attrs, context.slots);
+            return Vue.h();
           }
         }, this.cfg)
       },
@@ -350,7 +349,7 @@
     methods: {
       fdate: bbn.fn.fdate,
       updatePostIts() {
-        if (this.plugins['appui-note'] && !!this.app.uer) {
+        if (this.plugins['appui-note']) {
           bbn.fn.post(this.plugins['appui-note'] + '/data/postits', {pinned: 1}, d => {
             if (d && d.data) {
               this.postits = d.data;

@@ -39,7 +39,7 @@
                     @sortstart="isSorting = true; sortOriginIndex = w.index; sortTargetIndex = null; isDragging = true;"
                     :title="w.title ? w.title : (w.text ? w.text : '')"/>
       </template>
-      <slot v-if="!widgets.length"/>
+      <slot/>
     </div>
   </bbn-scroll>
 </div>

@@ -17,15 +17,17 @@
      * @param vm Vue
      * @returns Vue|false
      */
-    _retrievePopup(vm){
-      if (vm.ctx && vm.ctx.$options && vm.ctx.$options.name === 'bbn-popup' ){
+    _retrievePopup(vm) {
+
+      if (vm.getComponentName() === 'bbn-popup' ){
         return vm;
       }
       else if (vm.getRef && vm.getRef('popup')) {
         return vm.getRef('popup');
       }
 
-      return vm.$parent ? bbn.vue._retrievePopup(vm.$parent) : false;
+      let parent = vm.$parent || (vm.ctx ? vm.ctx.$parent : null);
+      return parent ? bbn.vue._retrievePopup(parent) : null;
     },
     /**
      * Sets default object for a component, accessible through bbn.vue.defaults[cpName].
@@ -1032,16 +1034,17 @@
      * @param {String} path The relative path to the component from the given component.
      */
      getComponentName(vm, path){
-      if (!vm.$options || !vm.$options.name) {
+      let o = vm.ctx ? vm.ctx.$options : vm.$options;
+      if (!o) {
         return null;
       }
 
       if (!path) {
-        return vm.$options.name;
+        return o.name;
       }
 
       let bits = path.split('/');
-      let resx = vm.$options.name.split('-');
+      let resx = o.name.split('-');
       bbn.fn.each(bits, b => {
         if (b === '..') {
           resx.pop();
