@@ -8,10 +8,11 @@
  * @author BBN Solutions
  */
 
-(function(bbn){
+((bbn, Vue) => {
+
   "use strict";
 
-  Vue.component('bbn-tooltip', {
+  const cpDef = {
     /**
      * @mixin bbn.vue.basicComponent
      */
@@ -81,6 +82,12 @@
         return bbn.fn.isFunction(this.source) ? this.source() : this.source;
       }
     }
-  });
+  };
 
-})(bbn);
+  if (Vue.component) {
+    Vue.component('bbn-tooltip', cpDef);
+  }
+
+  return cpDef;
+
+})(window.bbn, window.Vue);

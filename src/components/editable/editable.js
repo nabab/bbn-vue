@@ -5,8 +5,10 @@
  * @author Loredana Bruno
  * @created 09/11/2020.
  */
-(function(bbn){
+((bbn, Vue) => {
+
   "use strict";
+
   const titleTemplates = {
     h1: `<h1 v-text="currentValue"></h1>`,
     h2: `<h2 v-text="currentValue"></h2>`,
@@ -61,20 +63,20 @@
                 <hr v-show="source.hr"><component :is="cpHTML(source.tag,'title')" :source="source"></component><hr v-if="source.hr">
               </div>
               <div class="bbn-grid-fields bbn-vspadded bbn-w-100">
-                <label v-text="_('Title tag')"></label>
+                <label v-text="i18n('Title tag')"></label>
                 <div>
                   <bbn-dropdown :source="tags" v-model="source.tag"></bbn-dropdown>
                 </div>
-                <label v-text="_('Title text')"></label>
+                <label v-text="i18n('Title text')"></label>
                 <bbn-input v-model="currentValue"></bbn-input>
                 <label>Title color</label>
                   <div>
                     <bbn-colorpicker @change="setColor"
                     ></bbn-colorpicker>
                   </div>
-                <label v-text="_('Title alignment')"></label>
+                <label v-text="i18n('Title alignment')"></label>
                 <bbn-block-align-buttons></bbn-block-align-buttons>
-                <label v-text="_('Line')"></label>
+                <label v-text="i18n('Line')"></label>
                 <bbn-checkbox v-model="source.hr"></bbn-checkbox>
               </div>
             </div>`
@@ -115,7 +117,7 @@
       <div class="component-container bbn-block-image" :class="alignClass">
         <div class="bbn-padded">
           <div class="bbn-grid-fields bbn-vspadded">
-            <label v-text="_('Upload your image')"></label>
+            <label v-text="i18n('Upload your image')"></label>
             <bbn-upload :save-url="'upload/save/' + ref"
                         remove-url="test/remove"
                         :json="true"
@@ -125,7 +127,7 @@
                         @success="imageSuccess"
             ></bbn-upload>
 
-            <label v-text="_('Image size')"></label>
+            <label v-text="i18n('Image size')"></label>
             <bbn-cursor v-model="source.style['width']"
                         unit="%"
                         :min="0"
@@ -133,7 +135,7 @@
                         :step="20"
             ></bbn-cursor>
 
-            <label v-text="_('Image alignment')"></label>
+            <label v-text="i18n('Image alignment')"></label>
             <bbn-block-align-buttons></bbn-block-align-buttons>
           </div>
         </div>
@@ -179,7 +181,7 @@
                           :source="tinyNumbers"
             ></bbn-dropdown>
           </div>
-          <label v-text="_('Upload your images')"></label>
+          <label v-text="i18n('Upload your images')"></label>
           <bbn-upload :save-url="'upload/save/' + ref"
                       remove-url="test/remove"
                       :data="{gallery: true}"
@@ -216,12 +218,12 @@
       edit: `
       <div class="component-container" id="video-container">
         <div class="bbn-grid-fields bbn-padded">
-          <label v-text="_('Video source')"></label>
+          <label v-text="i18n('Video source')"></label>
           <bbn-input v-model="currentValue"></bbn-input>
           <label>Muted</label>
           <div>
             <bbn-button :notext="true"
-                        :title="_('Mute the video')"
+                        :title="i18n('Mute the video')"
                         @click="muted = !muted"
                         :icon="muted ? 'nf nf-oct-mute' : 'nf nf-oct-unmute'"
             >
@@ -230,7 +232,7 @@
           <label>Autoplay</label>
           <div>
             <bbn-button :notext="true"
-                        :title="_('Autoplay')"
+                        :title="i18n('Autoplay')"
                         @click="autoplay = !autoplay"
                         :icon="autoplay ? 'nf nf-fa-pause' : 'nf nf-fa-play'"
             >
@@ -337,7 +339,7 @@
     {"text":"ridge","value":"ridge"}
   ];
 
-  Vue.component('bbn-editable', {
+  const cpDef = {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.inputComponent
@@ -1015,18 +1017,18 @@
               template: `
               <div>
                 <bbn-button icon="nf nf-fa-align_left"
-                            :title="_('Align left')"
+                            :title="i18n('Align left')"
                             :notext="true"
                             @click="align = 'left'"
                             :class="{'bbn-state-active': ($parent.source.align === 'left')}"
                 ></bbn-button>
-                <bbn-button icon="nf nf-fa-align_center" :title="_('Align left')"
+                <bbn-button icon="nf nf-fa-align_center" :title="i18n('Align left')"
                             :notext="true"
                             @click="align = 'center'"
                             :class="{'bbn-state-active': ($parent.source.align === 'center')}"
                 ></bbn-button>
                 <bbn-button icon="nf nf-fa-align_right"
-                            :title="_('Align left')"
+                            :title="i18n('Align left')"
                             :notext="true"
                             @click="align = 'right'"
                             :class="{'bbn-state-active': ($parent.source.align === 'right')}"
@@ -1158,5 +1160,12 @@
       }
     },
 
-  });
-})(bbn);
+  };
+
+  if (Vue.component) {
+    Vue.component('bbn-editable', cpDef);
+  }
+
+  return cpDef;
+  
+})(window.bbn, window.Vue);

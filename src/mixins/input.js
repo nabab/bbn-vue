@@ -12,11 +12,7 @@
          * @prop value
          * @memberof inputComponent
          */
-        value: {
-          default(){
-            return this.default !== undefined ? this.default : ''
-          }
-        },
+        modelValue: {},
         /**
          * The component's name.
          * @prop {String} name 
@@ -65,11 +61,11 @@
         },
         /**
          * Defines the size of the component.
-         * @prop {Number|String} size
+         * @prop {Number, String} size
          * @memberof inputComponent
          */
         size: {
-          type: [Number, String]
+          type: [String, Number]
         },
          /**
          * Defines the maxlength of the value.
@@ -150,9 +146,9 @@
         }
       },
       data(){
-        let original = this.value;
-        if (bbn.fn.isObject(this.value) || bbn.fn.isArray(this.value)) {
-          original = bbn.fn.clone(this.value);
+        let original = this.modelValue;
+        if (bbn.fn.isObject(this.modelValue) || bbn.fn.isArray(this.modelValue)) {
+          original = bbn.fn.clone(this.modelValue);
         }
 
         return {
@@ -160,7 +156,7 @@
            * True if the component has a value.
            * @data {Boolean} hasVale
            */
-          hasValue: !!this.value,
+          hasValue: !!this.modelValue,
           originalValue: original
         };
       },
@@ -191,11 +187,11 @@
       },
       methods: {
         resetValue(){
-          if (bbn.fn.isObject(this.value) || bbn.fn.isArray(this.value)) {
-            this.originalValue = bbn.fn.clone(this.value);
+          if (bbn.fn.isObject(this.modelValue) || bbn.fn.isArray(this.modelValue)) {
+            this.originalValue = bbn.fn.clone(this.modelValue);
           }
           else {
-            this.originalValue = this.value;
+            this.originalValue = this.modelValue;
           }
         },
         /**
@@ -217,7 +213,7 @@
          * @memberof inputComponent
          */
         emitInput(val){
-          this.$emit('input', val);
+          this.$emit('update:modelValue', val);
         },
         /**
          * Emits the event change.
@@ -227,12 +223,12 @@
          * @memberof inputComponent
          */
         change(e){
-          this.$emit('change', e, this.value)
+          this.$emit('change', e, this.modelValue)
         },
         /**
          * Check the validity of the inserted value.
          * @method isValid
-         * @param {Vue} e 
+         * @param {Object} e 
          * @return {Boolean}
          * @memberof inputComponent
          */
@@ -250,8 +246,8 @@
                   specificCase = false;
               // If valid or disabled, return true
               if ( elem.disabled || validity.valid ){
-                //if ( (!!elem.required || !!elem.readOnly) && !elem.value ){
-                if ( elem.required && !elem.value ){
+                //if ( (!!elem.required || !!elem.readOnly) && !elem.modelValue ){
+                if ( elem.required && !elem.modelValue ){
                   specificCase = true;
                 }
                 else {
@@ -261,7 +257,7 @@
               
               if ( !validity.valid || specificCase ){
                 // If field is required and empty
-                if ( validity.valueMissing || specificCase ){
+                if ( validity.modelValueMissing || specificCase ){
                   mess = bbn._('Please fill out this field.');
                 }
                 // If not the right type
@@ -279,11 +275,11 @@
                 }
                 // If too short
                 else if ( validity.tooShort ){
-                  mess = bbn._('Please lengthen this text to %d characters or more. You are currently using %d characters.', parseInt(elem.getAttribute('minLength')), elem.value.length);
+                  mess = bbn._('Please lengthen this text to %d characters or more. You are currently using %d characters.', parseInt(elem.getAttribute('minLength')), elem.modelValue.length);
                 }
                 // If too long
                 else if ( validity.tooLong ){
-                  mess = bbn._('Please shorten this text to no more than %d characters. You are currently using %d characters.', parseInt(elem.getAttribute('maxLength')), elem.value.length);
+                  mess = bbn._('Please shorten this text to no more than %d characters. You are currently using %d characters.', parseInt(elem.getAttribute('maxLength')), elem.modelValue.length);
                 }
                 // If number input isn't a number
                 else if ( validity.badInput ){
@@ -360,15 +356,15 @@
          * @memberof inputComponent
          */
         value(newVal){
-          if ( this.widget && (this.widget.value !== undefined) ){
-            if (bbn.fn.isFunction(this.widget.value) ){
-              if ( this.widget.value() !== newVal ){
-                this.widget.value(newVal);
+          if ( this.widget && (this.widget.modelValue !== undefined) ){
+            if (bbn.fn.isFunction(this.widget.modelValue) ){
+              if ( this.widget.modelValue() !== newVal ){
+                this.widget.modelValue(newVal);
               }
             }
             else{
-              if ( this.widget.value !== newVal ){
-                this.widget.value = newVal;
+              if ( this.widget.modelValue !== newVal ){
+                this.widget.modelValue = newVal;
               }
             }
           }

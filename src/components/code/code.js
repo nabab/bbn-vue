@@ -12,7 +12,7 @@
  */
 
 
-(bbn => {
+((bbn, Vue, CodeMirror) => {
   "use strict";
 
   const themes = ["3024-day","3024-night","ambiance-mobile","ambiance","base16-dark","base16-light","blackboard","cobalt","eclipse","elegant","erlang-dark","lesser-dark","mbo","midnight","monokai","neat","night","paraiso-dark","paraiso-light","pastel-on-dark","rubyblue","solarized","the-matrix","tomorrow-night-eighties","twilight","vibrant-ink","xq-dark","xq-light"];
@@ -174,7 +174,7 @@
 
   let themeIndex = themes.indexOf(bbn.vue.defaults.code.defaultTheme);
 
-  Vue.component('bbn-code', {
+  const cpDef = {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.inputComponent
@@ -804,7 +804,7 @@
             }
 
             if (num !== this.currentFn.num) {
-              this.$set(this.currentFn, 'num', num);
+              this.currentFn.num = num;
             }
           }
           else {
@@ -1195,6 +1195,12 @@
         }
       }
     }
-  });
+  };
 
-})(bbn);
+  if (Vue.component) {
+    Vue.component('bbn-code', cpDef);
+  }
+
+  return cpDef;
+
+})(window.bbn, window.Vue, window.CodeMirror);

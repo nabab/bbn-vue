@@ -10,9 +10,11 @@
   * @cretaed 13/06/2017
   */
 
- (bbn => {
+((bbn, Vue) => {
+
   "use strict";
-  Vue.component('bbn-upload', {
+
+  const cpDef = {
     /**
      * @mixin bbn.vue.inputComponent
      * @mixin bbn.vue.basicComponent
@@ -353,7 +355,7 @@
         if ( id ){
           let idx = bbn.fn.search(this.currentData, {id: id})
           if ( idx > -1 ){
-            this.$set(this.currentData[idx], 'status', status)
+            this.currentData[idx].status = status;
             return true
           }
         }
@@ -603,10 +605,10 @@
           if ( idx > -1 ){
             if ( this.currentData[idx].fromUser ){
               const newFile = new File([this.currentData[idx].data], name, {type: this.currentData[idx].data.type})
-              this.$set(this.currentData[idx], 'data', newFile)
+              this.currentData[idx].data = newFile;
             }
             else {
-              this.$set(this.currentData[idx].data, 'name', name)
+              this.currentData[idx].data.name = name;
             }
             if ( setVal ){
               this.$nextTick(() => {
@@ -691,7 +693,7 @@
         if ( bbn.fn.isArray(this.currentData) && this.currentData.length ){
           let file = bbn.fn.getRow(this.currentData, {id: id})
           if ( bbn.fn.isObject(file) ){
-            this.$set(file, 'progress', progress)
+            file.progress = progress;
           }
         }
       },
@@ -716,10 +718,10 @@
           let old = bbn.fn.extend(true, {}, file.data)
           if ( file.fromUser ){
             const newFile = new File([file.data], name, {type: file.data.type})
-            this.$set(file, 'data', newFile) 
+            file.data = newFile;
           }
           else {
-            this.$set(file.data, 'name', name) 
+            file.data.name = name;
           }
           if ( file.fromPaste && (file.status === 'ready') ){
             this.upload(file.id)
@@ -973,5 +975,12 @@
         }
       }
     }
-  });
-})(bbn);
+  };
+
+  if (Vue.component) {
+    Vue.component('bbn-upload', cpDef);
+  }
+
+  return cpDef;
+
+})(window.bbn, window.Vue);

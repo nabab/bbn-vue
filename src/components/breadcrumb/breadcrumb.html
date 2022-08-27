@@ -27,7 +27,7 @@
             <i v-if="isNumber(selected) && source[selected] && !!source[selected].icon"
                :class="[source[selected].icon]"
             ></i>
-            <span v-text="isNumber(selected) && source[selected] && !!source[selected].title ? source[selected].title : _('Untitled')"
+            <span v-text="isNumber(selected) && source[selected] && !!source[selected].title ? source[selected].title : i18n('Untitled')"
                   :class="{'bbn-b': !currents.length}"
             ></span>
             <i v-if="isNumber(selected) && source[selected] && !source[selected].static"
@@ -71,7 +71,7 @@
               <i v-if="isNumber(sn.selected) && sn.source[sn.selected] && !!sn.source[sn.selected].icon"
                  :class="sn.source[sn.selected].icon"
               ></i>
-              <span v-text="isNumber(sn.selected) && sn.source[sn.selected] && !!sn.source[sn.selected].title ? sn.source[sn.selected].title : _('Untitled')"
+              <span v-text="isNumber(sn.selected) && sn.source[sn.selected] && !!sn.source[sn.selected].title ? sn.source[sn.selected].title : i18n('Untitled')"
                     :class="{'bbn-b': !currents[isn+1]}"
               ></span>
               <i v-if="isNumber(sn.selected) && sn.source[sn.selected] && !sn.source[sn.selected].static"

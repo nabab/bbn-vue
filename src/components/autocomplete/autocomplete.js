@@ -7,10 +7,10 @@
  */
 
 
-(function(bbn){
+((bbn, Vue) => {
   "use strict";
 
-  Vue.component('bbn-autocomplete', {
+  const cpDef = {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.eventsComponent
@@ -264,6 +264,12 @@
         }
       }
     }
-  });
+  };
 
-})(bbn);
+  if (Vue.component) {
+    Vue.component('bbn-autocomplete', cpDef);
+  }
+
+  return cpDef;
+  
+})(window.bbn, window.Vue);

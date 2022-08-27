@@ -7,15 +7,15 @@
             :left="0"
             :right="0"/>
   <h2 v-if="hasExpired">
-    <span class="bbn-nowrap" v-text="_('Refresh the page')"/>
-    <span class="bbn-nowrap" v-text="_('to be able to log in')"/>
+    <span class="bbn-nowrap" v-text="i18n('Refresh the page')"/>
+    <span class="bbn-nowrap" v-text="i18n('to be able to log in')"/>
     <span class="bbn-nowrap">
-      <span v-text="_('or click')"/>
+      <span v-text="i18n('or click')"/>
       <a class="bbn-p bbn-u"
          style="color: inherit"
          href="javascript:;"
          @click="reload"
-         v-text="_('here')"/>
+         v-text="i18n('here')"/>
     </span>
   </h2>
   <div v-else
@@ -30,12 +30,12 @@
       <div v-if="currentMode === 'invalid'"
             class="bbn-block">
         <h3 class="bbn-c"
-            v-text="_('The link is not valid')"/>
+            v-text="i18n('The link is not valid')"/>
         <h3>
           <a href="javascript:;"
              class="bbn-no"
              @click="currentMode = 'login'"
-             v-text="_('Back to the login page')"/>
+             v-text="i18n('Back to the login page')"/>
         </h3>
       </div>
       <bbn-form :action="currentUrl"
@@ -57,7 +57,7 @@
                       required="required"
                       button-left="nf nf-fa-envelope_o"
                       :nullable="true"
-                      :placeholder="_('Login name')"
+                      :placeholder="i18n('Login name')"
                       v-model="currentFormData.user"/>
           </div>
           <div class="bbn-w-100 bbn-c">
@@ -66,13 +66,13 @@
                        required="required"
                        button-left="nf nf-fa-lock"
                        :nullable="true"
-                       :placeholder="_('Password')"
+                       :placeholder="i18n('Password')"
                        v-model="currentFormData.pass"/>
           </div>
           <div class="bbn-c bbn-w-100 bbn-vsmargin bbn-flex-width">
             <bbn-button type="button"
                         @click="$refs.form.submit()"
-                        :text="_('Log in')"/>
+                        :text="i18n('Log in')"/>
             <div :class="['bbn-w-100', 'bbn-r', currentFontSizeClass]"
                  v-if="passwordLink">
               <a class="bbn-p"
@@ -87,7 +87,7 @@
             <bbn-input button-left="nf nf-fa-envelope_o"
                        class="bbn-w-100"
                        required="required"
-                       :placeholder="_('Enter your e-mail address')"
+                       :placeholder="i18n('Enter your e-mail address')"
                        v-model="currentFormData.email"
             ></bbn-input>
           </div>
@@ -95,10 +95,10 @@
             <bbn-button type="button"
                         class="bbn-right-sspace"
                         @click="currentMode = 'login'"
-                        :text="_('Cancel')"/>
+                        :text="i18n('Cancel')"/>
             <bbn-button type="button"
                         @click="$refs.form.submit()"
-                        :text="_('Send')"/>
+                        :text="i18n('Send')"/>
           </div>
         </div>
         <div v-else-if="currentMode === 'change'"
@@ -108,8 +108,8 @@
                       class="bbn-c bbn-w-100"
                       style="min-width: 20rem"
                       required="required"
-                      :title="_('Mandatory field, 8 characters minimum')"
-                      :placeholder="_('Choose your new password')"
+                      :title="i18n('Mandatory field, 8 characters minimum')"
+                      :placeholder="i18n('Choose your new password')"
                       :button-right="passwordVisible ? 'nf nf-fa-eye_slash' : 'nf nf-fa-eye'"
                       ref="pass1"
                       pattern=".{8,}"
@@ -121,8 +121,8 @@
                       class="bbn-c bbn-w-100"
                       style="min-width: 20rem"
                       required="required"
-                      :title="_('Mandatory field, 8 characters minimum')"
-                      :placeholder="_('Confirm your new password')"
+                      :title="i18n('Mandatory field, 8 characters minimum')"
+                      :placeholder="i18n('Confirm your new password')"
                       :button-right="passwordVisible ? 'nf nf-fa-eye_slash' : 'nf nf-fa-eye'"
                       ref="pass1"
                       pattern=".{8,}"
@@ -132,7 +132,7 @@
           <div class="bbn-c bbn-vmargin bbn-flex-width">
             <bbn-button type="button"
                         @click="$refs.form.submit()"
-                        :text="_('Send')"/>
+                        :text="i18n('Send')"/>
           </div>
         </div>
       </bbn-form>

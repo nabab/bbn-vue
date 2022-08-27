@@ -10,7 +10,8 @@
  * @created 11/01/2017
  */
 
-(() => {
+((bbn, Vue) => {
+
   "use strict";
 
   const defaultParagraphSeparatorString = 'defaultParagraphSeparator';
@@ -40,7 +41,6 @@
       text: bbn._('Style'),
       active: false,
       component: {
-        name: 'bbn-rte-style',
         template: `
           <bbn-dropdown class="bbn-rte-style"
                         :source="styles"
@@ -154,7 +154,6 @@
       notext: true,
       active: false,
       component: {
-        name: 'bbn-rte-fontcolor',
         template: `
           <span class="bbn-rte-fontcolor bbn-vmiddle bbn-bordered bbn-radius">
             <i class="nf nf-mdi-format_color_text bbn-hxsspace"/>
@@ -182,7 +181,6 @@
       notext: true,
       active: false,
       component: {
-        name: 'bbn-rte-fontbgcolor',
         template: `
         <span class="bbn-rte-fontbgcolor bbn-vmiddle bbn-bordered bbn-radius">
             <i class="nf nf-mdi-format_color_fill bbn-hxsspace bbn-lg"/>
@@ -329,7 +327,7 @@
 
   let openedFloatingRTE = [];
   
-  Vue.component('bbn-rte', {
+  const cpDef = {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.inputComponent
@@ -614,12 +612,12 @@
      * @event created
      */
     created(){
-      if (!this.value
-        && this.$slots.default
-        && this.$slots.default[0]
-        && this.$slots.default[0].text.length
-      ) {
-        this.currentValue = this.$slots.default[0].text;
+      
+      if (!this.value) {
+        let slot = this.$slots.default();
+        if (slot.length && slot[0].text.length) {
+          this.currentValue = this.$slots.default[0].text;
+        }
       }
       this.setButtons();
       this.defaultParagraphSeparator = this[defaultParagraphSeparatorString] || 'div'
@@ -740,5 +738,12 @@
         }
       }
     }
-  });
-})();
+  };
+
+  if (Vue.component) {
+    Vue.component('bbn-rte', cpDef);
+  }
+
+  return cpDef;
+
+})(window.bbn, window.Vue);

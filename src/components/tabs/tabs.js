@@ -9,9 +9,11 @@
   *
   * @created 13/02/2017
   */
-(bbn => {
+((bbn, Vue) => {
+
   "use strict";
-  Vue.component('bbn-tabs', {
+
+  const cpDef = {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.inputComponent
@@ -172,5 +174,12 @@
         }
       }, 500)
     }
-  });
-})(bbn);
+  };
+
+  if (Vue.component) {
+    Vue.component('bbn-tabs', cpDef);
+  }
+
+  return cpDef;
+
+})(window.bbn, window.Vue);

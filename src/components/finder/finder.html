@@ -10,7 +10,7 @@
         <div class="bbn-right">
           <bbn-button icon="nf nf-fa-close"
                       @click="uploading = false"
-                      :title="_('Cancel upload')"
+                      :title="i18n('Cancel upload')"
                       :notext="true"
                       class="bbn-xs"
           ></bbn-button>
@@ -55,29 +55,29 @@
         >
           <div class="bbn-grid-fields bbn-finder-info-dirs">
             <div class="bbn-grid-full bbn-l">
-              <bbn-button class="bbn-xs bbn-p" @click="refresh(p.name)" :title="_('Refresh tree')" icon="nf nf-fa-refresh"></bbn-button>
+              <bbn-button class="bbn-xs bbn-p" @click="refresh(p.name)" :title="i18n('Refresh tree')" icon="nf nf-fa-refresh"></bbn-button>
               <bbn-context :source="contextMenuTree"
                           :data="{path: p.path}" 
                           :key="p.path"
               >
-                <bbn-button class="bbn-xs" @click="context" :title="_('New Folder/Add files to this folder')" icon="nf nf-fa-plus"></bbn-button>
+                <bbn-button class="bbn-xs" @click="context" :title="i18n('New Folder/Add files to this folder')" icon="nf nf-fa-plus"></bbn-button>
               </bbn-context>
             </div>
-            <div v-text="_('Number of childs')" v-if="p.num_dirs || p.num_files"></div>
+            <div v-text="i18n('Number of childs')" v-if="p.num_dirs || p.num_files"></div>
             <div v-text="p.num_dirs + p.num_files" v-if="p.num_dirs || p.num_files"></div>
 
-            <div v-text="_('Directories')" v-if="p.num_dirs"></div>
+            <div v-text="i18n('Directories')" v-if="p.num_dirs"></div>
             <div v-text="p.num_dirs" v-if="p.num_dirs"></div>
 
-            <div v-text="_('Files')" v-if="p.num_files"></div>
+            <div v-text="i18n('Files')" v-if="p.num_files"></div>
             <div v-text="p.num_files" v-if="p.num_files"></div>
 
-            <div v-text="_('Size')"></div>
+            <div v-text="i18n('Size')"></div>
             <div v-if="!p.size">
               <bbn-button icon="nf nf-mdi-scale"
                           class="bbn-xs"
                           @click="get_size(p)" 
-                          :title="_('Get dir size')"
+                          :title="i18n('Get dir size')"
               ></bbn-button>         
             </div>
             <span v-text="p.size" v-else style="text-align:right!important"></span>
@@ -85,8 +85,8 @@
             <div class="bbn-grid-full bbn-c" v-if="isLoading && (i === (numCols - 1))">
               <bbn-button icon="nf nf-fa-hand_paper" 
                           @click="abortRequest(i)"
-                          :text="_('Abort request')"
-                          :title="_('Cancel the current request')"
+                          :text="i18n('Abort request')"
+                          :title="i18n('Cancel the current request')"
               ></bbn-button>               
             </div>
           </div>
@@ -98,29 +98,29 @@
           class="bbn-finder-info-file-container bbn-flex-height"
     >
       <div class="bbn-grid-fields bbn-header bbn-widget bbn-spadded">
-        <span v-text="_('Filename')"></span>
+        <span v-text="i18n('Filename')"></span>
         <span v-text="currentFile ? currentFile.node.data.value : ''"></span>
-        <span v-if="currentFile.info && currentFile.info.size" v-text="_('Size')"></span>
+        <span v-if="currentFile.info && currentFile.info.size" v-text="i18n('Size')"></span>
         <span v-text="(currentFile.info && currentFile.info.size) ? currentFile.info.size : ''"></span>
-        <span v-if="(currentFile.info && currentFile.info.width)" v-text="_('Width')"></span>
+        <span v-if="(currentFile.info && currentFile.info.width)" v-text="i18n('Width')"></span>
         <span v-if="(currentFile.info && currentFile.info.width)" v-text="currentFile.info.width + 'px'"></span>
-        <span v-if="(currentFile.info && currentFile.info.height)" v-text="_('Height')"></span>
+        <span v-if="(currentFile.info && currentFile.info.height)" v-text="i18n('Height')"></span>
         <span v-if="(currentFile.info && currentFile.info.height)" v-text="currentFile.info.height + 'px'"></span>
-        <!--span v-if="currentFile.info && currentFile.info.creation" v-text="_('Creation')"></span>
+        <!--span v-if="currentFile.info && currentFile.info.creation" v-text="i18n('Creation')"></span>
         <span-- v-text="(currentFile.info && currentFile.info.creation) ? currentFile.info.creation : ''"></span-->
-        <span v-if="currentFile.info && currentFile.info.mtime" v-text="_('Last modification')"></span>
+        <span v-if="currentFile.info && currentFile.info.mtime" v-text="i18n('Last modification')"></span>
         <span v-text="(currentFile.info && currentFile.info.mtime) ? currentFile.info.mtime : ''"></span>
         <div class="bbn-grid-full bbn-right">
           <bbn-button icon="nf nf-fa-hand_paper_o"
                       @click="abortRequest('file')"
-                      :text="_('Abort request')"
-                      :title="_('Cancel the current request')"
+                      :text="i18n('Abort request')"
+                      :title="i18n('Cancel the current request')"
                       v-if="isLoading"
                         
           ></bbn-button>
           <bbn-button icon="nf nf-fa-close"
                       @click="closePreview"
-                      :title="_('Close preview')"
+                      :title="i18n('Close preview')"
                       :notext="true"
           ></bbn-button>
         </div>
@@ -137,11 +137,11 @@
       </div>
       <div v-else-if="currentFile.info && !currentFile.info.content && !isImage && !isLoading"
             class="bbn-padded bbn-medium bbn-b"
-            v-text="_('The content of this file cannot be shown')">
+            v-text="i18n('The content of this file cannot be shown')">
       </div>
       <div v-else-if="isLoading" 
             class="bbn-padded bbn-medium bbn-b"
-            v-text="_('Loading file infos..')">
+            v-text="i18n('Loading file infos..')">
       </div>
     </div>
   </bbn-scroll>

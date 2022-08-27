@@ -28,7 +28,7 @@
       </li>
     </ul>
   </bbn-scroll>
-  <bbn-portal>
+  <Teleport to="body">
     <bbn-floater v-if="visibleFloater"
                 ref="floater"
                 :class="[componentClass, 'bbn-widget']"
@@ -56,7 +56,7 @@
         </span>
       </div>
     </bbn-floater>
-  </bbn-portal>
+  </Teleport>
   <div class="bbn-fisheye-bin"
        v-if="visibleBin"
        :style="binPosition">

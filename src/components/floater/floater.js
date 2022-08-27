@@ -14,8 +14,7 @@
    */
   let isClicked = false;
   //bbn.vue.preloadBBN(['scroll', 'list', 'button']);
-  Vue.component('bbn-floater', {
-    name: 'bbn-floater',
+  const cpDef = {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.listComponent
@@ -552,7 +551,7 @@
        * @return {Boolean}
        */
       hasContent(){
-        return !!(this.content || this.component || this.filteredData.length || this.$slots.default);
+        return !!(this.content || this.component || this.filteredData.length || this.$slots.default());
       },
       /**
        * True if the component is visible.
@@ -1407,7 +1406,7 @@
        * @return {Promise}
        */
       updateData(){
-        if (this.component || this.$slots.default || this.content) {
+        if (this.component || this.content || this.$slots.default()) {
           return this.$nextTick()
         }
         return bbn.vue.listComponent.methods.updateData.apply(this);
@@ -1623,6 +1622,12 @@
       }
     }
 
-  });
+  };
+
+  if (Vue.component) {
+    Vue.component('bbn-floater', cpDef);
+  }
+
+  return cpDef;
 
 })(window.Vue, window.bbn);

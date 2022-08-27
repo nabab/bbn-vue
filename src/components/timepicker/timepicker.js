@@ -8,10 +8,11 @@
  *
  * @copyright BBN Solutions
  */
-(function(bbn){
+((bbn, Vue, dayjs) => {
+
   "use strict";
 
-  Vue.component('bbn-timepicker', {
+  const cpDef = {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.inputComponent
@@ -264,7 +265,10 @@
       clear(){
         this.setValue('');
         this.$nextTick(() => {
-          this.$set(this.getRef('element'), 'inputValue', '');
+          let el = this.getRef('element');
+          if (el) {
+            el.inputValue = '';
+          }
         })
       }
     },
@@ -329,6 +333,12 @@
         this.setInputValue(newVal);
       }
     }
-  });
+  };
 
-})(bbn);
+  if (Vue.component) {
+    Vue.component('bbn-timepicker', cpDef);
+  }
+
+  return cpDef;
+
+})(window.bbn, window.Vue, window.dayjs);

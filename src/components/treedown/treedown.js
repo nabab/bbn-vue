@@ -11,10 +11,11 @@
  */
 
 
-(function(bbn){
+((bbn, Vue) => {
+
   "use strict";
 
-  Vue.component('bbn-treedown', {
+  const cpDef = {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.inputComponent
@@ -463,6 +464,12 @@
         this.updateData();
       }
     }
-  });
+  };
 
-})(bbn);
+  if (Vue.component) {
+    Vue.component('bbn-treedown', cpDef);
+  }
+
+  return cpDef;
+
+})(window.bbn, window.Vue);

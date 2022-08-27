@@ -7,10 +7,11 @@
  * @author Loredana Bruno
  */
 
-(function(bbn){
+((bbn, Vue) => {
+
   "use strict";
 
-  Vue.component('bbn-panelbar', {
+  const cpDef = {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.localStorageComponent
@@ -283,5 +284,12 @@
         }
       }
     }
-  });
-})(bbn);
+  };
+
+  if (Vue.component) {
+    Vue.component('bbn-panelbar', cpDef);
+  }
+
+  return cpDef;
+
+})(window.bbn, window.Vue);

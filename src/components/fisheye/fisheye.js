@@ -9,10 +9,10 @@
  *
  * @copyright BBN Solutions
  */
-(function(bbn){
+((bbn, Vue) => {
   "use strict";
 
-  Vue.component('bbn-fisheye', {
+  const cpDef = {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.listComponent
@@ -339,5 +339,12 @@
         }
       }
     }
-  });
-})(bbn);
+  };
+
+  if (Vue.component) {
+    Vue.component('bbn-fisheye', cpDef);
+  }
+
+  return cpDef;
+
+})(window.bbn, window.Vue);

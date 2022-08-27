@@ -10,12 +10,12 @@
       <!-- BUTTONS LEFT -->
       <div class="bbn-header-buttons bbn-widget-button-left bbn-hxspadded">
         <i v-if="isClosable"
-            :title="_('Close')"
+            :title="i18n('Close')"
             @click="close"
             class="bbn-lg nf nf-fa-times"/>
         <bbn-context v-if="hasMenu"
                       :source="finalMenu">
-          <i :title="_('Menu')"
+          <i :title="i18n('Menu')"
               class="bbn-lg nf nf-fa-caret_down"/>
         </bbn-context>
         <i v-for="(b, idx) in realButtonsLeft"

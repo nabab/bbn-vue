@@ -7,13 +7,14 @@
  *
  * @copyright BBN Solutions
  */
-(function(Vue, bbn){
+(function(bbn, Vue){
   "use strict";
   /**
    * Classic input with normalized appearance
    */
   let isClicked = false;
-  Vue.component('bbn-list', {
+
+  const cpDef = {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.listComponent
@@ -688,7 +689,12 @@
       */
     }
 
-  });
+  };
 
-})(window.Vue, window.bbn);
+  if (Vue.component) {
+    Vue.component('bbn-list', cpDef);
+  }
 
+  return cpDef;
+
+})(window.bbn, window.Vue);

@@ -8,7 +8,7 @@
 ((bbn, Vue) => {
   "use strict";
 
-  Vue.component('bbn-emoji', {
+  const cpDef = {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.resizerComponent
@@ -1497,5 +1497,12 @@
         })
       }
     }
-  })
-})(bbn, Vue)
+  };
+
+  if (Vue.component) {
+    Vue.component('bbn-emoji', cpDef);
+  }
+
+  return cpDef;
+
+})(window.bbn, window.Vue);

@@ -17,12 +17,12 @@
       <div v-if="summary && items.length"
            class="first bbn-flex-fill bbn-slide"
            :style="{display: currentIndex === 0 ? 'block' : 'none'}">
-        <h2 v-text="_('Summary')"></h2>
+        <h2 v-text="i18n('Summary')"></h2>
         <ol class="bbn-l bbn-lg">
           <li v-for="(it, i) in items">
             <a href="javascript:;"
                @click="currentIndex = i+1"
-               v-text="it.title ? it.title : _('Untitled')"/>
+               v-text="it.title ? it.title : i18n('Untitled')"/>
           </li>
         </ol>
       </div>
@@ -207,15 +207,15 @@
     <!--old arrows-->
     <div v-if="items.length && !arrows && (preview === false) && navigation" class="bbn-slideshow-navigation">
       <div class="bbn-100">
-        <a href="javascript:;" v-if="summary" :title="_('Summary')" @click="currentIndex = 0"
+        <a href="javascript:;" v-if="summary" :title="i18n('Summary')" @click="currentIndex = 0"
           :style="{visibility: currentIndex === 0 ? 'hidden' : 'visible'}" class="bbn-slideshow-summary">
           <i class="nf nf-fa-align_justify"/>
         </a>
-        <a href="javascript:;" @click="prev" :title="_('Previous')"
+        <a href="javascript:;" @click="prev" :title="i18n('Previous')"
           :style="{visibility: currentIndex === 0 ? 'hidden' : 'visible'}" class="bbn-slideshow-prev">
           <i class="nf nf-fa-arrow_circle_left"/>
         </a>
-        <a href="javascript:;" @click="next" :title="_('Next')"
+        <a href="javascript:;" @click="next" :title="i18n('Next')"
           :style="{visibility: currentIndex >= (summary ? items.length : items.length - 1) ? 'hidden' : 'visible'}"
           class="bbn-slideshow-next">
           <i class="nf nf-fa-arrow_circle_right"/>
@@ -227,7 +227,7 @@
     <bbn-loadicon class="bbn-vmiddle"
                   :size="24"/>
     <span class="bbn-xl bbn-b bbn-left-sspace"
-          v-text="_('Loading') + '...'"/>
+          v-text="i18n('Loading') + '...'"/>
   </div>
   <div class="bbn-hidden" ref="slot">
     <slot></slot>

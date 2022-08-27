@@ -6,10 +6,10 @@
  * @created 10/02/2017
  */
 
-(function(bbn, Vue) {
+((bbn, Vue) => {
   "use strict";
 
-  Vue.component('bbn-menu', {
+  const cpDef = {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.listComponent
@@ -143,6 +143,12 @@
     mounted() {
       this.ready = true;
     }
-  });
+  };
+
+  if (Vue.component) {
+    Vue.component('bbn-menu', cpDef);
+  }
+
+  return cpDef;
 
 })(window.bbn, window.Vue);

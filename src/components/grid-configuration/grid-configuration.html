@@ -3,7 +3,7 @@
 <div :class="['bbn-iblock', componentClass]">
   <bbn-button :notext="true"
               icon="nf nf-mdi-grid"
-              :text="_('Open selector')"
+              :text="i18n('Open selector')"
               @click="showWindow=!showWindow"
               ref="button"/>
   <bbn-floater :title="false"
@@ -22,7 +22,7 @@
              @mouseenter="mouseEnter(colidx, rowidx)"
              @mouseleave="mouseLeave()"
              @click="$emit('select', [colidx, rowidx])"
-             :title="_('Row') + ': ' + rowidx + ' / ' + _('Col') + ': ' + colidx"/>
+             :title="i18n('Row') + ': ' + rowidx + ' / ' + i18n('Col') + ': ' + colidx"/>
       </div>
     </div>
   </bbn-floater>

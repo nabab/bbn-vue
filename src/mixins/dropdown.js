@@ -103,10 +103,10 @@
         /**
          * Using an external popup component to open the floater
          * @memberof dropdownComponent
-         * @prop {Boolean|Vue} popup
+         * @prop {Boolean|Object} popup
          */
         popup: {
-          type: [Boolean, Vue],
+          type: [Boolean, Object],
           default: false
         },
         /**
@@ -160,10 +160,10 @@
           default: 'group'
         },
         /**
-         * @prop {(String|Object|Vue)} groupComponent
+         * @prop {(String|Object)} groupComponent
          */
         groupComponent: {
-          type: [String, Object, Vue]
+          type: [String, Object]
         },
         /**
          * @prop {String} groupStyle
@@ -238,7 +238,7 @@
           currentSelectValue: this.value,
           /**
            * The floater component
-           * @data {Vue} list
+           * @data {Object} list
            * @memberof dropdownComponent
            */
           list: null,

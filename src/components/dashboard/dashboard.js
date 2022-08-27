@@ -11,14 +11,13 @@
   * @created 15/02/2017.
   */
 
-(function(bbn){
+((bbn, Vue) => {
   "use strict";
 
-  var limits = [5, 10, 15, 20, 25, 30, 40, 50];
   /**
    * Classic input with normalized appearance
    */
-  Vue.component('bbn-dashboard', {
+  const cpDef = {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.resizerComponent
@@ -500,12 +499,7 @@
             }
 
             bbn.fn.iterate(params.cfg, (a, k) => {
-              if ( this.widgets[idx][k] === undefined ){
-                this.$set(this.widgets[idx], k, a);
-              }
-              else{
-                this.widgets[idx][k] = a;
-              }
+              this.widgets[idx][k] = a;
             });
             this.$nextTick(()=>{
               this.setWidgetStorage(idx);
@@ -517,12 +511,7 @@
                 bbn.fn.each(cps, (cp, i) => {
                   if ( (cp !== this) && (cp.storageFullName === this.storageFullName) ){
                     bbn.fn.iterate(params.cfg, (a, k) => {
-                      if ( cp.widgets[idx][k] === undefined ){
-                        cp.$set(cp.widgets[idx], k, a);
-                      }
-                      else if ( cp.widgets[idx][k] !== a ){
-                        cp.widgets[idx][k] = a;
-                      }
+                      cp.widgets[idx][k] = a;
                     });
                     if ( params.cfg.hidden !== undefined ){
                       cp.updateMenu();
@@ -654,8 +643,9 @@
       init(){
         this.originalSource = [];
         // Adding bbns-widget from the slot.
-        if ( this.$slots.default ){
-          for ( let node of this.$slots.default ){
+        let slot = this.$slots.default();
+        if (slot) {
+          for (let node of slot) {
             if (
               node &&
               (node.tag === 'bbns-widget')
@@ -696,7 +686,8 @@
        * @return {Boolean | Array}
        */
       setCurrentSlots(){
-        this.currentSlots = this.$slots.default ? this.$slots.default.filter(node => {
+        let slot = this.$slots.default();
+        this.currentSlots = slot ? slot.filter(node => {
           return !!node.tag;
         }) : [];
       },
@@ -798,6 +789,12 @@
         }
       }
     }
-  });
+  };
 
-})(bbn);
+  if (Vue.component) {
+    Vue.component('bbn-dashboard', cpDef);
+  }
+
+  return cpDef;
+
+})(window.bbn, window.Vue);

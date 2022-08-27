@@ -1,5 +1,5 @@
 (() => {
-  Vue.directive('focused', {
+  (Vue.directive || bbn.vue.setDirective)('focused', {
     inserted(el, binding) {
       if (binding.value === false) {
         return;

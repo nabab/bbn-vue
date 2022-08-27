@@ -4,7 +4,8 @@
  * @copyright BBN Solutions
  * @author BBN Solutions
  */
- (function(bbn, Vue){
+ ((bbn, Vue) => {
+
   "use strict";
 
   // Orientations of the thumbnails for visual mode
@@ -51,8 +52,7 @@
     }
   }
   
-  Vue.component("bbn-router", {
-    name: 'bbn-router',
+  const cpDef = {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.localStorageComponent
@@ -951,7 +951,7 @@
               this.$emit('close', idx, onClose);
               let url = this.views[idx].url;
               this.views.splice(idx, 1);
-              this.$delete(this.urls, url);
+              delete this.urls[url];
               this.fixIndexes();
               return true;
             }
@@ -1166,8 +1166,8 @@
               }
               bbn.fn.iterate(obj, (a, n) => {
                 if ( o[n] !== a ){
-                  // Each new property must be set with $set
-                  this.$set(o, n, a)
+                  // Each new property must be set
+                  o[n] = a;
                 }
               });
             }
@@ -1178,8 +1178,8 @@
 
               bbn.fn.iterate(this.getDefaultView(), (a, n) => {
                 if ( obj[n] === undefined ){
-                  // Each new property must be set with $set
-                  this.$set(obj, n, a);
+                  // Each new property must be set
+                  obj[n] = a;
                 }
               });
               obj.uid = obj.url + '-' + bbn.fn.randomString();
@@ -1695,7 +1695,7 @@
             (url === this.views[this.selected].url)
           )
         ){
-          this.$set(this.views[this.selected], 'current', url);
+          this.views[this.selected].current = url;
         }
         if (this.urlNavigation) {
           if (this.parentContainer) {
@@ -2173,7 +2173,7 @@
               }
               bbn.fn.iterate(bbn.fn.extend(this.getDefaultView(), kept), (a, n) => {
                 if (view[n] !== a) {
-                  this.$set(view, n, a);
+                  view[n] = a;
                 }
               });
               if (this.urls[url]) {
@@ -2621,7 +2621,7 @@
             key: "notext",
             icon: this.views[idx].notext ? "nf nf-fa-font" : "nf nf-fa-font_awesome",
             action: () => {
-              this.$set(this.views[idx], 'notext', !this.views[idx].notext);
+              this.views[idx].notext = !this.views[idx].notext;
             }
           });
         }
@@ -3023,7 +3023,7 @@
           if ( ele ){
             let idx = this.getIndex(ele);
             if ( idx !== false ){
-              this.$set(this.views[idx].events, 'bbnObs' + obs.element + obs.id, newVal);
+              this.views[idx].events.bbnObs = obs.element + obs.id, newVal;
               this.$nextTick(() => {
                 //this.$forceUpdate();
               });
@@ -3036,7 +3036,6 @@
        * @method observerClear
        * @param {Object} obs
        * @fires getIndex
-       * @fires $delete
        * @fires $nextTick
        * @fires $forceUpdate
        * @fires observationTower.observerClear
@@ -3046,10 +3045,7 @@
         if ( ele ){
           let idx = this.getIndex(ele);
           if ((idx !== false) && (this.views[idx].events['bbnObs' + obs.element + obs.id] !== undefined)) {
-            this.$delete(this.views[idx].events, 'bbnObs' + obs.element + obs.id);
-            this.$nextTick(() => {
-              //this.$forceUpdate();
-            });
+            delete this.views[idx].events['bbnObs' + obs.element + obs.id];
           }
         }
         else if (this.observationTower) {
@@ -3440,7 +3436,7 @@
           pane = bbn.fn.getRow(this.currentPanes, {id: paneId});
         }
 
-        this.$set(this.views[containerIdx], "pane", paneId);
+        this.views[containerIdx].pane = paneId;
         pane.tabs.push(view);
         setTimeout(() => {
           if (containerIdx === this.selected) {
@@ -3584,8 +3580,9 @@
 
       // ---- ADDED 16/12/20 (Mirko) ----
       // Adding bbns-container from the slot
-      if ( this.$slots.default ){
-        for ( let node of this.$slots.default ){
+      let slot = this.$slots.default();
+      if (slot) {
+        for ( let node of slot ){
           if (
             node.componentOptions
             && (node.componentOptions.tag === 'bbn-container')
@@ -4070,7 +4067,7 @@
     <div class="bbn-flex-fill bbn-nowrap">
       <span class="bbn-s bbn-badge bbn-bg-blue"
             v-text="source.score"/>
-      <span v-text="_('Opened container')"/>
+      <span v-text="i18n('Opened container')"/>
       <em v-text="'URL: ' + source.url"></em><br>
       <span class="bbn-lg" v-text="source.title"></span>
     </div>
@@ -4089,6 +4086,12 @@
         }
       }
     }
-  });
+  };
 
-})(bbn, Vue);
+  if (Vue.component) {
+    Vue.component("bbn-router", cpDef);
+  }
+
+  return cpDef;
+
+})(window.bbn, window.Vue);

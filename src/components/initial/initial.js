@@ -14,13 +14,13 @@
   * @created 28/03/2017
   */
 
-(function(bbn){
+((bbn, Vue) => {
   "use strict";
 
   /**
    * Initals
    */
-  Vue.component('bbn-initial', {
+  const cpDef = {
     /**
      * @mixin bbn.vue.basicComponent
      */
@@ -276,6 +276,12 @@
         return bbn.fn.isNumber(this.radius) ? this.radius + 'px' : this.radius;
       }
     }
-  });
+  };
 
-})(bbn);
+  if (Vue.component) {
+    Vue.component('bbn-initial', cpDef);
+  }
+
+  return cpDef;
+
+})(window.bbn, window.Vue);

@@ -1,6 +1,6 @@
 <div :class="[componentClass, 'bbn-padded', 'bbn-block']">
-  <h1 v-text="_('Router Configuration')"/>
-  <h2 v-text="_('Navigation mode')"/>
+  <h1 v-text="i18n('Router Configuration')"/>
+  <h2 v-text="i18n('Navigation mode')"/>
   <div class="bbn-router-config-mode bbn-w-100 bbn-grid"
        :style="'grid-template-columns: repeat(' + numModes + ', 1fr)'">
     <div class="bbn-h-100"
@@ -44,7 +44,7 @@
         </div>
         <div class="bbn-b bbn-spadding">
           <div class="bbn-iblock bbn-left-margin bbn-upper bbn-reactive-text"
-               v-text="_('visual')"
+               v-text="i18n('visual')"
                @click="mode = 'visual'"/>
         </div>
       </div>
@@ -74,7 +74,7 @@
         </div>
         <div class="bbn-b bbn-spadding">
           <div class="bbn-iblock bbn-left-margin bbn-upper bbn-reactive-text"
-               v-text="_('tabs')"
+               v-text="i18n('tabs')"
                @click="onSelect('tabs', tabsSelected)"/>
         </div>
       </div>
@@ -107,13 +107,13 @@
         </div>
         <div class="bbn-b bbn-spadding">
           <div class="bbn-iblock bbn-left-margin bbn-upper bbn-reactive-text"
-               v-text="_('breadcrumb')"
+               v-text="i18n('breadcrumb')"
                @click="onSelect('breadcrumb', breadcrumbSelected)"/>
         </div>
       </div>
     </div>
   </div>
-  <h2 v-text="_('Visual orientation')"
+  <h2 v-text="i18n('Visual orientation')"
       v-if="mode === 'visual'"/>
   <div v-if="mode === 'visual'"
        class="bbn-router-config-orientation bbn-grid bbn-w-100">
@@ -148,10 +148,10 @@
       </div>
     </div>
   </div>
-  <h2 v-text="_('Presets')"/>
+  <h2 v-text="i18n('Presets')"/>
   <div class="bbn-w-100 bbn-vspadding bbn-light bbn-m"
-       v-text="_('Soon...')"></div>
-  <h2 v-text="_('Configuration backups')"/>
+       v-text="i18n('Soon...')"></div>
+  <h2 v-text="i18n('Configuration backups')"/>
   <div class="bbn-w-100 bbn-vspadding bbn-light bbn-m"
-       v-text="_('Soon...')"></div>
+       v-text="i18n('Soon...')"></div>
 </div>

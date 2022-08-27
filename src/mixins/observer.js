@@ -51,7 +51,7 @@
           observerID: null,
           /**
            * The closest ancestor 'bbn-obsever';
-           * @data {Vue} observationTower
+           * @data {Object} observationTower
            * @memberof observerComponent
            */
           observationTower: null,

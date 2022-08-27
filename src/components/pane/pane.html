@@ -1,8 +1,8 @@
 <div :class="[componentClass, 'bbn-background']">
   <div :class="{
     'bbn-overlay': $parent.fullSize && !isCollapsed,
-    'bbn-w-100': ((isCollapsed && title) || !$parent.fullSize) && (($parent.panes.length === 1) || !isHorizontal),
-    'bbn-h-100': ((isCollapsed && title) || !$parent.fullSize) && ($parent.panes.length > 1) && isHorizontal,
+    'bbn-w-100': ((isCollapsed && title) || !$parent.fullSize) && (($parent.panes && ($parent.panes.length === 1)) || !isHorizontal),
+    'bbn-h-100': ((isCollapsed && title) || !$parent.fullSize) && (($parent.panes && ($parent.panes.length > 1)) && isHorizontal),
     'bbn-flex-height': $parent.fullSize && title && !isHorizontal && !isCollapsed,
     'bbn-flex-width': $parent.fullSize && title && isHorizontal && !isCollapsed
   }">
@@ -20,8 +20,8 @@
       'bbn-hidden': isCollapsed,
       'bbn-overlay': $parent.fullSize && !title && !isCollapsed,
       'bbn-flex-fill': $parent.fullSize && title && !isCollapsed,
-      'bbn-w-100': !$parent.fullSize && (($parent.panes.length === 1) || !isHorizontal),
-      'bbn-h-100': !$parent.fullSize && ($parent.panes.length > 1) && isHorizontal,
+      'bbn-w-100': !$parent.fullSize && (($parent.panes && ($parent.panes.length === 1)) || !isHorizontal),
+      'bbn-h-100': !$parent.fullSize && (($parent.panes && ($parent.panes.length > 1)) && isHorizontal),
     }"
          v-show="!isCollapsed">
       <component :is="scrollable ? 'bbn-scroll' : 'div'"

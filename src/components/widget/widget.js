@@ -9,15 +9,15 @@
  *
  * @created 15/02/2017.
  */
-(function(bbn){
+((bbn, Vue) => {
+
   "use strict";
 
   var limits = [5, 10, 15, 20, 25, 30, 40, 50];
   /**
    * Classic input with normalized appearance
    */
-  Vue.component('bbn-widget', {
-    name: 'bbn-widget',
+  const cpDef = {
     /**
      * @mixin bbn.vue.basicComponent,
      * @mixin bbn.vue.localStorageComponent,
@@ -444,7 +444,6 @@
        * @fires observerWatch
        * @fires $nextTick
        * @fires onResize
-       * @fires $set
        * @emits loaded
        * @return {Promise}
        */
@@ -656,6 +655,12 @@
         this.reload();
       }
     }
-  });
+  };
 
-})(bbn);
+  if (Vue.component) {
+    Vue.component('bbn-widget', cpDef);
+  }
+
+  return cpDef;
+
+})(window.bbn, window.Vue);

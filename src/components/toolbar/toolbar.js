@@ -7,10 +7,11 @@
  * @author BBN Solutions
  */
 
-(function(bbn){
+((bbn, Vue) => {
+
   "use strict";
 
-  Vue.component('bbn-toolbar', {
+  const cpDef = {
     /**
      * @mixin bbn.vue.basicComponent
      */
@@ -82,8 +83,9 @@
         }
       },
       updateSlot(){
-        if (this.$slots.default) {
-          for (let node of this.$slots.default) {
+        let slot = this.$slots.default();
+        if (slot) {
+          for (let node of slot) {
             if ((node.tag === 'div') && !node.children) {
               node.elm.classList.add('bbn-toolbar-separator');
             }
@@ -128,6 +130,12 @@
         }
       }
     }
-  });
+  };
 
-})(bbn);
+  if (Vue.component) {
+    Vue.component('bbn-toolbar', cpDef);
+  }
+
+  return cpDef;
+
+})(window.bbn, window.Vue);

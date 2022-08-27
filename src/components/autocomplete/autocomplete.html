@@ -66,8 +66,8 @@
          v-model="value"
          ref="element"
          :name="name">
-  <bbn-portal v-if="portalSelector"
-              :selector="portalSelector">
+  <Teleport v-if="portalSelector"
+            :to="portalSelector">
     <bbn-floater v-if="!popup
                     && filteredData.length
                     && !isDisabled
@@ -96,5 +96,5 @@
                 :selected="value ? [value] : []"
                 @close="isOpened = false"
                 :source="filteredData"/>
-  </bbn-portal>
+  </Teleport>
 </div>

@@ -5,10 +5,10 @@
  * @copyright BBN Solutions
  * @author Mirko Argentino
  */
-(bbn => {
+((bbn, Vue) => {
   "use strict";
 
-  Vue.component('bbn-gallery', {
+  const cpDef = {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.resizerComponent
@@ -790,7 +790,7 @@
                   [this.source.data[this.col.gallery.uid]]: pos
                 });
                 if (!sortEvent.defaultPrevented) {
-                  this.$set(data, this.col.gallery.sourceOrder, posNew);
+                  data[this.col.gallery.sourceOrder] = posNew;
                   this.source.data[this.col.gallery.sourceOrder] = pos;
                 }
               }
@@ -900,5 +900,12 @@
         }
       }
     }
-  })
-})(bbn);
+  };
+
+  if (Vue.component) {
+    Vue.component('bbn-gallery', cpDef);
+  }
+
+  return cpDef;
+
+})(window.bbn, window.Vue);

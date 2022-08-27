@@ -7,9 +7,11 @@
  * 
  * @created 15/02/2017
  */
-(function(bbn){
+((bbn, Vue) => {
+
   "use strict";
-  Vue.component('bbn-tree-input', {
+
+  const cpDef = {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.inputComponent
@@ -67,6 +69,12 @@
     mounted(){
       this.ready = true;
     }
-  });
+  };
 
-})(bbn);
+  if (Vue.component) {
+    Vue.component('bbn-tree-input', cpDef);
+  }
+
+  return cpDef;
+
+})(window.bbn, window.Vue);

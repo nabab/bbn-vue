@@ -15,7 +15,7 @@
 
 
 //Markdown editor use simpleMDe
-(function(bbn, JSONEditor){
+((bbn, Vue, JSONEditor) => {
   "use strict";
   let lang = {
     array: bbn._('Array'),
@@ -108,7 +108,7 @@
     examples: bbn._('Examples'),
     default: bbn._('Default')
   };
-  Vue.component('bbn-json-editor', {
+  const cpDef = {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.inputComponent
@@ -329,6 +329,12 @@
         }
       }
     }
-  });
+  };
 
-})(bbn, JSONEditor);
+  if (Vue.component) {
+    Vue.component('bbn-json-editor', cpDef);
+  }
+
+  return cpDef;
+
+})(window.bbn, window.Vue, window.JSONEditor);

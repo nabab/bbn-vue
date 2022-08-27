@@ -8,10 +8,10 @@
   <div class="bbn-h-100 bbn-flex-height bbn-vpadded" v-if="isOpened">
     <div class="bbn-xl bbn-c bbn-w-100 bbn-vpadded" v-if="!items.length && !search.length">
       <i class="nf nf-fa-clipboard"/> &nbsp; 
-      <span v-text="_('Clipboard is empty')"/>
+      <span v-text="i18n('Clipboard is empty')"/>
     </div>
     <div class="bbn-large bbn-c bbn-w-100 bbn-vpadded" v-else>
-      <bbn-input :placeholder="_('Search clipboard')"
+      <bbn-input :placeholder="i18n('Search clipboard')"
                  :button-right="(search === '') ? 'nf nf-fa-search' : 'nf nf-fa-close'"
                  v-model="search"
                  ref="search"
@@ -22,7 +22,7 @@
          v-if="items.length">
       <bbn-button v-if="!search.length"
                   @click="clear"
-                  :text="_('Clear all')"/>
+                  :text="i18n('Clear all')"/>
       <textarea class="bbn-invisible"
                 ref="textarea"
                 style="width: 0px; height: 0px"/>
@@ -46,15 +46,15 @@
               <bbn-context tag="span"
                            class="bbn-right-space"
                            :source="[
-                {text: _('Copy plain text'), icon: 'nf nf-mdi-cursor_text', action: () => {closest('bbn-clipboard').setClipboard(uid, 'plain')}},
-                {text: _('Copy rich text'), icon: 'nf nf-mdi-code_tags', disabled: !content, action: () => {closest('bbn-clipboard').setClipboard(uid, 'html')}},
-                {text: _('Copy as image'), icon: 'nf nf-fa-image', disabled: !type || (type.indexOf('image/')) !== 0, action: () => {closest('bbn-clipboard').setClipboard(uid, 'image')}},
-                {text: _('Save'), icon: 'nf nf-fa-file_o', action: () => {closest('bbn-clipboard').save(uid)}},
-                {text: _('Save as...'), icon: 'nf nf-fa-file_o', action: () => {closest('bbn-clipboard').saveAs(uid)}},
-                {text: _('Pin'), icon: 'nf nf-mdi-pin', action: () => {source.pinned = true;}, disabled: source.pinned},
-                {text: _('Unpin'), icon: 'nf nf-mdi-pin_off', action: () => {source.pinned = false;}, disabled: !source.pinned},
-                {text: _('Share'), icon: 'nf nf-fa-share', action: () => {}},
-                {text: _('Remove'), icon: 'nf nf-fa-trash_o', action: () => closest('bbn-clipboard').remove({uid: source.uid})},
+                {text: i18n('Copy plain text'), icon: 'nf nf-mdi-cursor_text', action: () => {closest('bbn-clipboard').setClipboard(uid, 'plain')}},
+                {text: i18n('Copy rich text'), icon: 'nf nf-mdi-code_tags', disabled: !content, action: () => {closest('bbn-clipboard').setClipboard(uid, 'html')}},
+                {text: i18n('Copy as image'), icon: 'nf nf-fa-image', disabled: !type || (type.indexOf('image/')) !== 0, action: () => {closest('bbn-clipboard').setClipboard(uid, 'image')}},
+                {text: i18n('Save'), icon: 'nf nf-fa-file_o', action: () => {closest('bbn-clipboard').save(uid)}},
+                {text: i18n('Save as...'), icon: 'nf nf-fa-file_o', action: () => {closest('bbn-clipboard').saveAs(uid)}},
+                {text: i18n('Pin'), icon: 'nf nf-mdi-pin', action: () => {source.pinned = true;}, disabled: source.pinned},
+                {text: i18n('Unpin'), icon: 'nf nf-mdi-pin_off', action: () => {source.pinned = false;}, disabled: !source.pinned},
+                {text: i18n('Share'), icon: 'nf nf-fa-share', action: () => {}},
+                {text: i18n('Remove'), icon: 'nf nf-fa-trash_o', action: () => closest('bbn-clipboard').remove({uid: source.uid})},
               ]">
                 <i class="nf nf-mdi-dots_vertical"/>
               </bbn-context>
@@ -84,7 +84,7 @@
              @drop.prevent.stop="copy"
              @keydown.enter="addInput"
              @keyup.prevent
-             :placeholder="_('Paste or drop something...')">
+             :placeholder="i18n('Paste or drop something...')">
     </div>
   </div>
 </bbn-slider>

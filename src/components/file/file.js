@@ -10,10 +10,10 @@
   * @created 13/06/2017.
   */
 
-(bbn => {
+((bbn, Vue) => {
   "use strict";
 
-  Vue.component('bbn-file', {
+  const cpDef = {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.inputComponent
@@ -294,6 +294,12 @@
         this.$emit('change', this.getValue);
       }
     }
-  });
+  };
 
-})(bbn);
+  if (Vue.component) {
+    Vue.component('bbn-file', cpDef);
+  }
+
+  return cpDef;
+
+})(window.bbn, window.Vue);

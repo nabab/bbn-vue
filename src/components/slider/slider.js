@@ -1,14 +1,13 @@
 /**
  * @file bbn-slider component
- *
  * @description 
- *
  * @copyright BBN Solutions
- *
- * @author Vito Fava
+ * @author Thomas Nabet
  */
-(function(bbn){
+((bbn, Vue) => {
+
   "use strict";
+
   const orientations = {
     left: {
       shadow: '2px 0 20px 0',
@@ -32,7 +31,7 @@
     }
   };
 
-  Vue.component('bbn-slider', {
+  const cpDef = {
     /**
      * @mixin bbn.vue.basicComponent 
      * @mixin bbn.vue.toggleComponent
@@ -263,6 +262,12 @@
         }
       }
     }
-  });
+  };
+  
+  if (Vue.component) {
+    Vue.component('bbn-slider', cpDef);
+  }
 
-})(bbn);
+  return cpDef;
+
+})(window.bbn, window.Vue);

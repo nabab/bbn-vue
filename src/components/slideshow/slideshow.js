@@ -8,9 +8,11 @@
  * @created 10/02/2017
  */
 
-(() => {
+((bbn, Vue) => {
+
   "use strict";
-  Vue.component('bbn-slideshow', {
+
+  const cpDef = {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.resizerComponent
@@ -383,7 +385,7 @@
        * @fires aspectRatio
        */
       afterLoad(idx) {
-        this.$set(this.items[idx], 'loaded', true);
+        this.items[idx].loaded = true;
         this.aspectRatio(idx);
       },
       /**
@@ -404,18 +406,18 @@
 
           if( imgRatio > ctnRatio ){
             if( mode === 'zoom' ){
-              this.$set(this.items[idx], 'imageWidth', 'auto');
-              this.$set(this.items[idx], 'imageHeight', '100%');
-              this.$set(this.items[idx], 'showImg', true);
+              this.items[idx].imageWidth = 'auto';
+              this.items[idx].imageHeight = '100%';
+              this.items[idx].showImg = true;
 
               //this.items[idx].imageWidth = "auto";
               //this.items[idx].imageHeight =  "100%";
               //this.items[idx].showImg =  true;
             }
             else if( mode === 'full' ){
-              this.$set(this.items[idx], 'imageWidth', '100%');
-              this.$set(this.items[idx], 'imageHeight', 'auto');
-              this.$set(this.items[idx], 'showImg', true);
+              this.items[idx].imageWidth = '100%';
+              this.items[idx].imageHeight = 'auto';
+              this.items[idx].showImg = true;
               //this.items[idx].imageWidth = "100%";
               //this.items[idx].imageHeight = "auto";
               //this.items[idx].showImg = true;
@@ -423,41 +425,41 @@
           }
           else if ( imgRatio <= ctnRatio ){
             if ( mode === 'zoom' ){
-              this.$set(this.items[idx], 'imageWidth', '100%');
-              this.$set(this.items[idx], 'imageHeight', 'auto');
-              this.$set(this.items[idx], 'showImg', true);
+              this.items[idx].imageWidth = '100%';
+              this.items[idx].imageHeight = 'auto';
+              this.items[idx].showImg = true;
 
               //this.items[idx].imageWidth = "100%";
               //this.items[idx].imageHeight = "auto";
               //this.items[idx].showImg =  true;
             }
             else if ( mode === 'full' ){
-              this.$set(this.items[idx], 'imageWidth', 'auto');
-              this.$set(this.items[idx], 'imageHeight', '100%');
-              this.$set(this.items[idx], 'showImg', true);
+              this.items[idx].imageWidth = 'auto';
+              this.items[idx].imageHeight = '100%';
+              this.items[idx].showImg = true;
               //this.items[idx].imageWidth = "auto";
               //this.items[idx].imageHeight = "100%";
               //this.items[idx].showImg =  true;
             }
           }
           if ( mode === 'stretch' ){
-            this.$set(this.items[idx], 'imageWidth',  cont.offsetWidth + 'px');
-            this.$set(this.items[idx], 'imageHeight', cont.offsetHeight + 'px');
-            this.$set(this.items[idx], 'showImg', true);
+            this.items[idx].imageWidth = cont.offsetWidth + 'px';
+            this.items[idx].imageHeight = cont.offsetHeight + 'px';
+            this.items[idx].showImg = true;
 
             //this.items[idx].imageWidth = this.lastKnownCtWidth + 'px';
             //this.items[idx].imageHeight = this.lastKnownCtHeight + 'px';
             //this.items[idx].showImg =  true;
           }
           if ( mode === "original" ){
-            this.$set(this.items[idx], 'showImg', true);
+            this.items[idx].showImg = true;
             //this.items[idx].showImg = true;
           }
           if (cont.offsetWidth) {
-            this.$set(this.items[idx], 'imageMaxWidth', cont.offsetWidth + 'px');
+            this.items[idx].imageMaxWidth = cont.offsetWidth + 'px';
           }
           if (cont.offsetHeight) {
-            this.$set(this.items[idx], 'imageMaxHeight', cont.offsetHeight + 'px');
+            this.items[idx].imageMaxHeight = cont.offsetHeight + 'px';
           }
         });
       },
@@ -919,5 +921,12 @@
         },
       }
     }
-  });
-})();
+  };
+
+  if (Vue.component) {
+    Vue.component('bbn-slideshow', cpDef);
+  }
+
+  return cpDef;
+
+})(window.bbn, window.Vue);

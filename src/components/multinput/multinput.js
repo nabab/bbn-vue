@@ -8,13 +8,14 @@
  * @copyright BBN Solutions
  */
 
-(function(bbn){
+((bbn, Vue) => {
+
   "use strict";
 
   /**
    * Classic input with normalized appearance
    */
-  Vue.component("bbn-input", {
+  const cpDef = {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.eventsComponent
@@ -215,6 +216,12 @@
         this.init()
       }
     }
-  });
+  };
 
-})(bbn);
+  if (Vue.component) {
+    Vue.component("bbn-multinput", cpDef);
+  }
+
+  return cpDef;
+
+})(window.bbn, window.Vue);

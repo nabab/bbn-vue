@@ -1,21 +1,30 @@
 (bbn => {
   "use strict";
-  const isReservedTag = Vue.config.isReservedTag;
+  //const isReservedTag = Vue.config.isReservedTag;
   let loadingComponents = [];
+  let directives = [];
   let maxUrlLength = 1800;
   bbn.fn.autoExtend("vue", {
+    directives: [],
+    setDirective() {
+      bbn.vue.directives.push(arguments);
+      if (bbn.vue.app) {
+        bbn.vue.app.directive(...arguments);
+      }
+    },
     /**
      * Retrieves the closest popup component in the Vue tree
      * @param vm Vue
      * @returns Vue|false
      */
     _retrievePopup(vm){
-      if ( vm.$options && vm.$options._componentTag === 'bbn-popup' ){
+      if (vm.ctx && vm.ctx.$options && vm.ctx.$options.name === 'bbn-popup' ){
         return vm;
       }
-      else if ( vm.getRef('popup') ){
+      else if (vm.getRef && vm.getRef('popup')) {
         return vm.getRef('popup');
       }
+
       return vm.$parent ? bbn.vue._retrievePopup(vm.$parent) : false;
     },
     /**
@@ -206,7 +215,6 @@
           res = eval(r.script);
         }
         catch (e) {
-          bbn.fn.log(r.script)
           throw new Error("Impossible to evaluate the content of tha component " + name);
         }
         if ( typeof res === 'object' ){
@@ -262,8 +270,8 @@
               return data;
             }
           }
-          //bbn.fn.log(name, res);
-          Vue.component(name, res);
+
+          bbn.vue.app.component(name, res);
           return true;
         }
       }
@@ -293,8 +301,8 @@
           if ( d && d.success && d.components ){
             bbn.fn.iterate(items, a => {
               let cp = bbn.fn.getRow(d.components, {name: a.name});
-              if ( cp && this._realDefineComponent(a.name, cp, a.mixins) && Vue.options.components[a.name]) {
-                a.resolve(Vue.options.components[a.name])
+              if ( cp && this._realDefineComponent(a.name, cp, a.mixins) && bbn.vue.app._context.components[a.name]) {
+                a.resolve(bbn.vue.app._context.components[a.name])
               }
               else{
                 //bbn.fn.log("PROMISE REJECT OF" + a.name, a);
@@ -325,8 +333,8 @@
       if (item.url) {
         return axios.get(item.url, {responseType:'json'}).then(r => {
           r = r.data;
-          if ( this._realDefineComponent(a.name, r, item.mixins)  && Vue.options.components[a.name]){
-            item.resolve(Vue.options.components[a.name]);
+          if ( this._realDefineComponent(a.name, r, item.mixins)  && bbn.vue.app._context.components[a.name]){
+            item.resolve(bbn.vue.app._context.components[a.name]);
           }
           else {
             item.reject();
@@ -347,10 +355,13 @@
       }
       if (bbn.fn.isArray(todo) && bbn.fn.getRow(bbn.vue.knownPrefixes, {prefix: 'bbn-'})) {
         bbn.fn.each(todo, cp => {
-          if ( Vue.options.components['bbn-' + cp] === undefined ){
-            Vue.component('bbn-' + cp, (resolve, reject) => {
-              bbn.vue.queueComponentBBN(cp, resolve, reject);
-            });
+          if ( bbn.vue.app._context.components['bbn-' + cp] === undefined ){
+            bbn.vue.app.component('bbn-' + cp, Vue.defineAsyncComponent({
+              name: 'bbn-' + cp,
+              loader: () => new Promise((resolve, reject) => {
+                bbn.vue.queueComponentBBN(cp, resolve, reject);
+              })
+            }));
           }
         })
       }
@@ -364,11 +375,15 @@
      */
     _realDefineBBNComponent(name, r){
       
+      let tpl;
       if ( r.html && r.html.length ){
         bbn.fn.each(r.html, h => {
           if ( h && h.content ){
-            let id = 'bbn-tpl-component-' + name + (h.name === name ? '' : '-' + h.name),
-            script = document.createElement('script');
+            let id = 'bbn-tpl-component-' + name + (h.name === name ? '' : '-' + h.name);
+            if (!tpl) {
+              tpl = id;
+            }
+            let script = document.createElement('script');
             script.innerHTML = h.content;
             script.setAttribute('id', id);
             script.setAttribute('type', 'text/x-template');
@@ -390,18 +405,28 @@
           throw new Error("Impossible to define the component " + name)
         }
       }
+      let res;
       try {
+        //'bbn.fn.log("_realDefineBBNComponent", r.script, r.script());
         // That should really define the component
-        r.script();
+        res = r.script(bbn);
       }
       catch (e) {
         throw new Error("Impossible to execute the component " + name + " - " + e.message)
       }
 
-      if ( Vue.options.components['bbn-' + name] !== undefined ){
-        return true;
+
+      if (res){
+        if (tpl) {
+          res.template = '#' + tpl;
+        }
+        res.name = name;
+        //res.mixins.unshift(bbn.vue.mixin);
+
+        return res;
       }
-      return false;
+
+      return null;
     },
 
     /**
@@ -463,9 +488,9 @@
                         if ( (typeof(r) === 'object') && r.script && r.name ){
                           let idx = bbn.fn.search(todo, {name: r.name});
                           if ( idx > -1 ){
-                            resolved = this._realDefineBBNComponent(r.name, r);
+                            resolved = this._realDefineBBNComponent('bbn-' + r.name, r);
                             if ( resolved ){
-                              todo[idx].resolve(Vue.options.components['bbn-' + r.name]);
+                              todo[idx].resolve(resolved);
                               /*
                               // Replacing function(){} with () => {}, error otherwise
                               r.script = '() => {' + r.script.toString().substr(11);
@@ -516,8 +541,9 @@
      * @param {Function} reject
      */
     queueComponentBBN(name, resolve, reject) {
-      if ( bbn.fn.search(this.queueBBN, {name: name}) === -1 ){
+      if (bbn.fn.search(this.queueBBN, {name: name}) === -1) {
         clearTimeout(this.queueTimerBBN);
+        /*
         let def = false;
         if ( def ){
           this._realDefineBBNComponent(name, def);
@@ -529,6 +555,7 @@
           })
         }
         else{
+          */
           this.queueBBN.push({
             name: name,
             resolve: resolve || (function(){}),
@@ -539,7 +566,8 @@
               this.executeQueueBBNItem(this.queueBBN.splice(0, this.queueBBN.length));
             }
           }, this.loadDelay);
-        }
+          /*
+        }*/
       }
       return this.queueTimerBBN;
     },
@@ -578,10 +606,13 @@
      * @param {Array} mixins
      */
     announceComponent(name, url, mixins){
-      if ( !this.isNodeJS && (typeof(name) === 'string') && (Vue.options.components[name] === undefined) ){
-        Vue.component(name, (resolve, reject) => {
-          return this.queueComponent(name, url, mixins, resolve, reject);
-        });
+      if ( !this.isNodeJS && (typeof(name) === 'string') && (bbn.vue.app._context.components[name] === undefined) ){
+        bbn.vue.app.component(name, Vue.defineAsyncComponent({
+          name: name,
+          loader: () => Promise((resolve, reject) => {
+            return this.queueComponent(name, url, mixins, resolve, reject);
+          })
+        }));
       }
     },
 
@@ -591,8 +622,8 @@
      * @param {String} cpName
      */
     unloadComponent(cpName){
-      if ( Vue.options.components[cpName] ){
-        let r = delete Vue.options.components[cpName];
+      if ( bbn.vue.app._context.components[cpName] ){
+        let r = delete bbn.vue.app._context.components[cpName];
         let idx = this.parsedTags.indexOf(cpName);
         if ( idx > -1 ){
           this.parsedTags.splice(idx, 1);
@@ -613,9 +644,9 @@
      * @param {String} cpName t
      */
     loadComponentsByPrefix(tag){
-      let res = isReservedTag(tag);
+      //let res = isReservedTag(tag);
       // Tag is unknown and has never gone through this function
-      if ( tag && !res && (this.parsedTags.indexOf(tag) === -1) ){
+      if ( tag && (this.parsedTags.indexOf(tag) === -1) ) {
         this.parsedTags.push(tag);
         let idx = -1;
         /** @todo add an extended object of all the mixins for all related path */
@@ -638,12 +669,17 @@
           }
         });
         // A rule has been found
-        if ( idx > -1 ){
-          Vue.component(tag, (resolve, reject) => {
-            bbn.vue.knownPrefixes[idx].handler(tag, resolve, reject);
-          });
+        if (idx > -1) {
+          bbn.vue.app.component(tag, Vue.defineAsyncComponent({
+            name: tag,
+            loader: () => new Promise((resolve, reject) => {
+              bbn.vue.knownPrefixes[idx].handler(tag, resolve, reject);
+            })
+          }));
         }
       }
+
+
       return false;
     },
 
@@ -679,11 +715,14 @@
      * @param {String} cp 
      */
     resetDefBBN(cp){
-      if ( Vue.options.components[cp] ){
-        delete Vue.options.components['bbn-' + cp];
-        Vue.component('bbn-' + cp, (resolve, reject) => {
-          bbn.vue.queueComponentBBN(cp, resolve, reject);
-        });
+      if ( bbn.vue.app._context.components[cp] ){
+        delete bbn.vue.app._context.components['bbn-' + cp];
+        bbn.vue.app.component('bbn-' + cp, Vue.defineAsyncComponent({
+          name: 'bbn-' + cp,
+          loader: () => new Promise((resolve, reject) => {
+            bbn.vue.queueComponentBBN(cp, resolve, reject);
+          })
+        }));
       }
     },
 
@@ -693,11 +732,14 @@
      * @param {String} cp 
      */
     resetDef(cp){
-      if ( Vue.options.components[cp] ){
-        delete Vue.options.components[cp];
-        Vue.component(cp, (resolve, reject) => {
-          bbn.vue.queueComponent(cp, resolve, reject);
-        });
+      if ( bbn.vue.app._context.components[cp] ){
+        delete bbn.vue.app._context.components[cp];
+        bbn.vue.app.component(cp, Vue.defineAsyncComponent({
+          name: cp,
+          loader: () => Promise((resolve, reject) => {
+            bbn.vue.queueComponent(cp, resolve, reject);
+          })
+        }));
       }
     },
 
@@ -737,11 +779,7 @@
           return vm._uid === selector;
         }
 
-        if (vm.$vnode && vm.$vnode.componentOptions && (vm.$vnode.componentOptions.tag === 'bbn-portal')) {
-          return false;
-        }
-
-        if ( vm.$vnode && vm.$vnode.componentOptions && (vm.$vnode.componentOptions.tag === selector)) {
+        if ( vm.$options && (vm.$options.name === selector)) {
           return true;
         }
 
@@ -994,7 +1032,7 @@
      * @param {String} path The relative path to the component from the given component.
      */
      getComponentName(vm, path){
-      if (!vm.$options.name) {
+      if (!vm.$options || !vm.$options.name) {
         return null;
       }
 
@@ -1080,7 +1118,7 @@
               bbn.fn.extend(true, out[n], o);
             }
             else if ( out[n] !== o ){
-              vm.$set(out, n, o);
+              out[n] = o;
             }
           });
         }

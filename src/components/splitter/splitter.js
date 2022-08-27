@@ -11,9 +11,11 @@
  * @created 15/02/2017
  */
 
-(function(bbn){
+((bbn, Vue) => {
+
   "use strict";
-  Vue.component('bbn-splitter', {
+
+  const cpDef = {
     /**
      * @mixin bbn.vue.basicComponent 
      * @mixin bbn.vue.resizerComponent
@@ -394,6 +396,9 @@
         // We add a timeout which cancels the previous one so it should be only triggered once at mount
         clearTimeout(this.initTimeout);
         this.initTimeout = setTimeout(() => {
+          if (!this.$children) {
+            return;
+          }
           // Emptying the panes array if it's filled
           this.panes.splice(0, this.panes.length);
           // position starts at 1
@@ -729,8 +734,8 @@
               pos1 = vue1.$el.getBoundingClientRect(),
               pos2 = vue2.$el.getBoundingClientRect();
           if (!this.panes[rs.pane1].size && !this.panes[rs.pane2].size) {
-            this.$set(this.panes[rs.pane1], "size", this.currentOrientation === 'horizontal' ? pos1.width : pos1.height);
-            this.$set(this.panes[rs.pane2], "size", this.currentOrientation === 'horizontal' ? pos2.width : pos2.height);
+            this.panes[rs.pane1].size = this.currentOrientation === 'horizontal' ? pos1.width : pos1.height;
+            this.panes[rs.pane2].size = this.currentOrientation === 'horizontal' ? pos2.width : pos2.height;
             this.$forceUpdate();
           }
           this.resizeCfg = {
@@ -925,6 +930,12 @@
         this.init();
       },
     },
-  });
+  };
 
-})(bbn);
+  if (Vue.component) {
+    Vue.component('bbn-splitter', cpDef);
+  }
+
+  return cpDef;
+
+})(window.bbn, window.Vue);

@@ -8,13 +8,14 @@
  * 
  * @author BBN Solutions
  */
-(function(bbn){
+((bbn, Vue, Terminal) => {
+
   "use strict";
 
   /**
    * Classic textarea with normalized appearance
    */
-  Vue.component('bbn-terminal', {
+  const cpDef = {
     mixins: [bbn.vue.basicComponent],
     props: {
     },
@@ -46,6 +47,12 @@
       this.widget.open(this.$el);
       this.fitter.fit();
     }
-  });
+  };
 
-})(bbn);
+  if (Vue.component) {
+    Vue.component('bbn-terminal', cpDef);
+  }
+
+  return cpDef;
+
+})(window.bbn, window.Vue, window.Terminal);

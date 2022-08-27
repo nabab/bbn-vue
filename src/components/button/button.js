@@ -7,10 +7,10 @@
  *
  * @author BBN Solutions
  */
-(function(bbn){
+((bbn, Vue) => {
   "use strict";
 
-  Vue.component('bbn-button', {
+  const cpDef = {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.eventsComponent
@@ -255,5 +255,13 @@
         document.body.appendChild(styleTag);
       }
     }
-  });
-})(bbn);
+  };
+
+  if (Vue.component) {
+    Vue.component('bbn-button', cpDef);
+    return;
+  }
+
+  return cpDef;
+  
+})(window.bbn, window.Vue);

@@ -2,7 +2,7 @@
   <input type="checkbox"
          :id="id"
          :name="name"
-         :value="value"
+         :value="modelValue"
          class="bbn-checkbox"
          :required="required"
          :disabled="isDisabled"
@@ -12,19 +12,16 @@
          ref="element"
 				 tabindex="0"
 				 @keydown="onKeyDown"
-				 @click="onClick"
-  >
+				 @click="onClick">
   <label class="bbn-checkbox-label bbn-iflex bbn-vmiddle"
          :for="id"
          @focus="focus"
          @blur="blur"
          @keyup="keyup"
          @keydown="onKeyDown"
-         @click="onClick"
-  >
+         @click="onClick">
 		<span class="bbn-left-spadded"
 					v-html="label"
-					v-if="label"
-		></span>
+					v-if="label"/>
 	</label>
 </span>

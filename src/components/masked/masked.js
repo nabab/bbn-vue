@@ -9,7 +9,7 @@
 (function(bbn){
   "use strict"
 
-  Vue.component('bbn-masked', {
+  const cpDef = {
 	/**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.inputComponent
@@ -795,6 +795,12 @@
         });
       }
     }
-  });
+  };
 
-})(bbn);
+  if (Vue.component) {
+    Vue.component('bbn-masked', cpDef);
+  }
+
+  return cpDef;
+
+})(window.bbn, window.Vue);

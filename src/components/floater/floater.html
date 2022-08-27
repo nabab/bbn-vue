@@ -46,14 +46,14 @@
             class="bbn-h-100 bbn-middle bbn-reactive"
             @click.stop.prevent="isMaximized = !isMaximized"
             tabindex="0"
-            :title="_('Full screen')">
+            :title="i18n('Full screen')">
           <i :class="'nf nf-mdi-window_' + (isMaximized ? 'restore' : 'maximize')"/>
         </div>
         <div v-if="closable !== false"
             class="bbn-h-100 bbn-middle bbn-reactive"
             @click.stop.prevent="close()"
             tabindex="0"
-            :title="_('Close')">
+            :title="i18n('Close')">
           <i class="nf nf-fa-times"/>
         </div>
       </div>
@@ -93,7 +93,7 @@
           <slot v-else-if="$slots.default"/>
           <div v-else-if="!!content"
               v-html="content"
-              :class="scrollable ? 'bbn-block' : 'bbn-overlay'"
+              :class="scrollable ? 'bbn-w-100' : 'bbn-overlay'"
               :style="HTMLStyle"/>
           <bbn-list v-else-if="filteredData.length"
                     :mode="mode"

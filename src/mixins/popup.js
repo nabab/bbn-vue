@@ -12,15 +12,13 @@
          * The object popup of the table.
          * @prop {Object} Vue
          */
-        popup: {
-          type: Vue
-        }
+        popup: Object
       },
       methods: {
         /**
          * Retuns the popup object.
          * @method getPopup
-         * @returns {Vue}
+         * @returns {Object}
          */
         getPopup(cfg){
           let popup = this.popup || bbn.vue.getPopup(this);

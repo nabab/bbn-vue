@@ -41,9 +41,12 @@
            */
           isTablet: bbn.fn.isTabletDevice()
         };
-        if (this.$options.name && bbn.vue.defaults[this.$options.name.slice(4)]) {
-          bbn.fn.extend(o, bbn.vue.defaults[this.$options.name.slice(4)]);
+        bbn.fn.log("ON DATA", this);
+        /*
+        if (this.ctx.$options.name && bbn.vue.defaults[this.ctx.$options.name.slice(4)]) {
+          bbn.fn.extend(o, bbn.vue.defaults[this.ctx.$options.name.slice(4)]);
         }
+        */
         return o;
       },
       methods: {
@@ -56,8 +59,8 @@
          */
         exportComponent(full, level){
           let lv = level || 0;
-          let st = bbn.fn.repeat('  ', lv) + '<' + this.$options._componentTag;
-          bbn.fn.iterate(this.$options.propsData, (a, n) => {
+          let st = bbn.fn.repeat('  ', lv) + '<' + this.ctx.$options._componentTag;
+          bbn.fn.iterate(this.ctx.$options.propsData, (a, n) => {
             if (n === 'value') {
               st += ' v-model=""';
             }
@@ -77,18 +80,8 @@
               }
             });
           }
-          st += bbn.fn.repeat('  ', lv) + '</' + this.$options._componentTag + '>' + "\n";
+          st += bbn.fn.repeat('  ', lv) + '</' + this.ctx.$options._componentTag + '>' + "\n";
           return st;
-        }
-      },
-      /**
-       * If not defined, defines component's template
-       * @memberof basicComponent
-       * @event beforeCreate
-       */
-      beforeCreate(){
-        if ( !this.$options.render && !this.$options.template && this.$options.name ){
-          this.$options.template = '#bbn-tpl-component-' + (this.$options.name.indexOf('bbn-') === 0 ? this.$options.name.slice(4) : this.$options.name);
         }
       },
       /**
@@ -96,9 +89,13 @@
        * @event created
        * @memberof basicComponent
        */
-      created(){
-        if (this.$options.name && !this.componentClass.includes(this.$options.name)){
-          this.componentClass.push(this.$options.name);
+      beforeMount(){
+        if (!this.ctx) {
+          return
+        }
+
+        if (this.ctx.$options.name && !this.componentClass.includes(this.ctx.$options.name)){
+          this.componentClass.push(this.ctx.$options.name);
         }
       },
       watch: {

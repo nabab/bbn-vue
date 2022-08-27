@@ -8,19 +8,19 @@
  * @copyright BBN Solutions
  */
 
-(function(bbn){
+((bbn, Vue) => {
   "use strict";
 
   /**
    * Classic input with normalized appearance
    */
-  Vue.component("bbn-input", {
+  let cpDef = {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.eventsComponent
      * @mixin bbn.vue.inputComponent
      */
-    mixins: 
+    mixins:
     [
       bbn.vue.basicComponent, 
       bbn.vue.eventsComponent, 
@@ -119,13 +119,6 @@
         type: String
       },
       /**
-       * The size of the input.
-       * @prop {(String|Number)} size
-       */
-      size: {
-        type: [String, Number],
-      },
-      /**
        * @prop {(String|Number)} min
        */
       min: {
@@ -161,8 +154,8 @@
         currentAutocomplete = this.autocomplete;
       }
 
-      let currentValue = this.value;
-      if (this.prefix && (this.value.indexOf(this.prefix) === 0)) {
+      let currentValue = this.modelValue;
+      if (this.prefix && (this.modelValue.indexOf(this.prefix) === 0)) {
         currentValue = bbn.fn.substr(currentValue, this.prefix.length);
       }
 
@@ -180,7 +173,7 @@
          * The property 'size' normalized.
          * @data {String} [''] currentSize
          */
-        currentSize: this.size || '',
+        currentSize: this.size,
         /**
          * The action performed by the left button.
          * @data {Function} currentActionLeft
@@ -197,12 +190,64 @@
     },
     computed: {
       /**
+       * HTML attributes to put on the input
+       * @computed realAttributes
+       * @returns {Object}
+       */
+      realAttributes() {
+        let r  = {
+          type: this.currentType
+        };
+        if (this.currentInputSize) {
+          r.size = this.currentInputSize;
+        }
+        if (this.name) {
+          r.name = this.name;
+        }
+        if (this.readonly) {
+          r.readonly = 'readonly';
+        }
+        if (this.isDisabled) {
+          r.disabled = 'disabled';
+        }
+        if (this.placeholder) {
+          r.placeholder = this.placeholder;
+        }
+        if (this.maxlength) {
+          r.maxlength = this.maxlength;
+        }
+        if (this.currentAutocomplete) {
+          r.autocomplete = this.currentAutocomplete;
+        }
+        if (this.currentPattern) {
+          r.pattern = this.currentPattern;
+        }
+        if (this.tabindex !== undefined) {
+          r.tabindex = this.tabindex;
+        }
+        if (this.inputmode) {
+          r.inputmode = this.inputmode;
+        }
+        if (this.min) {
+          r.min = this.min;
+        }
+        if (this.max) {
+          r.max = this.max;
+        }
+        
+        return r;
+      },
+      /**
        * The current input width in characters if the 'autosize' is enabled
        * @computed currentInputSize
-       * @returns {Number}
+       * @returns {Number|null}
        */
-      currentInputSize(){
-        return this.autosize ? (this.value ? this.value.toString().length : 1) : 0
+      currentInputSize() {
+        if (this.autosize) {
+          return this.modelValue ? (this.modelValue.toString ? this.modelValue.toString() : this.modelValue).length || 1 : 1;
+        }
+
+        return this.size;
       }
     },
     methods: {
@@ -256,7 +301,7 @@
         this.currentValue = v;
       },
       currentValue(v) {
-        if (this.value !== (this.prefix || '') + this.currentValue) {
+        if (this.modelValue !== (this.prefix || '') + this.currentValue) {
           this.emitValue(v);
         }
       },
@@ -273,6 +318,13 @@
         this.init()
       }
     }
-  });
+  };
+  if (Vue.component) {
+    Vue.component("bbn-input", cpDef);
+    return;
+  }
+  
+  return cpDef;
+  
 
-})(bbn);
+})(window.bbn, window.Vue);

@@ -6,12 +6,13 @@
  * @ignore
  * @created 10/02/2017.
  */
-(function(bbn){
+((bbn, Vue) => {
+
   "use strict";
 
-  let app;
   let registeredComponents = {};
-  Vue.component('bbn-appui', {
+
+  const cpDef = {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.resizerComponent
@@ -268,8 +269,8 @@
       },
       appComponent(){
         return bbn.fn.extend({
-          render(createElement){
-            return createElement();
+          render(props, context) {
+            return Vue.h(`Vue.h${props.level}`, context.attrs, context.slots);
           }
         }, this.cfg)
       },
@@ -624,7 +625,7 @@
               if ( message.data && message.data.plugins && Object.keys(message.data.plugins).length ){
                 bbn.fn.iterate(message.data.plugins, (d, i) => {
                   if ('serviceWorkers' in d) {
-                    this.$set(this.pollerObject, i, bbn.fn.extend(true, this.pollerObject[i], d.serviceWorkers));
+                    this.pollerObject[i] = bbn.fn.extend(true, this.pollerObject[i], d.serviceWorkers);
                     delete d.serviceWorkers;
                   }
                   this.$emit(i, message.type, d);
@@ -860,7 +861,7 @@
       };
     },
     created(){
-      if ( window.appui ){
+      if (window.appui) {
         throw new Error("Impossible to have 2 bbn-appui components on a same page. bbn-appui is meant to hold a whole web app");
       }
       else{
@@ -943,6 +944,7 @@
           this.pressedKey = false;
         });
 
+        /*
         this.$on('messageToChannel', data => {
           this.messageChannel(this.primaryChannel, data);
         });
@@ -1014,20 +1016,21 @@
             }
           }
         });
+        */
 
         // Set plugins pollerObject
         if (!this.pollerObject.token) {
           this.pollerObject.token = bbn.env.token;
         }
         if (this.plugins['appui-chat']){
-          this.$set(this.pollerObject, 'appui-chat', {
+          this.pollerObject['appui-chat'] = {
             online: null,
             usersHash: false,
             chatsHash: false
-          })
+          };
         }
         if (this.plugins['appui-notification']) {
-          this.$set(this.pollerObject, 'appui-notification', {unreadHash: false});
+          this.pollerObject['appui-notification'] = {unreadHash: false};
         }
       }
     },
@@ -1170,14 +1173,14 @@
                   let pane = this.closest('bbn-pane'),
                       w = pane.$children[0].$el.clientWidth + pane.$children[1].$el.clientWidth - 40;
                   this.$refs.search.$refs.element.placeholder = this.cfg.placeholderFocused;
-                  this.$set(this.style, 'width', w + 'px');
+                  this.style.width = w + 'px';
                   this.isExpanded = true;
                 }
               },
               blur: e => {
                 //bbn.fn.log("BLUR");
                 if ( this.isExpanded ){
-                  this.$set(this.style, 'width', this.source.style && this.source.style.width ? this.source.style.width : '30px');
+                  this.style.width = this.source.style && this.source.style.width ? this.source.style.width : '30px';
                   this.isExpanded = false;
                   this.$refs.search.$refs.element.placeholder = this.cfg.placeholder;
                   this.search = '';
@@ -1207,6 +1210,12 @@
         }
       }
     }
-  });
+  };
 
-})(window.bbn);
+  if (Vue.component) {
+    Vue.component('bbn-appui', cpDef)
+  }
+
+  return cpDef;
+
+})(window.bbn, window.Vue);

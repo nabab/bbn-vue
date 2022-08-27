@@ -48,9 +48,9 @@
   >
     <div class="bbn-header bbn-spadded bbn-no-border-top bbn-no-hborder bbn-flex-width">
       <div class="bbn-flex-fill bbn-l bbn-unselectable">
-        <span class="bbn-b" v-text="_('CHAT')"></span>
+        <span class="bbn-b" v-text="i18n('CHAT')"></span>
         <span>(</span>
-        <span v-text="currentOnline ? _('Online') : _('Offline')"
+        <span v-text="currentOnline ? i18n('Online') : i18n('Offline')"
               :class="{
                 'bbn-green': currentOnline,
                 'bbn-red': !currentOnline
@@ -74,7 +74,7 @@
       <bbn-scroll v-if="isReady">
         <diV class="bbn-spadded">
           <div class="bbn-box bbn-c bbn-unselectable"
-               v-text="_('CURRENT CHATS')"
+               v-text="i18n('CURRENT CHATS')"
           ></div>
           <bbn-list :source="Object.values(currentChats)"
                     class="bbn-vsmargin"
@@ -84,10 +84,10 @@
           ></bbn-list>
           <div v-else
                class="bbn-spadded bbn-c bbn-unselectable"
-               v-text="_('None')"
+               v-text="i18n('None')"
           ></div>
           <div class="bbn-box bbn-c bbn-unselectable"
-               v-text="_('USERS')"
+               v-text="i18n('USERS')"
           ></div>
           <bbn-list v-if="currentOnline"
                     :source="allUsersWithoutChats"
@@ -97,7 +97,7 @@
           ></bbn-list>
           <div v-else
                class="bbn-spadded bbn-c bbn-unselectable"
-               v-text="_('You are offline')"
+               v-text="i18n('You are offline')"
           ></div>
         </diV>
       </bbn-scroll>
@@ -105,7 +105,7 @@
            class="bbn-overlay bbn-middle"
       >
         <bbn-loadicon size="1.5rem"></bbn-loadicon>
-        <span class="bbn-left-sspace" v-text="_('Loading...')"></span>
+        <span class="bbn-left-sspace" v-text="i18n('Loading...')"></span>
       </div>
     </div>
   </div>
@@ -181,7 +181,7 @@
       </div>
       <div v-if="isLoading" class="bbn-middle bbn-top-xsspace bbn-s">
         <bbn-loadicon size="1.5rem"></bbn-loadicon>
-        <span class="bbn-left-sspace" v-text="_('Loading...')"></span>
+        <span class="bbn-left-sspace" v-text="i18n('Loading...')"></span>
       </div>
       <div v-if="showInfo"
            class="bbn-flex-fill bbn-bordered bbn-no-top-border bbn-alt-background"
@@ -201,7 +201,7 @@
           </div>
           <bbn-button class="bbn-no-hborder bbn-no-radius bbn-no-border-bottom"
                       @click="showInfo = false"
-                      :text="_('CLOSE')"
+                      :text="i18n('CLOSE')"
           ></bbn-button>
         </div>
       </div>
@@ -218,7 +218,7 @@
                 <div v-if="!midx || (messages[midx-1] && (getDate(messages[midx-1].time) !== getDate(msg.time)))"
                      class="bbn-middle bbn-s"
                 >
-                  <span v-text="isToday(msg.time) ? _('Today') : getDate(msg.time)"
+                  <span v-text="isToday(msg.time) ? i18n('Today') : getDate(msg.time)"
                         class="bbn-primary-text-alt"
                   ></span>
                 </div>

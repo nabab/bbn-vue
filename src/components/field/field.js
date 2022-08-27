@@ -3,24 +3,19 @@
 
 /**
   * @file bbn-field component
-  *
   * @description 
-  * 
   * bbn-field is a versatile component that adapts itself to the type of the data given by the user. 
-  *
   * @copyright BBN Solutions
-  *
   * @author BBN Solutions
-  *
   * @created 15/02/2017.
   */
-(bbn => {
+((bbn, Vue) => {
 
   "use strict";
   /**
    * Classic input with normalized appearance
    */
-  Vue.component('bbn-field', {
+  const cpDef = {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.fieldComponent
@@ -245,6 +240,12 @@
     created(){
       this.init();
     }
-  });
+  };
 
-})(bbn);
+  if (Vue.component) {
+    Vue.component('bbn-field', cpDef);
+  }
+
+  return cpDef;
+
+})(window.bbn, window.Vue);

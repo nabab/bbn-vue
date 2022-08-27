@@ -221,19 +221,23 @@
      */
     mounted(){
       this.currentComponent = this.realComponent;
-      if (!this.component && !this.template && this.$slots.default) {
-        let tpl = this.getRef('slot').innerHTML;
-        if (tpl) {
-          this.currentTemplate = tpl;
-          this.currentComponent = {
-            props: ['source'],
-            data(){
-              return this.source;
-            },
-            template: this.currentTemplate
-          };
+      if (!this.component && !this.template) {
+        let slot = this.$slots.default();
+        if (slot) {
+          let tpl = this.getRef('slot').innerHTML;
+          if (tpl) {
+            this.currentTemplate = tpl;
+            this.currentComponent = {
+              props: ['source'],
+              data(){
+                return this.source;
+              },
+              template: this.currentTemplate
+            };
+          }
         }
       }
+
       this.$nextTick(() => {
         if (this.$parent.$options && (this.$parent.$options._componentTag === 'bbn-scroll')) {
           this.hasScroll = true;

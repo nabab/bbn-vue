@@ -11,10 +11,11 @@
 
 
 //Markdown editor use simpleMDe
-(function(bbn, tui) {
+((bbn, Vue, tui) => {
+
   "use strict";
 
-  Vue.component('bbn-image-editor', {
+  const cpDef = {
     /**
      * @mixin bbn.vue.basicComponent 
      */
@@ -57,6 +58,12 @@
       this.ready = true;
     },
 
-  });
+  };
 
-})(bbn, tui);
+  if (Vue.component) {
+    Vue.component('bbn-image-editor', cpDef);
+  }
+
+  return cpDef;
+
+})(window.bbn, window.Vue, window.tui);

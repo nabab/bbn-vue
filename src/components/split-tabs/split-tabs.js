@@ -7,7 +7,8 @@
  *
  * @author BBN Solutions
  */
-(function(bbn, Vue){
+((bbn, Vue) => {
+
   "use strict";
 
   /**
@@ -29,7 +30,7 @@
    * otherwise.
    * @param {boolean|number} selected - The index of the currently selected tab, and false otherwise.
    */
-  Vue.component("bbn-split-tabs", {
+  const cpDef = {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.localStorageComponent
@@ -479,7 +480,7 @@
         }
         // Changing the current property of the view cascades on the container's currentURL
         if (this.views[this.selected] && (url.indexOf(this.views[this.selected].url) === 0)){
-          this.$set(this.views[this.selected], 'current', url);
+          this.views[this.selected].current = url;
         }
         if ( this.parent ){
           this.parent.changeURL(this.baseURL + url, title, replace);
@@ -773,10 +774,11 @@
             if ( obj.real ){
               return;
             }
+
             bbn.fn.iterate(obj, (a, n) => {
               if ( o[n] !== a ){
-                // Each new property must be set with $set
-                this.$set(o, n, a)
+                // Each new property must be set
+                o[n] = a;
               }
             });
           }
@@ -792,12 +794,14 @@
               obj.selected = false;
               obj.idx = idx === undefined ? this.views.length : idx;
             }
+
             bbn.fn.iterate(this.getDefaultView(), (a, n) => {
               if ( obj[n] === undefined ){
-                // Each new property must be set with $set
-                this.$set(obj, n, a);
+                // Each new property must be set
+                obj[n] = a;
               }
             });
+
             this.views.push(obj);
           }
         }
@@ -1078,7 +1082,12 @@
         }
       }
     }
-  });
+  };
 
-})(bbn, Vue);
+  if (Vue.component) {
+    Vue.component("bbn-split-tabs", cpDef);
+  }
 
+  return cpDef;
+
+})(window.bbn, window.Vue);

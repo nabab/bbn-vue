@@ -9,14 +9,15 @@
  *
  * @created 15/52/2017.
  */
-(function(bbn){
+((bbn, Vue) => {
   "use strict";
 
   /**
    * Classic input with normalized appearance
    */
   let isClicked = false;
-  Vue.component('bbn-vlist', {
+
+  const cpDef = {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.positionComponent
@@ -315,6 +316,12 @@
         }
       }
     }
-  });
+  };
 
-})(bbn);
+  if (Vue.component) {
+    Vue.component('bbn-vlist', cpDef);
+  }
+
+  return cpDef;
+
+})(window.bbn, window.Vue);

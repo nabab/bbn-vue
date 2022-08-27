@@ -10,10 +10,10 @@
  * @author BBN Solutions
  */
 
-(function(bbn){
+((bbn, Vue) => {
   "use strict";
 
-  Vue.component('bbn-form', {
+  const cpDef = {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.localStorageComponent
@@ -294,7 +294,7 @@
         default: true
       },
       /**
-       * @prop String mode Mode for buttons: normal or big
+       * @prop String mode Mode for buttons: small or big
        */
        mode: {
          type: String
@@ -339,7 +339,8 @@
        * @return {Boolean}
        */
       hasFooter(){
-        return this.$slots.footer && this.$slots.footer.length;
+        let foot = this.$slots.footer();
+        return foot && foot.length;
       },
       canCancel(){
         return this.window || this.isModified();
@@ -725,7 +726,7 @@
           //if ( this.source[name] !== val ){
           if ( !bbn.fn.isSame(this.source[name], val) ){
             if (typeof val !== typeof this.source[name]) {
-              this.$set(this.source, name, bbn.fn.clone(val));
+              this.source[name] = bbn.fn.clone(val);
             }
             else if (bbn.fn.isArray(this.source[name], val)){
               bbn.fn.each(val, (a, i) => {
@@ -761,7 +762,7 @@
               });
             }
             else{
-              this.$set(this.source, name, bbn.fn.clone(val));
+              this.source[name] = bbn.fn.clone(val);
             }
           }
         });
@@ -883,7 +884,7 @@
             //if ( this.source[name] !== val ){
             if ( !bbn.fn.isSame(this.source[name], val) ){
               if (typeof val !== typeof this.source[name]) {
-                this.$set(this.source, name, bbn.fn.clone(val));
+                this.source[name] = bbn.fn.clone(val);
               }
               else if (bbn.fn.isArray(this.source[name], val)){
                 bbn.fn.each(val, (a, i) => {
@@ -919,7 +920,7 @@
                 });
               }
               else{
-                this.$set(this.source, name, bbn.fn.clone(val));
+                this.source[name] = bbn.fn.clone(val);
               }
             }
           });
@@ -1027,6 +1028,12 @@
         this.currentMode = v;
       }
     }
-  });
+  };
 
-})(bbn);
+  if (Vue.component) {
+    Vue.component('bbn-form', cpDef);
+  }
+
+  return cpDef;
+
+})(window.bbn, window.Vue);

@@ -8,10 +8,10 @@
  * @author Mirko Argentino
  */
 
-(bbn => {
+((bbn, Vue, dayjs) => {
   "use strict";
 
-  Vue.component('bbn-calendar', {
+  const cpDef = {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.listComponent
@@ -464,7 +464,7 @@
         }
         this.gridStyle = 'grid-template-columns: repeat(7, 1fr); grid-template-rows: max-content repeat(6, 1fr);';
         this.currentLabelsDates = Array.from({length: 7}, (v, i) => dayjs(this.currentDate).weekday(i));
-        this.$set(this, 'items', items);
+        this.items = items;
       },
       /**
        * Makes the items' structure of "weeks" mode.
@@ -489,7 +489,7 @@
             });
         this.gridStyle = 'grid-template-columns: repeat(7, 1fr); grid-template-rows: max-content auto';
         this.currentLabelsDates = Array.from({length: 7}, (v, i) => dayjs(this.currentDate).weekday(i));
-        this.$set(this, 'items', items);
+        this.items = items;
       },
       /**
        * Makes the items' structure of "months" mode.
@@ -513,7 +513,7 @@
             });
         this.gridStyle = 'grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(4, 1fr);';
         this.currentLabelsDates = [];
-        this.$set(this, 'items', items);
+        this.items = items;
       },
       /**
        * Makes the items' structure in "years" mode.
@@ -538,7 +538,7 @@
             });
         this.gridStyle = 'grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(4, 1fr);';
         this.currentLabelsDates = [];
-        this.$set(this, 'items', items);
+        this.items = items;
       },
       /**
        * Returns the correct configuration based on the calendar type.
@@ -695,7 +695,7 @@
        * @method makeEvents
        */
       makeEvents(){
-        this.$set(this, 'events', {});
+        this.events = {};
         bbn.fn.each(this.currentData, d => {
           let tmpStart = dayjs(d.data[this.startField], this.startFormat).format(this.currentCfg.valueFormat),
               tmpEnd = dayjs(d.data[this.endField], this.endFormat).format(this.currentCfg.valueFormat);
@@ -775,10 +775,9 @@
       */
       setTitle(){
         if ( this.currentCfg && this.currentCfg.titleFormat ){
-          this.$set(this, 'title', bbn.fn.isFunction(this.currentCfg.titleFormat) ?
+          this.title = bbn.fn.isFunction(this.currentCfg.titleFormat) ?
             this.currentCfg.titleFormat() :
-            this.currentDate.format(this.currentCfg.titleFormat)
-          );
+            this.currentDate.format(this.currentCfg.titleFormat);
         }
       },
       /**
@@ -983,5 +982,12 @@
         this.init();
       }
     }
-  })
-})(bbn);
+  };
+
+  if (Vue.component) {
+    Vue.component('bbn-calendar', cpDef);
+  }
+
+  return cpDef;
+  
+})(window.bbn, window.Vue, window.dayjs);

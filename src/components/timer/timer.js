@@ -14,7 +14,8 @@
 
  console.log(formatted);*/
 
-(function(bbn){
+((bbn, Vue, dayjs) => {
+
   "use strict";
 
   const VALUES = [{
@@ -74,7 +75,7 @@
     timeout: 50
   }];
 
-  Vue.component('bbn-timer', {
+  const cpDef = {
     /**
      * @mixin bbn.vue.basicComponent
      */
@@ -441,5 +442,12 @@
         clearInterval(this.interval);
       }
     }
-  });
-})(bbn);
+  };
+
+  if (Vue.component) {
+    Vue.component('bbn-timer', cpDef);
+  }
+
+  return cpDef;
+
+})(window.bbn, window.Vue, window.dayjs);

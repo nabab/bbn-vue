@@ -5,10 +5,10 @@
  * @author BBN Solutions
  * @ignore
  */
-(function(bbn){
+((bbn, Vue) => {
   "use strict";
 
-  Vue.component('bbn-browser', {
+  const cpDef = {
     /**
      * @mixin bbn.vue.basicComponent
      */
@@ -119,6 +119,12 @@
         }
       }
     }
-  });
+  };
 
-})(bbn);
+  if (Vue.component) {
+    Vue.component('bbn-browser', cpDef);
+  }
+
+  return cpDef;
+
+})(window.bbn, window.Vue);

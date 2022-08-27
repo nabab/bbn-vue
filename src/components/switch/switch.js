@@ -9,9 +9,11 @@
   *
   * @created 13/02/2017
   */
-(bbn => {
+((bbn, Vue) => {
+
   "use strict";
-  Vue.component('bbn-switch', {
+
+  const cpDef = {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.inputComponent
@@ -253,5 +255,12 @@
         this.$emit('input', this.novalue);
       }
     }
-  });
-})(bbn);
+  };
+
+  if (Vue.component) {
+    Vue.component('bbn-switch', cpDef);
+  }
+
+  return cpDef;
+
+})(window.bbn, window.Vue);

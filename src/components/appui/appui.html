@@ -8,7 +8,7 @@
      @focusout="isFocused = false">
   <div v-if="!cool"
        class="bbn-middle bbn-xl"
-       v-text="_('Appui is already defined') + '... :('">
+       v-text="i18n('Appui is already defined') + '... :('">
   </div>
   <div :class="{
     'bbn-flex-height': scrollable,
@@ -192,7 +192,7 @@
           <div v-if="plugins['appui-note']"
                class="bbn-right-space">
             <i class="bbn-p nf nf-fa-sticky_note"
-               :title="_('Show my post-its')"
+               :title="i18n('Show my post-its')"
                @click="showPostIt = true"/>
           </div>
           <!-- TASK TRACKER -->
@@ -233,7 +233,7 @@
           <div v-if="plugins['appui-ide'] && ready && app.user && app.user.isAdmin"
                class="bbn-right-space">
             <i class="bbn-p nf nf-mdi-bug"
-               :title="_('Show the debugger')"
+               :title="i18n('Show the debugger')"
                @click="toggleDebug"/>
           </div>
           <!-- POWER/ENV ICON -->
@@ -363,17 +363,17 @@
               close-button="top-right">
     <div class="bbn-w-100 bbn-padded bbn-wrap bbn-l appui-ide-debugger-container">
       <div class="bbn-b"
-           v-text="_('Current URL')"/>
+           v-text="i18n('Current URL')"/>
       <div class="bbn-b"
            v-text="getRef('router').currentURL"/>
 
       <div class="bbn-b"
-           v-text="_('Current title')"/>
+           v-text="i18n('Current title')"/>
       <div class="bbn-b"
            v-text="getRef('router').currentTitle"/>
 
       <div class="bbn-b"
-           v-text="_('Selected index')"/>
+           v-text="i18n('Selected index')"/>
       <div class="bbn-b"
            v-text="getRef('router').selected"/>
 

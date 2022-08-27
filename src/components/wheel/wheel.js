@@ -4,10 +4,11 @@
  * @author Mirko Argentino
  * @copyright BBN Solutions
  */
- (function(bbn){
+((bbn, Vue) => {
+
   "use strict";
 
-  Vue.component('bbn-wheel', {
+  const cpDef = {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.inputComponent
@@ -254,5 +255,12 @@
         }
       }
     }
-  });
-})(bbn);
+  };
+
+  if (Vue.component) {
+    Vue.component('bbn-wheel', cpDef);
+  }
+
+  return cpDef;
+
+})(window.bbn, window.Vue);

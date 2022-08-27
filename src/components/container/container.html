@@ -30,7 +30,7 @@
           <div class="bbn-flex-fill bbn-vmiddle">
             <bbn-context v-if="isVisible"
                         class="bbn-right-sspace bbn-lg bbn-p"
-                        :floater-title="_('Container menu')"
+                        :floater-title="i18n('Container menu')"
                         tag="span"
                         :source="showMenu">
               <i class="nf nf-fa-bars"/>
@@ -82,7 +82,7 @@
                       }">
             <!-- This is an ad hoc component with unique name -->
             <component v-if="isComponent"
-                      :is="$options.components[componentName]"
+                      :is="currentComponent"
                       :source="source"
                       ref="component"/>
             <!-- This is a classic component -->
@@ -114,7 +114,7 @@
               <div class="bbn-c">
                 <bbn-button @click="close"
                             icon="nf nf-fa-times"
-                            :text="_('Close')"
+                            :text="i18n('Close')"
                             class="bbn-state-error"/>
               </div>
             </div>

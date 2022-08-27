@@ -10,22 +10,22 @@
           <bbn-button icon="nf nf-fa-minus"
                       @click="remove(v.key)"
                       @keyup.enter="remove(v.key)"
-                      text="_('Delete')"
+                      text="i18n('Delete')"
                       :notext="true"/>
         </div>
       </template>
       <template v-if="!max || (items.length <= max)">
         <div>
-          <bbn-input v-model="currentKey" :required="true" ref="key" :placeholder="_('key')"/>
+          <bbn-input v-model="currentKey" :required="true" ref="key" :placeholder="i18n('key')"/>
         </div>
         <div>
-          <bbn-input v-model="currentValue" :required="true" :placeholder="_('value')"/>
+          <bbn-input v-model="currentValue" :required="true" :placeholder="i18n('value')"/>
         </div>
         <div>
           <bbn-button icon="nf nf-fa-plus"
                       @click="getRef('form').submit()"
                       @keyup.enter="getRef('form').submit()"
-                      text="_('Add')"
+                      text="i18n('Add')"
                       :notext="true"/>
         </div>
       </template>

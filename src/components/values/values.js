@@ -9,12 +9,13 @@
  * @created 15/02/2017.
  */
 
-(bbn => {
+((bbn, Vue) => {
+
   "use strict";
   /**
    * Classic input with normalized appearance.
    */
-  Vue.component('bbn-values', {
+  const cpDef = {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.inputComponent
@@ -143,6 +144,12 @@
         this.emitInput(this.isJSON ? JSON.stringify(this.obj) : this.obj);
       }
     }
-  });
+  };
 
-})(bbn);
+  if (Vue.component) {
+    Vue.component('bbn-valuues', cpDef);
+  }
+
+  return cpDef;
+
+})(window.bbn, window.Vue);

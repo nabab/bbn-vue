@@ -12,7 +12,7 @@
 
   let cp = false;
 
-  Vue.component('bbn-chat', {
+  const cpDef = {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.localStorageComponent
@@ -380,7 +380,7 @@
                 c.participantsActivity = this._participantsActivity(c.participants);
                 c.participants = bbn.fn.map(c.participants, p => p.id);
                 bbn.fn.iterate(c, (v, p) => {
-                  this.$set(current, p, v);
+                  current[p] = v;
                 })
               }
               else {
@@ -408,11 +408,11 @@
               let chat = this.chatById(idChat);
               if ( chat ){
                 if ( c.info ){
-                  this.$set(chat, 'info', c.info)
+                  chat.info = c.info;
                 }
                 if ( c.messages ){
                   if ( chat.messages === undefined ){
-                    this.$set(chat, 'messages', []);
+                    chat.messages = [];
                   }
                   if ( c.messages.length ){
                     chat.messages.push(...c.messages);
@@ -434,7 +434,7 @@
                     chat.participants.splice(0);
                     chat.participants.push(...parts);
                   }
-                  this.$set(chat, 'participantsActivity', this._participantsActivity(c.participants));
+                  chat.participantsActivity = this._participantsActivity(c.participants);
                 }
                 if ( c.admins && !bbn.fn.isSame(c.admins, chat.admins) ){
                   chat.admins.splice(0);
@@ -479,7 +479,7 @@
                   this.$nextTick(() => {
                     let cw = this.chatWindowByIdx(idx);
                     if (bbn.fn.isVue(cw)) {
-                      this.$set(cw, 'currentMessage', mess);
+                      cw.currentMessage = mess;
                     }
                   });
                 }
@@ -497,7 +497,7 @@
             let chat = this.chatById(idChat);
             if ( chat ){
               if ( chat.messages === undefined ){
-                this.$set(chat, 'messages', []);
+                chat.messages = [];
               }
               if ( messages.length ){
                 chat.messages.push(...messages);
@@ -540,8 +540,8 @@
       setIdByTemp(idTemp, id){
         let c = bbn.fn.getRow(this.currentChats, {idTemp: idTemp});
         if ( c ){
-          this.$set(c, 'id', id);
-          this.$set(c, 'idTemp', '');
+          c.id = id;
+          c.idTemp = '';
         }
       },
       /**
@@ -659,7 +659,7 @@
       close(idx){
         let chat = bbn.fn.getRow(this.currentChats, {idx: idx});
         if ( chat ){
-          this.$set(chat, 'visible', false);
+          chat.visible = false;
         }
       },
       /**
@@ -671,7 +671,7 @@
       minimize(idx){
         let chat = bbn.fn.getRow(this.currentChats, {idx: idx});
         if ( chat ){
-          this.$set(chat, 'minimized', true);
+          chat.minimized = true;
           this.close(idx);
         }
       },
@@ -683,8 +683,8 @@
       maximaze(idx){
         let chat = bbn.fn.getRow(this.currentChats, {idx: idx});
         if ( chat ){
-          this.$set(chat, 'minimized', false);
-          this.$set(chat, 'visible', true);
+          chat.minimized = false;
+          chat.visible = true;
         }
       },
       /**
@@ -715,7 +715,7 @@
       activate(idx){
         let chat = bbn.fn.getRow(this.currentChats, {idx: idx});
         if ( chat ){
-          this.$set(chat, 'active', true);
+          chat.active = true;
           if ( chat.id ){
             this.setLastActivity(chat.id, this.userId);
           }
@@ -737,7 +737,7 @@
         let chat = bbn.fn.getRow(this.currentChats, {idx: idx});
         if (chat) {
           if (chat.unread) {
-            this.$set(chat, 'unread', 0);
+            chat.unread = 0;
           }
           if (!!chat.messages && chat.messages.length) {
             for (let i = chat.messages.length - 1; i > -1; i--) {
@@ -745,7 +745,7 @@
                 if (!chat.messages[i].unread) {
                   break;
                 }
-                this.$set(chat.messages[i], 'unread', false);
+                chat.messages[i].unread = false;
               }
             }
           }
@@ -760,7 +760,7 @@
       deactivate(idx){
         let chat = bbn.fn.getRow(this.currentChats, {idx: idx});
         if ( chat ){
-          this.$set(chat, 'active', false);
+          chat.active = false;
           if ( chat.id ){
             this.setLastActivity(chat.id, this.userId);
           }
@@ -1688,7 +1688,7 @@
                 title: this.currentTitle
               }, d => {
                 if ( d.success ){
-                  this.$set(this.info, 'title', this.currentTitle)
+                  this.info.title = this.currentTitle;
                 }
                 else {
                   this.alert(bbn._("Impossible to save the chat'stitle"));
@@ -1759,7 +1759,7 @@
                 let title = cp.getParticipantsFormatted(this.participants);
                 this.participants.push(idUser);
                 if ( this.info.title === title ){
-                  this.$set(this.info, 'title', cp.getParticipantsFormatted(this.participants))
+                  this.info.title = cp.getParticipantsFormatted(this.participants);
                 }
               }
             }
@@ -1790,7 +1790,7 @@
                       changeTitle = this.info.title === title;
                   this.participants.splice(this.participants.indexOf(idUser), 1);
                   if ( changeTitle ){
-                    this.$set(this.info, 'title', cp.getParticipantsFormatted(this.participants))
+                    this.info.title = cp.getParticipantsFormatted(this.participants);
                   }
                 };
                 if ( this.chatId ){
@@ -2047,6 +2047,12 @@
         }
       }
     }
-  });
+  };
 
-})(bbn, Vue);
+  if (Vue.component) {
+    Vue.component('bbn-chat', cpDef);
+  }
+
+  return cpDef;
+
+})(window.bbn, window.Vue);

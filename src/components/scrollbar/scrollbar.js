@@ -9,10 +9,11 @@
  *
  * @created 10/07/2017
  */
-(function(bbn, Vue){
+((bbn, Vue) => {
+
   "use strict";
 
-  Vue.component('bbn-scrollbar', {
+  const cpDef = {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.keepCoolComponent 
@@ -834,6 +835,12 @@
       document.removeEventListener("mouseup", this.stopDrag);
       document.removeEventListener("touchend", this.stopDrag);
     },
-  });
+  };
+
+  if (Vue.component) {
+    Vue.component('bbn-scrollbar', cpDef);
+  }
+
+  return cpDef;
 
 })(window.bbn, window.Vue);

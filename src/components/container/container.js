@@ -36,8 +36,7 @@
   // Will hold all the current rendered components random names to avoid doubles
   let componentsList = [];
 
-  Vue.component("bbn-container", {
-    name: 'bbn-container',
+  const cpDef = {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.resizerComponent
@@ -116,11 +115,6 @@
          */
         fullScreen: false,
         /**
-         * A random unique component name.
-         * @data {String} [this.randomName()] componentName
-         */
-        componentName: this.randomName(),
-        /**
          * The array containing popup objects.
          * @data {Array} [[]] popups
          */
@@ -198,7 +192,11 @@
          * The index in the router's views
          * @data {Number} currentIndex
          */
-        currentIndex: this.idx
+        currentIndex: this.idx,
+        /**
+         * The anonymous component definition
+         */
+        currentComponent: null
       };
     },
     computed: {
@@ -419,10 +417,10 @@
           let view = this.router.getView(this.url);
           if (view) {
             if ( bcolor ){
-              this.router.$set(view, "bcolor", bcolor);
+              this.router.view.bcolor = bcolor;
             }
             if ( fcolor ){
-              this.router.$set(view, "fcolor", fcolor);
+              this.router.view.fcolor = fcolor;
             }
           }
         }
@@ -594,8 +592,7 @@
             // the content as template
             // and the object returned as component definition
             // Adding also a few funciton to interact with the tab
-            let cont = this;
-            let o = bbn.fn.extend(true, res ? res : {}, {
+            this.currentComponent = bbn.fn.extend(true, res ? res : {}, {
               template: '<div class="' + (this.router.scrollContent ? '' : 'bbn-w-100') + '">' + this.currentView.content + '</div>',
               methods: {
                 getContainer(){
@@ -616,8 +613,6 @@
               },
               props: ['source']
             });
-            // The local anonymous component gets defined
-            this.$options.components[this.componentName] = o;
           }
           else {
             this.isComponent = false;
@@ -802,20 +797,16 @@
      */
     created(){
       this.componentClass.push('bbn-resize-emitter');
-      if ( this.isComponent ){
-        componentsList.push(this.componentName);
-      }
-      else if ( this.isComponent === null ){
+      if ( this.isComponent === null ){
         // The default onMount function is to do nothing.
         this.onMount = () => {
           return false;
         };
-        let res;
       }
-
-      // The router is needed
+    },
+    beforeMount() {
       this.router = this.closest('bbn-router');
-      this.updateScreenshot()
+      this.updateScreenshot();
       this._screenshotInterval = false;
     },
     /**
@@ -823,6 +814,7 @@
      * @fires router.register
      */
     mounted(){
+      // The router is needed
       if ( !this.router ){
         throw new Error(bbn._("bbn-container cannot be rendered without a bbn-router"));
       }
@@ -845,12 +837,6 @@
      */
     beforeDestroy(){
       this.router.unregister(this);
-      if ( this.isComponent ){
-        let idx = componentsList.indexOf(this.componentName);
-        if ( idx > -1 ){
-          componentsList.splice(idx, 1);
-        }
-      }
     },
 
     watch: {
@@ -995,6 +981,12 @@
       }
     },
 
-  });
+  };
 
-})(bbn, Vue);
+  if (Vue.component) {
+    Vue.component("bbn-container", cpDef);
+  }
+
+  return cpDef;
+
+})(window.bbn, window.Vue);

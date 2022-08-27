@@ -29,36 +29,26 @@
     <div v-if="prefix"
          class="bbn-block bbn-h-100 bbn-vmiddle bbn-nowrap"
          v-text="prefix"/>
-    <input :value="currentValue"
-          :type="currentType"
-          v-focused.selected="focused"
-          :name="name"
-          ref="element"
-          :readonly="readonly"
-          :disabled="isDisabled"
-          :placeholder="placeholder"
-          :maxlength="maxlength"
-          :autocomplete="currentAutocomplete"
-          :pattern="currentPattern"
-          @input="emitValue($refs.element.value)"
-          @click="click"
-          @paste="$emit('paste', $event)"
-          @focus="focus"
-          @blur="blur"
-          @change="change"
-          @keydown="keydown"
-          @keyup="keyup"
-          @mouseenter="over"
-          @mouseleave="out"
-          :tabindex="tabindex"
-          :class="{'bbn-flex-fill' : (buttonLeft || buttonRight || isNullable), 'bbn-ellipsis': ellipsis}"
-          :size="currentInputSize"
-          :inputmode="inputmode"
-          :min="min"
-          :max="max"
-          :style="{
-            paddingLeft: prefix ? 0 : null
-          }">
+    <input v-focused.selected="focused"
+           v-model="currentValue"
+           :class="{
+            'bbn-flex-fill' : (buttonLeft || buttonRight || isNullable),
+            'bbn-ellipsis': ellipsis
+           }"
+           :style="{
+             paddingLeft: prefix ? 0 : null
+           }"
+           v-bind="realAttributes"
+           ref="element"
+           @click="click"
+           @paste="$emit('paste', $event)"
+           @focus="focus"
+           @blur="blur"
+           @change="change"
+           @keydown="keydown"
+           @keyup="keyup"
+           @mouseenter="over"
+           @mouseleave="out">
     <bbn-loadicon v-if="loading"/>
     <div v-else-if="isNullable && (!readonly || forceNullable) && !isDisabled"
          class="bbn-input-nullable-container bbn-vmiddle"

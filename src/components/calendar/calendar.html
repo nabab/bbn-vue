@@ -3,7 +3,7 @@
 >
   <div v-if="showLoading && isLoading"
        class="bbn-overlay bbn-middle bbn-xl bbn-white bbn-modal bbn-abs"
-       v-text="_('Loading')"
+       v-text="i18n('Loading')"
        style="z-index: 1"
   ></div>
   <div :class="['bbn-widget', 'bbn-flex-height', {'bbn-overlay': type === 'weeks'}]">
@@ -18,13 +18,13 @@
           <bbn-button v-if="currentCfg.stepSkip"
                       icon="nf nf-fa-angle_double_left"
                       @click="prev(true)"
-                      :title="_('Previous') + ' ' + currentCfg.stepSkipText"
+                      :title="i18n('Previous') + ' ' + currentCfg.stepSkipText"
                       :notext="true"
                       class="bbn-right-xsspace"
           ></bbn-button>
           <bbn-button icon="nf nf-fa-angle_left"
                       @click="prev(false)"
-                      :title="_('Previous') + ' ' + currentCfg.stepText"
+                      :title="i18n('Previous') + ' ' + currentCfg.stepText"
                       :notext="true"
           ></bbn-button>
         </template>
@@ -32,11 +32,11 @@
           <i v-if="currentCfg.stepSkip"
              class="nf nf-fa-angle_double_left bbn-p bbn-hsmargin"
              @click="prev(true)"
-             :title="_('Previous') + ' ' + currentCfg.stepSkipText"
+             :title="i18n('Previous') + ' ' + currentCfg.stepSkipText"
           ></i>
           <i class="nf nf-fa-angle_left bbn-p bbn-hsmargin"
              @click="prev(false)"
-             :title="_('Previous') + ' ' + currentCfg.stepText"
+             :title="i18n('Previous') + ' ' + currentCfg.stepText"
           ></i>
         </template>
         <div class="bbn-flex-fill bbn-middle bbn-calendar-header-title">
@@ -51,13 +51,13 @@
         <template v-if="arrows && arrowsButtons">
           <bbn-button icon="nf nf-fa-angle_right"
                       @click="next(false)"
-                      :title="_('Next') + ' ' + currentCfg.stepText"
+                      :title="i18n('Next') + ' ' + currentCfg.stepText"
                       :notext="true"
           ></bbn-button>
           <bbn-button v-if="currentCfg.stepSkip"
                       icon="nf nf-fa-angle_double_right"
                       @click="next(true)"
-                      :title="_('Next') + ' ' + currentCfg.stepSkipText"
+                      :title="i18n('Next') + ' ' + currentCfg.stepSkipText"
                       :notext="true"
                       class="bbn-left-xsspace"
           ></bbn-button>
@@ -65,12 +65,12 @@
         <template v-else-if="arrows && !arrowsButtons">
           <i class="nf nf-fa-angle_right bbn-p bbn-hsmargin"
              @click="next(false)"
-             :title="_('Next') + ' ' + currentCfg.stepText"
+             :title="i18n('Next') + ' ' + currentCfg.stepText"
           ></i>
           <i v-if="currentCfg.stepSkip"
              class="nf nf-fa-angle_double_right bbn-p bbn-hsmargin"
              @click="next(true)"
-             :title="_('Next') + ' ' + currentCfg.stepSkipText"
+             :title="i18n('Next') + ' ' + currentCfg.stepSkipText"
           ></i>
         </template>
       </div>

@@ -10,7 +10,7 @@
  * @created 15/08/2019.
  */
 
-(function (bbn) {
+((bbn, Vue) => {
   "use strict";
 
   let app;
@@ -18,7 +18,7 @@
    * Classic input with normalized appearance
    */
 
-  Vue.component('bbn-clipboard', {
+  const cpDef = {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.localStorageComponent
@@ -548,6 +548,12 @@
         }
       }
     }
-  });
+  };
 
-})(window.bbn);
+  if (Vue.component) {
+    Vue.component('bbn-clipboard', cpDef);
+  }
+
+  return cpDef;
+
+})(window.bbn, window.Vue);

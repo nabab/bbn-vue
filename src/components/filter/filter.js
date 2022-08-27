@@ -10,68 +10,66 @@
   *
   * @created 10/02/2017.
   */
-(function(bbn){
+((bbn, Vue) => {
   "use strict";
 /**@todo add prefix for flexbox and inline flex http://ptb2.me/flexbox/ also for justify content and align items*/
-  const
-    get_operator_type = function(field){
-      if ( typeof field === 'object' ){
-        switch ( field.type ){
-          case 'int':
-            // maxlength is a string!
-            if ( field.maxlength == 1 ){
-              return 'boolean';
-            }
-            if ( (field.maxlength == 10) && field.keys ){
-              return 'enums';
-            }
-            return 'number';
-          case 'boolean':
-          case 'bool':
-            return 'boolean';
-          case 'float':
-          case 'decimal':
-          case 'number':
-          case 'money':
-            return 'number';
-          case 'date':
-            return 'date';
-          case 'datetime':
-            return 'date';
-          case 'time':
-            return 'date';
-          case 'enum':
-          case 'enums':
-            return 'enums';
-          default:
-            return 'string';
-        }
-      }
-    },
-    get_component_type = function(sqlType){
-      switch ( sqlType ){
+  const get_operator_type = field => {
+    if ( typeof field === 'object' ){
+      switch ( field.type ){
         case 'int':
+          // maxlength is a string!
+          if ( field.maxlength == 1 ){
+            return 'boolean';
+          }
+          if ( (field.maxlength == 10) && field.keys ){
+            return 'enums';
+          }
+          return 'number';
+        case 'boolean':
+        case 'bool':
+          return 'boolean';
         case 'float':
         case 'decimal':
-          return 'numeric';
+        case 'number':
+        case 'money':
+          return 'number';
         case 'date':
-          return 'datepicker';
+          return 'date';
         case 'datetime':
-          return 'datetimepicker';
+          return 'date';
         case 'time':
-          return 'timepicker';
+          return 'date';
+        case 'enum':
+        case 'enums':
+          return 'enums';
         default:
-          return 'input';
+          return 'string';
       }
-    };
+    }
+  };
+  const get_component_type = sqlType => {
+    switch ( sqlType ){
+      case 'int':
+      case 'float':
+      case 'decimal':
+        return 'numeric';
+      case 'date':
+        return 'datepicker';
+      case 'datetime':
+        return 'datetimepicker';
+      case 'time':
+        return 'timepicker';
+      default:
+        return 'input';
+    }
+  };
 
    // var  borders = ['#414d40', '#5a6559', '#7f897e', '#6c7a78', '#515963']
    // var  borders = ['red', 'green', 'yellow', 'pink', 'blue']
-  var borders = ['#e47777','#fa4a4a', '#8d0e0e','#b44f4f','#c16262'],
-    bg_colors = ['rgba(228,119,119,0.2)', 'rgba(250,74,74,0.2)', 'rgba(141,14,14,0.2)', 'rgba(180,79,79,0.2)', 'rgba(193,98,98,0.2)'];
+  let borders = ['#e47777','#fa4a4a', '#8d0e0e','#b44f4f','#c16262'];
+  let bg_colors = ['rgba(228,119,119,0.2)', 'rgba(250,74,74,0.2)', 'rgba(141,14,14,0.2)', 'rgba(180,79,79,0.2)', 'rgba(193,98,98,0.2)'];
 
-
-  Vue.component('bbn-filter', {
+  const cpDef = {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.dataEditorComponent
@@ -81,7 +79,6 @@
       bbn.vue.basicComponent, 
       bbn.vue.dataEditorComponent
     ],
-    name: 'bbn-filter',
     props: {
       /**
        * The value of the filter.
@@ -410,7 +407,6 @@
        * @component bbn-filter-form
        */
       'bbn-filter-form': {
-        name: 'bbn-filter-form',
         /**
          * @mixin bbn.vue.dataEditorComponent
          * @memberof bbn-filter-form
@@ -845,6 +841,12 @@
         }
       }
     }
-  });
+  };
 
-})(bbn);
+  if (Vue.component) {
+    Vue.component('bbn-filter', cpDef);
+  }
+
+  return cpDef;
+
+})(window.bbn, window.Vue);

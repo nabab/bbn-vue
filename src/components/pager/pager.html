@@ -11,7 +11,7 @@
 		<!-- 1ST BUTTON (FIRST) -->
 		<bbn-button icon="nf nf-fa-angle_double_left"
 								:notext="true"
-								:title="_('Go to the first') + ' ' + pageName"
+								:title="i18n('Go to the first') + ' ' + pageName"
 								:disabled="element.currentPage <= 2"
 								@click="firstPage"
 								v-if="buttons"/>
@@ -30,7 +30,7 @@
 		<!-- 2ND BUTTON (PREVIOUS) -->
 		<bbn-button icon="nf nf-fa-angle_left"
 								:notext="true"
-								:title="_('Go to the previous') + ' ' + pageName"
+								:title="i18n('Go to the previous') + ' ' + pageName"
 								:disabled="element.currentPage == 1"
 								@click="prevPage"
 								v-if="buttons"/>
@@ -59,11 +59,11 @@
 					v-text="currentPage"/>
 		<!-- OF TOTAL -->
 		<span class="bbn-iblock bbn-right-xsspace"
-					v-text="_('of') + ' ' + element.numPages"/>
+					v-text="i18n('of') + ' ' + element.numPages"/>
 		<!-- 3RD BUTTON (NEXT) -->
 		<bbn-button icon="nf nf-fa-angle_right"
 								:notext="true"
-								:title="_('Go to the next') + ' ' + pageName"
+								:title="i18n('Go to the next') + ' ' + pageName"
 								:disabled="element.currentPage == element.numPages"
 								@click="nextPage"
 								v-if="buttons"/>
@@ -81,7 +81,7 @@
 		<!-- 4TH BUTTON (LAST) -->
 		<bbn-button icon="nf nf-fa-angle_double_right"
 								:notext="true"
-								:title="_('Go to the last') + ' ' + pageName"
+								:title="i18n('Go to the last') + ' ' + pageName"
 								@click="lastPage"
 								:disabled="element.currentPage >= element.numPages - 1"
 								v-if="buttons"/>
@@ -107,7 +107,7 @@
 										@change="element.currentPage = 1"
 										:disabled="!!element.isLoading"
 										:autosize="true"/>
-			<span v-text="itemName + ' ' + _('per') + ' ' + pageName"/>
+			<span v-text="itemName + ' ' + i18n('per') + ' ' + pageName"/>
 		</span>
 	</div>
 	<div v-if="extraControls"
@@ -140,37 +140,37 @@
 			></span>
 			<span v-else-if="element.filteredData.length &&
 											 element.pageable && !element.isAjax"
-						v-text="(element.start+1) + '-' + (element.start + element.currentLimit > element.filteredData.length ? element.filteredData.length : element.start + element.currentLimit) + ' ' + _('of') + ' ' + element.filteredData.length"
+						v-text="(element.start+1) + '-' + (element.start + element.currentLimit > element.filteredData.length ? element.filteredData.length : element.start + element.currentLimit) + ' ' + i18n('of') + ' ' + element.filteredData.length"
 			></span>
 			<span v-else-if="!isMobile || isTablet"
-						v-text="element.total ? _('Total') + ': ' + element.total + ' ' + _('items') : _('No item')"
+						v-text="element.total ? i18n('Total') + ': ' + element.total + ' ' + i18n('items') : i18n('No item')"
 			></span>
 			<span v-else>
 				<i class="nf nf-fa-hashtag bbn-m bbn-right-sspace"></i><span v-text="element.total"></span>
 			</span>
 			&nbsp;
 			<bbn-button v-if="element.currentQuery && element.showQuery"
-									:title="_('View SQL query')"
+									:title="i18n('View SQL query')"
 									@click="element.showQuery"
 									icon="nf nf-mdi-database"
 									:notext="true"
 									class="bbn-left-xsspace"/>
 			<bbn-button v-if="element.saveable"
 									:disabled="element.isSaved"
-									:title="_('Save current configuration')"
+									:title="i18n('Save current configuration')"
 									@click="element.$emit('save', element.currentConfig)"
 									icon="nf nf-fa-save"
 									:notext="true"
 									class="bbn-left-xsspace"/>
 			<bbn-button v-if="(element.filterable || element.showable) && element.reset"
 									:disabled="!element.isChanged"
-									:title="_('Reset to original configuration')"
+									:title="i18n('Reset to original configuration')"
 									@click="element.reset(false)"
 									icon="nf nf-fa-undo"
 									:notext="true"
 									class="bbn-left-xsspace"/>
 			<bbn-button v-if="element.showable && element.openColumnsPicker"
-									:title="_('Columns\' picker')"
+									:title="i18n('Columns\' picker')"
 									@click="element.openColumnsPicker"
 									icon="nf nf-fa-columns"
 									:notext="true"
@@ -178,7 +178,7 @@
 			<bbn-button v-if="element.filterable &&
 												element.multifilter &&
 												element.openMultiFilter"
-									:title="_('Multi Filter')"
+									:title="i18n('Multi Filter')"
 									:class="[
 														'bbn-left-xsspace',
 														{'bbn-red': element.currentFilters && element.currentFilters.conditions.length ? true : false}
@@ -187,7 +187,7 @@
 									icon="nf nf-mdi-filter_variant"
 									:notext="true"/>
 			<bbn-button v-if="element.isAjax && element.updateData"
-									:title="_('Refresh')"
+									:title="i18n('Refresh')"
 									@click="element.updateData"
 									icon="nf nf-fa-refresh"
 									:notext="true"

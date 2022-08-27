@@ -10,9 +10,11 @@
  * @author BBN Solutions
  *
  */
-(bbn => {
+((bbn, Vue) => {
+
   "use strict";
-  Vue.component('bbn-checkbox', {
+
+  const cpDef = {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.inputComponent
@@ -26,7 +28,7 @@
       bbn.vue.eventsComponent
     ],
     props: {
-      value: {
+      modelValue: {
       /**
        * The value of the checkbox.
        *
@@ -66,7 +68,7 @@
        * @todo description
        * @prop {String|Boolean|Number} [undefined] modelValue
        */
-      modelValue: {
+      realValue: {
         type: [String, Boolean, Number],
         default: undefined
       },
@@ -133,7 +135,7 @@
         /**
          * @data valueToSet
          */
-        valueToSet: this.value
+        valueToSet: this.modelValue
       }
     },
     computed: {
@@ -144,20 +146,20 @@
        * @return {Boolean}
        */
       state(){
-        if ( this.checked && (this.modelValue === undefined) ){
+        if ( this.checked && (this.realValue === undefined) ){
           return true;
         }
         if ( this.checked &&
           (
-            ( !this.strict && (this.modelValue != this.valueToSet) ) ||
-            ( this.strict && (this.modelValue !== this.valueToSet) )
+            ( !this.strict && (this.realValue != this.valueToSet) ) ||
+            ( this.strict && (this.realValue !== this.valueToSet) )
           )
         ){
           return false;
         }
         if (
-          ( this.strict && (this.modelValue === this.valueToSet) ) ||
-          ( !this.strict && (this.modelValue == this.valueToSet) )
+          ( this.strict && (this.realValue === this.valueToSet) ) ||
+          ( !this.strict && (this.realValue == this.valueToSet) )
         ){
           return true;
         }
@@ -175,7 +177,7 @@
       toggle(){
         if ( !this.isDisabled && !this.readonly ){
           let emitVal = !this.state ? this.valueToSet : this.novalue;
-          this.$emit('input', emitVal);
+          this.$emit('update:modelValue', emitVal);
           this.$emit('change', emitVal, this);
           //this.$emit('change', event);
           //this.selfEmit(emitVal);
@@ -237,5 +239,13 @@
         //this.$emit('input', this.novalue);
       }
     }
-  });
-})(bbn);
+  };
+
+  if (Vue.component) {
+    Vue.component('bbn-checkbox', cpDef);
+    return;
+  }
+
+  return cpDef;
+
+})(window.bbn, window.Vue);

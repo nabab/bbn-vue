@@ -12,7 +12,7 @@
       <span class="bbn-overlay">
         <span class="bbn-h-100 bbn-vmiddle bbn-s">
           <a href="javascript:;"
-             :title="text + ' ' + _('Loading')"
+             :title="text + ' ' + i18n('Loading')"
              style="color: inherit; cursor: default"
              v-if="currentItem"
              v-text="currentItem.url"
@@ -25,7 +25,7 @@
                :element="$refs.bar"
                ref="floater"
                :auto-hide="true"
-               :title="_('Requests\' history')"
+               :title="i18n('Requests\' history')"
                :closable="true"
                :container="$root.$el"
                :scrollable="true"

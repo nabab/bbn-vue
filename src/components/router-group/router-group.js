@@ -4,11 +4,11 @@
  * @copyright BBN Solutions
  * @author BBN Solutions
  */
-(function(bbn, Vue){
+((bbn, Vue) => {
+
   "use strict";
 
-  Vue.component("bbn-router-group", {
-    name: 'bbn-router-group',
+  const cpDef = {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.localStorageComponent
@@ -66,6 +66,12 @@
     },
     watch: {
     }
-  });
+  };
 
-})(bbn, Vue);
+  if (Vue.component) {
+    Vue.component("bbn-router-group", cpDef);
+  }
+
+  return cpDef;
+
+})(window.bbn, window.Vue);

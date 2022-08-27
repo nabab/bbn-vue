@@ -7,10 +7,10 @@
  */
 
 
- (function(bbn){
+ ((bbn, Vue) => {
   "use strict";
 
-  Vue.component('bbn-search', {
+  const cpDef = {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.eventsComponent
@@ -267,6 +267,12 @@
         }
       }
     }
-  });
+  };
 
-})(bbn);
+  if (Vue.component) {
+    Vue.component('bbn-search', cpDef);
+  }
+
+  return cpDef;
+
+})(window.bbn, window.Vue);

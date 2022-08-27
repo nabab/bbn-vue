@@ -9,7 +9,7 @@
 				 @input="updateContenteditable"
 				 class="bbn-rte-element"
 				 ref="element"/>
-		<bbn-portal>
+		<Teleport to="body">
 			<div v-show="isEditing">
 				<bbn-floater :scrollable="false"
 										ref="floater"
@@ -22,7 +22,7 @@
 											:button-space="false"/>
 				</bbn-floater>
 			</div>
-		</bbn-portal>
+		</Teleport>
 
 	</div>
 	<div v-else

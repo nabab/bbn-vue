@@ -33,7 +33,7 @@
         <bbn-loadicon class="bbn-vmiddle"
                       :size="24"/>
         <span class="bbn-xl bbn-b bbn-left-sspace"
-              v-text="_('Loading') + '...'"/>
+              v-text="i18n('Loading') + '...'"/>
       </div>
       <component :is="scrollable ? 'bbn-scroll' : 'div'"
                  class="bbn-w-100"
@@ -117,10 +117,10 @@
                     }"
                     v-if="showFilterOnColumn(col)"
                     @click="showFilter(col, $event)"/>
-                  <div v-if="col.isSelection" :title="_('Check all')">
+                  <div v-if="col.isSelection" :title="i18n('Check all')">
                     <bbn-checkbox v-model="allRowsChecked"/>
                   </div>
-                  <div v-else-if="col.isExpander" :title="_('Expand all')">
+                  <div v-else-if="col.isExpander" :title="i18n('Expand all')">
                     <!-- @todo an icon for expanding all/none -->
                   </div>
                   <component v-else-if="col.tcomponent"
@@ -368,14 +368,14 @@
                             v-if="isDirty(d, col, i)"/>
                       <div v-if="isEdited(d.data, col, i)">
                         <div v-if="(editMode === 'inline') && (editable !== 'nobuttons') && (col.index === colButtons)">
-                          <bbn-button :text="_('Save')"
+                          <bbn-button :text="i18n('Save')"
                                       :disabled="!isEditedValid"
                                       icon="nf nf-fa-save"
                                       :notext="true"
                                       @focusin.stop
                                       @click.prevent.stop="saveInline"
                                       style="margin: 0 .1rem"/>
-                          <bbn-button :text="_('Cancel')"
+                          <bbn-button :text="i18n('Cancel')"
                                       icon="nf nf-fa-times"
                                       :notext="true"
                                       @focusin.stop
@@ -412,7 +412,7 @@
                                 :source="col.mapper ? col.mapper(d.data) : d.data"/>
                       <template v-else-if="col.buttons && (buttonMode === 'dropdown')">
                         <bbn-dropdown :source="buttonSource(d.data, col, i)"
-                                      :placeholder="col.title.trim() === '' ? _('Action') : col.title"
+                                      :placeholder="col.title.trim() === '' ? i18n('Action') : col.title"
                                       @select="_execCommand(button, d.data, col, i, $event)"/>
                       </template>
                       <template v-else-if="col.buttons && (buttonMode === 'menu')">
@@ -488,7 +488,7 @@
          class="bbn-table-filter-link bbn-p bbn-b bbn-i bbn-w-100 bbn-bottom-padded bbn-left-padded bbn-right-padded bbn-r"
          @click="openMultiFilter">
       <i class="zmdi zmdi-filter-list"/>
-      <span v-text="_('Open the full filter')"/>
+      <span v-text="i18n('Open the full filter')"/>
     </div>
   </bbn-floater>
   <bbn-popup ref="popup" v-if="inTable === false"/>
@@ -499,14 +499,14 @@
                tabindex="-1"
                :left="focusedElementX"
                :top="focusedElementY">
-        <bbn-button :text="_('Save')"
+        <bbn-button :text="i18n('Save')"
                     :disabled="!isEditedValid"
                     icon="nf nf-fa-save"
                     :notext="true"
                     @click.prevent.stop="saveInline"
                     style="margin: 0 .1rem"
                     tabindex="-1"/>
-        <bbn-button :text="_('Cancel')"
+        <bbn-button :text="i18n('Cancel')"
                     icon="nf nf-fa-times"
                     :notext="true"
                     @click.prevent.stop="cancel"

@@ -11,10 +11,10 @@
  */
 
 
-(bbn => {
+((bbn, Vue) => {
   "use strict";
 
-  Vue.component('bbn-keyboard', {
+  const cpDef = {
     /**
      * @mixin bbn.vue.basicComponent
      */
@@ -127,6 +127,12 @@
 
     watch: {
     }
-  });
+  };
 
-})(bbn);
+  if (Vue.component) {
+    Vue.component('bbn-keyboard', cpDef);
+  }
+
+  return cpDef;
+
+})(window.bbn, window.Vue);

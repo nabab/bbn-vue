@@ -9,11 +9,11 @@
  *
  * @created 15/02/2017
  */
-(function(bbn){
+((bbn, Vue) => {
+
   "use strict";
 
-  Vue.component('bbn-window', {
-    name: 'bbn-window',
+  const cpDef = {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.resizerComponent
@@ -351,6 +351,12 @@
         })
       },
     }
-  });
+  };
 
-})(bbn);
+  if (Vue.component) {
+    Vue.component('bbn-window', cpDef);
+  }
+
+  return cpDef;
+
+})(window.bbn, window.Vue);

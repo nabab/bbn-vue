@@ -11,10 +11,10 @@
  */
 
 
-(bbn => {
+((bbn, Vue) => {
   "use strict";
 
-  Vue.component('bbn-map', {
+  const cpDef = {
     /**
      * @mixin bbn.vue.basicComponent
      */
@@ -52,6 +52,12 @@
 
     watch: {
     }
-  });
+  };
 
-})(bbn);
+  if (Vue.component) {
+    Vue.component('bbn-map', cpDef);
+  }
+
+  return cpDef;
+
+})(window.bbn, window.Vue);

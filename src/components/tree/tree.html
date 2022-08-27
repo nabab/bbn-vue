@@ -4,7 +4,7 @@
 >
   <!-- A loader -->
   <div v-if="loading" class="loader">
-    <bbn-loadicon></bbn-loadicon> <span v-text="_('Loading')"></span>...
+    <bbn-loadicon></bbn-loadicon> <span v-text="i18n('Loading')"></span>...
   </div>
   <!-- The container: a scroll if root and scrollable, a div otherwise -->
   <component v-else-if="isInit && isLoaded"
@@ -73,7 +73,7 @@
                   @dragend="endDrag"
                   v-droppable:data="{node: _self}"/>
             <!-- The node starts here -->
-            <span :class="['bbn-tree-node-block', getCls(source, tree) || '', {'bbn-tree-node-block-no-component': !!component}]">
+            <span :class="['bbn-tree-node-block', getCls(source) || '', {'bbn-tree-node-block-no-component': !!component}]">
               <!-- The expander -->
               <span :class="['bbn-tree-node-block-expander', {'bbn-p': numChildren}]"
                     @click="if ( !flat && numChildren && (level >= tree.minExpandLevel) ){
@@ -214,6 +214,6 @@
     </transition>
   </component>
   <h2 v-else-if="isRoot"
-      v-html="_('No items') + '...'"
+      v-html="i18n('No items') + '...'"
   ></h2>
 </div>

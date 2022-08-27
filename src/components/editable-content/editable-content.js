@@ -7,10 +7,10 @@
  *
  * @author Mirko Argentino
  */
-(function() {
+((bbn, Vue) => {
   "use strict";
-  Vue.component('bbn-editable-content', {
-    name: 'bbn-editable-content',
+
+  const cpDef = {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.inputComponent
@@ -93,5 +93,12 @@
         this.isEditing = false;
       }
     }
-  })
-})();
+  };
+
+  if (Vue.component) {
+    Vue.component('bbn-editable-content', cpDef);
+  }
+
+  return cpDef;
+
+})(window.bbn, window.Vue);

@@ -11,13 +11,14 @@
  * @created 15/02/2017
  */
 
-(function(bbn){
+((bbn, Vue) => {
+
   "use strict";
 
   /**
    * Classic input with normalized appearance
    */
-  Vue.component('bbn-pane', {
+  const cpDef = {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.resizerComponent
@@ -143,6 +144,12 @@
         }, 40)
       }
     },
-  });
+  };
 
-})(bbn);
+  if (Vue.component) {
+    Vue.component('bbn-pane', cpDef);
+  }
+
+  return cpDef;
+
+})(window.bbn, window.Vue);

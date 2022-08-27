@@ -10,11 +10,11 @@
       props: {
        /**
         * The component that will be rendered inside the main component.
-        * @prop {String|Object|Vue} component
+        * @prop {String|Object} component
         * @memberof componentInsideComponent
         */
         component: {
-          type: [String, Object, Vue]
+          type: [String, Object]
         },
        /**
         * The component's props.

@@ -52,7 +52,6 @@
            * @param {String} text,
            * @param {Object} options
            * @fires _postMessage
-           * @fires $set
            */
         browserNotify(title, text, options){
           if (this.ready
@@ -87,7 +86,7 @@
             else {
               options.onclick = this.browserNotificationClick;
               let n = new Notification(title, options);
-              this.$set(this.browserNotifications, options.tag, n);
+              this.browserNotifications[options.tag] = n;
             }
           }
         },
@@ -119,11 +118,10 @@
          * @method removeBrowserNotification
          * @memberof browserNotificationComponent
          * @param {String} id
-         * @fires $delete
          */
         removeBrowserNotification(id){
           if (id && (id in this.browserNotifications)){
-            this.$delete(this.browserNotifications, id);
+            delete this.browserNotifications[id];
           }
         }
       },

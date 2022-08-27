@@ -10,10 +10,11 @@
   * @created 10/02/2017
   */
 
- (function(bbn){
+ ((bbn, Vue) => {
+
   "use strict";
-  Vue.component('bbn-scroll', {
-    name: 'bbn-scroll',
+
+  const cpDef = {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.resizerComponent
@@ -1100,6 +1101,12 @@
         this.currentStepY = bbn.fn.isDom(val) ? val.clientHeight : val;
       }
     }
-  });
+  };
 
-})(bbn);
+  if (Vue.component) {
+    Vue.component('bbn-scroll', cpDef);
+  }
+
+  return cpDef;
+
+})(window.bbn, window.Vue);

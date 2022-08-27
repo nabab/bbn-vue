@@ -8,9 +8,11 @@
  *
  * @author BBN Solutions
  */
-(function(bbn){
+((bbn, Vue) => {
+
   "use strict";
-  Vue.component('bbn-textarea', {
+
+  const cpDef = {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.inputComponent
@@ -75,6 +77,12 @@
     mounted(){
       this.ready = true;
     }
-  });
+  };
 
-})(bbn);
+  if (Vue.component) {
+    Vue.component('bbn-textarea', cpDef);
+  }
+
+  return cpDef;
+
+})(window.bbn, window.Vue, window.Terminal);

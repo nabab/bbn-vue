@@ -79,7 +79,7 @@
                           <span v-if="isNumber(bc.selected) && bc.views[bc.selected] && !bc.views[bc.selected].notext"
                                 :class="['bbn-router-breadcrumb-element-text', {'bbn-b': !breadcrumbs[i+1]}]"
                                 :title="bc.views[bc.selected].title && (bc.views[bc.selected].title.length > bc.maxTitleLength) ? bc.views[bc.selected].title : ''"
-                                v-html="bc.views[bc.selected].title ? bc.cutTitle(bc.views[bc.selected].title) : _('Untitled')"/>
+                                v-html="bc.views[bc.selected].title ? bc.cutTitle(bc.views[bc.selected].title) : i18n('Untitled')"/>
                         </div>
                         <i v-if="isNumber(bc.selected)
                                 && bc.views[bc.selected]
@@ -146,21 +146,24 @@
               </div>
             </div>
             <slot></slot>
-            <bbn-portal v-for="a in isVisual ? visualList : views"
-                        :key="isVisual ? a.view.uid : (component && componentSource && componentUrl ? componentSource[componentUrl] : a.uid)"
-                        :disabled="!routed || !getPane(a)"
-                        :selector="getPane(a) ? '#' + getPane(a) + slashToHyphen(isVisual ? a.view.url : a.url) : null">
-              <bbn-container v-if="(isVisual ? !a.view.real : !a.real) && !component && (!a.pane || routed)"
-                            :key="isVisual ? a.view.uid : a.uid"
-                            :visual="isVisual"
-                            v-bind="isVisual ? a.view : a"/>
-              <bbn-container v-else-if="component && componentSource && componentUrl"
-                            :source="componentSource"
-                            :visual="isVisual"
-                            :component="component"
-                            :key="componentSource[componentUrl]"
-                            :url="componentSource[componentUrl]"/>
-            </bbn-portal>
+            <template v-for="a in isVisual ? visualList : views"
+                      :key="isVisual ? a.view.uid : (component && componentSource && componentUrl ? componentSource[componentUrl] : a.uid)">
+              <template v-if="!routed || !getPane(a)">
+                <Teleport :disabled="!getPane(a)"
+                          :to="getPane(a) ? '#' + getPane(a) + slashToHyphen(isVisual ? a.view.url : a.url) : null">
+                  <bbn-container v-if="(isVisual ? !a.view.real : !a.real) && !component && (!a.pane || routed)"
+                                :key="isVisual ? a.view.uid : a.uid"
+                                :visual="isVisual"
+                                v-bind="isVisual ? a.view : a"/>
+                  <bbn-container v-else-if="component && componentSource && componentUrl"
+                                :source="componentSource"
+                                :visual="isVisual"
+                                :component="component"
+                                :key="componentSource[componentUrl]"
+                                :url="componentSource[componentUrl]"/>
+                </Teleport>
+              </template>
+            </template>
           </div>
         </div>
         <!-- END OF CONTENT -->

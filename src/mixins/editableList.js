@@ -107,7 +107,7 @@
          *
          * @method _addTmp
          * @param data
-         * @returns {Vue}
+         * @returns {Object}
          */
         _addTmp(data) {
           this._removeTmp().tmpRow = this._defaultRow(data);
@@ -117,7 +117,7 @@
         /**
          * Changes the values of tmpRow to false.
          * @method _removeTmp
-         * @returns {Vue}
+         * @returns {Object}
          */
         _removeTmp() {
           if (this.tmpRow) {
@@ -338,7 +338,7 @@
             // Update
             else if (this.editedRow) {
               let row = bbn.fn.clone(this.editedRow);
-              this.$set(this.currentData[this.editedIndex], 'data', row);
+              this.currentData[this.editedIndex].data = row;
               if (this.originalData) {
                 let or = this.originalData.splice(this.editedIndex, 1, bbn.fn.clone(row));
                 if (bbn.fn.isArray(this.source)) {

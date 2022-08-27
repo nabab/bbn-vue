@@ -11,13 +11,13 @@
  * @created 15/02/2017
  */
 
-;(bbn => {
+((bbn, Vue) => {
   "use strict";
 
   /**
    * Classic input with normalized appearance
    */
-  Vue.component('bbn-loadbar', {
+  const cpDef = {
     /**
      * @mixin bbn.vue.basicComponent 
      */
@@ -239,6 +239,12 @@
         */
       }
     }
-  });
+  };
 
-})(bbn);
+  if (Vue.component) {
+    Vue.component('bbn-loadbar', cpDef);
+  }
+  
+  return cpDef;
+
+})(window.bbn, window.Vue);

@@ -9,13 +9,13 @@
  *
  * @created 10/01/2017
  */
-(function($, bbn){
+((bbn, Vue) => {
   "use strict";
 
   /**
    * Classic input with normalized appearance
    */
-  Vue.component('bbn-message', {
+  const cpDef = {
     /**
      * @mixin bbn.vue.basicComponent
      */
@@ -251,5 +251,12 @@
       return this;
     },
 
-  });
-})(bbn);
+  };
+
+  if (Vue.component) {
+    Vue.component('bbn-message', cpDef);
+  }
+
+  return cpDef;
+
+})(window.bbn, window.Vue);

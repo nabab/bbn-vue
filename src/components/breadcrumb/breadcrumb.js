@@ -6,11 +6,11 @@
   * @created 10/03/2020
   * @ignore
   */
- (function(bbn, Vue){
+ ((bbn, Vue) => {
+
   "use strict";
 
-  Vue.component("bbn-breadcrumb", {
-    name: 'bbn-breadcrumb',
+  const cpDef = {
     mixins: [
       /**
        * @mixin bbn.vue.basicComponent
@@ -509,5 +509,12 @@
         }
       }
     }
-  });
-})(bbn, Vue);
+  };
+
+  if (Vue.component) {
+    Vue.component("bbn-breadcrumb", cpDef);
+  }
+
+  return cpDef;
+
+})(window.bbn, window.Vue);

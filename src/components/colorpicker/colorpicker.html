@@ -100,22 +100,22 @@
               <div v-if="palette.length">
                 <bbn-button :icon="!showPalette ? 'nf nf-fae-palette_color' : 'nf nf-fa-adjust'"
                             :notext="true"
-                            :text="!showPalette ? _('Show palette') : _('Close palette')"
+                            :text="!showPalette ? i18n('Show palette') : i18n('Close palette')"
                             @click="showPalette = !showPalette"
                             v-if="!onlyPalette"/>
               </div>
               <div class="bbn-flex-fill bbn-r">
                 <bbn-button icon="nf nf-fa-close"
                             :notext="true"
-                            :text="_('Close')"
+                            :text="i18n('Close')"
                             @click="showFloater = false"/>
                 <bbn-button icon="nf nf-oct-diff_ignored"
                             :notext="true"
-                            :text="_('Empty')"
+                            :text="i18n('Empty')"
                             @click="empty"
                             v-if="emptyButton"/>
                 <bbn-button icon="nf nf-fa-check"
-                            :text="_('Confirm')"
+                            :text="i18n('Confirm')"
                             @click="save"/>
               </div>
             </div>

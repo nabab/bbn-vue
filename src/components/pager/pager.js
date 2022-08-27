@@ -4,10 +4,11 @@
  * @author BBN Solutions
  * @copyright BBN Solutions
  */
-(bbn =>{
+((bbn, Vue) => {
+
   "use strict";
 
-  Vue.component('bbn-pager', {
+  const cpDef = {
     /**
      * @mixin bbn.vue.basicComponent
      */
@@ -203,6 +204,12 @@
         }, 500);
       }
     }
-  });
+  };
 
-})(bbn);
+  if (Vue.component) {
+    Vue.component('bbn-pager', cpDef);
+  }
+
+  return cpDef;
+
+})(window.bbn, window.Vue);

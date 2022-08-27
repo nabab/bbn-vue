@@ -124,9 +124,7 @@
          * @prop {String} bcolor
          * @memberof viewComponent
          */
-        bcolor: {
-          type: String
-        },
+        bcolor: String,
         /**
          * @prop {Boolean} [false] load
          * @memberof viewComponent
@@ -154,19 +152,15 @@
           default: ""
         },
         /**
-         * @prop {String|Vue} advert
+         * @prop {String|Object} advert
          * @memberof viewComponent
          */
-        advert: {
-          type: [String, Vue]
-        },
+        advert: [String, Object],
         /**
          * @prop {String} help
          * @memberof viewComponent
          */
-        help: {
-          type: String
-        },
+        help: String,
         /**
          * @prop {Array} imessages
          * @memberof viewComponent

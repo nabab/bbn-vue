@@ -8,10 +8,10 @@
   *
   * @author Mirko Argentino
   */
-(function(bbn){
+((bbn, Vue) => {
   "use strict";
 
-  Vue.component('bbn-datepicker', {
+  const cpDef = {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.inputComponent
@@ -377,7 +377,10 @@
       clear(){
         this.setValue('');
         this.$nextTick(() => {
-          this.$set(this.getRef('element'), 'inputValue', '');
+          let el = this.getRef('element');
+          if (el) {
+            el.inputValue = '';
+          }
         })
       }
     },
@@ -438,6 +441,12 @@
         this.setInputValue(newVal);
       }
     }
-  });
+  };
 
-})(bbn);
+  if (Vue.component) {
+    Vue.component('bbn-datepicker', cpDef);
+  }
+
+  return cpDef;
+
+})(window.bbn, window.Vue);

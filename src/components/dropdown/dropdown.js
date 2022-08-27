@@ -11,10 +11,10 @@
  */
 
 
-(function(bbn){
+((bbn, Vue) => {
   "use strict";
 
-  Vue.component('bbn-dropdown', {
+  const cpDef = {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.eventsComponent
@@ -243,6 +243,12 @@
         }
       }
     }
-  });
+  };
 
-})(bbn);
+  if (Vue.component) {
+    Vue.component('bbn-dropdown', cpDef);
+  }
+
+  return cpDef;
+
+})(window.bbn, window.Vue);

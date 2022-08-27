@@ -1,18 +1,14 @@
  /**
   * @file bbn-grapes component
-  *
   * @description
-  *
   * @copyright BBN Solutions
-  *
   * @author BBN Solutions
-  *
   * @created 10/02/2017
   */
-(function(){
+((bbn, Vue, grapesjs) => {
   "use strict";
 
-  Vue.component('bbn-grapes', {
+  const cpDef = {
     /**
      * @mixin bbn.vue.basicComponent
      */
@@ -44,6 +40,12 @@
         style: this.css || ''
       })
     }
-  });
+  };
 
-})();
+  if (Vue.component) {
+    Vue.component('bbn-grapes', cpDef);
+  }
+
+  return cpDef;
+
+})(window.bbn, window.Vue, window.grapesjs);

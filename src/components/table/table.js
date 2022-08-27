@@ -15,9 +15,11 @@
  * @copyright BBN Solutions
  */
 
-(function (bbn, Vue) {
+((bbn, Vue) => {
+
   "use strict";
-  Vue.component('bbn-table', {
+
+  const cpDef = {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.resizerComponent
@@ -1505,7 +1507,7 @@
               template: `
 <div class="bbn-block bbn-spadded">
   <h3 @click="showValues = !showValues"
-      v-text="showValues ? _('Hide the values') : _('Show the values')"
+      v-text="showValues ? i18n('Hide the values') : i18n('Show the values')"
       class="bbn-p"></h3>
   <ol class="bbn-space-bottom" v-if="showValues">
     <li v-for="v in source.values" v-text="v"></li>
@@ -1910,7 +1912,7 @@
                 return ok;
               },
               check(col, index) {
-                this.$set(this.shownCols, index, !this.shownCols[index]);
+                this.shownCols[index] = !this.shownCols[index];
               },
               checkAll(group) {
                 let show = !this.allVisible(group),
@@ -2024,7 +2026,7 @@
               let hidden = (this.currentHidden.indexOf(i) > -1);
               if (a.hidden !== hidden) {
                 //bbn.fn.log("CHANGING HIDDEN");
-                this.$set(this.cols[i], 'hidden', hidden);
+                this.cols[i].hidden = hidden;
               }
             });
           }
@@ -2380,21 +2382,21 @@
                     tmp = maxWidth;
                   }
 
-                  this.$set(col, 'realWidth', tmp);
+                  col.realWidth = tmp;
                 }
                 sum += col.realWidth;
                 if (groupIdx === 0) {
-                  this.$set(col, 'left', sumLeft);
+                  col.left = sumLeft;
                   sumLeft += col.realWidth;
                 }
 
                 if (groupIdx === 2) {
-                  this.$set(col, 'right', sumRight);
+                  col.right = sumRight;
                   sumRight += col.realWidth;
                 }
               }
             })
-            this.$set(this.groupCols[groupIdx], 'width', sum);
+            this.groupCols[groupIdx].width = sum;
             sum = 0;
             sumLeft = 0;
             sumRight = 0;
@@ -2574,7 +2576,7 @@
               aggregatedColumns = [],
               parentWidth = this.$el.offsetParent ? this.$el.offsetParent.getBoundingClientRect().width : this.lastKnownCtWidth;
           this.groupCols.splice(0);
-          this.$set(this, 'groupCols', bbn.fn.clone(groupCols));
+          this.groupCols = bbn.fn.clone(groupCols);
           bbn.fn.each(this.cols, a => {
             a.realWidth = 0;
           });
@@ -2780,7 +2782,7 @@
               sumRight = 0;
             });
             this.groupCols.splice(0);
-            this.$set(this, 'groupCols', groupCols);
+            this.groupCols = groupCols;
             this.colButtons = colButtons;
             this.isAggregated = isAggregated;
             this.aggregatedColumns = aggregatedColumns;
@@ -3138,9 +3140,11 @@
      */
      created(){
       this.componentClass.push('bbn-resize-emitter');
+
+      let slot = this.$slots.default();
       // Adding bbns-column from the slot
-      if (this.$slots.default) {
-        for (let node of this.$slots.default) {
+      if (slot) {
+        for (let node of slot) {
           /** @todo Check when used: when in DOM? Not sure */
           if (
             node.componentOptions &&
@@ -3470,6 +3474,12 @@
         }
       }
     }
-  });
+  };
+
+  if (Vue.component) {
+    Vue.component('bbn-table', cpDef);
+  }
+
+  return cpDef;
 
 })(window.bbn, window.Vue);

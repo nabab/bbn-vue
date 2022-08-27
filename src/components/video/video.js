@@ -5,9 +5,11 @@
  * @author Mirko Argentino
  * @created 10/08/2020.
  */
-(bbn => {
+((bbn, Vue) => {
+
   "use strict";
-  Vue.component('bbn-video', {
+
+  const cpDef = {
     /**
      * @mixin bbn.vue.basicComponent
      */
@@ -227,5 +229,12 @@
         this.showPoster = true;
       }
     }
-  });
-})(bbn);
+  };
+
+  if (Vue.component) {
+    Vue.component('bbn-video', cpDef);
+  }
+
+  return cpDef;
+
+})(window.bbn, window.Vue);

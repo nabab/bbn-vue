@@ -4,7 +4,8 @@
  * @copyright BBN Solutions
  * @author BBN Solutions
  */
-(function(bbn, Vue){
+((bbn, Vue) => {
+
   "use strict";
 
   const img = `<svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
@@ -54,7 +55,7 @@
 
 `;
 
-  Vue.component("bbn-router-config", {
+  const cpDef = {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.localStorageComponent
@@ -223,6 +224,12 @@
     },
     watch: {
     }
-  });
+  };
 
-})(bbn, Vue);
+  if (Vue.component) {
+    Vue.component("bbn-router-config", cpDef);
+  }
+
+  return cpDef;
+
+})(window.bbn, window.Vue);

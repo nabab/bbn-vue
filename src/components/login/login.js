@@ -6,10 +6,10 @@
  * @created 31/05/2021
  */
 
-(function(bbn){
+((bbn, Vue) => {
   "use strict";
 
-  Vue.component('bbn-login', {
+  const cpDef = {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.resizerComponent
@@ -221,10 +221,9 @@
       },
       /**
        * @method resetForm
-       * @fires $set
        */
       resetForm(){
-        this.$set(this, 'formData', {
+        this.formData = {
           login: {
             [this.saltName]: this.salt,
             user: '',
@@ -240,7 +239,7 @@
             pass1: '',
             pass2: ''
           }
-        });
+        };
       },
       /**
        * @method validation
@@ -327,6 +326,13 @@
         this.resetForm();
       }
     }
-  });
+  };
 
-})(bbn);
+  if (Vue.component) {
+    Vue.component('bbn-login', cpDef);
+  }
+
+  return cpDef;
+
+})(window.bbn, window.Vue);
+

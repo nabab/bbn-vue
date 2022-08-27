@@ -295,10 +295,10 @@
         /**
          * A component for each element of the list.
          * @memberof listComponent
-         * @prop {String|Object|Vue} component
+         * @prop {String|Object} component
          */
         component: {
-          type: [String, Object, Vue]
+          type: [String, Object]
         },
         /**
          * The template to costumize the dropdown menu.
@@ -1091,7 +1091,7 @@
           if (this.currentData.length) {
             bbn.fn.each(this.currentData, (a, i) => {
               if (a.index !== i) {
-                this.$set(this.currentData[i], 'index', i);
+                this.currentData[i].index = i;
                 //a.index = i;
               }
             });
@@ -1252,7 +1252,7 @@
         this.listOnBeforeMount();
       },
       mounted() {
-        if (!this.component && !this.template && this.$slots.default) {
+        if (!this.component && !this.template && this.$slots.default()) {
           let tpl = this.getRef('slot');;
           if (tpl) {
             this.currentTemplate = tpl.innerHTML;

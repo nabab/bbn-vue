@@ -136,7 +136,7 @@
     }
   };
 
-  Vue.directive('droppable', {
+  (Vue.directive || bbn.vue.setDirective)('droppable', {
     inserted: inserted,
     update: (el, binding) => {
       if ((binding.value !== false)

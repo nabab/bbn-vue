@@ -2,7 +2,7 @@
  * Created by BBN on 15/08/2019.
  */
 
-(function(bbn){
+((bbn, Vue) => {
   "use strict";
 
   let app;
@@ -10,9 +10,7 @@
    * Classic input with normalized appearance
    */
 
-  let fields = ['host', 'user', 'pass'],
-  
-  filesRules = {
+  let filesRules = {
     pdf: 'nf nf-mdi-file_pdf bbn-red',
     php: 'nf nf-mdi-language_php bbn-blue',
     doc: 'nf nf-mdi-file_word bbn-blue',
@@ -36,10 +34,10 @@
     gif: 'nf nf-mdi-file_image bbn-pink',
     tiff: 'nf nf-mdi-file_image bbn-brown',
     json: 'nf nf-mdi-json bbn-red'
-  },
-  imageExt = ['jpeg', 'png', 'jpg', 'tiff', 'gif'];
+  };
+  let imageExt = ['jpeg', 'png', 'jpg', 'tiff', 'gif'];
 
-  Vue.component('bbn-finder', {
+  const cpDef = {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.localStorageComponent
@@ -1030,6 +1028,12 @@
         
       }
     }  
-  });
-})(window.bbn);
+  };
 
+  if (Vue.component) {
+    Vue.component('bbn-finder', cpDef);
+  }
+
+  return cpDef;
+
+})(window.bbn, window.Vue);

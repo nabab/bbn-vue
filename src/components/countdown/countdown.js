@@ -14,7 +14,7 @@
 
  console.log(formatted);*/
 
-(function(bbn){
+((bbn, Vue) => {
   "use strict";
 
   const VALUES = [{
@@ -74,7 +74,7 @@
     timeout: 50
   }];
 
-  Vue.component('bbn-countdown', {
+  const cpDef = {
     /**
      * @mixin bbn.vue.basicComponent
      */
@@ -365,5 +365,12 @@
         this.init()
       }
     }
-  });
-})(bbn);
+  };
+
+  if (Vue.component) {
+    Vue.component('bbn-countdown', cpDef);
+  }
+
+  return cpDef;
+
+})(window.bbn, window.Vue);

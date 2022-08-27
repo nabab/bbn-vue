@@ -9,14 +9,14 @@
                 ref="input"
                 @ready="ready = true"
                 class="bbn-w-100"
-                :placeholder="max && (value.length > max) ? _('Max number of') + ' ' + max : _('Value')"/>
+                :placeholder="max && (value.length > max) ? i18n('Max number of') + ' ' + max : i18n('Value')"/>
     </div>
     <div>
       <bbn-button v-if="!max || (value.length <= max)"
                   icon="nf nf-fa-plus"
                   @click="add"
                   @keyup.prevent.stop.enter.space="add"
-                  text="_('Add')"
+                  text="i18n('Add')"
                   :notext="true"/>
     </div>
   </div>
@@ -28,7 +28,7 @@
          @click="remove(idx)"
          tabindex="0"
          @keyup.enter.space="remove(idx)"
-         :title="_('Delete')"/>
+         :title="i18n('Delete')"/>
     </div>
   </div>
   <bbn-floater v-if="ready && !isDisabled && !readonly && filteredData.length && currentInput.length"

@@ -11,10 +11,10 @@
  * @created 10/02/2020
  */
 
-(bbn => {
+((bbn, Vue, ApexCharts) => {
   "use strict";
 
-  Vue.component('bbn-chart', {
+  const cpDef = {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.resizerComponent
@@ -1418,5 +1418,12 @@
         this.ready = true;
       })
     }
-  });
-})(bbn);
+  };
+
+  if (Vue.component) {
+    Vue.component('bbn-chart', cpDef);
+  }
+
+  return cpDef;
+  
+})(window.bbn, window.Vue, window.ApexCharts);

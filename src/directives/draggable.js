@@ -458,7 +458,7 @@
     }
   };
 
-  Vue.directive('draggable', {
+  (Vue.directive || bbn.vue.setDirective)('draggable', {
     inserted: inserted,
     update: (el, binding) => {
       if ((binding.value !== false)

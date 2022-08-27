@@ -11,7 +11,7 @@
 
 
 //Markdown editor use simpleMDe
-(function(bbn, EasyMDE){
+((bbn, Vue, EasyMDE) => {
   "use strict";
 
   const toolbar = [
@@ -95,7 +95,7 @@
     "|" */
   ];
 
-  Vue.component('bbn-markdown', {
+  const cpDef = {
     /**
      * @mixin bbn.vue.basicComponent 
      * @mixin bbn.vue.inputComponent 
@@ -208,6 +208,12 @@
       this.ready = true;
     },
 
-  });
+  };
 
-})(bbn, EasyMDE);
+  if (Vue.component) {
+    Vue.component('bbn-markdown', cpDef);
+  }
+
+  return cpDef;
+
+})(window.bbn, window.Vue, window.EasyMDE);
