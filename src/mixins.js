@@ -11,10 +11,18 @@
     mixin: {
       data() {
         return {
+          _componentName: null,
           $children: []
         }
       },
       computed: {
+        componentName() {
+          if (!this._componentName) {
+            this._componentName = this.getComponentName();
+          }
+
+          return this._componentName;
+        },
         /**
          * Return the object of the currentPopup.
          * @computed currentPopup

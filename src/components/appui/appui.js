@@ -268,6 +268,7 @@
       },
       appComponent(){
         return bbn.fn.extend({
+          mixins: bbn.vue.customMixins || [],
           render(props, context) {
             return Vue.h();
           }

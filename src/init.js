@@ -16,8 +16,8 @@
       }
 
       bbn.vue.fullComponent = bbn.fn.extend(true, {}, bbn.vue.basicComponent, bbn.vue.inputComponent, bbn.vue.eventsComponent);
-      let cfg2 = bbn.fn.extend(cfg, {
-        mixins: mixins,
+      bbn.vue.customMixins = mixins;
+      let cfg2 = bbn.fn.extend({
         config: {
           compilerOptions: {
             isCustomElement: tag => bbn.vue.loadComponentsByPrefix(tag),
@@ -29,32 +29,6 @@
             }
           },
           devtools: !(!bbn.env.mode || (bbn.env.mode === 'prod'))
-        },
-        components: {
-          'bbns-container': bbn.fn.extend({
-            //functional: true,
-            template: '<div class="bbns-container bbn-hidden"><slot></slot></div>',
-            props: {
-              real: {
-                type: Boolean,
-                default: false
-              }
-            },
-            mounted() {
-              let template = this.$el.innerHTML.trim();
-              let router = this.closest('bbn-router');
-              if ( router && this.url ){
-                let obj = this.$options.propsData || {};
-                if ( template ){
-                  if ( !obj.content ){
-                    obj.content = template;
-                  }
-                }
-                obj.real = false;
-                router.add(obj);
-              }
-            }
-          }, bbn.vue.viewComponent)
         }
       });
       bbn.vue.addPrefix('bbn', (tag, resolve, reject) => {
@@ -65,6 +39,31 @@
       if (bbn.vue.directives) {
         bbn.fn.each(bbn.vue.directives, a => bbn.vue.app.directive(...a));
       }
+      bbn.vue.app.component('bbns-container', bbn.fn.extend({
+        name: 'bbns-container',
+        //functional: true,
+        template: '<div class="bbns-container bbn-hidden"><slot></slot></div>',
+        props: {
+          real: {
+            type: Boolean,
+            default: false
+          }
+        },
+        mounted() {
+          let template = this.$el.innerHTML.trim();
+          let router = this.closest('bbn-router');
+          if ( router && this.url ){
+            let obj = this.$options.propsData || {};
+            if ( template ){
+              if ( !obj.content ){
+                obj.content = template;
+              }
+            }
+            obj.real = false;
+            router.add(obj);
+          }
+        }
+      }, bbn.vue.viewComponent));
 
       bbn.vue.app.config.compilerOptions.isCustomElement = tag => bbn.vue.loadComponentsByPrefix(tag);
       bbn.vue.app.mount(ele);

@@ -13,9 +13,9 @@
   <div :class="{
     'bbn-flex-height': scrollable,
     'bbn-w-100': !scrollable
-  }" v-else-if="ready">
+  }" v-else-if="app && ready">
     <!-- HEADER -->
-    <div v-if="header"
+    <div v-if="app.header"
          class="bbn-w-100"
          style="overflow: visible">
       <div :class="['bbn-w-100', 'bbn-flex-width', 'bbn-unselectable', 'bbn-no-border', {
@@ -58,7 +58,7 @@
                 class="bbn-appui-logo">
         </div>
         <!-- FISHEYE (MOBILE) -->
-        <bbn-fisheye v-if="plugins['appui-menu'] && isMobile && !searchIsActive"
+        <bbn-fisheye v-if="plugins['appui-menu'] && app.isMobile && !searchIsActive"
                     class="bbn-appui-fisheye bbn-block bbn-large"
                     :removable="true"
                     @remove="removeShortcut"
@@ -95,7 +95,8 @@
                class="nf nf-oct-search bbn-xxxl"> </i>
           </div>
           <div class="bbn-block bbn-right-lspace"> </div>
-          <bbn-context tag="div"
+          <bbn-context v-if="app"
+                       tag="div"
                        class="bbn-block"
                        :source="userMenu">
             <bbn-initial font-size="2rem" :user-name="app.user.name"/>
@@ -171,12 +172,12 @@
       </bbn-router>
     </div>
     <!-- FOOTER -->
-    <component v-if="footerComponent"
+    <component v-if="app && footerComponent"
                ref="footer"
                class="appui-footer"
                :is="footerComponent"/>
     <!-- STATUS -->
-    <div v-if="status"
+    <div v-if="app && status"
         ref="foot"
         class="bbn-header bbn-bordered-top appui-statusbar"
         style="overflow: visible">
@@ -219,7 +220,7 @@
             <appui-notification-tray ref="notificationsTray"/>
           </div>
           <!-- CLIPBOARD BUTTON -->
-          <div v-if="plugins['appui-clipboard'] && clipboard"
+          <div v-if="plugins['appui-clipboard'] && app.clipboard"
               @click.stop.prevent="getRef('clipboard').toggle()"
               ref="clipboardButton"
               class="bbn-appui-clipboard-button bbn-right-space bbn-p bbn-rel">
@@ -278,7 +279,8 @@
              ref="popup"
              :z-index="13"/>
   <!-- BBOKMARKS -->
-  <div v-show="plugins['appui-bookmark'] && showBookmarks">
+  <div v-if="plugins['appui-bookmark']"
+       v-show="showBookmarks">
     <div class="bbn-overlay bbn-modal"
          v-if="showBookmarks"/>
     <bbn-floater component="appui-bookmark-list"
@@ -298,7 +300,7 @@
                  :search="true"/>
   </div>
   <!-- SEARCH -->
-  <div v-if="searchOn && plugins['appui-search']"
+  <div v-if="app && searchOn && plugins['appui-search']"
        class="bbn-overlay bbn-secondary"
        style="z-index: 13; background-color: transparent !important;">
     <div v-if="searchOn && plugins['appui-search']"
@@ -346,13 +348,14 @@
        @click="closeBigMessage"/>
   </div>
   <component ref="app"
-             :is="appComponent"/>
+             :is="appComponent"
+             @vue:mount="app = getRef('app')"/>
   <!-- POST-IT COMPONENT -->
   <appui-note-postits v-if="plugins['appui-note'] && showPostIt"
                       :source="postits"
                       @close="showPostIt = false"/>
   <!-- DEBUG COMPONENT -->
-  <bbn-slider v-if="plugins['appui-ide'] && ready && app.user && app.user.isAdmin"
+  <bbn-slider v-if="plugins['appui-ide'] && ready && app && app.user && app.user.isAdmin"
               orientation="right"
               ref="debug"
               :style="{

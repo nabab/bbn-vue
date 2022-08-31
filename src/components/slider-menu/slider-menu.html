@@ -1,5 +1,5 @@
 <div :class="[componentClass, 'bbn-overlay']">
-  <div class="bbn-hidden" v-if="$slots.default" ref="slot">
+  <div class="bbn-hidden" v-if="$slots.default && $slots.default()" ref="slot">
     <slot></slot>
   </div>
   <div v-for="(item, index) of items"

@@ -105,9 +105,10 @@
     addComponent(name, mixins){
       if ( this.localURL ){
         let componentName = bbn.fn.replaceAll("/", "-", name);
-        if ( this.localPrefix ){
+        if (this.localPrefix) {
           componentName = this.localPrefix + '-' + componentName;
         }
+
         this.announceComponent(componentName, this.localURL + name, mixins);
       }
     },
@@ -267,6 +268,7 @@
               }
             }
           });
+
           if ( Object.keys(data).length ){
             res.props.source.default = () => {
               return data;
@@ -357,7 +359,8 @@
       }
       if (bbn.fn.isArray(todo) && bbn.fn.getRow(bbn.vue.knownPrefixes, {prefix: 'bbn-'})) {
         bbn.fn.each(todo, cp => {
-          if ( bbn.vue.app._context.components['bbn-' + cp] === undefined ){
+          if (!bbn.vue.parsedTags.includes('bbn-' + cp)) {
+            bbn.vue.parsedTags.push('bbn-' + cp);
             bbn.vue.app.component('bbn-' + cp, Vue.defineAsyncComponent({
               name: 'bbn-' + cp,
               loader: () => new Promise((resolve, reject) => {
@@ -608,7 +611,8 @@
      * @param {Array} mixins
      */
     announceComponent(name, url, mixins){
-      if ( !this.isNodeJS && (typeof(name) === 'string') && (bbn.vue.app._context.components[name] === undefined) ){
+      if ( !this.isNodeJS && (typeof(name) === 'string') && !bbn.vue.parsedTags.includes(name)) {
+        bbn.vue.parsedTags.push(name);
         bbn.vue.app.component(name, Vue.defineAsyncComponent({
           name: name,
           loader: () => Promise((resolve, reject) => {
@@ -648,36 +652,43 @@
     loadComponentsByPrefix(tag){
       //let res = isReservedTag(tag);
       // Tag is unknown and has never gone through this function
-      if ( tag && (this.parsedTags.indexOf(tag) === -1) ) {
-        this.parsedTags.push(tag);
-        let idx = -1;
-        /** @todo add an extended object of all the mixins for all related path */
-        let mixins = [];
-        // Looking for a corresponding prefix rule
-        bbn.fn.each(bbn.vue.knownPrefixes, (a, i) => {
-          if ( a.prefix && (tag.indexOf(a.prefix) === 0) && a.handler && bbn.fn.isFunction(a.handler) ){
-            // Taking the longest (most precise) prefix's rule
-            if ( a.mixins ){
-              mixins = mixins.concat(a.mixins);
-            }
-            if ( idx > -1 ){
-              if ( bbn.vue.knownPrefixes[i].prefix.length > bbn.vue.knownPrefixes[idx].prefix.length ){
+      if (tag) {
+        if (bbn.var.tags.includes(tag)) {
+          return true;
+        }
+
+        if (this.parsedTags.indexOf(tag) === -1) {
+          this.parsedTags.push(tag);
+          let idx = -1;
+          /** @todo add an extended object of all the mixins for all related path */
+          let mixins = [];
+          // Looking for a corresponding prefix rule
+          bbn.fn.each(bbn.vue.knownPrefixes, (a, i) => {
+            if ( a.prefix && (tag.indexOf(a.prefix) === 0) && a.handler && bbn.fn.isFunction(a.handler) ){
+              // Taking the longest (most precise) prefix's rule
+              if ( a.mixins ){
+                mixins = mixins.concat(a.mixins);
+              }
+              if ( idx > -1 ){
+                if ( bbn.vue.knownPrefixes[i].prefix.length > bbn.vue.knownPrefixes[idx].prefix.length ){
+                  idx = i;
+                }
+              }
+              else{
                 idx = i;
               }
             }
-            else{
-              idx = i;
-            }
+          });
+          // A rule has been found
+          if (idx > -1) {
+            bbn.vue.parsedTags.push(tag);
+            bbn.vue.app.component(tag, Vue.defineAsyncComponent({
+              name: tag,
+              loader: () => new Promise((resolve, reject) => {
+                bbn.vue.knownPrefixes[idx].handler(tag, resolve, reject);
+              })
+            }));
           }
-        });
-        // A rule has been found
-        if (idx > -1) {
-          bbn.vue.app.component(tag, Vue.defineAsyncComponent({
-            name: tag,
-            loader: () => new Promise((resolve, reject) => {
-              bbn.vue.knownPrefixes[idx].handler(tag, resolve, reject);
-            })
-          }));
         }
       }
 
@@ -738,7 +749,7 @@
         delete bbn.vue.app._context.components[cp];
         bbn.vue.app.component(cp, Vue.defineAsyncComponent({
           name: cp,
-          loader: () => Promise((resolve, reject) => {
+          loader: () => new Promise((resolve, reject) => {
             bbn.vue.queueComponent(cp, resolve, reject);
           })
         }));

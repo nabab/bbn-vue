@@ -5,7 +5,7 @@
      @touchend="touchend"
      :style="currentStyle">
   <div class="bbn-hidden"
-       v-if="$slots.default"
+       v-if="$slots.default && $slots.default()"
        ref="slot">
     <slot></slot>
   </div>

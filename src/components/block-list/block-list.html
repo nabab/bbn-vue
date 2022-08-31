@@ -1,5 +1,5 @@
 <div :class="componentClass">
-  <div class="bbn-hidden" v-if="$slots.default" ref="slot">
+  <div class="bbn-hidden" ref="slot">
     <slot></slot>
   </div>
   <div :class="getComponentName() + '-content'"

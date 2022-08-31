@@ -90,7 +90,7 @@
                     ref="component"
                     :is="component"
                     v-bind="realComponentOptions"/>
-          <slot v-else-if="$slots.default"/>
+          <slot v-else-if="$slots.default && $slots.default()"/>
           <div v-else-if="!!content"
               v-html="content"
               :class="scrollable ? 'bbn-w-100' : 'bbn-overlay'"
