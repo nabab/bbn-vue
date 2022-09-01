@@ -115,6 +115,26 @@
             this.isOpened = true;
           }
         }
+      },
+      selectOnNative(ev){
+        if (!ev.defaultPrevented) {
+          let idx = bbn.fn.search(this.filteredData, 'data.' + this.sourceValue, ev.target.value);
+          if (idx > -1) {
+            let item = this.filteredData[idx].data;
+            if (this.sourceAction && item[this.sourceAction] && bbn.fn.isFunction(item[this.sourceAction])) {
+              item[this.sourceAction](item);
+            }
+            else if ((this.sourceUrl !== undefined) && item[this.sourceUrl]) {
+              bbn.fn.link(item[this.sourceUrl]);
+            }
+            else if (item[this.uid || this.sourceValue] !== undefined) {
+              this.emitInput(item[this.uid || this.sourceValue]);
+              this.$emit('change', item[this.uid || this.sourceValue], idx, this.filteredData[idx].index, ev);
+              bbn.fn.log('yes', item[this.uid || this.sourceValue], idx, this.filteredData[idx].index, ev)
+            }
+          }
+        }
+        this.isOpened = false;
       }
     },
     /**

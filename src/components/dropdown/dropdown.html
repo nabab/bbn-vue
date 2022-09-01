@@ -49,7 +49,7 @@
               :required="required"
               ref="input"
               @blur="isOpened = false"
-              @change="isOpened = false"
+              @change="selectOnNative"
               @focus="isOpened = true"
               @click="isOpened = true"
               :disabled="!!isDisabled || !!readonly">
