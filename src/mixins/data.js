@@ -69,7 +69,7 @@
                   v,
                   (cfg.precision === -4) || (cfg.format && (cfg.format.toLowerCase() === 'k')),
                   cfg.currency || cfg.unit || "",
-                  '-',
+                  !!cfg.novalue ? (bbn.fn.isFunction(cfg.novalue) ? cfg.novalue(data[cfg.field], cfg) : cfg.novalue) : '-',
                   ',',
                   ' ',
                   cfg.precision === -4 ? 3 : (cfg.precision || cfg.decimals || 0)
