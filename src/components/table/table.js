@@ -3339,7 +3339,7 @@
           if (bbn.fn.isNumber(oldIndex) && this.items[oldIndex]) {
             let idx = this.items[oldIndex].index;
             if ((this.editedIndex === idx)
-              && this.isModified(idx)
+              && ((idx === -1) || this.isModified(idx))
             ) {
               if (this.autoSave) {
                 this.saveInline();
