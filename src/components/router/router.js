@@ -1611,6 +1611,7 @@
 
         //bbn.fn.log("ACTIVATING " + url + " AND SENDING FOLLOWING CONTAINER:", container);
         if (this.selected !== container.currentIndex) {
+          this.$emit('activate', url);
           container.setCurrent(url);
           if (!container.isPane) {
             this.activeContainer = container;
@@ -2217,6 +2218,7 @@
 
           this.$forceUpdate();
           this.$emit('update', this.views);
+          this.$emit("load", finalURL);
           let dataObj = this.postBaseUrl ? {_bbn_baseURL: this.fullBaseURL} : {};
           return this.post(
             finalURL,

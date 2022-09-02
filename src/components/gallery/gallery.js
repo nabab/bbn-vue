@@ -420,7 +420,10 @@
        * @method onResize
        */
       onResize() {
-        this.width = this.$refs.gallery.offsetWidth;
+        let gallery = this.getRef('gallery');
+        if (gallery) {
+          this.width = gallery.offsetWidth;
+        }
       },
       resetSearch() {
         this.currentSearch = '';
@@ -562,6 +565,7 @@
            'bbn-invisible': !loaded
          }"
          :style="imgStyle"
+         :alt="(source.caption ? source.caption + ' - ' : '') + (source.text ? source.text + ' - ' : '') + (source.tags || []).join(' | ')"
          :draggable="!col.gallery.isSorting">
     <bbn-loadicon class="bbn-gallery-item-loading bbn-c"
                   v-if="!loaded && !error"/>
@@ -835,7 +839,8 @@
   <i class="bbn-top-right nf nf-fa-close bbn-red bbn-vxspadded bbn-hspadded bbn-lg bbn-p"
      @click="unselect"/>
   <img :src="imgSrc"
-       class="bbn-radius bbn-bordered">
+       class="bbn-radius bbn-bordered"
+       :alt="altSrc">
 </div>
         `,
         props: {
@@ -849,6 +854,15 @@
           }
         },
         computed: {
+          /**
+           * @computed altSrc
+           * @memberof gallery-selected
+           * @fires bbn.fn.basename
+           * @return {String}
+           */
+          altSrc() {
+            return bbn.fn.basename(this.imgSrc);
+          },
           /**
            * @computed gallery
            * @memberof gallery-selected

@@ -797,6 +797,9 @@
         this.$nextTick(() => {
           this.searchOn = false;
         })
+      },
+      onLoad() {
+        this.$emit('load', ...arguments);
       }
     },
     beforeCreate(){
@@ -1061,7 +1064,7 @@
             }
             this.poll();
           }, 5000);
-        }, 1000);
+        }, this.app && this.app.header ? 1000 : 10);
       }
     },
     beforeDestroy(){

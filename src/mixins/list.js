@@ -669,20 +669,33 @@
          * @memberof listComponent
          * @return {String}
          */
-        currentItemIcon(){
+        currentItem() {
           if ((this.value !== undefined)
             && !bbn.fn.isNull(this.value)
             && this.sourceValue
-            && this.sourceIcon
             && this.currentData.length
           ){
             let idx = bbn.fn.search(this.currentData, a => {
               return a.data[this.sourceValue] === this.value;
             });
             if (idx > -1) {
-              return this.currentData[idx].data[this.sourceIcon];
+              return this.currentData[idx].data;
             }
           }
+
+          return null;
+        },
+        /**
+         * Returns the current item icon
+         * @computed currentItemIcon
+         * @memberof listComponent
+         * @return {String}
+         */
+        currentItemIcon() {
+          if (this.currentItem && this.sourceIcon) {
+            return this.currentItem[this.sourceIcon];
+          }
+
           return '';
         },
         /**
@@ -692,19 +705,10 @@
          * @return {String}
          */
         currentItemImg(){
-          if ((this.value !== undefined)
-            && !bbn.fn.isNull(this.value)
-            && this.sourceValue
-            && this.sourceImg
-            && this.currentData.length
-          ){
-            let idx = bbn.fn.search(this.currentData, a => {
-              return a.data[this.sourceValue] === this.value;
-            });
-            if (idx > -1) {
-              return this.currentData[idx].data[this.sourceImg];
-            }
+          if (this.currentItem && this.sourceImg) {
+            return this.currentItem[this.sourceImg];
           }
+  
           return '';
         },
         /**
@@ -714,19 +718,10 @@
          * @return {String}
          */
         currentItemCls(){
-          if ((this.value !== undefined)
-            && !bbn.fn.isNull(this.value)
-            && this.sourceValue
-            && this.sourceCls
-            && this.currentData.length
-          ){
-            let idx = bbn.fn.search(this.currentData, a => {
-              return a.data[this.sourceValue] === this.value;
-            });
-            if (idx > -1) {
-              return this.currentData[idx].data[this.sourceCls];
-            }
+          if (this.currentItem && this.sourceCls) {
+            return this.currentItem[this.sourceCls];
           }
+  
           return '';
         }
       },

@@ -108,6 +108,7 @@
                     <div :class="[{'bbn-w-100': !fullSlide, 'bbn-overlay': fullSlide}, 'bbn-middle']">
                       <img :src="it.content"
                            :ref="'slide-img'+ i.toString()"
+                           :alt="it.caption || it.text || ''"
                            @load="afterLoad(i)"
                            :class="[
                             'img' + i.toString(),

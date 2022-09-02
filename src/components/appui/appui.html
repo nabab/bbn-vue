@@ -46,6 +46,7 @@
           <div class="bbn-100 bbn-vmiddle" style="justify-content: center;">
             <img v-if="!!logo"
                  :src="logo"
+                 alt="logo"
                  style="background-color: white;"
                  class="bbn-right-padded bbn-appui-logo">
           </div>
@@ -55,6 +56,7 @@
               v-else-if="!searchIsActive && !!logo && isMobile">
           <img :src="logo"
                 style="background-color: white;"
+                alt="logo"
                 class="bbn-appui-logo">
         </div>
         <!-- FISHEYE (MOBILE) -->
@@ -159,6 +161,7 @@
                   :url="!!nav ? undefined : url"
                   @beforeroute="onBeforeRoute"
                   @route="onRoute"
+                  @load="onLoad"
                   @change="$emit('change', $event)"
                   @shortcut="addShortcut"
                   :breadcrumb="isMobile"

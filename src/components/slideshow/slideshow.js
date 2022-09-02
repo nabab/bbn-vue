@@ -820,6 +820,7 @@
                   ></div>
                   <img v-else-if="it.type === 'img'"
                       :src="getImgSrc(it.content)"
+                      :alt="it.caption || it.text || ''"
                       width="100%"
                       height="100%"
                   >

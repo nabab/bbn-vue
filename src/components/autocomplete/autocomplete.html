@@ -18,8 +18,9 @@
     </div>
     <div v-if="sourceImg && hasValue && !!currentItemImg"
          class="bbn-left-xspadded">
-      <img src="currentItemImg"
-           @click.stop="click">
+      <img :src="currentItemImg"
+           @click.stop="click"
+           :alt="currentItemImg">
     </div>
     <bbn-input :disabled="isDisabled"
                class="bbn-no-border bbn-flex-fill bbn-unselectable"
