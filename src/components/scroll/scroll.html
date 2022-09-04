@@ -1,6 +1,5 @@
 <div :class="elementClass"
-     :style="elementStyle"
->
+     :style="elementStyle">
   <div :class="containerClass"
        ref="scrollContainer"
        @scroll="onScroll"
@@ -9,8 +8,7 @@
        @touchmove="onTouchmove"
        @focus="isFocused = true"
        @blur="isFocused = false"
-       :tabindex="scrollable ? '0' : '-1'"
-  >
+       :tabindex="scrollable ? '0' : '-1'">
     <div :class="{
           'bbn-scroll-content': true,
           resizing: isMeasuring,
@@ -18,9 +16,8 @@
         }"
          ref="scrollContent"
          @subready.stop="waitReady"
-         :style="contentStyle"
-    >
-      <slot></slot>
+         :style="contentStyle">
+      <slot/>
     </div>
   </div>
   <bbn-scrollbar v-if="scrollReady && hasScrollX"
@@ -31,8 +28,7 @@
                  :scrollAlso="scrollAlso"
                  :initial="currentX"
                  @scroll="scrollHorizontal"
-                 :offset="offsetX">
-  </bbn-scrollbar>
+                 :offset="offsetX"/>
   <bbn-scrollbar v-if="scrollReady && hasScrollY"
                  :hidden="isResizing || !scrollReady || hiddenY"
                  orientation="vertical"
@@ -41,6 +37,5 @@
                  :scrollAlso="scrollAlso"
                  :initial="currentY"
                  @scroll="scrollVertical"
-                 :offset="offsetY">
-  </bbn-scrollbar>
+                 :offset="offsetY"/>
 </div>

@@ -373,6 +373,7 @@
           this.currentURL = url;
           return true;
         }
+
         return false;
       },
       /**
@@ -884,8 +885,13 @@
        * @param {String} oldVal 
        */
       currentURL(newVal, oldVal){
+        // Auto cancelling if it does not correspond to the url
         if ( !newVal || (newVal.indexOf(this.url) !== 0) ){
           this.currentURL = this.url;
+        }
+        // Routing if the router has different info
+        else if (this.currentView && (this.currentView.current !== newVal)) {
+          this.router.route(newVal)
         }
       },
       ready(v){

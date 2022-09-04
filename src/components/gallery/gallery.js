@@ -546,7 +546,7 @@
 <a v-if="!col.gallery.isLoading"
     :class="['bbn-gallery-item', 'bbn-box', {'bbn-primary': isSelected, 'bbn-p': !!col.gallery.zoomable}]"
     @click="action"
-    @contextmenu.prevent.stop="getRef('itemMenu').click()"
+    @contextmenu.prevent.stop="getRef('menuButton').click()"
     :style="aStyle"
     v-draggable="!!col.gallery.isSorting && !!col.gallery.uid"
     v-droppable="!!col.gallery.isSorting && !!col.gallery.uid"
@@ -576,8 +576,9 @@
           :title="source.data[col.gallery.overlayName]"/>
     <i v-if="col.gallery.zoomable && loaded && !col.gallery.isSelecting && !col.gallery.isSorting"
        class="bbn-gallery-zoverlay nf nf-fa-search"/>
-    <bbn-context v-if="!!col.gallery.buttonMenu && loaded && !col.gallery.isSelecting && !col.gallery.isSorting"
-                 tag="span"
+    <bbn-context v-if="showOverlay && !!col.gallery.buttonMenu && loaded && !col.gallery.isSelecting && !col.gallery.isSorting"
+                 tag="div"
+                 class="bbn-block bbn-top-left bbn-top-smargin bbn-left-smargin"
                  :source="!!col.gallery.buttonMenu
                    ? (isFunction(col.gallery.buttonMenu)
                      ? col.gallery.buttonMenu(source.data, source.index, source.key)
@@ -586,10 +587,11 @@
                  :attach="buttonMenuElement"
                  :item-component="col.gallery.contextComponent"
                  @hook:mounted="buttonMenuElement = getRef('itemMenu') || undefined"
-                 ref="menuButton"
-                 @click.prevent.stop>
-      <i class="bbn-gallery-button-menu nf nf-mdi-menu"
-         ref="itemMenu"/>
+                 ref="menuButton">
+        <div class="bbn-block">
+          <i class="bbn-gallery-button-menu nf nf-mdi-menu"
+             ref="itemMenu"/>
+        </div>
     </bbn-context>
   </span>
   <div v-if="col.gallery.sortable && col.gallery.isSorting && col.gallery.sourceOrder"

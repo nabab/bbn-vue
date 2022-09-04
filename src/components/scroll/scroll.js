@@ -769,7 +769,7 @@
        * @method getNaturalDimensions
        * @fires getNaturalDimensions
        */
-      getNaturalDimensions(){
+      getNaturalDimensions() {
         this.isMeasuring = true;
         return new Promise((resolve, reject) => {
           this.$nextTick(() => {
