@@ -184,6 +184,14 @@
         default: false
       },
       /**
+       * The property that will be used for the image info.
+       * @prop {String} ['info'] sourceInfo
+       */
+       sourceInfo: {
+        type: String,
+        default: 'info'
+      },
+      /**
        * If the property content is given to the item, set to true insert the html content inside a scroll.
        * @prop {Boolean} [false] scrollable
        */

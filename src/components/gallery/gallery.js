@@ -246,6 +246,14 @@
       sourceAction: {
         type: String,
         default: 'link'
+      },
+      /**
+       * The property that will be used for the image info.
+       * @prop {String} ['info'] sourceInfo
+       */
+       sourceInfo: {
+        type: String,
+        default: 'info'
       }
     },
     data() {
@@ -724,12 +732,13 @@
                     obj.content = obj[this.col.gallery.pathName];
                     obj.type = 'img';
                     obj.mode = 'original';
-                    if (!obj.info) {
-                      obj.info = obj[this.col.gallery.overlayName];
+                    if (!obj[this.col.gallery.sourceInfo]) {
+                      obj[this.col.gallery.sourceInfo] = obj[this.col.gallery.overlayName];
                     }
                     return obj;
                   }),
                   info: this.col.gallery.info,
+                  sourceInfo: this.col.gallery.sourceInfo,
                   slide: this.source.index,
                   preview: this.col.gallery.preview
                 }
@@ -813,6 +822,7 @@
 <div class="bbn-overlay bbn-gallery-zoom">
   <bbn-slideshow :source="source.data"
                 :show-info="source.info"
+                :source-info="source.sourceInfo"
                 :arrows="true"
                 :show-count="true"
                 :full-slide="true"

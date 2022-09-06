@@ -181,17 +181,18 @@
                :style="{visibility: (currentIndex >= items.length - 1) && !loop ? 'hidden' : 'visible'}"/>
           </div>
         </div>
-        <div v-if="showInfo && items[currentIndex] && items[currentIndex].info && items[currentIndex].info.length"
-          class="bbn-middle bbn-padded bbn-slideshow-info" v-html="items[currentIndex].info"/>
+        <div v-if="showInfo && items[currentIndex] && items[currentIndex][sourceInfo] && items[currentIndex][sourceInfo].length"
+             class="bbn-middle bbn-padded bbn-slideshow-info"
+             v-html="items[currentIndex][sourceInfo]"/>
         <!-- Miniatures -->
         <div v-if=" [true, 'image', 'circle'].includes(preview)" :class="[
                'bbn-block',
                'bbn-middle',
                'bbns-gallery-miniature',
                'bbn-hsmargin',
-               {'bbn-top-sspace': !showInfo || (!!items[currentIndex] && (!items[currentIndex].info || !items[currentIndex].info.length))}
-             ]" 
-             :style="{'min-height': typeof(dimensionPreview)=== 'Number' ? dimensionPreview + 'px': dimensionPreview}" 
+               {'bbn-top-sspace': !showInfo || (!!items[currentIndex] && (!items[currentIndex][sourceInfo] || !items[currentIndex][sourceInfo].length))}
+             ]"
+             :style="{'min-height': typeof(dimensionPreview)=== 'Number' ? dimensionPreview + 'px': dimensionPreview}"
              @mouseover="miniaturePreview(true)"
              @mouseleave="miniaturePreview(false)">
           <component v-show="showMiniature"
