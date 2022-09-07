@@ -10,9 +10,11 @@
     <bbn-pane :scrollable="false">
       <div :class="{
                   'bbn-overlay': scrollContent,
-                  'bbn-flex-height': scrollContent,
+                  'bbn-flex-height': scrollContent && !hasVerticalTabs,
+                  'bbn-flex-width': hasVerticalTabs,
                   'bbn-router-nav': nav,
                   'bbn-router-nav-bc': nav && isBreadcrumb,
+                  'bbn-router-nav-verticaltabs': hasVerticalTabs,
                   'bbn-w-100': !scrollContent
                   }">
         <!-- START OF BREADCRUMB -->
@@ -108,15 +110,16 @@
           </div>
         </div>
         <!-- END OF BREADCRUMB -->
-        <!-- START OF TABS -->
-        <bbn-tabs v-else-if="nav && !isBreadcrumb && !isVisual"
+        <!-- START OF LEFT|TOP TABS -->
+        <bbn-tabs v-else-if="nav && !isBreadcrumb && !isVisual && ((orientation !== 'right') && (orientation !== 'bottom'))"
                   ref="tabs"
                   v-model="selectedTab"
                   @close="closeTab"
                   :scrollable="scrollable"
                   :max-title-length="maxTitleLength"
-                  :source="tabsList"/>
-        <!-- END OF TABS -->
+                  :source="tabsList"
+                  :position="orientation === 'auto' ? undefined : orientation"/>
+        <!-- END OF LEFT|TOP TABS -->
         <!-- START OF CONTENT -->
         <div v-if="ready"
             :class="{
@@ -168,6 +171,16 @@
         <bbn-scrollbar :container="$refs.visualListContainer"
                        orientation="vertical"
                        v-if="isVisual && visualShowAll"/>
+        <!-- START OF RIGHT|BOTTOM TABS -->
+        <bbn-tabs v-else-if="nav && !isBreadcrumb && !isVisual && ((orientation === 'right') || (orientation === 'bottom'))"
+                  ref="tabs"
+                  v-model="selectedTab"
+                  @close="closeTab"
+                  :scrollable="scrollable"
+                  :max-title-length="maxTitleLength"
+                  :source="tabsList"
+                  :position="orientation"/>
+        <!-- END OF RIGHT|BOTTOM TABS -->
       </div>
     </bbn-pane>
     <!-- START FOR SPLITTABLE MODE -->

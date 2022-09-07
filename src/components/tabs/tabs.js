@@ -46,6 +46,14 @@
       maxTitleLength: {
         type: Number,
         default: 35
+      },
+      position: {
+        type: String,
+        default: 'top'
+      },
+      vertical: {
+        type: Boolean,
+        default: false
       }
     },
     data(){
@@ -70,6 +78,9 @@
           container: true,
           hidden: true
         } : {};
+      },
+      isVertical(){
+        return (this.position === 'left') || (this.position === 'right');
       }
     },
     methods: {

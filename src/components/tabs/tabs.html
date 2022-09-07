@@ -1,7 +1,7 @@
-<div :class="[componentClass, {'bbn-tabs-scrollable': scrollable}]">
+<div :class="[componentClass, {'bbn-tabs-scrollable': scrollable, 'bbn-tabs-vertical': isVertical}]">
   <div class="bbn-tabs-container">
     <div class="bbn-tabs-ul-container">
-      <div class="bbn-flex-width">
+      <div :class="{'bbn-flex-width': !isVertical, 'bbn-flex-height': isVertical}">
         <div v-if="scrollable"
             class="bbn-tabs-button bbn-tabs-button-prev bbn-p">
           <div class="bbn-100 bbn-middle"
@@ -14,7 +14,8 @@
         <div class="bbn-flex-fill">
           <component :is="scrollable ? 'bbn-scroll' : 'div'"
                      ref="horizontal-scroll"
-                     v-bind="scrollCfg">
+                     v-bind="scrollCfg"
+                     style="height: 100%">
             <ul ref="tabgroup"
                 class="bbn-alt bbn-tabs-tabs bbn-bordered-bottom bbn-flex-fill">
               <li v-for="(tab, tabIndex) in source"
@@ -26,7 +27,12 @@
                           color: tab.fcolor || null
                           }"
                   :data-index="tabIndex"
-                  :class="['bbn-transition-bcolor', 'bbn-iblock', 'bbn-bordered', 'bbn-radius-top', 'bbn-state-default', 'bbn-unselectable', {
+                  :class="['bbn-transition-bcolor', 'bbn-bordered', 'bbn-state-default', 'bbn-unselectable', position, {
+                          'bbn-radius-top': position === 'top',
+                          'bbn-radius-bottom': position === 'bottom',
+                          'bbn-radius-left': position === 'left',
+                          'bbn-radius-right': position === 'right',
+                          'bbn-iblock': !isVertical,
                           'bbn-tabs-static': !!tab.static,
                           'bbn-background-effect-internal': tabIndex === value,
                           'bbn-tabs-active': tabIndex === value,

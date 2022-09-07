@@ -894,6 +894,12 @@
       tabsList() {
         return this.splittable ? bbn.fn.filter(this.views, a => !a.pane) : this.views;
       },
+      hasVerticalTabs(){
+        return !this.isVisual
+          && !this.isBreadcrumb
+          && ((this.orientation === 'left')
+            || (this.orientation === 'right'));
+      }
     },
 
     methods: {

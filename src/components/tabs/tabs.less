@@ -2,11 +2,13 @@ div.bbn-tabs {
   border: 0 !important;
   overflow: hidden;
   position: relative;
-  width: 100%;
   box-sizing: border-box;
   margin: 0;
   padding: 0;
   zoom: 1;
+  &:not(.bbn-tabs-vertical) {
+    width: 100%;
+  }
   div.bbn-tabs-ul-container{
     width: 100%;
     height: auto;
@@ -45,7 +47,12 @@ div.bbn-tabs {
         margin: 0 !important;
         vertical-align: middle;
         position: relative;
-        border-bottom: 0;
+        &.top {
+          border-bottom: 0;
+        }
+        &.bottom {
+          border-top: 0;
+        }
         i:focus, span:focus{
           animation: bbn-anim-blinker 1s linear infinite;
         }
@@ -219,6 +226,26 @@ div.bbn-tabs {
     > span.bbn-button{
       top: 0.4rem;
       position: absolute;
+    }
+  }
+  &.bbn-tabs-vertical {
+    height: 100%;
+    div.bbn-tabs-ul-container{
+      width: auto;
+      height: 100%;
+    }
+    > div.bbn-tabs-container{
+      height: 100%;
+      ul.bbn-tabs-tabs:first-child{
+        > li {
+          &.right {
+            border-left: 0;
+          }
+          &.left {
+            border-right: 0;
+          }
+        }
+      }
     }
   }
   .bbn-tabs{
