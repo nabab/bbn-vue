@@ -323,7 +323,7 @@
        * @return {Number}
        */
       cols() {
-        return parseInt(this.width / (this.currentItemWidth + this.columnGap)) || 1
+        return parseInt(this.lastKnownWidth / (this.currentItemWidth + this.columnGap)) || 1
       },
       /**
        * The data of the current view
@@ -423,16 +423,6 @@
           }
         }
       },
-      /**
-       * Handles the resize of the component.
-       * @method onResize
-       */
-      onResize() {
-        let gallery = this.getRef('gallery');
-        if (gallery) {
-          this.width = gallery.offsetWidth;
-        }
-      },
       resetSearch() {
         this.currentSearch = '';
       }
@@ -443,7 +433,6 @@
      */
     mounted() {
       this.$nextTick(() => {
-        this.onResize();
         this.ready = true;
       });
     },

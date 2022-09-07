@@ -1,4 +1,4 @@
-<div :class="[componentClass, {'bbn-flex-height': scrollable}]">
+<div :class="[componentClass, {'bbn-flex-height': scrollable, 'bbn-gallery-sorting': isSorting}]">
   <div v-if="toolbar"
        class="bbn-l bbn-widget bbn-gallery-toolbar bbn-spadded bbn-vmiddle">
     <component v-if="isObject(toolbar) || isVue(toolbar)"
