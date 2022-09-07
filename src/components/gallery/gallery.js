@@ -710,12 +710,17 @@
                   let prop = this.col.gallery.pathName || 'thumb' || 'content';
                   if (this.source.data[prop]) {
                     src = this.source.data[prop];
+                    // This is really specific to bbn, it should be set as propable rule
+                    if (this.source.data.thumbs && this.source.data.thumbs.length) {
+                      let thumb = this.getThumbSrc(this.source.data, this.col.colStyle.width);
+                      if (thumb) {
+                        src = thumb;
+                      }
+                    }
                   }
                 }
-                if (src && bbn.fn.isString(src)) {
-                  return bbn.fn.escapeUrl(src, 'w=' + this.col.gallery.currentItemWidth + '&thumb=1');
-                }
-                return null;
+
+                return src;
               },
               floaterSource() {
                 return {
@@ -740,6 +745,61 @@
               }
             },
             methods: {
+              /**
+               * Returns the right thumb's path using data with path, thumbs' rules for the given dimensions
+               * @methods getThumbSrc
+               * @memberof gallery-item
+               */
+               getThumbSrc(data, width, height, crop) {
+                if (bbn.fn.isObject(data) && (width || height)) {
+                  let thumbs = data.thumbs;
+                  let currentSize = 0;
+                  for (let i = 0; i < thumbs.length; i++) {
+                    let ok = true;
+                    if (ok && width) {
+                      if (!thumbs[i][0] || (thumbs[i][0] < width) || (currentSize[0] > thumbs[i][0])) {
+                        ok = false;
+                      }
+                    }
+
+                    if (ok && height) {
+                      if (!thumbs[i][1] || (thumbs[i][1] < height) || (currentSize[1] > thumbs[i][1])) {
+                        ok = false;
+                      }
+                    }
+
+                    if (ok && crop && !thumbs[i][2]) {
+                      ok = false;
+                    }
+
+                    if (ok) {
+                      currentSize = thumbs[i];
+                    }
+                  }
+
+                  if (currentSize) {
+                    let dot = src.lastIndexOf('.');
+                    let ext = bbn.fn.substr(src, dot + 1);
+                    let name = bbn.fn.substr(src, 0, dot);
+                    src = name + '.bbn';
+                    if (currentSize[0]) {
+                      src += '-w-' + currentSize[0];
+                    }
+
+                    if (currentSize[1]) {
+                      src += '-h-' + currentSize[1];
+                    }
+
+                    if (currentSize[2]) {
+                      src += '-c';
+                    }
+
+                    return src + '.' + ext;
+                  }
+                }
+
+                return null;
+              },
               /**
                * Alias of bbn.fn.isFunction method
                * @methods isFunction

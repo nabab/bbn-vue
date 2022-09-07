@@ -74,58 +74,53 @@
           <img :src="$parent.path + source.src"
                 style="heigth:500px;width:100%"
                :style="style"
-               :alt="source.alt ? source.alt : ''"
-          >
+               :alt="source.alt ? source.alt : ''">
         </a>
         <img v-else
              :src="$parent.path + source.src"
              :style="style"
-             :alt="source.alt ? source.alt : ''"
-        >
+             :alt="source.alt ? source.alt : ''">
         <p class="image-caption bbn-l bbn-s bbn-vsmargin"
            v-if="source.caption"
-           v-html="source.caption"
-        ></p>
+           v-html="source.caption"/>
         <!--error when using decodeuricomponent on details of home image-->
         <a class="image-details-title bbn-l bbn-vsmargin bbn-w-100"
            v-if="source.details_title"
            v-html="(source.details_title)"
            :href="source.href"
-           target="_blank"
-        ></a>
+           target="_blank"/>
         <p class="image-details bbn-l bbn-vsmargin"
            v-if="source.details"
-           v-html="(source.details)"
-        ></p>
+           v-html="(source.details)"/>
       </div>`,
       edit:     `
       <div class="component-container bbn-block-image" :class="alignClass">
         <div class="bbn-padded">
           <div class="bbn-grid-fields bbn-vspadded">
-            <label v-text="_('Upload your image')"></label>
+            <label v-text="_('Upload your image')"/>
             <bbn-upload :save-url="'upload/save/' + ref"
                         remove-url="test/remove"
                         :json="true"
                         :paste="true"
                         :multiple="false"
                         v-model="image"
-                        @success="imageSuccess"
-            ></bbn-upload>
+                        @success="imageSuccess"/>
 
-            <label v-text="_('Image size')"></label>
+            <label v-text="_('Image size')"/>
             <bbn-cursor v-model="source.style['width']"
                         unit="%"
                         :min="0"
                         :max="100"
-                        :step="20"
-            ></bbn-cursor>
+                        :step="20"/>
 
-            <label v-text="_('Image alignment')"></label>
-            <bbn-block-align-buttons></bbn-block-align-buttons>
+            <label v-text="_('Image alignment')"/>
+            <bbn-block-align-buttons/>
           </div>
         </div>
         <img :src="$parent.path + source.src" :style="style">
-        <p class="image-caption bbn-l bbn-s bbn-vsmargin" v-if="source.caption" v-html="source.caption"></p>
+        <p class="image-caption bbn-l bbn-s bbn-vsmargin"
+           v-if="source.caption"
+           v-html="source.caption"/>
       </div>
                 `
     },
@@ -133,14 +128,15 @@
       view: `
       <div :class="['component-container', 'bbn-block-carousel', 'bbn-w-100',  alignClass]" :style="style" v-if="show">
         <div v-for="(group, idx) in carouselSource"
-             v-if="idx === currentCarouselIdx"
-        >
+             v-if="idx === currentCarouselIdx">
           <bbn-cms-carousel-control :source="idx"
                                     :key="idx"
-                                    v-if="carouselSource.length > 3"
-          ></bbn-cms-carousel-control>
+                                    v-if="carouselSource.length > 3"/>
           <div :class="['bbn-w-100',carouselCols]">
-            <bbn-cms-block-gallery-item v-for="(image, imgIdx) in group" :source="image" :key="imgIdx" :index="imgIdx"></bbn-cms-block-gallery-item>
+            <bbn-cms-block-gallery-item v-for="(image, imgIdx) in group"
+                                        :source="image"
+                                        :key="imgIdx"
+                                        :index="imgIdx"/>
           </div>
         </div>
       </div>
@@ -150,21 +146,28 @@
     gallery: {
       view: `
       <div :class="['component-container', 'bbn-block-gallery', alignClass, galleryCols]" :style="style" v-if="show">
-        <bbn-cms-block-gallery-item v-for="(image, idx) in source.source" :source="image" :key="idx" :index="idx"></bbn-cms-block-gallery-item>
+        <bbn-cms-block-gallery-item v-for="(image, idx) in source.source"
+                                    :source="image"
+                                    :key="idx"
+                                    :index="idx"/>
       </div>
       `,
       edit: `
       <div>
-        <div :class="['component-container', 'bbn-block-gallery', alignClass, galleryCols]" :style="style" v-if="show">
+        <div :class="['component-container', 'bbn-block-gallery', alignClass, galleryCols]"
+             :style="style"
+             v-if="show">
           <!-- GIVE HREF TO VIEW FULL IMAGE -->
-          <bbn-cms-block-gallery-item v-for="(image, idx) in source.content" :source="image" :key="idx" :index="idx"></bbn-cms-block-gallery-item>
+          <bbn-cms-block-gallery-item v-for="(image, idx) in source.content"
+                                      :source="image"
+                                      :key="idx"
+                                      :index="idx"/>
         </div>
         <div class="bbn-grid-fields bbn-padded">
-          <label>Columns number</label>
+          <label v-text="_('Columns number')"/>
           <div>
             <bbn-dropdown v-model="source.columns"
-                          :source="tinyNumbers"
-            ></bbn-dropdown>
+                          :source="tinyNumbers"/>
           </div>
           <label v-text="_('Upload your images')"></label>
           <bbn-upload :save-url="'upload/save/' + ref"
@@ -173,9 +176,7 @@
                       :paste="true"
                       :multiple="true"
                       v-model="source.content"
-                      @success="imageSuccess"
-          ></bbn-upload>
-
+                      @success="imageSuccess"/>
         </div>
       </div>
       `
@@ -203,45 +204,39 @@
       edit: `
       <div class="component-container" id="video-container">
         <div class="bbn-grid-fields bbn-padded">
-          <label v-text="_('Video source')"></label>
-          <bbn-input v-model="source.content"></bbn-input>
-          <label>Muted</label>
+          <label v-text="_('Video source')"/>
+          <bbn-input v-model="source.content"/>
+          <label v-text="_('Muted')"/>
           <div>
             <bbn-button :notext="true"
                         :title="_('Mute the video')"
                         @click="muted = !muted"
-                        :icon="muted ? 'nf nf-oct-mute' : 'nf nf-oct-unmute'"
-            >
-            </bbn-button>
+                        :icon="muted ? 'nf nf-oct-mute' : 'nf nf-oct-unmute'"/>
           </div>
-          <label>Autoplay</label>
+          <label v-text="_('Autoplay')"/>
           <div>
             <bbn-button :notext="true"
                         :title="_('Autoplay')"
                         @click="autoplay = !autoplay"
-                        :icon="autoplay ? 'nf nf-fa-pause' : 'nf nf-fa-play'"
-            >
-            </bbn-button>
+                        :icon="autoplay ? 'nf nf-fa-pause' : 'nf nf-fa-play'"/>
           </div>
-          <label>Video alignment</label>
-          <bbn-block-align-buttons></bbn-block-align-buttons>
-          <label>Video width</label>
+          <label v-text="_('Video alignment')"/>
+          <bbn-block-align-buttons/>
+          <label v-text="_('Video width')"/>
           <div>
             <bbn-cursor v-model="source.style['width']"
                         :min="100"
                         :max="1000"
                         :step="10"
-                        class="bbn-w-70"
-            ></bbn-cursor>
+                        class="bbn-w-70"/>
           </div>
-          <label>Video height</label>
+          <label v-text="_('Video height')"/>
           <div>
             <bbn-cursor v-model="source.style['height']"
                         :min="100"
                         :max="1000"
                         :step="10"
-                        class="bbn-w-70"
-            ></bbn-cursor>
+                        class="bbn-w-70"/>
           </div>
         </div>
         <div :class="alignClass">
@@ -251,8 +246,7 @@
                     :autoplay="autoplay"
                     :muted="muted"
                     :youtube="youtube"
-                    :source="source.content"
-          ></bbn-video>
+                    :source="source.content"/>
         </div>
       </div>
       `
@@ -263,43 +257,39 @@
               <hr :style="style">
               <div class="block-line-edit-command bbn-padded">
                 <div class="bbn-grid-fields bbn-vspadded">
-                  <label>Line width</label>
+                  <label v-text="_('Line width')"/>
                   <div>
                     <bbn-cursor v-model="source.style['width']"
                                 :min="0"
                                 :max="100"
-                                unit="%"
-                    ></bbn-cursor>
+                                unit="%"/>
                   </div>
-                  <label>Line height</label>
+                  <label v-text="_('Line height')"/>
                   <div>
                     <bbn-cursor v-model="source.style['border-width']"
                                 :min="1"
                                 :max="10"
-                                unit="px"
-                    ></bbn-cursor>
+                                unit="px"/>
                   </div>
-                  <label>Line style</label>
+                  <label v-text="_('Line style')"/>
                   <div>
                     <bbn-dropdown v-model="source.style['border-style']"
-                                  :source="borderStyle"
-                    ></bbn-dropdown>
+                                  :source="borderStyle"/>
                   </div>
 
-                  <label>Line color</label>
+                  <label v-text="_('Line color')"/>
                   <div>
-                    <bbn-colorpicker v-model="source.style['border-color']"
-                    ></bbn-colorpicker>
+                    <bbn-colorpicker v-model="source.style['border-color']"/>
                   </div>
-                  <label>Line alignment</label>
-                  <bbn-block-align-buttons></bbn-block-align-buttons>
+                  <label v-text="_('Line alignment')"/>
+                  <bbn-block-align-buttons/>
                 </div>
               </div>
              </div>`
     },
     space: {
       view: `<div class="component-container" :style="style">
-              <div class="block-space-view"></div>
+               <div class="block-space-view"/>
             </div>`,
       edit: `
           <div class="component-container" :style="style">
@@ -307,8 +297,7 @@
               <bbn-cursor v-model="source.style.height"
                           unit="px"
                           :min="0"
-                          :step="50"
-              ></bbn-cursor>
+                          :step="50"/>
             </div>
           </div>`
     },

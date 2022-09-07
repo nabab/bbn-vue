@@ -884,13 +884,13 @@
        * @param {String} newVal 
        * @param {String} oldVal 
        */
-      currentURL(newVal, oldVal){
+      currentURL(newVal, oldVal) {
         // Auto cancelling if it does not correspond to the url
         if ( !newVal || (newVal.indexOf(this.url) !== 0) ){
           this.currentURL = this.url;
         }
         // Routing if the router has different info
-        else if (this.currentView && (this.currentView.current !== newVal)) {
+        else if (this.ready && this.currentView && (this.currentView.current !== newVal)) {
           this.router.route(newVal)
         }
       },

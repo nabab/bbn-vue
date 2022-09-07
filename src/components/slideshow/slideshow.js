@@ -904,9 +904,58 @@
            * @return {String}
            */
           getImgSrc(content){
-            return content.match(/data\:image\/[a-zA-Z]*\;base64/)
-              ? content
-              : `${content}${content.indexOf('?') > -1 ? '&' : '?'}w=${this.dimension.match(/\d+/)}&thumb=1`;
+            if (bbn.fn.isString(content) && content.match(/data\:image\/[a-zA-Z]*\;base64/)) {
+              return content;
+            }
+            /*
+            let src = '';
+            if (bbn.fn.isString(this.source.data)) {
+              src = this.source.data;
+            }
+            else {
+              let prop = this.col.gallery.pathName || 'thumb' || 'content';
+              if (this.source.data[prop]) {
+                src = this.source.data[prop];
+                if (this.source.data.thumbs && this.source.data.thumbs.length) {
+                  let thumbs = this.source.data.thumbs;
+                  let w = parseFloat(this.col.colStyle.width);
+                  let currentSize = null;
+                  for (let i = 0; i < thumbs.length; i++) {
+                    if (thumbs[i][0] &&
+                      (thumbs[i][0] > w) &&
+                      (!currentSize || (currentSize[0] > thumbs[i][0]))
+                    ) {
+                      currentSize = thumbs[i];
+                    }
+                  }
+                  if (currentSize) {
+                    let dot = src.lastIndexOf('.');
+                    let ext = bbn.fn.substr(src, dot + 1);
+                    let name = bbn.fn.substr(src, 0, dot);
+                    src = name + '.bbn';
+                    if (currentSize[0]) {
+                      src += '-w-' + currentSize[0];
+                    }
+
+                    if (currentSize[1]) {
+                      src += '-h-' + currentSize[1];
+                    }
+
+                    if (currentSize[2]) {
+                      src += '-c';
+                    }
+
+                    src += '.' + ext;
+                  }
+                }
+              }
+            }
+            */
+
+            return src;
+
+            // return ${content}${content.indexOf('?') > -1 ? '&' : '?'}w=${this.dimension.match(/\d+/)}&thumb=1`;
+
           },
           init(){
             const elem = this.$el.querySelector('div.bbn-slideshow-zoom div.bbn-slideshow-content');
