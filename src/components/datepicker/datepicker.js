@@ -248,8 +248,8 @@
        * @fires getValueFormat
        * @fires setValue
        */
-      setDate(val){
-        this.setValue(dayjs(val, this.getValueFormat(val)).isValid() ? dayjs(val, this.getValueFormat(val)).format(this.getValueFormat(val)) : '');
+      setDate(val, calendar, format){
+        this.setValue(dayjs(val, format).isValid() ? dayjs(val, format).format(this.getValueFormat(val)) : '');
       },
       /**
        * Sets the value.
