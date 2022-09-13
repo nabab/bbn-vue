@@ -125,7 +125,20 @@
         type: [Boolean, String],
         default: bbn._("Password forgotten?")
       },
-
+      /**
+       * @prop {String} ['Login name'] loginFieldPlaceholder
+       */
+      loginFieldPlaceholder: {
+        type: String,
+        default: bbn._('Login name')
+      },
+      /**
+       * @prop {String} ['Password'] passwordFieldPlaceholder
+       */
+       passwordFieldPlaceholder: {
+        type: String,
+        default: bbn._('Password')
+      }
     },
     data(){
       return{
