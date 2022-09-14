@@ -43,8 +43,8 @@
         <slot></slot>
       </fieldset>
       <!-- SMALL BUTTONS OUTSIDE WINDOW -->
-      <div v-if="!hasFooter && !window && realButtons.length && (currentMode === 'small')"
-          class="bbn-middle bbn-top-lspace">
+      <div v-if="!hasFooter && !window && realButtons.length && ['small', 'normal'].includes(currentMode)"
+          class="bbn-middle bbn-vpadding">
         <bbn-button v-for="(button, i) in realButtons"
                     :key="i"
                     class="bbn-hsmargin"
@@ -60,7 +60,7 @@
                     v-bind="button"/>
       </div>
       <!-- SMALL BUTTONS IN WINDOW -->
-      <div v-else-if="!hasFooter && realButtons.length && (currentMode === 'small')"
+      <div v-else-if="!hasFooter && realButtons.length && ['small', 'normal'].includes(currentMode)"
           class="bbn-w-100 bbn-vpadding bbn-c">
         <bbn-button v-for="(button, i) in realButtons"
                     :class="{'bbn-primary': button.preset === 'submit'}"

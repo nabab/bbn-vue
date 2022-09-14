@@ -874,6 +874,11 @@
         );
       },
 
+      /**
+       * The number of tabs which are not in a pane
+       * 
+       * @returns {Number}
+       */
       numOutOfPane() {
         return bbn.fn.filter(this.views, {pane: false}).length;
       },

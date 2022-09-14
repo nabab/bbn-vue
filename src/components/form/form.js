@@ -321,7 +321,7 @@
         isPosted: false,
         isLoading: false,
         currentSchema: currentSchema,
-        currentMode: this.mode || (this.closest('bbn-floater') ? 'big' : 'normal'),
+        currentMode: this.mode ? this.mode : (this.closest('bbn-floater') ? 'big' : 'normal'),
         _isSetting: false,
         window: null,
         isInit: false,
