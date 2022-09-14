@@ -138,6 +138,12 @@
        passwordFieldPlaceholder: {
         type: String,
         default: bbn._('Password')
+      },
+      /**
+       * @prop {String} note
+       */
+      note: {
+        type: String
       }
     },
     data(){
@@ -197,10 +203,20 @@
     methods: {
       /**
        * @method onSubmit
+       * @param {Event} ev
+       * @param {Vue} form
+       * @emit submit
+       */
+       onSubmit(ev, form){
+        this.$emit('submit', ev, form);
+       },
+      /**
+       * @method onAfterSubmit
        * @param d
        * @fires alert
+       * @emit aftersubmit
        */
-      onSubmit(d){
+      onAfterSubmit(d){
         let ev = new Event('aftersubmit', {cancelable: true});
         this.$emit('aftersubmit', ev, d, this.currentMode, this);
         if (ev.defaultPrevented) {

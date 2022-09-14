@@ -45,7 +45,8 @@
                 :scrollable="false"
                 :fixed-footer="false"
                 ref="form"
-                @success="onSubmit"
+                @submit="onSubmit"
+                @success="onAfterSubmit"
                 key="form"
                 :validation="validation"
                 v-else
@@ -129,7 +130,10 @@
                       v-model="currentFormData.pass2"
                       @clickRightButton="passwordVisible = !passwordVisible"/>
           </div>
-          <div class="bbn-c bbn-vmargin bbn-flex-width">
+          <div v-if="note"
+               class="bbn-s bbn-i"
+               v-text="note"/>
+          <div class="bbn-c bbn-vmargin bbn-flex-width bbn-w-100">
             <bbn-button type="button"
                         @click="$refs.form.submit()"
                         :text="_('Send')"/>

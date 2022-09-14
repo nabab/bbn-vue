@@ -258,7 +258,6 @@
                   return true;
                 }
               }
-              
               if ( !validity.valid || specificCase ){
                 // If field is required and empty
                 if ( validity.valueMissing || specificCase ){
@@ -308,10 +307,40 @@
                 }
                 if (setError) {
                   this.$emit('error', customMessage || mess);
-                  let border = $elem.style.border;
-                  $elem.style.border = '1px solid red';
+                  this.validationID = bbn.fn.randomString();
+                  if (!this.$el.classList.contains('bbn-state-invalid')) {
+                    this.$el.classList.add('bbn-state-invalid');
+                  let cont = document.createElement('div');
+                  cont.id = this.validationID;
+                  cont.innerHTML = `
+                    <bbn-tooltip source="${customMessage || mess}"
+                                  ref="tooltip"
+                                  @hook:mounted="showContent"
+                                  :icon="false"
+                                  position="bottomLeft"
+                                  @close="removeEle"
+                                  :element="element"/>
+                  `;
+                    this.$el.appendChild(cont);
+                    new Vue({
+                      el: `#${this.validationID}`,
+                      data(){
+                        return {
+                          element: $elem
+                        }
+                      },
+                      methods: {
+                        showContent(){
+                          this.getRef('tooltip').isVisible = true;
+                        },
+                        removeEle(){
+                          this.$el.remove();
+                        }
+                      }
+                    })
+                  }
                   this.$once('blur', () => {
-                    $elem.style.border  = border;
+                    this.$emit('removevalidation');
                     $elem.focus();
                   });
                 }
@@ -352,6 +381,17 @@
             ele.focus();
           }
         }, 100)
+        this.$on('removevalidation', () => {
+          if (!!this.validationID
+            && this.$el.classList.contains('bbn-state-invalid')
+          ) {
+            this.$el.classList.remove('bbn-state-invalid');
+            if (document.getElementById(this.validationID)) {
+              document.getElementById(this.validationID).remove();
+            }
+            this.validationID = false;
+          }
+        })
       },
       watch: {
         /**

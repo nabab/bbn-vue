@@ -653,21 +653,19 @@
       isValid(force, callValidation = true) {
         let ok = true;
         let elems = this.findAll('.bbn-input-component');
-        if ( Array.isArray(elems) ){
+        if (Array.isArray(elems)) {
           bbn.fn.each(elems, a => {
-            if (bbn.fn.isFunction(a.isValid) && !a.isValid(a, false) ){
+            if ((bbn.fn.isFunction(a.isValid) && !a.isValid(a, callValidation))
+              || (bbn.fn.isFunction(a.validation) && !a.validation())
+            ) {
               ok = false;
             }
-            else if (bbn.fn.isFunction(a.validation) && !a.validation() ){
-              ok = false;
-            }
-
             if ( !ok ){
               return false;
             }
           });
         }
-        if ( ok && this.validation && callValidation ){
+        if (ok && this.validation && callValidation) {
           ok = this.validation(this.source, this.originalData, force)
         }
         return !!ok;
@@ -766,6 +764,12 @@
           }
         });
         this.$forceUpdate();
+        this.$nextTick(() => {
+          let elems = this.findAll('.bbn-input-component');
+          if (bbn.fn.isArray(elems)) {
+            bbn.fn.each(elems, a => a.$emit('removevalidation'));
+          }
+        })
         return true;
       },
       /**

@@ -62,6 +62,13 @@
         type: Number,
         default: 10
       },
+      /**
+       * The HTML element to which the floater must bind
+       * @prop {HTMLElement} element
+       */
+      element: {
+        type: HTMLElement
+      }
     },
     data(){
       return {
@@ -79,6 +86,15 @@
        */
       getContent() {
         return bbn.fn.isFunction(this.source) ? this.source() : this.source;
+      },
+      /**
+       * The method called after the floater close
+       * @methods onClose
+       * @emit close
+       */
+      onClose(){
+        this.isVisible = false;
+        this.$emit('close', this);
       }
     }
   });
