@@ -792,11 +792,14 @@ Vue.component('bbn-tree', {
      * @param {Object} node
      * @return {Object}
      */
-    findNode(props){
+    findNode(props, expand){
       let ret = false;
       if (this.isRoot || (this.node.numChildren && bbn.fn.isObject(props))) {
-        if (!this.isRoot && !this.node.isExpanded) {
+        if (expand && !this.isRoot && !this.node.isExpanded) {
           this.node.isExpanded = true;
+        }
+        else if (!this.node.isExpanded) {
+          return false;
         }
 
         let cp = this.isRoot && this.scrollable ? this.getRef('scroll') : this;
@@ -810,6 +813,18 @@ Vue.component('bbn-tree', {
           );
           if (idx > -1) {
             ret = cp.$children[idx];
+          }
+          else {
+            bbn.fn.each(cp.$children, node => {
+              let tree = node.getRef('tree');
+              if (tree) {
+                ret = tree.findNode(props, expand);
+                if (ret) {
+                  return false;
+                }
+              }
+            })
+
           }
         }
       }
@@ -1175,6 +1190,11 @@ Vue.component('bbn-tree', {
               if (bbn.fn.isFunction(this.transferData)) {
                 nodeSource = this.transferData(nodeSource);
               }
+              let children = target.source.data[this.tree.children];
+              if (!children) {
+                target.source.data[this.tree.children] = [];
+                children = target.source.data[this.tree.children]
+              }
               if (!target.isExpanded) {
                 targetTree.$once('dataloaded', () => {
                   // adding in the node source the length of the target tree if there is no length then we set it at 1
@@ -1182,7 +1202,7 @@ Vue.component('bbn-tree', {
                   // we're adding the index also
                   nodeSource.index = nodeSource.num - 1;
                   // and then we push node source in the targetTree
-                  target.source.data[this.tree.children].push(nodeSource);
+                  children.push(nodeSource);
                 });
               }
               else {
@@ -1191,7 +1211,7 @@ Vue.component('bbn-tree', {
                 // we're adding the index also
                 nodeSource.index = nodeSource.num - 1;
                 // and then we push node source in the targetTree
-                target.source.data[this.tree.children].push(nodeSource);
+                children.push(nodeSource);
               }
             }
             else {
@@ -2422,7 +2442,7 @@ Vue.component('bbn-tree', {
           }
         },
         getCls(source, tree) {
-          return source.cls !== undefined ? source.cls : (bbn.fn.isFunction(tree.cls) ? tree.cls() : tree.cls || '');
+          return source.cls !== undefined ? source.cls : (bbn.fn.isFunction(tree.cls) ? tree.cls(source, this.tree, this.parent) : tree.cls || '');
         }
       },
       /**

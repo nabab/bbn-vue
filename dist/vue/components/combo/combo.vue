@@ -5,61 +5,112 @@
        'bbn-textbox',
        {'bbn-disabled': !!isDisabled}
      ]"
-     @mouseleave="isOverDropdown = false"
      @mouseenter="isOverDropdown = true"
+     @mouseleave="isOverDropdown = false"
      @focusin="isActive = true"
-     @focusout="isActive = false"
-     :title="filterString || placeholder || null"
->
-  <div class="bbn-flex-width">
-    <div class="bbn-flex-fill">
-      <input v-if="!isDisabled && !readonly"
-              tabindex="0"
-              class="bbn-no-border"
-              v-model="filterString"
-              ref="input"
-              @focus="selectText"
-              autocomplete="off"
-              autocorrect="off"
-              :placeholder="placeholder"
-              autocapitalize="off"
-              spellcheck="false"
+     @focusout="onFocusOut">
+  <div :class="['bbn-rel', 'bbn-combo-container', 'bbn-flex-width', 'bbn-vmiddle', currentItemCls, {
+    'bbn-combo-container-native': native
+  }]">
+    <div v-if="sourceIcon && hasValue && !!currentItemIcon"
+         class="bbn-left-xspadded">
+      <i :class="currentItemIcon"
+         @click.stop="click" />
+    </div>
+    <div v-if="sourceImg && hasValue && !!currentItemImg"
+         class="bbn-left-xspadded">
+      <img src="currentItemImg"
+           @click.stop="click">
+    </div>
+    <bbn-input v-if="!native"
+               ref="input"
+               class="bbn-no-border bbn-flex-fill"
+               v-model="filterString"
+               @focus="selectText"
+               @keydown="keydown"
+               @keyup="keyup"
+               @click.stop="click"
+               @clickRightButton="click"
+               :disabled="isDisabled"
+               autocorrect="off"
+               autocapitalize="off"
+               spellcheck="false"
+               :required="required"
+               :nullable="isNullable"
+               :force-nullable="isNullable"
+               :placeholder="placeholder"
+               :tabindex="isDisabled ? -1 : 0"
+               :button-right="currentIcon"
+               :autosize="autosize"
+               :readonly="readonly"/>
+    <template v-else>
+      <select v-model="currentSelectValue"
+              class="bbn-textbox bbn-no-border bbn-flex-fill bbn-p"
               :required="required"
-              :readonly="readonly"
-              @keydown.stop="keydown"
-              @change="ready = true"
-              :name="name"
-      >
-    </div>
-    <div class="bbn-list-component-button">
-      <div v-if="isAjax && isLoading"
-           class="bbn-middle">
-        <bbn-loadicon size="1.2rem"
-                      tabindex="-1"
-        ></bbn-loadicon>
-      </div>
-      <bbn-button v-else
-                  :icon="isOpened && !isDisabled && !readonly && filteredData.length ? iconUp : iconDown"
-                  class="bbn-button-right bbn-no-vborder bbn-m"
-                  @click.prevent.stop="click"
+              ref="input"
+              @blur="isOpened = false"
+              @change="isOpened = false"
+              @focus="isOpened = true"
+              @click="isOpened = true"
+              :disabled="!!isDisabled || !!readonly">
+        <option value=""
+                v-html="placeholder"
+                :disabled="!isNullable"
+                :selected="!value"/>
+        <option v-for="d in filteredData"
+                :value="d.data[sourceValue]"
+                v-html="d.data[sourceText]"/>
+      </select>
+      <bbn-button :icon="currentIcon"
                   tabindex="-1"
-                  :disabled="isDisabled"
-      ></bbn-button>
-    </div>
+                  :class="['bbn-combo-select-button', 'bbn-button-right', 'bbn-no-vborder', 'bbn-m', 'bbn-top-right', {
+                    'bbn-disabled': !filteredData.length || !!isDisabled || !!readonly
+                  }]"/>
+    </template>
   </div>
-  <bbn-floater v-if="!isDisabled && !readonly && isOpened"
-               :element="$el"
-               :max-height="maxHeight"
-               :min-width="currentWidth"
-               ref="list"
-               :uid="sourceValue"
-               :item-component="realComponent"
-               @select="select"
-               @close="isOpened = false"
-               :source-text="sourceText"
-               :source-value="sourceValue"
-               :source="filteredData"
-  ></bbn-floater>
+  <input type="hidden"
+         v-model="value"
+         ref="element"
+         :name="name">
+  <bbn-portal v-if="portalSelector"
+              :selector="portalSelector">
+    <bbn-floater v-if="!popup
+                  && filteredData.length
+                  && !isDisabled
+                  && !readonly
+                  && ready
+                  && !native
+                  && (isOpened || preload)"
+                v-show="isOpened"
+                :element="asMobile ? undefined : $el"
+                :max-height="asMobile ? undefined : maxHeight"
+                :min-width="$el.clientWidth"
+                :width="asMobile ? '100%' : undefined"
+                :height="asMobile ? '100%' : undefined"
+                ref="list"
+                :uid="sourceValue"
+                :item-component="realComponent"
+                @ready="attachList"
+                @select="select"
+                :children="null"
+                :suggest="true"
+                @mouseenter="isOverDropdown = true"
+                @mouseleave="isOverDropdown = false"
+                :selected="value ? [value] : []"
+                @close="isOpened = false"
+                :source="filteredData"
+                :groupable="groupable"
+                :group-component="groupComponent"
+                :group-style="groupStyle"
+                :source-group="sourceGroup"
+                :source-text="sourceText"
+                :source-action="sourceAction"
+                :source-value="sourceValue"
+                :source-url="sourceUrl"
+                :source-icon="sourceIcon"
+                :title="floaterTitle"
+                :buttons="asMobile ? realButtons : []"/>
+  </bbn-portal>
 </div>
 
 </template>
@@ -175,8 +226,7 @@
        * @fires getRef
        */
       selectText(){
-        let input = this.getRef('input');
-        input.setSelectionRange(0, input.value.length);
+        this.getRef('input').selectText();
       },
       /**
        * Function to do the reset and if the component is open it closes it.
@@ -256,35 +306,29 @@
         }
         clearTimeout(this.filterTimeout);
         if ( this.writing ){
-          this.isOpened = false;
           this.filterTimeout = setTimeout(() => {
             this.filterTimeout = false;
-            if ( this.isActive ){
+            if (this.isActive) {
               if (v && (v.length >= this.minLength)) {
                 this.currentFilters.conditions.splice(0, this.currentFilters.conditions.length ? 1 : 0, {
                   field: this.sourceText,
                   operator: this.searchOperator,
                   value: v
                 });
-                this.$nextTick(() => {
-                  if (!this.isOpened){
-                    this.isOpened = true;
-                  }
-                  else{
-                    let list = this.getRef('list');
-                    list = list ? list.getRef('scroll') : false;
-                    if ( list ){
-                      list.onResize();
-                    }
-                  }
-                });
               }
               else {
                 this.unfilter();
+                this.enptyData();
               }
             }
             this.emitInput(v);
           }, this.delay);
+        }
+      },
+      filteredTotal() {
+        let fl = this.getRef('list');
+        if (this.isOpened && fl) {
+          fl.fullResize();
         }
       }
     }
@@ -297,27 +341,69 @@
 .bbn-combo {
   display: inline-block;
   box-sizing: border-box;
+  cursor: pointer;
+}
+.bbn-combo.bbn-combo-autosize {
   min-width: 4rem;
-  cursor: pointer;
 }
-.bbn-combo input {
-  cursor: pointer;
-  width: 100%;
-  font-size: inherit;
+.bbn-combo:hover .bbn-combo-select-button:not(.bbn-disabled) {
+  opacity: 1;
+  background: none, linear-gradient(to bottom,var(--effect) 0%,rgba(255,255,255,0) 100%) 50% 50% repeat var(--hover-background);
 }
-.bbn-combo button {
+.bbn-combo .bbn-combo-container {
+  line-height: normal;
   height: 100%;
 }
-.bbn-combo div {
+.bbn-combo .bbn-combo-container.bbn-combo-container-native {
+  min-width: 6rem;
+}
+.bbn-combo .bbn-combo-container .bbn-combo-content {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+.bbn-combo .bbn-combo-container .bbn-input,
+.bbn-combo .bbn-combo-container select {
+  background-color: transparent;
+  max-width: 100%;
+  width: 100%;
+  height: 100%;
+}
+.bbn-combo .bbn-combo-container .bbn-input div.bbn-flex-width,
+.bbn-combo .bbn-combo-container select div.bbn-flex-width {
+  height: 100%;
   box-sizing: border-box;
 }
-.bbn-combo .bbn-list-component-button,
-.bbn-combo .bbn-button-right {
-  min-width: 2rem;
-  line-height: normal;
+.bbn-combo .bbn-combo-container .bbn-input div.bbn-flex-width .bbn-button,
+.bbn-combo .bbn-combo-container select div.bbn-flex-width .bbn-button {
+  font-size: 125%;
+  line-height: 100%;
+  margin: 0;
 }
-.bbn-combo .bbn-button-right {
+.bbn-combo .bbn-combo-container .bbn-input input,
+.bbn-combo .bbn-combo-container select input {
+  cursor: pointer;
+}
+.bbn-combo .bbn-combo-container select {
+  min-width: 4rem;
+  font-size: inherit;
+  font-weight: inherit;
+  border-radius: inherit;
+  color: inherit;
+  border: 0;
+  padding: 0.0833rem 0.25rem;
+  padding-right: 2.45rem;
+  box-sizing: border-box;
+  appearance: none;
+  -webkit-appearance: none;
+  z-index: 1;
+}
+.bbn-combo .bbn-combo-container .bbn-combo-select-button {
+  min-width: 2rem;
   opacity: 0.7;
+  z-index: 0;
+  min-height: 100%;
+  max-height: 100%;
 }
 
 </style>

@@ -1,25 +1,67 @@
 .bbn-combo {
   display: inline-block;
   box-sizing: border-box;
+  cursor: pointer;
+}
+.bbn-combo.bbn-combo-autosize {
   min-width: 4rem;
-  cursor: pointer;
 }
-.bbn-combo input {
-  cursor: pointer;
-  width: 100%;
-  font-size: inherit;
+.bbn-combo:hover .bbn-combo-select-button:not(.bbn-disabled) {
+  opacity: 1;
+  background: none, linear-gradient(to bottom,var(--effect) 0%,rgba(255,255,255,0) 100%) 50% 50% repeat var(--hover-background);
 }
-.bbn-combo button {
+.bbn-combo .bbn-combo-container {
+  line-height: normal;
   height: 100%;
 }
-.bbn-combo div {
+.bbn-combo .bbn-combo-container.bbn-combo-container-native {
+  min-width: 6rem;
+}
+.bbn-combo .bbn-combo-container .bbn-combo-content {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+.bbn-combo .bbn-combo-container .bbn-input,
+.bbn-combo .bbn-combo-container select {
+  background-color: transparent;
+  max-width: 100%;
+  width: 100%;
+  height: 100%;
+}
+.bbn-combo .bbn-combo-container .bbn-input div.bbn-flex-width,
+.bbn-combo .bbn-combo-container select div.bbn-flex-width {
+  height: 100%;
   box-sizing: border-box;
 }
-.bbn-combo .bbn-list-component-button,
-.bbn-combo .bbn-button-right {
-  min-width: 2rem;
-  line-height: normal;
+.bbn-combo .bbn-combo-container .bbn-input div.bbn-flex-width .bbn-button,
+.bbn-combo .bbn-combo-container select div.bbn-flex-width .bbn-button {
+  font-size: 125%;
+  line-height: 100%;
+  margin: 0;
 }
-.bbn-combo .bbn-button-right {
+.bbn-combo .bbn-combo-container .bbn-input input,
+.bbn-combo .bbn-combo-container select input {
+  cursor: pointer;
+}
+.bbn-combo .bbn-combo-container select {
+  min-width: 4rem;
+  font-size: inherit;
+  font-weight: inherit;
+  border-radius: inherit;
+  color: inherit;
+  border: 0;
+  padding: 0.0833rem 0.25rem;
+  padding-right: 2.45rem;
+  box-sizing: border-box;
+  appearance: none;
+  -webkit-appearance: none;
+  z-index: 1;
+}
+.bbn-combo .bbn-combo-container .bbn-combo-select-button {
+  min-width: 2rem;
   opacity: 0.7;
+  z-index: 0;
+  min-height: 100%;
+  max-height: 100%;
 }

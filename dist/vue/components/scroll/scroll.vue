@@ -1,7 +1,6 @@
 <template>
 <div :class="elementClass"
-     :style="elementStyle"
->
+     :style="elementStyle">
   <div :class="containerClass"
        ref="scrollContainer"
        @scroll="onScroll"
@@ -10,8 +9,7 @@
        @touchmove="onTouchmove"
        @focus="isFocused = true"
        @blur="isFocused = false"
-       :tabindex="scrollable ? '0' : '-1'"
-  >
+       :tabindex="scrollable ? '0' : '-1'">
     <div :class="{
           'bbn-scroll-content': true,
           resizing: isMeasuring,
@@ -19,9 +17,8 @@
         }"
          ref="scrollContent"
          @subready.stop="waitReady"
-         :style="contentStyle"
-    >
-      <slot></slot>
+         :style="contentStyle">
+      <slot/>
     </div>
   </div>
   <bbn-scrollbar v-if="scrollReady && hasScrollX"
@@ -32,8 +29,7 @@
                  :scrollAlso="scrollAlso"
                  :initial="currentX"
                  @scroll="scrollHorizontal"
-                 :offset="offsetX">
-  </bbn-scrollbar>
+                 :offset="offsetX"/>
   <bbn-scrollbar v-if="scrollReady && hasScrollY"
                  :hidden="isResizing || !scrollReady || hiddenY"
                  orientation="vertical"
@@ -42,8 +38,7 @@
                  :scrollAlso="scrollAlso"
                  :initial="currentY"
                  @scroll="scrollVertical"
-                 :offset="offsetY">
-  </bbn-scrollbar>
+                 :offset="offsetY"/>
 </div>
 
 </template>
@@ -215,6 +210,22 @@
         type: [Number, Array],
         default: 0
       },
+      /**
+       * @prop {Number|HTMLElement} stepX
+       */
+      stepX: {
+        type: [Number, HTMLElement]
+      },
+      /**
+       * @prop {Number|HTMLElement} stepY
+       */
+       stepY: {
+        type: [Number, HTMLElement]
+      },
+      afterScrollDelay: {
+        type: Number,
+        default: 500
+      }
     },
     data() {
       return {
@@ -317,7 +328,9 @@
         touchY: false,
         scrollInitial: false,
         touchDirection: null,
-        scrollTimeout: null
+        scrollTimeout: null,
+        currentStepX: bbn.fn.isDom(this.stepX) ? this.stepX.clientHeight : this.stepX,
+        currentStepY: bbn.fn.isDom(this.stepY) ? this.stepY.clientHeight : this.stepY
       };
     },
     computed: {
@@ -514,42 +527,51 @@
         clearTimeout(this.scrollTimeout);
         this.scrollTimeout = setTimeout(() => {
           this.afterScroll();
-        }, this.scrollInitial.touched === 'finished' ? 100 : 500);
+        }, this.scrollInitial.touched === 'finished' ? 100 : this.afterScrollDelay);
       },
       afterScroll(){
         if (this.fullPage && this.scrollInitial) {
           if (this.hasScrollX && (this.currentX !== this.scrollInitial.x)) {
-            let r1 = this.scrollInitial.x ? Math.round(this.scrollInitial.x / this.containerWidth) : 0;
-            let r2 = this.currentX ? Math.round(this.currentX / this.containerWidth) : 0;
+            let m = this.currentStepX || this.containerWidth;
+            let r1 = this.scrollInitial.x ? Math.round(this.scrollInitial.x / m) : 0;
+            let r2 = this.currentX ? Math.round(this.currentX / m) : 0;
             let left;
             if (r1 !== r2) {
-              left = r2 * this.containerWidth;
+              left = r2 * m;
             }
             else if (this.scrollInitial.x < this.currentX) {
-              left = (r1 + 1) * this.containerWidth;
+              left = (r1 + 1) * m;
             }
             else if (this.scrollInitial.x > this.currentX) {
-              left = (r1 - 1) * this.containerWidth;
+              left = (r1 - 1) * m;
             }
             if (bbn.fn.isNumber(left) && (left !== this.currentX)) {
-              this.$refs.xScroller.scrollTo(left, true);
+              this.$refs.xScroller.scrollTo(left, true).then(() => {
+                this.$emit('afterscroll');
+              });
             }
           }
           else if (this.hasScrollY && (this.currentY !== this.scrollInitial.y)) {
-            let r1 = this.scrollInitial.y ? Math.round(this.scrollInitial.y / this.containerHeight) : 0;
-            let r2 = this.currentY ? Math.round(this.currentY / this.containerHeight) : 0;
+            let m = this.currentStepY || this.containerHeight;
+            let r1 = this.scrollInitial.y ? Math.round(this.scrollInitial.y / m) : 0;
+            let r2 = this.currentY ? Math.round(this.currentY / m) : 0;
             let top;
             if (r1 !== r2) {
-              top = r2 * this.containerHeight;
+              top = r2 * m;
             }
             else if (this.scrollInitial.y < this.currentY) {
-              top = (r1 + 1) * this.containerHeight;
+              top = (r1 + 1) * m;
             }
             else if (this.scrollInitial.y > this.currentY) {
-              top = (r1 - 1) * this.containerHeight;
+              top = (r1 - 1) * m;
             }
             if (bbn.fn.isNumber(top) && (top !== this.currentY)) {
-              this.$refs.yScroller.scrollTo(top, true);
+              this.$refs.yScroller.scrollTo(top, true).then(() => {
+                this.$emit('afterscroll');
+              });
+            }
+            else {
+              this.$emit('afterscroll');
             }
           }
           this.scrollInitial = false;
@@ -792,7 +814,7 @@
        * @method getNaturalDimensions
        * @fires getNaturalDimensions
        */
-      getNaturalDimensions(){
+      getNaturalDimensions() {
         this.isMeasuring = true;
         return new Promise((resolve, reject) => {
           this.$nextTick(() => {
@@ -1115,6 +1137,12 @@
           }
         }
         this.$emit('scrolly', y);
+      },
+      stepX(val){
+        this.currentStepX = bbn.fn.isDom(val) ? val.clientHeight : val;
+      },
+      stepY(val){
+        this.currentStepY = bbn.fn.isDom(val) ? val.clientHeight : val;
       }
     }
   });

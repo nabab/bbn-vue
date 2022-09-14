@@ -100,7 +100,7 @@
          * @prop {Boolean} [false] autobind 
          */
         autobind: {
-          default: false
+          default: true
         },
         /**
          * Defines if the search can have a null value.
@@ -361,6 +361,12 @@
          *
          */
         keydown(e){
+          if (e.key === 'Enter') {
+            let list = this.getRef('list');
+            if (list && bbn.fn.isNumber(list.overIdx)) {
+              list.select(list.overIdx);
+            }
+          }
           if ((e.key === ' ') || this.commonKeydown(e)) {
             return;
           }

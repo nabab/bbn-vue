@@ -1,46 +1,53 @@
 ((bbn) => {
 
 let script = document.createElement('script');
-script.innerHTML = `<div :class="[componentClass, {'bbn-flex-height': scrollable}]">
+script.innerHTML = `<div :class="[componentClass, {'bbn-flex-height': scrollable, 'bbn-gallery-sorting': isSorting}]">
   <div v-if="toolbar"
-       class="bbn-l bbn-widget bbn-gallery-toolbar bbn-spadded">
+       class="bbn-l bbn-widget bbn-gallery-toolbar bbn-spadded bbn-vmiddle">
     <component v-if="isObject(toolbar) || isVue(toolbar)"
                :is="toolbar"/>
     <template v-else>
-      <div class="bbn-flex-width">
+      <div class="bbn-flex-width bbn-vmiddle">
         <div class="bbn-flex-fill">
-          <div class="bbn-flex-width">
+          <div class="bbn-flex-width bbn-vmiddle">
             <bbn-button v-if="toolbarButtons && toolbarButtons.length"
                         v-for="(btn, idx) in toolbarButtons"
-                        :disabled="isSelecting"
+                        :disabled="isSelecting || isSorting"
                         v-bind="btn"
                         :key="idx"/>
             <bbn-button :text="_('Select')"
                         icon="nf nf-mdi-vector_selection"
                         @click="setSelecting('selection')"
                         :notext="buttonsNoText"
-                        :disabled="isSelecting"
+                        :disabled="isSelecting || isSorting"
                         v-if="!!selection"/>
             <bbn-button :text="_('Upload')"
                         icon="nf nf-fa-upload"
                         @click="$emit('upload')"
                         v-if="uploadable"
                         :notext="buttonsNoText"
-                        :disabled="isSelecting"/>
+                        :disabled="isSelecting || isSorting"/>
             <bbn-button :text="_('Download')"
                         icon="nf nf-fa-download"
                         @click="setSelecting('download')"
                         v-if="downloadable"
-                        :disabled="isSelecting || !total"
+                        :disabled="isSelecting || !total || isSorting"
                         :notext="buttonsNoText"
                         class="bbn-left-xsspace"/>
             <bbn-button :text="_('Delete')"
                         icon="nf nf-fa-trash"
                         @click="setSelecting('delete')"
                         v-if="deletable"
-                        :disabled="isSelecting || !total"
+                        :disabled="isSelecting || !total || isSorting"
                         :notext="buttonsNoText"
                         class="bbn-left-xsspace"/>
+            <bbn-button :text="_('Order')"
+                        icon="nf nf-fa-sort_numeric_asc"
+                        @click="isSorting = !isSorting"
+                        v-if="sortable && !!uid"
+                        :disabled="isSelecting || !total"
+                        :notext="buttonsNoText"
+                        :class="['bbn-left-xsspace', {'bbn-primary': isSorting}]"/>
             <bbn-button :text="_('Ok')"
                         icon="nf nf-fa-check"
                         @click="emitAction()"
@@ -114,7 +121,7 @@ script.innerHTML = `<div :class="[componentClass, {'bbn-flex-height': scrollable
             <gallery-col v-for="(col, index) in cols"
                         :key="'gallery-col-'+index"
                         :index="index"
-                        :source="currentView.filter((it, i) => {
+                        :source="items.filter((it, i) => {
                             return i % cols === index;
                           })"/>
           </div>
@@ -376,6 +383,29 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
       pager: {
         type: Boolean,
         default: true
+      },
+      /**
+       * The data property name of an item used to sort the items
+       * @prop {String} sourceOrder
+       */
+      sourceOrder: {
+        type: String
+      },
+      /**
+       * The data property name of an intem used to open a link
+       * @prop {String} ['link'] sourceAction
+       */
+      sourceAction: {
+        type: String,
+        default: 'link'
+      },
+      /**
+       * The property that will be used for the image info.
+       * @prop {String} ['info'] sourceInfo
+       */
+       sourceInfo: {
+        type: String,
+        default: 'info'
       }
     },
     data() {
@@ -420,8 +450,22 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
          * @data {Array} [[]] currentSelectedData
          */
         currentSelectedData: [],
+        /**
+         * @data {Boolean} [false] showFloater
+         */
         showFloater: false,
+        /**
+         * @data {Object} [{}] floaterSource
+         */
         floaterSource: {},
+        /**
+         * @data {Boolean} [false] isSorting
+         */
+        isSorting: false,
+        /**
+         * @data {Number} currentLimit
+         */
+        currentLimit: !!this.pageable ? this.limit : 0
       }
     },
     computed: {
@@ -431,18 +475,25 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
        * @return {Number}
        */
       cols() {
-        return parseInt(this.width / (this.currentItemWidth + this.columnGap)) || 1
+        return parseInt(this.lastKnownWidth / (this.currentItemWidth + this.columnGap)) || 1
       },
       /**
        * The data of the current view
-       * @computed viewData
+       * @computed items
        * @return {Array}
        */
-      currentView() {
-        if (this.pageable && this.currentLimit && (!this.isAjax || !this.serverSorting)) {
-          return this.filteredData.slice(this.start, this.start + this.currentLimit);
+      items() {
+        let data = this.filteredData;
+        if (this.sortable && !this.serverSorting) {
+          data = bbn.fn.order(data, 'data.' + this.sourceOrder, 'asc');
         }
-        return this.filteredData;
+        if (this.pageable
+          && this.currentLimit
+          && (!this.isAjax || !this.serverPaging)
+        ) {
+          return data.slice(this.start, this.start + this.currentLimit);
+        }
+        return data;
       },
       /**
        * The min item width
@@ -524,13 +575,6 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
           }
         }
       },
-      /**
-       * Handles the resize of the component.
-       * @method onResize
-       */
-      onResize() {
-        this.width = this.$refs.gallery.offsetWidth;
-      },
       resetSearch() {
         this.currentSearch = '';
       }
@@ -541,7 +585,6 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
      */
     mounted() {
       this.$nextTick(() => {
-        this.onResize();
         this.ready = true;
       });
     },
@@ -652,8 +695,11 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
 <a v-if="!col.gallery.isLoading"
     :class="['bbn-gallery-item', 'bbn-box', {'bbn-primary': isSelected, 'bbn-p': !!col.gallery.zoomable}]"
     @click="action"
-    @contextmenu.prevent.stop="getRef('itemMenu').click()"
-    :style="aStyle">
+    @contextmenu.prevent.stop="getRef('menuButton').click()"
+    :style="aStyle"
+    v-draggable="!!col.gallery.isSorting && !!col.gallery.uid"
+    v-droppable="!!col.gallery.isSorting && !!col.gallery.uid"
+    @drop="changeOrder">
   <span :class="{
           'bbn-spadded': !loaded,
           'bbn-c': !loaded
@@ -662,11 +708,14 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
     <img :src="imgSrc"
          @load="loaded = true"
          @error="error = true"
-         :class="['bbn-radius', {
+         :class="{
+           'bbn-radius': !col.gallery.isSorting,
            'bbn-gallery-item-selected': isSelected,
            'bbn-invisible': !loaded
-         }]"
-         :style="imgStyle">
+         }"
+         :style="imgStyle"
+         :alt="(source.caption ? source.caption + ' - ' : '') + (source.text ? source.text + ' - ' : '') + (source.tags || []).join(' | ')"
+         :draggable="!col.gallery.isSorting">
     <bbn-loadicon class="bbn-gallery-item-loading bbn-c"
                   v-if="!loaded && !error"/>
     <i v-else-if="error && !loaded" class="bbn-red nf nf-mdi-image_off"/>
@@ -674,10 +723,11 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
           class="bbn-gallery-overlay bbn-widget bbn-ellipsis bbn-radius-bottom bbn-hxspadded"
           v-text="source.data[col.gallery.overlayName]"
           :title="source.data[col.gallery.overlayName]"/>
-    <i v-if="col.gallery.zoomable && loaded && !col.gallery.isSelecting"
+    <i v-if="col.gallery.zoomable && loaded && !col.gallery.isSelecting && !col.gallery.isSorting"
        class="bbn-gallery-zoverlay nf nf-fa-search"/>
-    <bbn-context v-if="!!col.gallery.buttonMenu && loaded && !col.gallery.isSelecting"
-                 tag="span"
+    <bbn-context v-if="showOverlay && !!col.gallery.buttonMenu && loaded && !col.gallery.isSelecting && !col.gallery.isSorting"
+                 tag="div"
+                 class="bbn-block bbn-top-left bbn-top-smargin bbn-left-smargin"
                  :source="!!col.gallery.buttonMenu
                    ? (isFunction(col.gallery.buttonMenu)
                      ? col.gallery.buttonMenu(source.data, source.index, source.key)
@@ -686,12 +736,16 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
                  :attach="buttonMenuElement"
                  :item-component="col.gallery.contextComponent"
                  @hook:mounted="buttonMenuElement = getRef('itemMenu') || undefined"
-                 ref="menuButton"
-                 @click.prevent.stop>
-      <i class="bbn-gallery-button-menu nf nf-mdi-menu"
-         ref="itemMenu"/>
+                 ref="menuButton">
+        <div class="bbn-block">
+          <i class="bbn-gallery-button-menu nf nf-mdi-menu"
+             ref="itemMenu"/>
+        </div>
     </bbn-context>
   </span>
+  <div v-if="col.gallery.sortable && col.gallery.isSorting && col.gallery.sourceOrder"
+        v-text="source.data[col.gallery.sourceOrder]"
+        class="bbn-b bbn-gallery-item-position bbn-lg"/>
 </a>
             `,
             props: {
@@ -740,9 +794,9 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
               aStyle() {
                 let style = {
                   margin: `0 0 ${this.col.gallery.rowGap}px 0`,
-                  border: this.isSelected ? '5px dotted' : ''
+                  border: this.isSelected ? '5px dotted' : (this.col.gallery.isSorting ? '5px var(--primary-border) solid' : ''),
                 };
-                if (!this.col.gallery.zoomable) {
+                if (!this.col.gallery.zoomable && !this.hasLink) {
                   style.cursor = 'default';
                 }
                 return style;
@@ -759,7 +813,8 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
                   height: this.loaded ? '' : 0,
                   margin: 0,
                   display: 'block',
-                  visibility: this.loaded ? 'visible' : 'hidden'
+                  visibility: this.loaded ? 'visible' : 'hidden',
+                  '-webkit-user-drag': !this.col.gallery.isSorting
                 }
               },
               /**
@@ -818,15 +873,20 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
                     obj.content = obj[this.col.gallery.pathName];
                     obj.type = 'img';
                     obj.mode = 'original';
-                    if (!obj.info) {
-                      obj.info = obj[this.col.gallery.overlayName];
+                    if (!obj[this.col.gallery.sourceInfo]) {
+                      obj[this.col.gallery.sourceInfo] = obj[this.col.gallery.overlayName];
                     }
                     return obj;
                   }),
                   info: this.col.gallery.info,
+                  sourceInfo: this.col.gallery.sourceInfo,
                   slide: this.source.index,
                   preview: this.col.gallery.preview
                 }
+              },
+              hasLink() {
+                return this.col.gallery.sourceAction
+                  && !!this.source.data[this.col.gallery.sourceAction];
               }
             },
             methods: {
@@ -843,7 +903,6 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
                * @fires getPopup
                */
               action(ev) {
-                bbn.fn.log("ACTION");
                 if (this.col.gallery.isSelecting) {
                   let id = !!this.col.gallery.uid ? this.source.data[this.col.gallery.uid] : this.source.index;
                   if (this.isSelected) {
@@ -866,12 +925,29 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
                   && (!ev.target.closest('.bbn-floater-list'))
                   && this.col.gallery.zoomable
                 ) {
-                  bbn.fn.log("ACTION 2");
                   this.col.gallery.floaterSource = this.floaterSource;
                   this.col.gallery.showFloater = true;
                 }
+                else if (this.hasLink) {
+                  bbn.fn.link(this.source.data[this.col.gallery.sourceAction]);
+                }
                 else {
                   this.col.gallery.$emit('clickItem', this.source);
+                }
+              },
+              changeOrder(ev) {
+                ev.preventDefault();
+                let sortEvent = new Event('sort', {cancelable: true}),
+                    data = ev.detail.from.originalElement.__vue__.source.data,
+                    pos = data[this.col.gallery.sourceOrder],
+                    posNew = this.source.data[this.col.gallery.sourceOrder];
+                this.col.gallery.$emit('sort', sortEvent, {
+                  [data[this.col.gallery.uid]]: posNew,
+                  [this.source.data[this.col.gallery.uid]]: pos
+                });
+                if (!sortEvent.defaultPrevented) {
+                  this.$set(data, this.col.gallery.sourceOrder, posNew);
+                  this.source.data[this.col.gallery.sourceOrder] = pos;
                 }
               }
             }
@@ -887,12 +963,13 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
 <div class="bbn-overlay bbn-gallery-zoom">
   <bbn-slideshow :source="source.data"
                 :show-info="source.info"
+                :source-info="source.sourceInfo"
                 :arrows="true"
                 :show-count="true"
                 :full-slide="true"
                 :initial-slide="source.slide"
                 :preview="source.preview"
-  ></bbn-slideshow>
+                :keyboard="true"/>
 </div>
                 `,
         props: {
@@ -915,7 +992,8 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
   <i class="bbn-top-right nf nf-fa-close bbn-red bbn-vxspadded bbn-hspadded bbn-lg bbn-p"
      @click="unselect"/>
   <img :src="imgSrc"
-       class="bbn-radius bbn-bordered">
+       class="bbn-radius bbn-bordered"
+       :alt="altSrc">
 </div>
         `,
         props: {
@@ -929,6 +1007,15 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
           }
         },
         computed: {
+          /**
+           * @computed altSrc
+           * @memberof gallery-selected
+           * @fires bbn.fn.basename
+           * @return {String}
+           */
+          altSrc() {
+            return bbn.fn.baseName(this.imgSrc);
+          },
           /**
            * @computed gallery
            * @memberof gallery-selected

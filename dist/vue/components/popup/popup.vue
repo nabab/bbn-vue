@@ -472,7 +472,7 @@
           */
           this.open(bbn.fn.extend(o, {
             maximizable: false,
-            scrollable: true,
+            scrollable: false,
             resizable: false
           }));
         }
@@ -571,7 +571,7 @@
           this.open(bbn.fn.extend(o, options, {
             resizable: false,
             maximizable: false,
-            scrollable: true
+            scrollable: false
           }));
         }
       },

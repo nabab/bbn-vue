@@ -22,7 +22,10 @@
             'bbn-button-left',
             'bbn-no-vborder',
             'bbn-m',
-            {'bbn-invisible' : autoHideLeft}
+            {
+              'bbn-invisible': autoHideLeft,
+              'bbn-disabled': buttonLeftDisabled
+            }
           ]"/>
     <div v-if="prefix"
          class="bbn-block bbn-h-100 bbn-vmiddle bbn-nowrap"
@@ -49,7 +52,7 @@
           @mouseenter="over"
           @mouseleave="out"
           :tabindex="tabindex"
-          :class="{'bbn-flex-fill' : (buttonLeft || buttonRight || isNullable)}"
+          :class="{'bbn-flex-fill' : (buttonLeft || buttonRight || isNullable), 'bbn-ellipsis': ellipsis}"
           :size="currentInputSize"
           :inputmode="inputmode"
           :min="min"
@@ -58,12 +61,13 @@
             paddingLeft: prefix ? 0 : null
           }">
     <bbn-loadicon v-if="loading"/>
-    <div v-else-if="isNullable && hasValue && !readonly && !isDisabled"
+    <div v-else-if="isNullable && (!readonly || forceNullable) && !isDisabled"
          class="bbn-input-nullable-container bbn-vmiddle"
          :style="{
            positions: 'absolute',
            top: 0,
            bottom: 0,
+           visibility: hasValue ? 'visible' : 'hidden',
            right: buttonRight ? '3rem' : '2px'
          }">
       <i class="nf nf-fa-times_circle bbn-p"
@@ -77,7 +81,10 @@
                   'bbn-button-right',
                   'bbn-no-vborder',
                   'bbn-m',
-                  {'bbn-invisible' : autoHideRight}
+                  {
+                    'bbn-invisible' : autoHideRight,
+                    'bbn-disabled': buttonRightDisabled
+                  }
                 ]"/>
   </div>
 </div>
@@ -170,15 +177,31 @@
        * Called when click the left button. 
        * @prop {Function} actionLeft
        */
-       actionLeft: {
+      actionLeft: {
         type: Function
       },
       /**
        * Called when click the right button. 
        * @prop {Function} actionRight
        */
-       actionRight: {
+      actionRight: {
         type: Function
+      },
+      /**
+       * Sets the left button disabled.
+       * @prop {Boolean} [false] autoHideRight
+       */
+      buttonLeftDisabled: {
+        type: Boolean,
+        default: false
+      },
+      /**
+       * Sets the left button disabled.
+       * @prop {Boolean} [false] autoHideRight
+       */
+      buttonRightDisabled: {
+        type: Boolean,
+        default: false
       },
       /**
        * The input's attribute 'pattern'. 
@@ -206,8 +229,19 @@
       max: {
         type: [String, Number]
       },
+      /**
+       * @prop {String} prefix
+       */
       prefix: {
         type: String
+      },
+      /**
+       * Forces the input to show the nullable icon even if it is in the read-only state
+       * @prop {Boolean} [false] forceNullable
+       */
+      forceNullable: {
+        type: Boolean,
+        default: false
       }
     },
     data(){

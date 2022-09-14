@@ -25,10 +25,8 @@ script.innerHTML = `<div :class="[componentClass, {
           v-show="isVisible || router.isVisual">
         <!-- The header -->
         <div v-if="!isPane && (visual || fullScreen)"
-            :class="'bbn-transition-bcolor bbn-b bbn-vspadded bbn-flex-width ' + (isVisible ? ' bbn-m' : '')"
+            :class="'bbn-transition-bcolor bbn-b bbn-spadded bbn-flex-width ' + (isVisible ? ' bbn-m' : '')"
             :style="{
-              paddingLeft: '0.5rem',
-              paddingRight: '0.5rem',
               fontSize: isVisible && !router.visualShowAll ? null : '10rem',
               backgroundColor: bcolor || router.bcolor,
               color: fcolor || router.fcolor
@@ -597,6 +595,7 @@ document.head.insertAdjacentElement('beforeend', css);
           this.currentURL = url;
           return true;
         }
+
         return false;
       },
       /**
@@ -692,7 +691,10 @@ document.head.insertAdjacentElement('beforeend', css);
        * @fires router.reload
        */
       reload(){
-        this.router.reload(this.currentIndex);
+        this.popups.splice(0);
+        this.$nextTick(() => {
+          this.router.reload(this.currentIndex);
+        });
       },
       /**
        * Handles the configuration of the container's menu.
@@ -1105,8 +1107,13 @@ document.head.insertAdjacentElement('beforeend', css);
        * @param {String} oldVal 
        */
       currentURL(newVal, oldVal){
+        // Auto cancelling if it does not correspond to the url
         if ( !newVal || (newVal.indexOf(this.url) !== 0) ){
           this.currentURL = this.url;
+        }
+        // Routing if the router has different info
+        else if (this.currentView && (this.currentView.current !== newVal)) {
+          this.router.route(newVal)
         }
       },
       ready(v){

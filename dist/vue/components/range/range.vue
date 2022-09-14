@@ -1,9 +1,9 @@
 <template>
 <span :class="[componentClass, 'bbn-flex-width', 'bbn-vmiddle']"
-	    :style="(currentSize !== '') ? 'width:' + currentSize : '' ">
+	   :style="(currentSize !== '') ? 'width:' + currentSize : '' ">
 	<span v-text="value"
-        class="bbn-right-space bbn-nowrap"
-				v-if="showLabel && !showNumeric"/>
+         class="bbn-right-space bbn-nowrap"
+			v-if="showLabel && !showNumeric"/>
 	<bbn-numeric v-if="showNumeric"
                 v-model="numericValue"
                 class="bbn-right-space"
@@ -11,7 +11,9 @@
                 :min="currentMin"
                 :max="currentMax"
                 :step="currentStep"
-                :decimals="currentDecimals"/>
+                :decimals="currentDecimals"
+                :readonly="readonly"
+                :disabled="isDisabled"/>
   <input :value="Number(value.toString().replace(currentUnit, ''))"
          type="range"
          :name="name"
@@ -41,7 +43,9 @@
   <bbn-dropdown v-if="showUnits"
                 :source="units"
                 v-model="currentUnit"
-                class="bbn-left-sspace bbn-narrow"/>
+                class="bbn-left-sspace bbn-narrow"
+                :readonly="readonly"
+                :disabled="isDisabled"/>
 </span>
 </template>
 <script>
@@ -173,7 +177,7 @@
     data(){
       let currentUnit = this.unit;
       if (!!this.value) {
-        let match = this.value.toString().match(/\D+/);
+        let match = this.value.toString().match(/(?!^\-{0,1}\d+)\D+/);
         if (!!match) {
           currentUnit = match[0];
         }

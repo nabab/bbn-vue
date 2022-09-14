@@ -14,18 +14,20 @@ script.innerHTML = `<div :class="[componentClass, {
     <bbn-pane :scrollable="false">
       <div :class="{
                   'bbn-overlay': scrollContent,
-                  'bbn-flex-height': scrollContent,
+                  'bbn-flex-height': scrollContent && !hasVerticalTabs,
+                  'bbn-flex-width': hasVerticalTabs,
                   'bbn-router-nav': nav,
                   'bbn-router-nav-bc': nav && isBreadcrumb,
+                  'bbn-router-nav-verticaltabs': hasVerticalTabs,
                   'bbn-w-100': !scrollContent
                   }">
         <!-- START OF BREADCRUMB -->
         <div v-if="nav && isBreadcrumb && !isVisual"
             ref="breadcrumb"
             :class="['bbn-router-breadcrumb', {'bbn-router-breadcrumb-master': master}]">
-          <div v-if="master"
+          <div v-if="isBreadcrumbMaster"
               class="bbn-router-breadcrumb-container">
-            <div class="bbn-transition-bcolor bbn-h-100 bbn-alt bbn-bordered-bottom bbn-no-border-top bbn-no-border-right bbn-vmiddle"
+            <div class="bbn-transition-bcolor bbn-spadded bbn-alt bbn-bordered-bottom bbn-no-border-top bbn-no-border-right bbn-vmiddle"
                 :style="{
                         backgroundColor: getBackgroundColor(selected),
                         color: getFontColor(selected)
@@ -112,15 +114,16 @@ script.innerHTML = `<div :class="[componentClass, {
           </div>
         </div>
         <!-- END OF BREADCRUMB -->
-        <!-- START OF TABS -->
-        <bbn-tabs v-else-if="nav && !isBreadcrumb && !isVisual"
+        <!-- START OF LEFT|TOP TABS -->
+        <bbn-tabs v-else-if="nav && !isBreadcrumb && !isVisual && ((orientation !== 'right') && (orientation !== 'bottom'))"
                   ref="tabs"
                   v-model="selectedTab"
                   @close="closeTab"
                   :scrollable="scrollable"
                   :max-title-length="maxTitleLength"
-                  :source="tabsList"/>
-        <!-- END OF TABS -->
+                  :source="tabsList"
+                  :position="orientation === 'auto' ? undefined : orientation"/>
+        <!-- END OF LEFT|TOP TABS -->
         <!-- START OF CONTENT -->
         <div v-if="ready"
             :class="{
@@ -172,6 +175,16 @@ script.innerHTML = `<div :class="[componentClass, {
         <bbn-scrollbar :container="$refs.visualListContainer"
                        orientation="vertical"
                        v-if="isVisual && visualShowAll"/>
+        <!-- START OF RIGHT|BOTTOM TABS -->
+        <bbn-tabs v-else-if="nav && !isBreadcrumb && !isVisual && ((orientation === 'right') || (orientation === 'bottom'))"
+                  ref="tabs"
+                  v-model="selectedTab"
+                  @close="closeTab"
+                  :scrollable="scrollable"
+                  :max-title-length="maxTitleLength"
+                  :source="tabsList"
+                  :position="orientation"/>
+        <!-- END OF RIGHT|BOTTOM TABS -->
       </div>
     </bbn-pane>
     <!-- START FOR SPLITTABLE MODE -->
@@ -221,7 +234,8 @@ script.innerHTML = `<div :class="[componentClass, {
          @click="showRouterCfg = false">
       <div class="bbn-block bbn-background"
            @click.stop>
-        <bbn-router-config :router="this"/>
+        <bbn-router-config :router="this"
+                           :visual="!parent"/>
       </div>
     </div>
   </bbn-floater>
@@ -450,7 +464,7 @@ document.head.insertAdjacentElement('beforeend', css);
       },
       /**
        * Set it to true if you want to send the variable _baseUrl.
-       * @prop {Boolean} [true] master
+       * @prop {Boolean} [true] postBaseUrl
        */
       postBaseUrl: {
         type: Boolean,
@@ -852,11 +866,29 @@ document.head.insertAdjacentElement('beforeend', css);
        * @return {Vue}
        */
       itsMaster(){
+        let r = this;
         if ( this.master ){
-          return this;
+          return r;
         }
 
-        return bbn.fn.getRow(this.parents, {master: true}) || this;
+        if (this.parents.length) {
+          let i = 0;
+          while (this.parents[i] && this.parents[i].isBreadcrumb) {
+            r = this.parents[i];
+            i++;
+            if (r.master) {
+              break;
+            }
+          }
+        }
+        return r;
+      },
+      isBreadcrumbMaster() {
+        if (this.isBreadcrumb) {
+          return this.itsMaster === this;
+        }
+
+        return false;
       },
       /**
        * Returns the bbn-tabs component of this router.
@@ -1092,6 +1124,24 @@ document.head.insertAdjacentElement('beforeend', css);
           }
         );
       },
+
+      /**
+       * The number of tabs which are not in a pane
+       * 
+       * @returns {Number}
+       */
+      numOutOfPane() {
+        return bbn.fn.filter(this.views, {pane: false}).length;
+      },
+
+      /**
+       * The number of panes displayed
+       * @computed numPanes
+       * @return {Number} 
+       */
+      numPanes() {
+        return this.currentPanes.length;
+      },
       /**
        * The views to show in the tabs, without the ones in the pane if splittable
        * @computed tabsList
@@ -1100,6 +1150,12 @@ document.head.insertAdjacentElement('beforeend', css);
       tabsList() {
         return this.splittable ? bbn.fn.filter(this.views, a => !a.pane) : this.views;
       },
+      hasVerticalTabs(){
+        return !this.isVisual
+          && !this.isBreadcrumb
+          && ((this.orientation === 'left')
+            || (this.orientation === 'right'));
+      }
     },
 
     methods: {
@@ -1454,10 +1510,10 @@ document.head.insertAdjacentElement('beforeend', css);
           cp.currentIndex = idx;
         }
 
-        if (this.numRegistered === this.views.length) {
+        //bbn.fn.log(this.numRegistered + " OUT OF " + this.numOutOfPane, cp.currentView.pane)
+        if (this.numRegistered === this.numOutOfPane) {
           this.init(this.getDefaultURL());
         }
-
         this.$emit('registered', cp.url)
       },
       /**
@@ -1600,6 +1656,7 @@ document.head.insertAdjacentElement('beforeend', css);
        * @returns {void}
        */
       route(url, force) {
+        //bbn.fn.log("ROUTING ON " + url);
         if (!bbn.fn.isString(url)) {
           throw Error(bbn._('The component bbn-container must have a valid URL defined'));
         }
@@ -1725,7 +1782,7 @@ document.head.insertAdjacentElement('beforeend', css);
           // First routing, triggered only once
           if (this.urls[st].currentView.pane) {
             let pane = bbn.fn.getRow(this.currentPanes, {id: this.urls[st].currentView.pane});
-            if (pane) {
+            if (pane && pane.tabs) {
               let idx  = bbn.fn.search(pane.tabs, {url: st});
               /*
               if (pane.tabs[idx] && (pane.selected === idx)) {
@@ -1816,6 +1873,7 @@ document.head.insertAdjacentElement('beforeend', css);
 
         //bbn.fn.log("ACTIVATING " + url + " AND SENDING FOLLOWING CONTAINER:", container);
         if (this.selected !== container.currentIndex) {
+          this.$emit('activate', url);
           container.setCurrent(url);
           if (!container.isPane) {
             this.activeContainer = container;
@@ -1903,7 +1961,7 @@ document.head.insertAdjacentElement('beforeend', css);
           this.$set(this.views[this.selected], 'current', url);
         }
         if (this.urlNavigation) {
-          if ( this.parentContainer ){
+          if (this.parentContainer) {
             this.parentContainer.currentTitle = title + ' < ' + this.parentContainer.title;
             if (!this.parentContainer.isPane) {
               this.parent.changeURL(this.baseURL + url, this.parentContainer.currentTitle, replace);
@@ -1982,7 +2040,6 @@ document.head.insertAdjacentElement('beforeend', css);
        * @returns {String}
        */
       parseURL(fullURL){
-        let url = fullURL;
         if ( fullURL === undefined ){
           return '';
         }
@@ -2340,13 +2397,12 @@ document.head.insertAdjacentElement('beforeend', css);
        * @emit update
       */
       load(url, force, index){
-        if (url){
+        if (url) {
           this.isLoading = true;
           let finalURL = this.fullBaseURL + url;
           let idx = this.search(url);
           let toAdd = false;
           let view;
-          //bbn.fn.warning("START LOADING FN FOR IDX " + idx + " ON URL " + finalURL);
           if ( idx !== false ){
             //bbn.fn.log("INDEX RETRIEVED BEFORE LOAD: " + idx.toString(), JSON.stringify(this.views[idx], null, 2));
             if ( this.views[idx].loading || (!force && !this.views[idx].load) ){
@@ -2424,6 +2480,7 @@ document.head.insertAdjacentElement('beforeend', css);
 
           this.$forceUpdate();
           this.$emit('update', this.views);
+          this.$emit("load", finalURL);
           let dataObj = this.postBaseUrl ? {_bbn_baseURL: this.fullBaseURL} : {};
           return this.post(
             finalURL,
@@ -2443,12 +2500,21 @@ document.head.insertAdjacentElement('beforeend', css);
                 d.current = url;
                 //bbn.fn.warning("CURRENT DEFINED AS " + d.current);
               }
+              else {
+                bbn.fn.warning(url + ' != ' + d.url);
+                let searchIdx = this.search(url);
+                if (searchIdx !== false) {
+                  idx = searchIdx;
+                  this.remove(searchIdx, true);
+                }
+              }
+
               if ( d.data && bbn.fn.numProperties(d.data)){
                 d.source = d.data;
                 delete d.data;
               }
               if ( (d.url !== d.current) && this.urls[d.current] ){
-                bbn.fn.warning("DELETING VIEW CASE.... " + d.current + ' ' + this.urls[d.current].currentIndex, d.url, bbn.fn.search(this.views, {idx: this.urls[d.current].idx}));
+                //bbn.fn.warning("DELETING VIEW CASE.... " + d.current + ' ' + this.urls[d.current].currentIndex, d.url, bbn.fn.search(this.views, {idx: this.urls[d.current].idx}));
                 this.remove(this.urls[d.current].currentIndex, true);
                 callRealInit = false;
                 /*
@@ -2486,8 +2552,14 @@ document.head.insertAdjacentElement('beforeend', css);
 
               this.$nextTick(() => {
                 let o = bbn.fn.extend(view || {}, d, {loading: false, load: true, real: false, loaded: true});
+                let searchIndex = this.search(o.url);
+                //bbn.fn.log("Looking for " + o.url);
+                if (searchIndex !== false) {
+                  //bbn.fn.log("FOUND AND REMOVED " + idx);
+                  this.remove(idx, true);
+                }
                 this.add(o, idx);
-                if (o.title) {
+                if (o.title && !o.pane) {
                   this.currentTitle = o.title;
                 }
                 this.$nextTick(() => {
@@ -2570,12 +2642,24 @@ document.head.insertAdjacentElement('beforeend', css);
                     f.reset();
                   });
                 }
+                if (this.urls[this.views[idx].url]
+                  && this.urls[this.views[idx].url].popups
+                  && this.urls[this.views[idx].url].popups.length
+                ) {
+                  this.urls[this.views[idx].url].popups.splice(0);
+                }
                 this.load(url, true, idx);
               }
             });
           }
           else {
             this.$nextTick(() => {
+              if (this.urls[this.views[idx].url]
+                && this.urls[this.views[idx].url].popups
+                && this.urls[this.views[idx].url].popups.length
+              ) {
+                this.urls[this.views[idx].url].popups.splice(0);
+              }
               this.load(url, true, idx);
             });
           }
@@ -3087,7 +3171,7 @@ document.head.insertAdjacentElement('beforeend', css);
           });
         }
 
-        if (!this.views[idx].pane && !this.parent) {
+        if (!this.views[idx].pane) {
           items.push({
             text: bbn._("Configuration"),
             key: "config",
@@ -3424,15 +3508,16 @@ document.head.insertAdjacentElement('beforeend', css);
        * @param {String} url
        */
       unregisterBreadcrumb(bc){
-        let url = bbn.fn.substr(bc.baseURL, 0, bc.baseURL.length - 1);
-        let idx = bbn.fn.search(this.breadcrumbsList, {baseURL: bc.baseURL});
-        if (idx !== -1) {
-          this.breadcrumbsList.splice(idx, 1);
-        }
-        if (this.itsMaster && !this.master) {
-          idx = bbn.fn.search(this.itsMaster.breadcrumbsList, {baseURL: bc.baseURL});
+        if (this.breadcrumbsList) {
+          let idx = bbn.fn.search(this.breadcrumbsList, {baseURL: bc.baseURL});
           if (idx !== -1) {
-            this.itsMaster.breadcrumbsList.splice(idx, 1);
+            this.breadcrumbsList.splice(idx, 1);
+          }
+          if (this.itsMaster && !this.master) {
+            idx = bbn.fn.search(this.itsMaster.breadcrumbsList, {baseURL: bc.baseURL});
+            if (idx !== -1) {
+              this.itsMaster.breadcrumbsList.splice(idx, 1);
+            }
           }
         }
       },
@@ -3504,7 +3589,9 @@ document.head.insertAdjacentElement('beforeend', css);
        */
        onResize() {
         this.keepCool(() => {
-          if (this.setResizeMeasures() && this.setContainerMeasures()) {
+          let m = this.setResizeMeasures();
+          let c = this.setContainerMeasures();
+          if (m || c) {
             this.$emit('resize');
           }
           if (this.isVisual && (this.orientation === 'auto') && !this.lockedOrientation) {
@@ -3580,7 +3667,7 @@ document.head.insertAdjacentElement('beforeend', css);
         this.close(this.tabsList[idx].idx);
       },
       removePane(paneId) {
-        if (this.splittable) {
+        if (this.splittable && this.currentPanes) {
           let paneIndex = bbn.fn.search(this.currentPanes, {id: paneId});
           let pane = this.currentPanes[paneIndex];
           if (!pane) {
@@ -3637,20 +3724,22 @@ document.head.insertAdjacentElement('beforeend', css);
           let paneId = view.pane;
           if (paneId) {
             let pane = bbn.fn.getRow(this.currentPanes, {id: paneId});
-            let idx = bbn.fn.search(pane.tabs, {idx: containerIdx});
-            if (idx > -1) {
-              this.selected = containerIdx;
-              view.pane = false;
-              this.$nextTick(() => {
-                pane.tabs.splice(idx, 1);
-                if (!pane.tabs.length) {
-                  this.removePane(paneId);
-                }
-                else if (pane.selected >= idx) {
-                  pane.selected--;
-                  this.getRef('pane' + pane.id).onResize(true);
-                }
-              })
+            if (pane && pane.tabs) {
+              let idx = bbn.fn.search(pane.tabs, {idx: containerIdx});
+              if (idx > -1) {
+                this.selected = containerIdx;
+                view.pane = false;
+                this.$nextTick(() => {
+                  pane.tabs.splice(idx, 1);
+                  if (!pane.tabs.length) {
+                    this.removePane(paneId);
+                  }
+                  else if (pane.selected >= idx) {
+                    pane.selected--;
+                    this.getRef('pane' + pane.id).onResize(true);
+                  }
+                })
+              }
             }
           }
         }
@@ -3806,7 +3895,7 @@ document.head.insertAdjacentElement('beforeend', css);
       });
 
       //Get config from the storage
-      if ( storage && storage.views ){
+      if (storage && storage.views && tmp) {
         bbn.fn.each(storage.views, a => {
           let idx = bbn.fn.search(tmp, {url: a.url});
           if ( idx > -1 ){
@@ -3919,6 +4008,12 @@ document.head.insertAdjacentElement('beforeend', css);
       }
     },
     watch: {
+      numVisuals() {
+        this.onResize();
+      },
+      numPanes() {
+        this.onResize();
+      },
       visualShowAll(v) {
         if (v && this.isVisual) {
           this.getRef('visualRouter').focus();
@@ -4023,6 +4118,9 @@ document.head.insertAdjacentElement('beforeend', css);
             this.setConfig();
           }
         }
+      },
+      breadcrumb(v) {
+        this.isBreadcrumb = v;
       },
       /**
        * @watch isBreadcrumb
@@ -4204,7 +4302,7 @@ document.head.insertAdjacentElement('beforeend', css);
             let k = this.source.key;
             if (this.source.closeAction()){
               let list = this.closest('bbn-list');
-              if (bbn.fn.isVue(list)) {
+              if (bbn.fn.isVue(list) && list.source) {
                 let idx = bbn.fn.search(list.source, {'data.key': k});
                 if (idx > -1) {
                   list.source.splice(idx, 1);

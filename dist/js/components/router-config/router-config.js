@@ -5,9 +5,10 @@ let script = document.createElement('script');
 script.innerHTML = `<div :class="[componentClass, 'bbn-padded', 'bbn-block']">
   <h1 v-text="_('Router Configuration')"/>
   <h2 v-text="_('Navigation mode')"/>
-  <div class="bbn-router-config-mode bbn-w-100 bbn-grid">
-
-    <div class="bbn-h-100">
+  <div class="bbn-router-config-mode bbn-w-100 bbn-grid"
+       :style="'grid-template-columns: repeat(' + numModes + ', 1fr)'">
+    <div class="bbn-h-100"
+         v-if="visual">
       <div :class="'bbn-bordered bbn-w-100 bbn-flex-height' + (mode === 'visual' ? ' bbn-selected-border' : '')">
         <div class="bbn-flex-fill">
           <div class="bbn-router-config bbn-router-config-visual">
@@ -53,7 +54,8 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-padded', 'bbn-block']">
       </div>
     </div>
 
-    <div class="bbn-h-100">
+    <div class="bbn-h-100"
+         v-if="tabs">
       <div :class="'bbn-bordered bbn-w-100 bbn-flex-height' + (mode === 'tabs' ? ' bbn-selected-border' : '')">
         <div class="bbn-flex-fill">
           <div class="bbn-router-config bbn-router-config-tabs">
@@ -82,7 +84,8 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-padded', 'bbn-block']">
       </div>
     </div>
 
-    <div class="bbn-h-100">
+    <div class="bbn-h-100"
+         v-if="breadcrumb">
       <div :class="'bbn-bordered bbn-w-100 bbn-flex-height' + (mode === 'breadcrumb' ? ' bbn-selected-border' : '')">
         <div class="bbn-flex-fill">
           <div class="bbn-router-config bbn-router-config-breadcrumb">
@@ -235,10 +238,34 @@ document.head.insertAdjacentElement('beforeend', css);
       router: {
         type: Vue,
         required: true
-      }
+      },
+      visual: {
+        type: Boolean,
+        default: true
+      },
+      tabs: {
+        type: Boolean,
+        default: true
+      },
+      breadcrumb: {
+        type: Boolean,
+        default: true
+      },
     },
-    data(){
+    data() {
+      let modes = ['visual', 'tabs', 'breadcrumb'];
+      let num = 0;
+      bbn.fn.each(modes, m => {
+        if (this[m]) {
+          num++;
+        }
+      });
+      if (num < 2) {
+        throw new Error(bbn._("You cannot have more then one mode disabled"))
+      }
+
       return {
+        numModes: num,
         svg: img,
         visualSelected: 2,
         breadcrumbSelected: 2,

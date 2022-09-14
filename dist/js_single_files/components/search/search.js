@@ -1,43 +1,76 @@
 ((bbn) => {
 
 let script = document.createElement('script');
-script.innerHTML = `<div :class="[componentClass, 'bbn-iblock']">
-  <bbn-input :placeholder="currentPlaceholder"
-              type="search"
-              ref="input"
-              @focus="searchFocus"
-              @blur="searchBlur"
-              @keydown.esc.prevent="isOpened ? isOpened = false : searchBlur() && getRef('input').getRef('element').blur()"
-              @keydown.stop="keydown"
-              :nullable="nullable"
-              autocomplete="off"
-              v-model="filterString"
-              :loading="isAjax && isLoading"
-              button-right="nf nf-fa-search">
-  </bbn-input>
-  <bbn-floater v-if="filteredData.length && !isDisabled && !readonly && isOpened && $refs.input"
-               :element="$refs.input.$el"
-               class="bbn-secondary"
-               :max-height="maxHeight"
-               :min-width="$el.offsetWidth"
-               ref="list"
-               @mouseleave.prevent
-               :auto-hide="false"
-               :suggest="suggest"
-               :item-component="searchComponent"
-               :children="null"
-               @select="select"
-               @close="searchClose"
-               :source-text="sourceText"
-               :source-value="sourceValue"
-               :source-url="sourceUrl"
-               :source-action="sourceAction"
-               :source="filteredData">
-  </bbn-floater>
-  <input type="hidden"
-         v-model="value"
-         ref="element"
-         :name="name">
+script.innerHTML = `<div :class="[
+       componentClass,
+       'bbn-iblock',
+       'bbn-textbox',
+       {'bbn-disabled': !!isDisabled}
+     ]"
+     @mouseenter="isOverDropdown = true"
+     @mouseleave="isOverDropdown = false"
+     @focusin="isActive = true"
+     @focusout="onFocusOut">
+  <div :class="['bbn-rel', 'bbn-search-container', 'bbn-flex-width', 'bbn-vmiddle', currentItemCls, {
+    'bbn-search-container-native': native
+  }]">
+    <div v-if="sourceIcon && hasValue && !!currentItemIcon"
+         class="bbn-left-xspadded">
+      <i :class="currentItemIcon"
+         @click.stop="click" />
+    </div>
+    <div v-if="sourceImg && hasValue && !!currentItemImg"
+         class="bbn-left-xspadded">
+      <img src="currentItemImg"
+           @click.stop="click">
+    </div>
+    <bbn-input :tabindex="0"
+               class="bbn-no-border bbn-i"
+               v-model="filterString"
+               ref="input"
+               @focus="selectText"
+               @blur="inputIsVisible = false"
+               autocomplete="off"
+               @keydown.stop="keydown"
+               @change="onChange"
+               :autosize="autosize"
+               autocorrect="off"
+               autocapitalize="off"
+               spellcheck="false"
+               :button-right="currentIcon"
+               :button-right-disabled="!filteredData.length"
+               :action-right="() => {isOpened = !isOpened}"
+               :nullable="true"/>
+  </div>
+  <bbn-portal v-if="portalSelector"
+              :selector="portalSelector">
+    <bbn-floater v-if="!popup
+                    && filteredData.length
+                    && !isDisabled
+                    && !native
+                    && ready
+                    && isOpened"
+                :element="asMobile ? undefined : $el"
+                :max-height="asMobile ? undefined : maxHeight"
+                :min-width="$el.clientWidth"
+                :width="asMobile ? '100%' : undefined"
+                :height="asMobile ? '100%' : undefined"
+                ref="list"
+                :children="null"
+                :source-value="sourceValue"
+                :source-text="sourceText"
+                :source-url="sourceUrl"
+                :source-icon="sourceIcon"
+                :title="floaterTitle"
+                :buttons="asMobile ? realButtons : []"
+                :item-component="realComponent"
+                @mouseenter="isOverDropdown = true"
+                @mouseleave="isOverDropdown = false"
+                @ready="attachList"
+                @select="select"
+                @close="isOpened = false"
+                :source="filteredData"/>
+  </bbn-portal>
 </div>
 `;
 script.setAttribute('id', 'bbn-tpl-component-search');
@@ -45,364 +78,276 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
 
 /**
  * @file bbn-search component
- *
- * @description The easy-to-implement bbn-dropdown component allows you to choose a single value from a user-supplied list.
- *
+ * @description The search allows to select a single value from a list of items by proposeing suggestions based on the typed characters.
  * @copyright BBN Solutions
- *
  * @author BBN Solutions
- *
  * @created 10/02/2017.
  */
 
-(
-  (bbn, Vue) => {
 
-    "use strict";
+ (function(bbn){
+  "use strict";
 
-    Vue.component('bbn-search', {
+  Vue.component('bbn-search', {
+    /**
+     * @mixin bbn.vue.basicComponent
+     * @mixin bbn.vue.eventsComponent
+     * @mixin bbn.vue.resizerComponent
+     * @mixin bbn.vue.listComponent
+     * @mixin bbn.vue.keynavComponent
+     * @mixin bbn.vue.urlComponent
+     * @mixin bbn.vue.dropdownComponent
+      */
+    mixins: [
+      bbn.vue.basicComponent,
+      bbn.vue.eventsComponent,
+      bbn.vue.resizerComponent,
+      bbn.vue.listComponent,
+      bbn.vue.keynavComponent,
+      bbn.vue.urlComponent,
+      bbn.vue.dropdownComponent
+    ],
+    props: {
       /**
-       * @mixin bbn.vue.basicComponent
-       * @mixin bbn.vue.eventsComponent
-       * @mixin bbn.vue.inputComponent
-       * @mixin bbn.vue.resizerComponent
-       * @mixin bbn.vue.listComponent
-       * @mixin bbn.vue.keynavComponent
-       * @mixin bbn.vue.urlComponent
-       * @mixin bbn.vue.dropdownComponent
-        */
-      mixins: 
-      [
-        bbn.vue.basicComponent,
-        bbn.vue.eventsComponent,
-        bbn.vue.inputComponent,
-        bbn.vue.resizerComponent,
-        bbn.vue.listComponent,
-        bbn.vue.keynavComponent,
-        bbn.vue.urlComponent,
-        bbn.vue.dropdownComponent
-      ],
-      props: {
+       * For to apply the filters or not.
+       *
+       * @prop {Boolean} filterable
+       */
+      filterable: {
+        type: Boolean,
+        default: true
+      },
+      /**
+       * To define the length of the string to start the filter.
+       *
+       * @prop {Number} [0] minLength
+       */
+      minLength: {
+        type: Number,
+        default: 2
+      },
+      /**
+       * Specifies the time of delay.
+       *
+       * @prop {Number} [250] delay
+       */
+      delay: {
+        type: Number,
+        default: 250
+      },
+      /**
+       * Specifies the mode of the filter.
+       *
+       * @prop {String} ['startswith'] filterMode
+       */
+      filterMode: {
+        type: String,
+        default: 'contains'
+      },
+      /**
+       * Autobind defaults at false.
+       *
+       * @prop {Boolean} [false] autobind
+       */
+      autobind: {
+        type: Boolean,
+        default: false
+      },
+      /**
+       * Defines if the component has to be disabled.
+       * @prop {Boolean|Function} [false] disabled
+       * @memberof inputComponent
+       */
+      disabled: {
+        type: [Boolean, Function],
+        default: false
+      },
+      /**
+       * Set it to true if you want to auto-resize the input's width based on its value (in characters).
+       * @prop {Boolean} [false] autosize
+       */
+        autosize: {
+        type: Boolean,
+        default: false
+      },
+    },
+    data(){
+      return {
         /**
-         * @prop {Boolean} [false] filterselection 
+         * Indicates if the filter input is visible
+         * @data {Boolean} [false] inputIsVisible
          */
-        filterselection: {
-          default: false
-        },
-        /**
-         * Defines if the search is filterable.
-         * @prop {Boolean} [true] filterable 
-         */
-        filterable: {
-          type: Boolean,
-          default: true
-        },
-        /**
-         * Set to true will automatically update the data before mount.
-         * @prop {Boolean} [false] autobind 
-         */
-        autobind: {
-          default: false
-        },
-        /**
-         * Defines if the search can have a null value.
-         * @prop {Boolean} [false] nullable
-         */
-        nullable: {
-          default: false
-        },
-        /**
-         * Defines the min length of the filter string. 
-         * @prop {Number} [1] minLength
-         * 
-         */      
-        minLength: {
-          type: Number,
-          default: 1
-        },
-        /**
-         * Defines the left icon of the search.
-         * @prop {Boolean|String} [false] leftIcon 
-         */
-        leftIcon: {
-          default: false
-        },
-        /**
-         * Defines the right icon of the search.
-         * @prop {Boolean|String} ['nf nf-fa-search'] rightIcon 
-         */
-        rightIcon: {
-          default: 'nf nf-fa-search'
-        },
-        /**
-         * Defines the min width of the input.
-         * @prop {String} ['4,2rem'] minWidth
-         */
-        minWidth: {
-          default: '4.2rem'
-        },
-        /**
-         * Defines the max width of the input.
-         * @prop {String} ['100%'] maxWidth
-         */
-        maxWidth: {
-          default: '100%'
-        },
-        /**
-         * Defines the delay before the component starts to search.
-         * @prop {Number} [500] delay
-         */
-        delay: {
-          type: Number,
-          default: 500
-        },
-        /** 
-         * @prop {String} ['?'] shortPlaceholder
-         */
-        shortPlaceholder: {
-          type: String,
-          default: '?'
-        },
-        /**
-         * Delay to auto-hide the results when mouse out (or false to not auto-hide).
-         * @prop {Boolean|Number} [1500] autohide
-         */
-        autohide: {
-          type: [Boolean, Number],
-          default: 1500
-        },
-        /**
-         * The name of the property to be used as action to execute when selected.
-         * @prop {String} sourceAction
-         */
-        sourceAction: {
-          type: [String, Function],
-          default: 'action'
-        },
-        /**
-         * The name of the property to be used as URL to go to when selected.
-         * @prop {String} sourceUrl
-         */
-        sourceUrl: {
-          type: [String, Function],
-          default: 'url'
-        },
-        /**
-         * The URL where to send the selected result.
-         * @prop {String} selectUrl
-         */
-         selectUrl: {
-          type: String
+        inputIsVisible: false,
+        isDisabled: this.disabled
+      }
+    },
+    methods: {
+      /**
+       * Shows the filter input
+       * @method _setInputVisible
+       */
+      _setInputVisible(){
+        this.filterString = this.currentText;
+        this.inputIsVisible = true;
+        this.$nextTick(() => {
+          this.getRef('input').focus();
+        })
+      },
+      onChange(){
+        if (!this.ready) {
+          this.ready = true;
         }
       },
-      data() {
-        return {
-          /**
-           * The current min width.
-           * @data {String} ['4.2rem'] specialWidth
-           */
-          specialWidth: this.minWidth,
-          /**
-           * The placeholder.
-           * @data {String} ['?'] currentPlaceholder 
-           */
-          currentPlaceholder: this.shortPlaceholder,
-          /**
-           * The timeout.
-           * @data {Number|null} [null] timeout
-           */
-          timeout: null,
-           /**
-           * @data {Number|null} [null] mouseTimeout
-           */
-          mouseTimeout: null,
-          isActive: true
-        };
-      },
-      computed: {
-        isNullable(){
-          return this.nullable && this.isActive;
-        },
-        /**
-         * Returns the component object. 
-         * @computed realComponent
-         * @memberof listComponent
-         */
-         searchComponent(){
-          let cp = bbn.fn.isString(this.component) || (bbn.fn.isObject(this.component) && Object.keys(this.component).length) ? this.component : null;
-          if (!cp) {
-            cp = {
-              props: ['source'],
-              data(){
-                return this.source;
-              },
-              template: `<component :is="myCp" :source="source"></component>`,
-              computed: {
-                myCp() {
-                  return this.source.component || 'div';
-                }
-              }
-            };
+      /**
+       * Puts the focus on the element.
+       *
+       * @method click
+       * @fires getRef
+       */
+      click(){
+        if (!this.isDisabled) {
+          this.getRef('input').focus();
+          if (this.filteredData.length) {
+            this.isOpened = !this.isOpened;
           }
-
-          return cp;
-        },
+        }
       },
-      methods: {
-        /***
-         * Focuses the search input.
-         * @method searchFocus
-         */
-        searchFocus(){
-          clearTimeout(this.timeout);
-          this.$emit('focus', this);
-          this.isFocused = true;
-          this.specialWidth = this.maxWidth;
-          this.currentPlaceholder = this.placeholder;
-        },
-        /**
-         * Blurs the search input.
-         * @method searchBlur
-         */
-        searchBlur(){
-          clearTimeout(this.timeout);
-          this.timeout = setTimeout(() => {
-            this.isFocused = false;
-            this.isOpened = false;
-            this.specialWidth = this.minWidth;
-            this.filterString = '';
-            this.currentPlaceholder = '?';
-            this.$emit('blur', this);
-          }, 250);
-        },
-        /**
-         * Closes the search.
-         * @method searchClose
-         */
-        searchClose(){
+      /**
+       * Remove the filter and close the list if it is notabove it.
+       *
+       * @method leave
+       * @fires getRef
+       */
+      leave(){
+        if ( this.isOpened && !this.getRef('list').isOver ){
           this.isOpened = false;
-        },
-        /**
-         * Emits the event 'select' 
-         * @method select
-         * @param {Object} item 
-         * @param {Number} idx
-         * @param {Number} dataIndex
-         * @emit change
-         */
-        select(item, idx, dataIndex) {
-          if (item){
-            let ev = new Event('select', {cancelable: true});
-            this.$emit('select', ev, item, idx, dataIndex);
-            if ( !ev.defaultPrevented  && (item[this.sourceValue] !== undefined) ){
-              this.currentText = item[this.sourceText];
-              this.filterString = item[this.sourceText];
-              this.emitInput(item[this.sourceValue]);
-              this.$emit('change', item[this.sourceValue]);
-              this.$nextTick(() => {
-                this.getRef('input').focus();
-              });
-            }
-            this.isOpened = false;
+        }
+        this.inputIsVisible = false;
+        this.filterString = '';
+      },
+      /**
+       * Emits the event 'select'.
+       *
+       * @method select
+       * @param {Object} item
+       * @fires emitInput
+       * @fires getRef
+       * @emit change
+       */
+      select(item){
+        if (item) {
+          if (this.sourceUrl && item[this.sourceUrl]) {
+            bbn.fn.link(item[this.sourceUrl]);
           }
-        },
-        /**
-         * States the role of the enter key on the dropdown menu.
-         *
-         * @method _pressEnter
-         * @fires resetDropdown
-         * @fires keynav
-         *
-         */
-        keydown(e){
-          if ((e.key === ' ') || this.commonKeydown(e)) {
-            return;
+          else if (this.sourceAction && item[this.sourceAction] && bbn.fn.isFunction(item[this.sourceAction])) {
+            item[this.sourceAction](item);
           }
-          if (e.key === 'Escape') {
-            this.resetDropdown();
+          else {
+            this.$emit('select', item);
           }
-          else if (bbn.var.keys.upDown.includes(e.keyCode)) {
-            this.keynav(e);
-          }
-        },
-        /**
-         * On mouse Leave.
-         * @method leave
-         * @fires searchBlur
-         */
-        leave(){
-          if (this.autohide) {
-            if (this.mouseTimeout) {
-              clearTimeout(this.mouseTimeout);
-            }
-            this.mouseTimeout = setTimeout(() => {
-              this.searchBlur();
-            }, this.autohide);
-          }
-        },
-        /**
-         * On mouse enter.
-         * @method enter
-         */
-        enter(){
-          if (this.mouseTimeout) {
-            clearTimeout(this.mouseTimeout);
-          }
+          this.filterString = '';
+        }
+        this.isOpened = false;
+      },
+      /**
+       * Function to do the reset and if the component is open it closes it.
+       *
+       * @method resetDropdown
+       * @fires unfilter
+       */
+      resetDropdown(){
+        this.currentText = this.currentTextValue;
+        this.filterString = this.currentTextValue;
+        this.unfilter();
+        if ( this.isOpened ){
+          this.isOpened = false;
         }
       },
-      watch: {
-        /**
-         * @watch filterString
-         * @param {String} v 
-         */
-        filterString(v){
-          if (!this.ready) {
-            this.ready = true;
+      /**
+       * Function that performs different actions based on what is being pressed.
+       *
+       * @method keydown
+       * @param {Event} e
+       * @fires resetDropdown
+       * @fires commonKeydown
+       * @fires keynav
+       */
+      keydown(e){
+        if ( this.commonKeydown(e) ){
+          return;
+        }
+        else if (this.isOpened && (e.key === 'Escape')) {
+          e.stopPropagation();
+          e.preventDefault();
+          this.resetDropdown();
+          return;
+        }
+        else if (bbn.var.keys.upDown.includes(e.keyCode)) {
+          this.keynav(e);
+        }
+      },
+    },
+    watch: {
+      disabled(v) {
+        this.isDisabled = v;
+      },
+      /**
+       * @watch filterString
+       * @fires onResize
+       * @fires unfilter
+       * @param {String} v
+       */
+      filterString(v){
+        if (!this.ready) {
+          this.ready = true;
+        }
+
+        clearTimeout(this.filterTimeout);
+        bbn.fn.log("CLEARED")
+        if (!v && this.nullable && this.inputIsVisible) {
+          bbn.fn.log("NO VALUE")
+          this.unfilter();
+          this.emitInput(null);
+          this.currentText = '';
+          if (this.currentData.length) {
+            this.currentData.splice(0, this.currentData.length);
           }
-          clearTimeout(this.filterTimeout);
-          if (v !== this.currentText) {
-            this.isOpened = false;
+        }
+        else if (v) {
+          bbn.fn.log("VALUE")
+          if (v.length < this.minLength) {
             if (this.currentData.length) {
-              this.currentData.splice(0);
+              this.currentData.splice(0, this.currentData.length);
             }
-            this.$nextTick(() => {
-              this.filterTimeout = setTimeout(() => {
-                this.filterTimeout = false;
-                // We don't relaunch the source if the component has been left
-                if ( this.isActive ){
-                  if (v && (v.length >= this.minLength)) {
-                    this.$once('dataloaded', () => {
-                      this.$nextTick(() => {
-                        if (!this.isOpened){
-                          this.isOpened = true;
-                        }
-                        else{
-                          let list = this.find('bbn-scroll');
-                          if ( list ){
-                            list.onResize();
-                          }
-                        }
-                      });
-                    });
-                    this.currentFilters.conditions.splice(0, this.currentFilters.conditions.length ? 1 : 0, {
-                      field: this.sourceText,
-                      operator: 'startswith',
-                      value: v
-                    });
-                  }
-                  else {
-                    this.unfilter();
-                  }
-                }
-              }, this.delay);
-            })
           }
+          else if ((v !== this.currentText)) {
+            bbn.fn.log("MIN PASSED")
+            this.isOpened = false;
+            this.filterTimeout = setTimeout(() => {
+              // this.filterTimeout = false;
+              // We don't relaunch the source if the component has been left
+              if (this.isActive) {
+                bbn.fn.log("UPDATING AUTOC");
+                this.currentFilters.conditions.splice(0, this.currentFilters.conditions.length ? 1 : 0, {
+                  field: this.sourceText,
+                  operator: this.filterMode,
+                  value: v
+                });
+                this.updateData().then(() => {
+                  this.isOpened = true;
+                })
+              }
+            }, this.delay);
+          }
+        }
+        else if ( !v ){
+          this.unfilter();
         }
       }
-    });
+    }
+  });
 
-  }
-)(bbn, Vue);
+})(bbn);
 
 
 })(bbn);

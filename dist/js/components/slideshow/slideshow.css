@@ -60,12 +60,10 @@
 }
 .bbn-slideshow .bbn-slideshow-content {
   width: 100%;
-  height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  position: absolute;
   top: 0;
   left: 0;
   overflow: hidden;
@@ -105,9 +103,6 @@
   -o-animation-name: flip;
   animation-name: flip;
   backface-visibility: hidden;
-}
-.bbn-slideshow .slide-preview-img {
-  max-height: calc(100vh - 70px) !important;
 }
 @keyframes bbn-slideshow-effect-fade_in {
   from {

@@ -39,8 +39,9 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-background', {
                @keydown.enter="toggleMenu"
                @keydown.space="toggleMenu"
                @click.prevent.stop="toggleMenu"
-               class="bbn-c bbn-p bbn-padded">
-            <i ref="icon" class="nf nf-fa-bars bbn-xxxl"> </i>
+               class="bbn-c bbn-p bbn-hpadded">
+            <i ref="icon"
+               class="nf nf-mdi-menu bbn-xxxl"/>
           </div>
         </div>
         <!-- LOGO -->
@@ -49,6 +50,7 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-background', {
           <div class="bbn-100 bbn-vmiddle" style="justify-content: center;">
             <img v-if="!!logo"
                  :src="logo"
+                 alt="logo"
                  style="background-color: white;"
                  class="bbn-right-padded bbn-appui-logo">
           </div>
@@ -58,6 +60,7 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-background', {
               v-else-if="!searchIsActive && !!logo && isMobile">
           <img :src="logo"
                 style="background-color: white;"
+                alt="logo"
                 class="bbn-appui-logo">
         </div>
         <!-- FISHEYE (MOBILE) -->
@@ -162,6 +165,7 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-background', {
                   :url="!!nav ? undefined : url"
                   @beforeroute="onBeforeRoute"
                   @route="onRoute"
+                  @load="onLoad"
                   @change="$emit('change', $event)"
                   @shortcut="addShortcut"
                   :breadcrumb="isMobile"
@@ -280,6 +284,26 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-background', {
              :source="popups"
              ref="popup"
              :z-index="13"/>
+  <!-- BBOKMARKS -->
+  <div v-show="plugins['appui-bookmark'] && showBookmarks">
+    <div class="bbn-overlay bbn-modal"
+         v-if="showBookmarks"/>
+    <bbn-floater component="appui-bookmark-list"
+                 :source="plugins['appui-bookmark'] + '/bookmarks'"
+                 v-show="showBookmarks"
+                 v-if="showBookmarks || bookmarksLoaded"
+                 class="bbn-radius"
+                 width="90%"
+                 height="90%"
+                 @ready="bookmarksLoaded = true"
+                 @close="$event.preventDefault(); showBookmarks = false"
+                 :closable="true"
+                 :title="false"
+                 :filterable="true"
+                 :pageable="true"
+                 :url="plugins['appui-bookmark'] + '/actions'"
+                 :search="true"/>
+  </div>
   <!-- SEARCH -->
   <div v-if="searchOn && plugins['appui-search']"
        class="bbn-overlay bbn-secondary"
@@ -636,7 +660,9 @@ document.head.insertAdjacentElement('beforeend', css);
         isDesktop: !isTablet && !isMobile,
         emptyPostIt: emptyPostIt,
         postits: postits,
-        showPostIt: false
+        showPostIt: false,
+        showBookmarks: false,
+        bookmarksLoaded: false
       }
     },
     computed: {
@@ -678,7 +704,9 @@ document.head.insertAdjacentElement('beforeend', css);
                 bbn._("Are you sure you want to delete the browser storage?"),
                 () => {
                   window.localStorage.clear();
-                  document.location.reload();
+                  this.$nextTick(() => {
+                    document.location.reload();
+                  });
                 }
               );
             },
@@ -690,8 +718,12 @@ document.head.insertAdjacentElement('beforeend', css);
             action: () => {
               bbn.fn.post(this.plugins['appui-core'] + '/service/increase').then(() => {
                 if (window.bbnSW) {
-                  window.bbnSW.unregister();
-                  this.$nextTick(() => window.document.location.reload());
+                  window.bbnSW.unregister().then(() => {
+                    document.location.reload();
+                  });
+                }
+                else {
+                  this.$nextTick(() => document.location.reload());
                 }
               });
             }
@@ -1135,6 +1167,9 @@ document.head.insertAdjacentElement('beforeend', css);
           case 'f':
             this.searchOn = true;
             break;
+          case 'b':
+            this.showBookmarks = true;
+            break;
           case 'g':
             let loadbar = this.getRef('loading');
             if (loadbar) {
@@ -1165,6 +1200,9 @@ document.head.insertAdjacentElement('beforeend', css);
         this.$nextTick(() => {
           this.searchOn = false;
         })
+      },
+      onLoad() {
+        this.$emit('load', ...arguments);
       }
     },
     beforeCreate(){
@@ -1409,9 +1447,9 @@ document.head.insertAdjacentElement('beforeend', css);
             this.$el.scrollLeft = 0;
           }
         }, 1000)
+        this.onResize();
         setTimeout(() => {
           this.ready = true;
-          this.$emit('resize');
           this.opacity = 1;
           setTimeout(() => {
             this._postMessage({
@@ -1429,7 +1467,7 @@ document.head.insertAdjacentElement('beforeend', css);
             }
             this.poll();
           }, 5000);
-        }, 1000);
+        }, this.app && this.app.header ? 1000 : 10);
       }
     },
     beforeDestroy(){

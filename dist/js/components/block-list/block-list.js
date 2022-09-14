@@ -98,11 +98,32 @@ document.head.insertAdjacentElement('beforeend', css);
         type: Number,
         default: 420
       },
+      /**
+       * The max columns number
+       * @prop {Number} maxColumns
+       */
+      maxColumns: {
+        type: Number
+      }
     },
     data(){
       return {
-        windowWidth: window.innerWidth,
-        rowCount: Math.ceil(window.innerWidth / this.imgWidth),
+        windowWidth: window.innerWidth
+      }
+    },
+    computed: {
+      /**
+       * @computed rowCount
+       * @returns {Number}
+       */
+      rowCount(){
+        let res = Math.ceil(this.windowWidth / this.imgWidth);
+        if (!!this.maxColumns
+          && (this.maxColumns < res)
+        ) {
+          res = this.maxColumns;
+        }
+        return res;
       }
     },
     mounted(){
@@ -112,9 +133,6 @@ document.head.insertAdjacentElement('beforeend', css);
       });
     },
     watch: {
-      windowWidth(newWidth, oldWidth) {
-        this.rowCount = Math.ceil(newWidth / this.imgWidth);
-      },
       currentPage() {
         let sc = this.closest('bbn-scroll');
         while (sc && !sc.scrollable) {

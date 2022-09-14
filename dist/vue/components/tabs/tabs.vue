@@ -1,8 +1,8 @@
 <template>
-<div :class="[componentClass, {'bbn-tabs-scrollable': scrollable}]">
+<div :class="[componentClass, {'bbn-tabs-scrollable': scrollable, 'bbn-tabs-vertical': isVertical}]">
   <div class="bbn-tabs-container">
     <div class="bbn-tabs-ul-container">
-      <div class="bbn-flex-width">
+      <div :class="{'bbn-flex-width': !isVertical, 'bbn-flex-height': isVertical}">
         <div v-if="scrollable"
             class="bbn-tabs-button bbn-tabs-button-prev bbn-p">
           <div class="bbn-100 bbn-middle"
@@ -15,7 +15,8 @@
         <div class="bbn-flex-fill">
           <component :is="scrollable ? 'bbn-scroll' : 'div'"
                      ref="horizontal-scroll"
-                     v-bind="scrollCfg">
+                     v-bind="scrollCfg"
+                     style="height: 100%">
             <ul ref="tabgroup"
                 class="bbn-alt bbn-tabs-tabs bbn-bordered-bottom bbn-flex-fill">
               <li v-for="(tab, tabIndex) in source"
@@ -27,7 +28,12 @@
                           color: tab.fcolor || null
                           }"
                   :data-index="tabIndex"
-                  :class="['bbn-transition-bcolor', 'bbn-iblock', 'bbn-bordered', 'bbn-radius-top', 'bbn-state-default', 'bbn-unselectable', {
+                  :class="['bbn-transition-bcolor', 'bbn-bordered', 'bbn-state-default', 'bbn-unselectable', position, {
+                          'bbn-radius-top': position === 'top',
+                          'bbn-radius-bottom': position === 'bottom',
+                          'bbn-radius-left': position === 'left',
+                          'bbn-radius-right': position === 'right',
+                          'bbn-iblock': !isVertical,
                           'bbn-tabs-static': !!tab.static,
                           'bbn-background-effect-internal': tabIndex === value,
                           'bbn-tabs-active': tabIndex === value,
@@ -162,6 +168,14 @@
       maxTitleLength: {
         type: Number,
         default: 35
+      },
+      position: {
+        type: String,
+        default: 'top'
+      },
+      vertical: {
+        type: Boolean,
+        default: false
       }
     },
     data(){
@@ -186,6 +200,9 @@
           container: true,
           hidden: true
         } : {};
+      },
+      isVertical(){
+        return (this.position === 'left') || (this.position === 'right');
       }
     },
     methods: {
@@ -239,15 +256,18 @@
        * @return {String}
        */
       getFontColor(idx){
-        if (bbn.fn.isNumber(idx)) {
-          if ( this.source[idx] && this.source[idx].fcolor ){
+        if (bbn.fn.isNumber(idx) && this.source[idx]) {
+          if (this.source[idx].fcolor) {
             return this.source[idx].fcolor;
           }
+          /*
           let el = this.getRef('title-' + idx);
-          if ( el ){
-            return window.getComputedStyle(el.$el ? el.$el : el).color;
+          if (el) {
+            return window.getComputedStyle(el.$el ? el.$el : el).color || '';
           }
+          */
         }
+
         return '';
       },
       getMenuFn(idx) {
@@ -262,6 +282,12 @@
           this.selectedBarColor = this.source[v] ? this.getFontColor(v) : null;
         })
       }
+    },
+    updated() {
+      if (!this.selectedBarColor && this.source[this.value]) {
+        this.selectedBarColor = this.getFontColor(this.value);
+      }
+
     },
     /**
      * Sets the initial state of the component.
@@ -288,11 +314,13 @@ div.bbn-tabs {
   border: 0 !important;
   overflow: hidden;
   position: relative;
-  width: 100%;
   box-sizing: border-box;
   margin: 0;
   padding: 0;
   zoom: 1;
+}
+div.bbn-tabs:not(.bbn-tabs-vertical) {
+  width: 100%;
 }
 div.bbn-tabs div.bbn-tabs-ul-container {
   width: 100%;
@@ -322,10 +350,15 @@ div.bbn-tabs > div.bbn-tabs-container ul.bbn-tabs-tabs:first-child > li {
   height: 2.4rem;
   list-style-type: none;
   text-decoration: none;
-  margin: 0 !important;
+  margin: 0;
   vertical-align: middle;
   position: relative;
+}
+div.bbn-tabs > div.bbn-tabs-container ul.bbn-tabs-tabs:first-child > li.top {
   border-bottom: 0;
+}
+div.bbn-tabs > div.bbn-tabs-container ul.bbn-tabs-tabs:first-child > li.bottom {
+  border-top: 0;
 }
 div.bbn-tabs > div.bbn-tabs-container ul.bbn-tabs-tabs:first-child > li i:focus,
 div.bbn-tabs > div.bbn-tabs-container ul.bbn-tabs-tabs:first-child > li span:focus {
@@ -490,6 +523,22 @@ div.bbn-tabs > div.bbn-tabs-container div.bbn-tabs-button {
 div.bbn-tabs > div.bbn-tabs-container > span.bbn-button {
   top: 0.4rem;
   position: absolute;
+}
+div.bbn-tabs.bbn-tabs-vertical {
+  height: 100%;
+}
+div.bbn-tabs.bbn-tabs-vertical div.bbn-tabs-ul-container {
+  width: auto;
+  height: 100%;
+}
+div.bbn-tabs.bbn-tabs-vertical > div.bbn-tabs-container {
+  height: 100%;
+}
+div.bbn-tabs.bbn-tabs-vertical > div.bbn-tabs-container ul.bbn-tabs-tabs:first-child > li.right {
+  border-left: 0;
+}
+div.bbn-tabs.bbn-tabs-vertical > div.bbn-tabs-container ul.bbn-tabs-tabs:first-child > li.left {
+  border-right: 0;
 }
 div.bbn-tabs .bbn-tabs {
   margin-top: 0.5rem;

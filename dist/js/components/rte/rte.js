@@ -40,16 +40,22 @@ script.innerHTML = `<div :class="[componentClass, {'bbn-textbox': !floating}, 'b
 				 @mouseup.stop="getRef('element').focus()">
 			<component :is="currentHeight ? 'bbn-scroll' : 'div'">
 				<div class="bbn-spadded bbn-rte-element"
-							style="min-height: max(4rem, 100%)"
-							contenteditable="true"
-							ref="element"
-							@input="rteOnInput"
-							@keydown="rteOnKeydown"
-							@keyup="rteOnClick"
-							@click="rteOnClick"/>
-				<div class="bbn-hidden">
+						 style="min-height: max(4rem, 100%)"
+						 contenteditable="true"
+						 ref="element"
+						 @input="rteOnInput"
+						 @keydown="rteOnKeydown"
+						 @keyup="rteOnClick"
+						 @click="rteOnClick"/>
+				<div class="bbn-hidden"
+				     ref="content">
 					<slot></slot>
 				</div>
+				<bbn-code v-model="currentValue"
+				          v-if="showSource"
+									class="bbn-overlay"
+									style="min-height: max(4rem, 100%)"
+									mode="html"/>
 				<textarea :required="required"
 									:readonly="readonly"
 									ref="input"
@@ -331,7 +337,7 @@ document.head.insertAdjacentElement('beforeend', css);
       icon: 'nf nf-mdi-format_quote_open',
       text: bbn._('Quote'),
       notext: true,
-      action: () => exec(formatBlock, '<blockquote>')
+      action: () => exec('formatBlock', '<blockquote>')
     },
     olist: {
       icon: 'nf nf-mdi-format_list_numbers',
@@ -349,7 +355,7 @@ document.head.insertAdjacentElement('beforeend', css);
       icon: 'nf nf-mdi-code_tags',
       text: bbn._('Code'),
       notext: true,
-      action: () => exec(formatBlock, '<pre>')
+      action: () => exec('formatBlock', '<pre>')
     },
     line: {
       icon: 'nf nf-oct-horizontal_rule',
@@ -525,6 +531,7 @@ document.head.insertAdjacentElement('beforeend', css);
          * @data {Bool} [false] isEditing
          */
         isEditing: false,
+        showSource: false,
         body: document.body
 
       }
@@ -569,6 +576,12 @@ document.head.insertAdjacentElement('beforeend', css);
               this.isEditing = false;
             }
           });
+        }
+        let row = bbn.fn.getRow(tmp, {code: 'code'});
+        if (row) {
+          row.action = () => {
+            this.showSource = !this.showSource;
+          }
         }
         this.currentButtons = tmp;
       },
@@ -750,6 +763,11 @@ document.head.insertAdjacentElement('beforeend', css);
       value(v) {
         if (v !== this.currentValue) {
           this.currentValue = v;
+          this.content.innerHTML = v;
+        }
+      },
+      currentValue(v) {
+        if (this.showSource) {
           this.content.innerHTML = v;
         }
       },

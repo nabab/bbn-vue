@@ -11,6 +11,7 @@ script.innerHTML = `<button :class="[
                   componentClass
                 ]"
         ref="element"
+        :aria-label="text"
         @click="click($event)"
         @focus="focus($event)"
         @blur="blur($event)"

@@ -2,7 +2,11 @@
 ((bbn) => {
 
 let script = document.createElement('script');
-script.innerHTML = `<div :class="[componentClass, 'bbn-middle', {'bbn-w-100': !fullSlide, 'bbn-overlay': fullSlide}]">
+script.innerHTML = `<div :class="[componentClass, 'bbn-middle', {'bbn-w-100': !fullSlide, 'bbn-overlay': fullSlide}]"
+     @keydown.right="next"
+     @keyup.left="prev"
+     :tabindex="!!keyboard ? 0 : -1"
+     v-focused="!!keyboard">
   <div v-if="ready"
        :class="{'bbn-w-100': !fullSlide, 'bbn-overlay': fullSlide, 'bbn-padded' : !fullSlide}">
     <!-- position aboslute -->
@@ -12,7 +16,7 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-middle', {'bbn-w-100': !f
             v-text="(currentIndex+1) + '/' + items.length"/>
     </div>
 
-    <div class="bbn-100 bbn-flex-width">
+    <div :class="['bbn-flex-width', {'bbn-w-100': !fullSlide, 'bbn-100': !!fullSlide}]">
       <!-- SUMMARY -->
       <div v-if="summary && items.length"
            class="first bbn-flex-fill bbn-slide"
@@ -29,9 +33,25 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-middle', {'bbn-w-100': !f
 
       <div class="bbn-flex-fill bbn-iflex-height">
         <div class="bbn-flex-fill">
+          <div v-if="arrowsPosition.startsWith('top')"
+               class="bbn-flex"
+               :style="arrowsStyle">
+            <i v-show="showArrowLeft"
+               :class="[leftArrowClass, 'bbn-p', 'bbn-xxxl']"
+               @click="prev"
+               :style="{visibility: (currentIndex === 0 && !loop)? 'hidden' : 'visible'}"/>
+            <i v-show="showArrowRight"
+               @click="next"
+               :class="[
+                 rightArrowClass,
+                 'bbn-p',
+                 'bbn-xxxl'
+               ]"
+               :style="{visibility: (currentIndex >= items.length - 1) && !loop ? 'hidden' : 'visible'}"/>
+          </div>
           <div :class="[{'bbn-w-100': !fullSlide, 'bbn-overlay': fullSlide}, 'bbn-flex-width']">
             <!--Left arrow-->
-            <div v-if="arrows && (items.length > 1)"
+            <div v-if="arrows && (arrowsPosition === 'default') && (items.length > 1)"
                  class="bbn-middle bbn-padded bbn-slideshow-arrow-left"
                  @mouseover="arrowsPreview('prev', true)"
                  @mouseleave="arrowsPreview('prev', false)">
@@ -63,17 +83,20 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-middle', {'bbn-w-100': !f
                          'bbn-vmiddle',
                          'bbn-lpadded',
                          'bbn-block',
-                         'bbn-lg'
+                         'bbn-lg',
+                         {'bbn-h-100': fullSlide, 'bbn-abs': fullSlide}
                        ]">
                     <component v-if="it.component"
                                :is="it.component"
                                :data="it.data || {}"
                                v-bind="it.attributes"
-                               :key="i"/>
+                               :key="i"
+                               @clickitem="itemClickable ? $emit('clickitem', it) : false"/>
                     <component v-else-if="component"
                                :is="component"
                                :content="it.content || ''"
-                               :data="it.data || {}"/>
+                               :data="it.data || {}"
+                               @clickitem="itemClickable ? $emit('clickitem', it) : false"/>
                     <div v-else-if="it.content"
                          :ref="'slide' + i.toString()"
                          :class="[(it.animation ? 'bbn-slideshow-effect-' + it.animation : ''), 'bbn-w-100']">
@@ -89,21 +112,19 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-middle', {'bbn-w-100': !f
                     <div :class="[{'bbn-w-100': !fullSlide, 'bbn-overlay': fullSlide}, 'bbn-middle']">
                       <img :src="it.content"
                            :ref="'slide-img'+ i.toString()"
+                           :alt="it.caption || it.text || ''"
                            @load="afterLoad(i)"
-                           :class="[
-                            'img' + i.toString(), 
-                            'bbn-unselectable',
-                            {'slide-preview-img': preview === true}
-                            ]" 
+                           :class="['img' + i.toString(), 'bbn-unselectable', {'bbn-p': itemClickable}]"
                            :style="{
-                            marginLeft: it.imageLeftMargin || 0,
-                            marginTop: it.imageTopMargin || 0,
-                            visibility: it.showImg ? 'visible' : 'hidden',
-                            maxWidth: '100%',
-                            maxHeight: '100vh',
-                            width: it.imageWidth || 'auto',
-                            height: it.imageHeight || 'auto'
-                          }">
+                             marginLeft: it.imageLeftMargin || 0,
+                             marginTop: it.imageTopMargin || 0,
+                             visibility: it.showImg ? 'visible' : 'hidden',
+                             maxWidth: '100%',
+                             maxHeight: '100%',
+                             width: it.imageWidth || 'auto',
+                             height: it.imageHeight || 'auto'
+                           }"
+                           @click="itemClickable ? $emit('clickitem', it) : false">
                     </div>
                   </div>
                   <bbn-checkbox v-if="checkbox && it.checkable" v-model="valuesCB[i]" :value="true" :novalue="false"
@@ -126,7 +147,7 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-middle', {'bbn-w-100': !f
               </div>
             </div>
             <!-- Right arrow-->
-            <div v-if="arrows && (items.length > 1)"
+            <div v-if="arrows && (arrowsPosition === 'default') && (items.length > 1)"
                  class="bbn-middle bbn-padded bbn-slideshow-arrow-right"
                  @mouseover="arrowsPreview('next', true)"
                  @mouseleave="arrowsPreview('next', false)">
@@ -140,18 +161,35 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-middle', {'bbn-w-100': !f
                  :style="{visibility: (currentIndex >= items.length - 1) && !loop ? 'hidden' : 'visible'}"/>
             </div>
           </div>
+          <div v-if="arrowsPosition.startsWith('bottom')"
+               class="bbn-flex"
+               :style="arrowsStyle">
+            <i v-show="showArrowLeft"
+               :class="[leftArrowClass, 'bbn-p', 'bbn-xxxl']"
+               @click="prev"
+               :style="{visibility: (currentIndex === 0 && !loop)? 'hidden' : 'visible'}"/>
+            <i v-show="showArrowRight"
+               @click="next"
+               :class="[
+                 rightArrowClass,
+                 'bbn-p',
+                 'bbn-xxxl'
+               ]"
+               :style="{visibility: (currentIndex >= items.length - 1) && !loop ? 'hidden' : 'visible'}"/>
+          </div>
         </div>
-        <div v-if="showInfo && items[currentIndex].info && items[currentIndex].info.length"
-          class="bbn-middle bbn-padded bbn-slideshow-info" v-html="items[currentIndex].info"/>
+        <div v-if="showInfo && items[currentIndex] && items[currentIndex][sourceInfo] && items[currentIndex][sourceInfo].length"
+             class="bbn-middle bbn-padded bbn-slideshow-info"
+             v-html="items[currentIndex][sourceInfo]"/>
         <!-- Miniatures -->
         <div v-if=" [true, 'image', 'circle'].includes(preview)" :class="[
                'bbn-block',
                'bbn-middle',
                'bbns-gallery-miniature',
                'bbn-hsmargin',
-               {'bbn-top-sspace': !showInfo || !items[currentIndex].info || !items[currentIndex].info.length}
-             ]" 
-             :style="{'min-height': typeof(dimensionPreview)=== 'Number' ? dimensionPreview + 'px': dimensionPreview}" 
+               {'bbn-top-sspace': !showInfo || (!!items[currentIndex] && (!items[currentIndex][sourceInfo] || !items[currentIndex][sourceInfo].length))}
+             ]"
+             :style="{'min-height': typeof(dimensionPreview)=== 'Number' ? dimensionPreview + 'px': dimensionPreview}"
              @mouseover="miniaturePreview(true)"
              @mouseleave="miniaturePreview(false)">
           <component v-show="showMiniature"
@@ -311,6 +349,11 @@ document.head.insertAdjacentElement('beforeend', css);
         type: [Boolean, Object],
         default: true
       },
+      arrowsPosition: {
+        type: String,
+        default: 'default',
+        validator: p => ['default', 'top', 'topleft', 'topright', 'bottom', 'bottomleft', 'bottomright'].includes(p)
+      },
       /**
        * Shows or hides the navigation arrow at the bottom of the slider.
        * @prop {Boolean} [false] navigation
@@ -384,6 +427,14 @@ document.head.insertAdjacentElement('beforeend', css);
         default: false
       },
       /**
+       * The property that will be used for the image info.
+       * @prop {String} ['info'] sourceInfo
+       */
+       sourceInfo: {
+        type: String,
+        default: 'info'
+      },
+      /**
        * If the property content is given to the item, set to true insert the html content inside a scroll.
        * @prop {Boolean} [false] scrollable
        */
@@ -391,74 +442,30 @@ document.head.insertAdjacentElement('beforeend', css);
         type: Boolean,
         default: false
       },
+      /**
+       * @prop {String|Number} ['50px'] minimumPreview
+       */
       minimumPreview: {
         type: [String, Number],
         default: '50px'
+      },
+      /**
+       * @prop {Boolean} [false] itemClickable
+       */
+      itemClickable: {
+        type: Boolean,
+        default: false
+      },
+      /**
+       * Enables keyboard navigation
+       * @prop {Boolean} [false] keyboard
+       */
+      keyboard: {
+        type: Boolean,
+        default: false
       }
     },
     data(){
-      let src = [],
-          valuesCB = {},
-          isAjax   = false;
-      if (bbn.fn.isString(this.source)) {
-        if (this.separator) {
-          src = this.source.split(this.separator).map(a =>{
-            return {
-              content: a,
-              type: 'text'
-            };
-          });
-        }
-        else{
-          isAjax = true;
-        }
-      }
-      else if (bbn.fn.isFunction(this.source)) {
-        src = this.source();
-      }
-      else if (bbn.fn.isArray(this.source)) {
-        if (this.checkbox) {
-          if (this.separator) {
-            this.source.forEach((v, i) =>{
-              v.content.split(this.separator).forEach((a, k) =>{
-                let o = {
-                  type: 'text',
-                  content: a,
-                  id: v.id
-                };
-                if (k === 0) {
-                  o.checkable = true;
-                }
-                src.push(o);
-              });
-              valuesCB[i] = false;
-            });
-          }
-        }
-        else {
-          src = bbn.fn.extend(true, [], this.source).map(val => {
-            if (bbn.fn.isString(val)) {
-              val = {
-                type: this.gallery ? 'img' : 'text',
-                content: val
-              };
-            }
-            if ( val.type === 'img' ){
-              bbn.fn.extend(val, {
-                imageWidth: 0,
-                imageHeight: 0,
-                imageLeftMargin: 0,
-                imageTopMargin: 0,
-                showImg: false
-              });
-            }
-            if (bbn.fn.isObject(val) && (!val.type || ((val.type !== 'img') && (val.type !== 'text')))) {
-              val.type = 'text';
-            }
-            return bbn.fn.isObject(val) ? val : {};
-          });
-        }
-      }
       return {
         /**
          * @data {String} [bbn.fn.randomString().toLowerCase()] name
@@ -466,19 +473,19 @@ document.head.insertAdjacentElement('beforeend', css);
         name: bbn.fn.randomString().toLowerCase(),
         /**
          * The current slide index
-         * @data {Number} currentIndex
+         * @data {Number} [0] currentIndex
          */
-        currentIndex: this.initialSlide > src.length ? 0 : this.initialSlide,
+        currentIndex: 0,
         /**
          * The array of items.
-         * @data {Array} items
+         * @data {Array} [[]] items
          */
-        items: src,
+        items: [],
         /**
          * True if the type of the prop source is string and the prop separator is false.
          * @data {Boolean} isAjax
          */
-        isAjax: isAjax,
+        isAjax: bbn.fn.isString(this.source) && !this.separator,
         /**
          * The default text to show as label of the checkbox in a selectable slideshow.
          * @data {String} ['Don't show it again'] defaultTextCB
@@ -486,9 +493,9 @@ document.head.insertAdjacentElement('beforeend', css);
         defaultTextCB: bbn._("Don't show it again"),
         /**
          * The values of the checkbox in a selectable slideshow.
-         * @data valuesCB
+         * @data {Object} [{}] valuesCB
          */
-        valuesCB: valuesCB,
+        valuesCB: {},
         /**
          * The active miniature.
          * @data {Number} [0] activeMiniature
@@ -554,6 +561,7 @@ document.head.insertAdjacentElement('beforeend', css);
         imageTopMargin: 0,
         maxImgWidth: 0,
         maxImgHeight: 0,
+        loaded: false
       }
     },
     computed: {
@@ -578,6 +586,26 @@ document.head.insertAdjacentElement('beforeend', css);
         }
 
         return this.arrowClass.right;
+      },
+      arrowsStyle(){
+        let style = {
+          clear: 'both'
+        };
+        switch (this.arrowsPosition) {
+          case 'top':
+          case 'bottom':
+            style.justifyContent = 'center';
+            break;
+          case 'topleft':
+          case 'bottomleft':
+            style.justifyContent = 'flex-start';
+            break;
+          case 'topright':
+          case 'bottomright':
+            style.justifyContent = 'flex-end';
+            break;
+        }
+        return style;
       }
     },
     methods: {
@@ -708,22 +736,32 @@ document.head.insertAdjacentElement('beforeend', css);
        * @fires startAutoPlay
        */
       prev(){
-        let idx = this.currentIndex;
-        if ( (idx > 0) && this.items[idx-1] ){
-          if ( !this.items[idx-1].animation ){
-            let slide = this.getRef('slide' + (idx-1).toString());
-            if ( slide ){
+        let idx = this.currentIndex,
+            isFirst = idx === 0;
+        if (isFirst && !this.loop) {
+          return;
+        }
+        if (!isFirst || this.loop) {
+          let nextIdx = isFirst ? (this.items.length - 1) : (idx - 1);
+          if (!this.items[nextIdx].animation) {
+            let slide = this.getRef('slide' + nextIdx);
+            if (slide) {
               slide.style.animationName = 'bbn-slideshow-effect-slide_from_right';
             }
           }
-          this.currentIndex--;
+          this.currentIndex = nextIdx;
+          this.$nextTick(() => {
+            setTimeout(() => {
+              let slide2 = this.getRef('slide' + nextIdx);
+              if (!this.items[nextIdx].animation && !!slide2) {
+                slide2.style.animationName = '';
+              }
+            }, 500);
+          });
         }
-        if ( this.loop &&  idx === 0 ){
-          this.currentIndex = this.items.length - 1;
-        }
-        if ( this.autoPlay ){
+        if (this.autoPlay) {
           this.stopAutoPlay();
-          this.$nextTick(()=>{
+          this.$nextTick(() => {
             this.startAutoPlay();
           });
         }
@@ -736,25 +774,34 @@ document.head.insertAdjacentElement('beforeend', css);
        */
       next(){
         let idx = this.currentIndex;
-        if ( this.summary ){
+        if (this.summary){
           idx--;
         }
-        if ( idx < (this.items.length -1) && this.items[idx+1] ){
-
-          if ( !this.items[idx+1].animation ){
-            let slide = this.getRef('slide' + (idx-1).toString());
-            if ( slide ){
+        let isLast = idx === (this.items.length - 1);
+        if (isLast && !this.loop) {
+          return;
+        }
+        if (!isLast || this.loop) {
+          let nextIdx = isLast ? 0 : (idx + 1);
+          if (!this.items[nextIdx].animation) {
+            let slide = this.getRef('slide' + nextIdx);
+            if (slide) {
               slide.style.animationName = 'bbn-slideshow-effect-slide_from_left';
             }
           }
-          this.currentIndex++;
+          this.currentIndex = nextIdx;
+          this.$nextTick(() => {
+            setTimeout(() => {
+              let slide2 = this.getRef('slide' + nextIdx);
+              if (!this.items[nextIdx].animation && !!slide2) {
+                slide2.style.animationName = '';
+              }
+            }, 500)
+          });
         }
-        if ( this.loop && (idx === (this.items.length - 1)) ){
-          this.currentIndex = 0;
-        }
-        if( this.autoPlay ){
+        if (this.autoPlay) {
           this.stopAutoPlay();
-          this.$nextTick(()=>{
+          this.$nextTick(() => {
             this.startAutoPlay();
           });
         }
@@ -819,6 +866,69 @@ document.head.insertAdjacentElement('beforeend', css);
         if( this.autoHideCtrl ){
           this.showCtrl = val;
         }
+      },
+      updateData(){
+        let src = [];
+        if (bbn.fn.isString(this.source) && this.separator) {
+          src = this.source.split(this.separator).map(a =>{
+            return {
+              content: a,
+              type: 'text'
+            };
+          });
+        }
+        else if (bbn.fn.isFunction(this.source)) {
+          src = this.source();
+        }
+        else if (bbn.fn.isArray(this.source)) {
+          if (this.checkbox) {
+            if (this.separator) {
+              this.source.forEach((v, i) =>{
+                v.content.split(this.separator).forEach((a, k) =>{
+                  let o = {
+                    type: 'text',
+                    content: a,
+                    id: v.id
+                  };
+                  if (k === 0) {
+                    o.checkable = true;
+                  }
+                  src.push(o);
+                });
+                if (this.valuesCB[i] === undefined) {
+                  this.valuesCB[i] = false;
+                }
+              });
+            }
+          }
+          else {
+            src = bbn.fn.extend(true, [], this.source).map(val => {
+              if (bbn.fn.isString(val)) {
+                val = {
+                  type: this.gallery ? 'img' : 'text',
+                  content: val
+                };
+              }
+              if ( val.type === 'img' ){
+                bbn.fn.extend(val, {
+                  imageWidth: 0,
+                  imageHeight: 0,
+                  imageLeftMargin: 0,
+                  imageTopMargin: 0,
+                  showImg: false
+                });
+              }
+              if (bbn.fn.isObject(val) && (!val.type || ((val.type !== 'img') && (val.type !== 'text')))) {
+                val.type = 'text';
+              }
+              return bbn.fn.isObject(val) ? val : {};
+            });
+          }
+        }
+        this.items.splice(0, this.items.length, ...src);
+        if (!this.loaded) {
+          this.loaded = true;
+        }
       }
     },
     /**
@@ -827,58 +937,53 @@ document.head.insertAdjacentElement('beforeend', css);
      * @fires startAutoPlay
      */
     mounted(){
-      /** @todo WTF?? Obliged to execute the following hack to not have scrollLeft and scrollTop when we open a
-       *  popup a 2nd time.
-       */
-      /*
-      this.$refs.scrollContainer.style.position = 'relative';
-      setTimeout(() => {
-        this.$refs.scrollContainer.style.position = 'absolute';
-      }, 0)
-      */
-      if ( !this.isAjax && !this.items.length && this.getRef('slot').innerHTML.trim() ){
-        if ( this.separator ){
-          this.items = this.getRef('slot').innerHTML.split(this.separator).map((txt, i) => {
-          let el = document.createElement('div'),
-              title = '';
-            el.innerHTML = txt;
-            if ( el ){
-              let titles = el.querySelectorAll('h1,h2,h3,h4,h5');
-              if ( titles.length ){
-                bbn.fn.each(titles, (v, i) => {
-                 let title = v.innerText.trim();
-                })
-              }
-            }
-            return {content: txt, type: 'text', title: title};
-          });
-        }
-        else{
-          this.items = [{content: this.getRef('slot').innerHTML, type: 'text'}]
-        }
-      }
-      this.ready = true;
+      this.updateData();
       this.$nextTick(() => {
-        this.createStyle();
-        if( this.autoPlay ){
-          this.startAutoPlay();
-        }
-        if ( bbn.fn.isObject(this.arrows) ){
-          if ( this.arrows.left && this.arrows.left.length ){
-            this.arrowClass.left = this.arrows.left
+        this.currentIndex = this.initialSlide > this.items.length ? 0 : this.initialSlide;
+        if ( !this.isAjax && !this.items.length && this.getRef('slot').innerHTML.trim() ){
+          if ( this.separator ){
+            this.items = this.getRef('slot').innerHTML.split(this.separator).map((txt, i) => {
+            let el = document.createElement('div'),
+                title = '';
+              el.innerHTML = txt;
+              if ( el ){
+                let titles = el.querySelectorAll('h1,h2,h3,h4,h5');
+                if ( titles.length ){
+                  bbn.fn.each(titles, (v, i) => {
+                    let title = v.innerText.trim();
+                  })
+                }
+              }
+              return {content: txt, type: 'text', title: title};
+            });
           }
-          if( this.arrows.right && this.arrows.right.length ){
-            this.arrowClass.right = this.arrows.right
+          else{
+            this.items = [{content: this.getRef('slot').innerHTML, type: 'text'}]
           }
         }
-        this.onResize();
-      })
+        this.ready = true;
+        this.$nextTick(() => {
+          this.createStyle();
+          if (this.autoPlay) {
+            this.startAutoPlay();
+          }
+          if (bbn.fn.isObject(this.arrows)) {
+            if (this.arrows.left && this.arrows.left.length) {
+              this.arrowClass.left = this.arrows.left
+            }
+            if (this.arrows.right && this.arrows.right.length) {
+              this.arrowClass.right = this.arrows.right
+            }
+          }
+          this.onResize();
+        })
+     })
     },
     watch: {
       /**
        * @watch show
-       * @param newVal 
-       * @param oldVal 
+       * @param newVal
+       * @param oldVal
        * @emits show
        * @emits hide
        */
@@ -891,7 +996,6 @@ document.head.insertAdjacentElement('beforeend', css);
        * @watch valuesCB
        * @emits check
        * @emits uncheck
-       * 
        */
       valuesCB: {
         deep: true,
@@ -916,6 +1020,12 @@ document.head.insertAdjacentElement('beforeend', css);
           }
         }
         this.$emit('changeSlide', val);
+      },
+      source: {
+        deep: true,
+        handler(){
+          this.updateData();
+        }
       }
     },
     components: {
@@ -961,6 +1071,7 @@ document.head.insertAdjacentElement('beforeend', css);
                   ></div>
                   <img v-else-if="it.type === 'img'"
                       :src="getImgSrc(it.content)"
+                      :alt="it.caption || it.text || ''"
                       width="100%"
                       height="100%"
                   >

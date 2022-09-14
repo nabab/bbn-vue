@@ -2,11 +2,13 @@ div.bbn-tabs {
   border: 0 !important;
   overflow: hidden;
   position: relative;
-  width: 100%;
   box-sizing: border-box;
   margin: 0;
   padding: 0;
   zoom: 1;
+}
+div.bbn-tabs:not(.bbn-tabs-vertical) {
+  width: 100%;
 }
 div.bbn-tabs div.bbn-tabs-ul-container {
   width: 100%;
@@ -36,10 +38,15 @@ div.bbn-tabs > div.bbn-tabs-container ul.bbn-tabs-tabs:first-child > li {
   height: 2.4rem;
   list-style-type: none;
   text-decoration: none;
-  margin: 0 !important;
+  margin: 0;
   vertical-align: middle;
   position: relative;
+}
+div.bbn-tabs > div.bbn-tabs-container ul.bbn-tabs-tabs:first-child > li.top {
   border-bottom: 0;
+}
+div.bbn-tabs > div.bbn-tabs-container ul.bbn-tabs-tabs:first-child > li.bottom {
+  border-top: 0;
 }
 div.bbn-tabs > div.bbn-tabs-container ul.bbn-tabs-tabs:first-child > li i:focus,
 div.bbn-tabs > div.bbn-tabs-container ul.bbn-tabs-tabs:first-child > li span:focus {
@@ -204,6 +211,22 @@ div.bbn-tabs > div.bbn-tabs-container div.bbn-tabs-button {
 div.bbn-tabs > div.bbn-tabs-container > span.bbn-button {
   top: 0.4rem;
   position: absolute;
+}
+div.bbn-tabs.bbn-tabs-vertical {
+  height: 100%;
+}
+div.bbn-tabs.bbn-tabs-vertical div.bbn-tabs-ul-container {
+  width: auto;
+  height: 100%;
+}
+div.bbn-tabs.bbn-tabs-vertical > div.bbn-tabs-container {
+  height: 100%;
+}
+div.bbn-tabs.bbn-tabs-vertical > div.bbn-tabs-container ul.bbn-tabs-tabs:first-child > li.right {
+  border-left: 0;
+}
+div.bbn-tabs.bbn-tabs-vertical > div.bbn-tabs-container ul.bbn-tabs-tabs:first-child > li.left {
+  border-right: 0;
 }
 div.bbn-tabs .bbn-tabs {
   margin-top: 0.5rem;

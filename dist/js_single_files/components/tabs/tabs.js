@@ -1,10 +1,10 @@
 ((bbn) => {
 
 let script = document.createElement('script');
-script.innerHTML = `<div :class="[componentClass, {'bbn-tabs-scrollable': scrollable}]">
+script.innerHTML = `<div :class="[componentClass, {'bbn-tabs-scrollable': scrollable, 'bbn-tabs-vertical': isVertical}]">
   <div class="bbn-tabs-container">
     <div class="bbn-tabs-ul-container">
-      <div class="bbn-flex-width">
+      <div :class="{'bbn-flex-width': !isVertical, 'bbn-flex-height': isVertical}">
         <div v-if="scrollable"
             class="bbn-tabs-button bbn-tabs-button-prev bbn-p">
           <div class="bbn-100 bbn-middle"
@@ -17,7 +17,8 @@ script.innerHTML = `<div :class="[componentClass, {'bbn-tabs-scrollable': scroll
         <div class="bbn-flex-fill">
           <component :is="scrollable ? 'bbn-scroll' : 'div'"
                      ref="horizontal-scroll"
-                     v-bind="scrollCfg">
+                     v-bind="scrollCfg"
+                     style="height: 100%">
             <ul ref="tabgroup"
                 class="bbn-alt bbn-tabs-tabs bbn-bordered-bottom bbn-flex-fill">
               <li v-for="(tab, tabIndex) in source"
@@ -29,7 +30,12 @@ script.innerHTML = `<div :class="[componentClass, {'bbn-tabs-scrollable': scroll
                           color: tab.fcolor || null
                           }"
                   :data-index="tabIndex"
-                  :class="['bbn-transition-bcolor', 'bbn-iblock', 'bbn-bordered', 'bbn-radius-top', 'bbn-state-default', 'bbn-unselectable', {
+                  :class="['bbn-transition-bcolor', 'bbn-bordered', 'bbn-state-default', 'bbn-unselectable', position, {
+                          'bbn-radius-top': position === 'top',
+                          'bbn-radius-bottom': position === 'bottom',
+                          'bbn-radius-left': position === 'left',
+                          'bbn-radius-right': position === 'right',
+                          'bbn-iblock': !isVertical,
                           'bbn-tabs-static': !!tab.static,
                           'bbn-background-effect-internal': tabIndex === value,
                           'bbn-tabs-active': tabIndex === value,
@@ -165,6 +171,14 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
       maxTitleLength: {
         type: Number,
         default: 35
+      },
+      position: {
+        type: String,
+        default: 'top'
+      },
+      vertical: {
+        type: Boolean,
+        default: false
       }
     },
     data(){
@@ -189,6 +203,9 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
           container: true,
           hidden: true
         } : {};
+      },
+      isVertical(){
+        return (this.position === 'left') || (this.position === 'right');
       }
     },
     methods: {
@@ -242,15 +259,18 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
        * @return {String}
        */
       getFontColor(idx){
-        if (bbn.fn.isNumber(idx)) {
-          if ( this.source[idx] && this.source[idx].fcolor ){
+        if (bbn.fn.isNumber(idx) && this.source[idx]) {
+          if (this.source[idx].fcolor) {
             return this.source[idx].fcolor;
           }
+          /*
           let el = this.getRef('title-' + idx);
-          if ( el ){
-            return window.getComputedStyle(el.$el ? el.$el : el).color;
+          if (el) {
+            return window.getComputedStyle(el.$el ? el.$el : el).color || '';
           }
+          */
         }
+
         return '';
       },
       getMenuFn(idx) {
@@ -265,6 +285,12 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
           this.selectedBarColor = this.source[v] ? this.getFontColor(v) : null;
         })
       }
+    },
+    updated() {
+      if (!this.selectedBarColor && this.source[this.value]) {
+        this.selectedBarColor = this.getFontColor(this.value);
+      }
+
     },
     /**
      * Sets the initial state of the component.

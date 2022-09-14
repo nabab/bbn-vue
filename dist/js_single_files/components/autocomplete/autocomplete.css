@@ -1,31 +1,67 @@
 .bbn-autocomplete {
+  display: inline-block;
   box-sizing: border-box;
+  cursor: pointer;
+}
+.bbn-autocomplete.bbn-autocomplete-autosize {
   min-width: 4rem;
-  cursor: pointer;
 }
-.bbn-autocomplete > .bbn-flex-width .bbn-w-100 {
+.bbn-autocomplete:hover .bbn-autocomplete-select-button:not(.bbn-disabled) {
+  opacity: 1;
+  background: none, linear-gradient(to bottom,var(--effect) 0%,rgba(255,255,255,0) 100%) 50% 50% repeat var(--hover-background);
+}
+.bbn-autocomplete .bbn-autocomplete-container {
+  line-height: normal;
   height: 100%;
 }
-.bbn-autocomplete > .bbn-flex-width .bbn-input {
-  height: 100%;
+.bbn-autocomplete .bbn-autocomplete-container.bbn-autocomplete-container-native {
+  min-width: 6rem;
 }
-.bbn-autocomplete > .bbn-flex-width .bbn-input input {
-  cursor: pointer;
+.bbn-autocomplete .bbn-autocomplete-container .bbn-autocomplete-content {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+.bbn-autocomplete .bbn-autocomplete-container .bbn-input,
+.bbn-autocomplete .bbn-autocomplete-container select {
+  background-color: transparent;
+  max-width: 100%;
   width: 100%;
-  font-size: inherit;
   height: 100%;
 }
-.bbn-autocomplete button {
+.bbn-autocomplete .bbn-autocomplete-container .bbn-input div.bbn-flex-width,
+.bbn-autocomplete .bbn-autocomplete-container select div.bbn-flex-width {
   height: 100%;
-}
-.bbn-autocomplete div {
   box-sizing: border-box;
 }
-.bbn-autocomplete .bbn-list-component-button,
-.bbn-autocomplete .bbn-button-right {
-  min-width: 2rem;
-  line-height: normal;
+.bbn-autocomplete .bbn-autocomplete-container .bbn-input div.bbn-flex-width .bbn-button,
+.bbn-autocomplete .bbn-autocomplete-container select div.bbn-flex-width .bbn-button {
+  font-size: 125%;
+  line-height: 100%;
+  margin: 0;
 }
-.bbn-autocomplete .bbn-button-right {
+.bbn-autocomplete .bbn-autocomplete-container .bbn-input input,
+.bbn-autocomplete .bbn-autocomplete-container select input {
+  cursor: pointer;
+}
+.bbn-autocomplete .bbn-autocomplete-container select {
+  min-width: 4rem;
+  font-size: inherit;
+  font-weight: inherit;
+  border-radius: inherit;
+  color: inherit;
+  border: 0;
+  padding: 0.0833rem 0.25rem;
+  padding-right: 2.45rem;
+  box-sizing: border-box;
+  appearance: none;
+  -webkit-appearance: none;
+  z-index: 1;
+}
+.bbn-autocomplete .bbn-autocomplete-container .bbn-autocomplete-select-button {
+  min-width: 2rem;
   opacity: 0.7;
+  z-index: 0;
+  min-height: 100%;
+  max-height: 100%;
 }

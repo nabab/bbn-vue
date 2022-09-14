@@ -29,6 +29,3 @@
 .bbn-menu > ul > li.bbn-menu-selected {
   border-color: var(--selected-border) !important;
 }
-.bbn-menu .bbn-menu-floater .bbn-menulist li {
-  line-height: 2.5rem !important;
-}

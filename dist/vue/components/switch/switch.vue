@@ -289,6 +289,7 @@
 .bbn-switch {
   width: 2.96rem;
   height: 1.7rem;
+  min-height: 1.7rem;
   position: relative;
 }
 .bbn-switch input {

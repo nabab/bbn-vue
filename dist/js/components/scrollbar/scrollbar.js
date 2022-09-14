@@ -2,7 +2,10 @@
 ((bbn) => {
 
 let script = document.createElement('script');
-script.innerHTML = `<div :class="componentClass"
+script.innerHTML = `<div :class="[componentClass, {
+            vertical: isVertical,
+            horizontal: !isVertical
+      }]"
       :style="barStyle"
       v-if="isVisible"
       @click="jump($event)"

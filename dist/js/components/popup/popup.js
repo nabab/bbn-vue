@@ -482,7 +482,7 @@ document.head.insertAdjacentElement('beforeend', css);
           */
           this.open(bbn.fn.extend(o, {
             maximizable: false,
-            scrollable: true,
+            scrollable: false,
             resizable: false
           }));
         }
@@ -581,7 +581,7 @@ document.head.insertAdjacentElement('beforeend', css);
           this.open(bbn.fn.extend(o, options, {
             resizable: false,
             maximizable: false,
-            scrollable: true
+            scrollable: false
           }));
         }
       },

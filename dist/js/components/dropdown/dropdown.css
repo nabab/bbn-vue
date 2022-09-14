@@ -1,6 +1,10 @@
 .bbn-dropdown {
+  display: inline-block;
   box-sizing: border-box;
   cursor: pointer;
+}
+.bbn-dropdown.bbn-dropdown-autosize {
+  min-width: 4rem;
 }
 .bbn-dropdown:hover .bbn-dropdown-select-button:not(.bbn-disabled) {
   opacity: 1;
@@ -8,6 +12,7 @@
 }
 .bbn-dropdown .bbn-dropdown-container {
   line-height: normal;
+  height: 100%;
 }
 .bbn-dropdown .bbn-dropdown-container.bbn-dropdown-container-native {
   min-width: 6rem;

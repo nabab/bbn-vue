@@ -2,7 +2,8 @@
 <div :class="[componentClass, 'bbn-flex-height', {'bbn-box': skin}]"
      :style="{
        width: width,
-       height: height
+       height: height,
+       aspectRatio: aspectRatio
      }">
   <div v-if="title && (titlePosition === 'top')"
        :class="['bbn-c', {
@@ -213,6 +214,14 @@
        */
       cls: {
         type: String
+      },
+      /**
+       * Force an aspect ratio
+       * @prop {String} aspectRatio
+       */
+      aspectRatio: {
+        type: String,
+        validator: ar => ['1/1', '16/9', '4/3', '3/2', '8/5'].includes(ar)
       }
     },
     data() {

@@ -4,8 +4,7 @@
 let script = document.createElement('script');
 script.innerHTML = `<div :class="componentClass" :style="'border-left-color:' + border_color">
   <h3 v-if="first"
-      v-html="_('Where the following conditions are true')"
-  ></h3>
+      v-html="_('Where the following conditions are true')"/>
   <!-- List of the validated conditions -->
   <div class="bbn-form-full"
        v-for="(condition, idx) in conditions"
@@ -14,8 +13,7 @@ script.innerHTML = `<div :class="componentClass" :style="'border-left-color:' + 
          style="align-items: baseline">
       <div class="bbn-filter-logic">
         <span v-if="idx"
-              v-text="currentLogic"
-        ></span>
+              v-text="currentLogic"/>
         <bbn-dropdown v-else
                       class="bbn-s"
                       :source="[{
@@ -28,9 +26,7 @@ script.innerHTML = `<div :class="componentClass" :style="'border-left-color:' + 
                       v-model="currentLogic"
                       name="logic"
                       ref="logic"
-                      @change="$emit('change', {logic: currentLogic, conditions: conditions})"
-        >
-        </bbn-dropdown>
+                      @change="$emit('change', {logic: currentLogic, conditions: conditions})"/>
       </div>
       <div class="bbn-flex"
            :style="{
@@ -43,8 +39,7 @@ script.innerHTML = `<div :class="componentClass" :style="'border-left-color:' + 
              @mouseout="out"
              :title="_('Delete this condition')"
              ref="minus"
-             @click="delete_condition(condition)"
-          > </i>
+             @click="delete_condition(condition)"/>
           <i class="bbn-p bbn-lg nf nf-fa-plus_circle"
              v-if="multi"
              @mouseover="$event.target.style.color = 'red'"
@@ -52,12 +47,11 @@ script.innerHTML = `<div :class="componentClass" :style="'border-left-color:' + 
              :title="_('Add new condition')"
              ref="plus"
              @click="add_group(idx)"
-             v-show="!condition.conditions"
-          > </i>
+             v-show="!condition.conditions"/>
         </div>
         <div class="bbn-filter-main">
           <div v-if="condition.operator">
-            <span v-html="condition_text(condition)"></span>
+            <span v-html="condition_text(condition)"/>
           </div>
           <bbn-filter v-else-if="condition.logic"
                       :fields="fields"
@@ -66,8 +60,7 @@ script.innerHTML = `<div :class="componentClass" :style="'border-left-color:' + 
                       @change="d => {condition.logic = d.logic}"
                       :num="num + 1"
                       :idx="idx"
-                      :multi="multi"
-          ></bbn-filter>
+                      :multi="multi"/>
         </div>
       </div>
     </div>
@@ -81,14 +74,11 @@ script.innerHTML = `<div :class="componentClass" :style="'border-left-color:' + 
         'bbn-filter-temp': true,
         'bbn-filter-or': currentLogic === 'OR',
         'bbn-filter-and': currentLogic === 'AND',
-      }"
-    >
+      }">
       <!-- Showing the logic (AND/OR) if there are already conditions -->
       <div class="bbn-filter-logic bbn-vmiddle"
            v-text="conditions.length ? currentLogic : ''"
-           v-if="multi"
-      ></div>
-
+           v-if="multi"/>
       <div class="bbn-filter-main">
         <bbn-filter-form inline-template
                          :value="value"
@@ -99,25 +89,21 @@ script.innerHTML = `<div :class="componentClass" :style="'border-left-color:' + 
                          :button-delete="!multi"
                          :component="component"
                          :component-options="componentOptions"
-                         @validate="setCondition"
-        >
+                         @validate="setCondition">
           <div class="bbn-w-100 bbn-filter-form bbn-flex">
             <div class="bbn-flex bbn-right-sspace" style="flex-direction: column">
               <!-- Condition creation line -->
               <div v-if="columns.length > 1"
-                   class="bbn-block bbn-filter-padding bbn-db-column"
-              >
+                   class="bbn-block bbn-filter-padding bbn-db-column">
                 <bbn-autocomplete :source="columns"
                                   v-model="currentField"
                                   name="field[]"
                                   :placeholder="_('Pick a field')"
-                                  ref="column"
-                ></bbn-autocomplete>
+                                  ref="column"/>
               </div>
               <div v-else-if="field"
                    class="bbn-block bbn-filter-padding bbn-db-column bbn-right-sspace"
-                   v-html="currentTitle"
-              ></div>
+                   v-html="currentTitle"/>
               <div class="bbn-block bbn-filter-padding bbn-db-operator bbn-top-xsspace">
                 <bbn-dropdown name="operator[]"
                               :disabled="!currentField"
@@ -126,11 +112,9 @@ script.innerHTML = `<div :class="componentClass" :style="'border-left-color:' + 
                               :required="true"
                               :source="operators"
                               ref="operator"
-                              :placeholder="_('Pick an operator')"
-                ></bbn-dropdown>
+                              :placeholder="_('Pick an operator')"/>
               </div>
-              <div :class="[{'bbn-hidden': !!no_value}, 'bbn-block', 'bbn-filter-padding', 'bbn-db-value', 'bbn-top-xsspace']"
-              >
+              <div :class="[{'bbn-hidden': !!no_value}, 'bbn-block', 'bbn-filter-padding', 'bbn-db-value', 'bbn-top-xsspace']">
                 <component v-if="type && currentComponent"
                            :is="currentComponent"
                            :disabled="no_value"
@@ -138,8 +122,7 @@ script.innerHTML = `<div :class="componentClass" :style="'border-left-color:' + 
                            v-model="currentValue"
                            ref="value"
                            v-bind="currentComponentOptions"
-                           @keyup.enter="validate"
-                ></component>
+                           @keyup.enter="validate"/>
               </div>
             </div>
             <div class="bbn-flex bbn-filter-padding bbn-db-column">
@@ -148,8 +131,7 @@ script.innerHTML = `<div :class="componentClass" :style="'border-left-color:' + 
                           :title="_('Validate')"
                           ref="check"
                           icon="nf nf-fa-check"
-                          :notext="true"
-              ></bbn-button>
+                          :notext="true"/>
               <bbn-button v-if="buttonDelete"
                           :disabled="!currentOperator"
                           @click="unset"
@@ -157,15 +139,15 @@ script.innerHTML = `<div :class="componentClass" :style="'border-left-color:' + 
                           ref="unset"
                           icon="nf nf-fa-times"
                           :notext="true"
-                          class="bbn-left-xsspace"
-              ></bbn-button>
+                          class="bbn-left-xsspace"/>
             </div>
           </div>
         </bbn-filter-form>
       </div>
     </div>
   </div>
-</div>`;
+</div>
+`;
 script.setAttribute('id', 'bbn-tpl-component-filter');
 script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
 
@@ -204,6 +186,7 @@ document.head.insertAdjacentElement('beforeend', css);
             }
             return 'number';
           case 'boolean':
+          case 'bool':
             return 'boolean';
           case 'float':
           case 'decimal':
@@ -319,10 +302,7 @@ document.head.insertAdjacentElement('beforeend', css);
        * @prop {Object} [{}] component
        */
       component: {
-        type: [String, Object, Function],
-        default() {
-          return {};
-        }
+        type: [String, Object, Function]
       },
       /**
        * The component options used for a single filter.
@@ -638,7 +618,9 @@ document.head.insertAdjacentElement('beforeend', css);
            * @memberof bbn-filter-form
            *
            */
-          component: {},
+          component: {
+            type: [String, Object, Function]
+          },
            /**
            * The component options used for a single filter.
            * @prop {Object} [{}] componentOptions
@@ -685,7 +667,7 @@ document.head.insertAdjacentElement('beforeend', css);
              * @data {String} currentComponent
              * @memberof bbn-filter-form
              */
-            currentComponent: this.component || '',
+            currentComponent: this.component || false,
             /**
              * The current component's options.
              * @data {Object} currentComponentOptions

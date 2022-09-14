@@ -55,12 +55,11 @@
                    :index="li.index"
                    @remove="remove(idx)"
                    @hook:mounted="selfEmit(true)"
-                   :key="li.key">
-        </component>
+                   :key="li.key"/>
         <component v-else
                   :is="li.data && li.data.url && !li.data[children] ? 'a' : 'span'"
                   @click.prevent="() => {}"
-                  class="bbn-w-100 bbn-hspadded"
+                  class="bbn-w-100"
                   :href="li.data && li.data.url ? li.data.url : null"
                   :key="li.key">
           <span class="space"
@@ -68,8 +67,10 @@
             <i v-if="li.data.selected"
                class="nf nf-fa-check"></i>
           </span>
-          <span class="space" v-if="hasIcons">
-            <i v-if="li.data.icon" :class="li.data.icon"></i>
+          <span v-if="hasIcons"
+                class="space bbn-c bbn-iblock">
+            <i v-if="li.data[sourceIcon]"
+               :class="'bbn-m ' + li.data[sourceIcon]"></i>
           </span>
           <span class="text"
                 v-html="li.data[sourceText]"></span>
@@ -78,7 +79,7 @@
              :class="['bbn-block', 'bbn-top-right', 'bbn-hspadded', 'bbn-h-100', {
               'bbn-vmiddle': (origin === 'floater')
              }]">
-          <i class="nf nf-fa-chevron_right"></i>
+          <i class="nf nf-fa-chevron_right"/>
         </div>
         <bbn-floater v-if="isOpened
                       && children
@@ -274,11 +275,20 @@
         type: Array
       },
       /**
+       * The name of the property to be used as icon.
+       * @prop {String} sourceIcon
+       * @memberof listComponent
+       */
+      sourceIcon: {
+        type: String,
+        default: 'icon'
+      },
+      /**
        * The name of the property to be used as action to execute when selected.
        * @prop {String} sourceAction
        * @memberof listComponent
        */
-       sourceAction: {
+      sourceAction: {
         type: [String, Function],
         default: 'action'
       },
@@ -499,14 +509,16 @@
        * Manages the icon of the items.
        * @method _updateIconSituation
        */
-      _updateIconSituation(){
+      _updateIconSituation() {
         let hasIcons = false;
-        bbn.fn.each(this.filteredData, a => {
-          if ( a.data && a.data.icon ){
-            hasIcons = true;
-            return false;
-          }
-        });
+        if (this.sourceIcon) {
+          bbn.fn.each(this.filteredData, a => {
+            if ( a.data && a.data.icon ){
+              hasIcons = true;
+              return false;
+            }
+          });
+        }
         if ( hasIcons !== this.hasIcons ){
           this.hasIcons = hasIcons;
         }
@@ -663,6 +675,11 @@
           }
         });
         this.selected.splice(0, this.selected.length);
+      },
+      overByString(st) {
+        let idx = bbn.fn.search(this.filteredData, 'data.' + this.sourceText, st, 'startswith');
+        bbn.fn.log("overByString", st, idx);
+        this.overIdx = idx;
       }
     },
     /**
@@ -673,6 +690,33 @@
     created(){
       this.$on('dataloaded', () => {
         this._updateIconSituation();
+      });
+      this.$once('dataloaded', () => {
+        if (this.selected
+          && this.selected.length
+          && this.uid
+        ) {
+          this.$nextTick(() => {
+            if (this.hasScroll) {
+              let overIdx = bbn.fn.search(this.filteredData, 'data.' + this.uid, this.selected[0]),
+                  scroll = this.closest('bbn-scroll');
+              if (scroll.ready) {
+                this.isOver = false;
+                this.overIdx = overIdx;
+              }
+              else {
+                scroll.$once('ready', () => {
+                  this.$nextTick(() => {
+                    setTimeout(() => {
+                      this.isOver = false;
+                      this.overIdx = overIdx;
+                    }, 50)
+                  })
+                });
+              }
+            }
+          });
+        }
       });
       if (!this.level) {
         this.rootList = this;
@@ -738,7 +782,16 @@
       },
       filteredTotal(v, ov) {
         if (!ov) {
-          this.$nextTick(this.resetOverIdx);
+          this.$nextTick(() => {
+            this.resetOverIdx();
+          });
+        }
+        if (v < ov) {
+          let fl = this.closest('bbn-scroll');
+          if (fl) {
+            fl.isResized = false;
+            fl.onResize(true);
+          }
         }
 
       }
@@ -775,7 +828,6 @@
 .bbn-list > ul > li .space {
   display: inline-block;
   width: 1.8rem;
-  text-align: left;
   line-height: 1.5rem;
 }
 .bbn-list > ul > li .text {

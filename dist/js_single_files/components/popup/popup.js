@@ -475,7 +475,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
           */
           this.open(bbn.fn.extend(o, {
             maximizable: false,
-            scrollable: true,
+            scrollable: false,
             resizable: false
           }));
         }
@@ -574,7 +574,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
           this.open(bbn.fn.extend(o, options, {
             resizable: false,
             maximizable: false,
-            scrollable: true
+            scrollable: false
           }));
         }
       },

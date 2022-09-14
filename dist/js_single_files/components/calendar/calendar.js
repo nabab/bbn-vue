@@ -1023,7 +1023,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
           this.currentValue = val;
           this.$emit('input', val);
           if ( !notEmit ){
-            this.$emit('selected', val, this);
+            this.$emit('selected', val, this, this.currentCfg.valueFormat);
           }
         }
       },

@@ -33,7 +33,7 @@
             }"
             v-draggable.mode.helper.container="!!draggable && ready ? {mode: 'move', helper: $el, container: $el.parentElement} : false">
       <div v-if="title"
-          class="bbn-w-100 bbn-hpadding bbn-vxspadded">
+          class="bbn-w-100 bbn-vxspadded">
         <h3 v-html="title"
             class="bbn-no-margin bbn-c"
             :style="{
@@ -158,7 +158,11 @@
                   :key="i"
                   :ref="'button' + i"
                   @ready="t => focusable = t"
-                  v-bind="b"/>
+                  v-bind="b"
+                  :class="['bbn-no-radius', {
+                    'bbn-primary': b.preset === 'submit',
+                    'bbn-no-border-right': !currentButtons[i + 1]
+                  }]"/>
     </footer>
   </div>
 </div>
@@ -939,6 +943,10 @@
           setTimeout(() => {resolve();}, 0);
         });
       },
+      fullResize() {
+        this.isResized = false;
+        this.realResize();
+      },
       /**
        * Handles the resize of the component.
        * @method onResize
@@ -995,7 +1003,7 @@
 
                   let naturalWidth;
                   let naturalHeight;
-                  if (!this.isResized) {
+                  /*if (!this.isResized) {*/
                     scroll.$el.style.width = this.formatSize(this.currentMaxWidth || '100%');
                     scroll.$el.style.height = this.formatSize(this.currentMinHeight || '0px');
                     let containerEle = scroll.getRef('scrollContainer');
@@ -1045,12 +1053,12 @@
                     }
                     scroll.$el.style.width = null;
                     scroll.$el.style.height = null;
-                  }
+                  /*}
                   else {
                     let contentEle = scroll.getRef('scrollContent');
                     naturalWidth = contentEle.scrollWidth;
                     naturalHeight = contentEle.scrollHeight;
-                  }
+                  }*/
                   let dimensions = {
                     w: naturalWidth,
                     h: naturalHeight
@@ -1481,18 +1489,21 @@
           }
         }
 
+        let popup = this.$parent && bbn.fn.isDom(this.$parent.$el) && (this.$parent.$el.className.indexOf('bbn-popup') > -1) ? this.$parent : null;
         if (this.forms.length && !confirm) {
+          //bbn.fn.log("The form should have closed the floater");
           this.forms[0].closePopup(force);
         }
+        else if (popup && this.uid) {
+          //bbn.fn.log("The popup should have closed the floater");
+          let idx = popup.getIndexByUID(this.uid);
+          popup.close(idx, true);
+          this.$destroy();
+        }
         else {
-          let popup = this.closest('bbn-popup');
-          if (popup && this.uid) {
-            let idx = popup.getIndexByUID(this.uid);
-            popup.close(idx, true);
-          }
-          else {
-            this.hide();
-          }
+          //bbn.fn.log("The floater should have closed itself");
+          this.hide();
+          this.$emit('close');
         }
       },
       /**
@@ -1749,6 +1760,7 @@
        * @watch isOver
        */
       isOver(v) {
+        this.$emit(v ? 'mouseenter' : 'mouseleave');
         if (this.autoHide && this.isResized && this.ready && !this.isResizing) {
           if (v && this.mouseLeaveTimeout) {
             clearTimeout(this.mouseLeaveTimeout);

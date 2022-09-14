@@ -1,0 +1,6 @@
+.bbn-timewheel .bbn-grid {
+  grid-auto-flow: column;
+}
+.bbn-timewheel footer .bbn-button {
+  width: 100%;
+}

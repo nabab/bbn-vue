@@ -35,19 +35,19 @@ script.innerHTML = `<form :action="action"
               <component v-if="field.editor"
                         :is="field.editor"
                         v-bind="field.options"
-                        v-currentModel="source[field.field]"/>
+                        v-model="source[field.field]"/>
               <bbn-field v-else
-                        currentMode="write"
+                        mode="write"
                         v-bind="field"
-                        v-currentModel="source[field.field]"/>
+                        v-model="source[field.field]"/>
             </template>
           </template>
         </div>
         <slot></slot>
       </fieldset>
       <!-- SMALL BUTTONS OUTSIDE WINDOW -->
-      <div v-if="!hasFooter && !window && realButtons.length && (currentMode === 'small')"
-          class="bbn-middle bbn-top-lspace">
+      <div v-if="!hasFooter && !window && realButtons.length && ['small', 'normal'].includes(currentMode)"
+          class="bbn-middle bbn-vpadding">
         <bbn-button v-for="(button, i) in realButtons"
                     :key="i"
                     class="bbn-hsmargin"
@@ -63,7 +63,7 @@ script.innerHTML = `<form :action="action"
                     v-bind="button"/>
       </div>
       <!-- SMALL BUTTONS IN WINDOW -->
-      <div v-else-if="!hasFooter && realButtons.length && (currentMode === 'small')"
+      <div v-else-if="!hasFooter && realButtons.length && ['small', 'normal'].includes(currentMode)"
           class="bbn-w-100 bbn-vpadding bbn-c">
         <bbn-button v-for="(button, i) in realButtons"
                     :class="{'bbn-primary': button.preset === 'submit'}"
@@ -424,7 +424,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
         isPosted: false,
         isLoading: false,
         currentSchema: currentSchema,
-        currentMode: this.mode || (this.closest('bbn-floater') ? 'big' : 'normal'),
+        currentMode: this.mode ? this.mode : (this.closest('bbn-floater') ? 'big' : 'normal'),
         _isSetting: false,
         window: null,
         isInit: false,
@@ -717,6 +717,8 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
                   this.isClosing = false;
                 }
               });
+            }, () => {
+              this.isClosing = false;
             });
           }
           else{
@@ -754,21 +756,19 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
       isValid(force, callValidation = true) {
         let ok = true;
         let elems = this.findAll('.bbn-input-component');
-        if ( Array.isArray(elems) ){
+        if (Array.isArray(elems)) {
           bbn.fn.each(elems, a => {
-            if (bbn.fn.isFunction(a.isValid) && !a.isValid(a, false) ){
+            if ((bbn.fn.isFunction(a.isValid) && !a.isValid(a, callValidation))
+              || (bbn.fn.isFunction(a.validation) && !a.validation())
+            ) {
               ok = false;
             }
-            else if (bbn.fn.isFunction(a.validation) && !a.validation() ){
-              ok = false;
-            }
-
             if ( !ok ){
               return false;
             }
           });
         }
-        if ( ok && this.validation && callValidation ){
+        if (ok && this.validation && callValidation) {
           ok = this.validation(this.source, this.originalData, force)
         }
         return !!ok;
@@ -867,6 +867,12 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
           }
         });
         this.$forceUpdate();
+        this.$nextTick(() => {
+          let elems = this.findAll('.bbn-input-component');
+          if (bbn.fn.isArray(elems)) {
+            bbn.fn.each(elems, a => a.$emit('removevalidation'));
+          }
+        })
         return true;
       },
       /**
@@ -897,7 +903,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
           else {
             bbn.fn.each(all, a => {
               if (a.offsetHeight && a.offsetWidth && !a.disabled && !a.classList.contains('bbn-no')) {
-                bbn.fn.log(a);
+                //bbn.fn.log(a);
                 focusable = a;
                 return false;
               }

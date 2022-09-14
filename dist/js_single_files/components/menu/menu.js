@@ -9,7 +9,7 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-block']">
         :class="[
           'bbn-menu-item',
           'bbn-reactive-block',
-          {'bbn-menu-selected': currentSelectedIndex === i}
+          {'bbn-menu-selected': (!!multiple && currentSelected.includes(item.index)) || (!multiple && (currentSelectedIndex === i))}
         ]"
         role="menuitem"
         :ref="'li' + i"
@@ -128,7 +128,6 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
           else {
             this.select(this.filteredData[idx].data, idx, idx, ev);
           }
-
           this.currentSelectedIndex = idx;
         }
       },
@@ -154,6 +153,18 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
         //getRef('li' + selectedElement).blur(); selectedElement = -1;
       },
       select(item, idx, idx2, ev) {
+        if (this.selection) {
+          let selected = this.currentSelected.includes(this.filteredData[idx].index);
+          if (!this.multiple) {
+            this.currentSelected.splice(0);
+          }
+          if (!selected) {
+            this.currentSelected.push(this.filteredData[idx].index);
+          }
+          else if (!!this.multiple) {
+            this.currentSelected.splice(this.currentSelected.indexOf(this.filteredData[idx].index), 1);
+          }
+        }
         if (this.sourceUrl && item[this.sourceUrl]) {
           bbn.fn.link(item.url);
         }
@@ -166,7 +177,13 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
     },
     watch: {
       overIdx(nv, ov) {
-        //bbn.fn.log("changed overIdx from " + ov + " to " + nv);
+        if (nv > -1) {
+          let fl = this.getRef('floater');
+          if (fl) {
+            // Allows to downsize
+            fl.fullResize();
+          }
+        }
       }
     },
     mounted() {

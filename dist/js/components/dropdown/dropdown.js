@@ -11,9 +11,7 @@ script.innerHTML = `<div :class="[
      @mouseenter="isOverDropdown = true"
      @mouseleave="isOverDropdown = false"
      @focusin="isActive = true"
-     @focusout="onFocusOut"
-     :title="currentText || placeholder || null"
->
+     @focusout="onFocusOut">
   <div :class="['bbn-rel', 'bbn-dropdown-container', 'bbn-flex-width', 'bbn-vmiddle', currentItemCls, {
     'bbn-dropdown-container-native': native
   }]">
@@ -28,33 +26,34 @@ script.innerHTML = `<div :class="[
            @click.stop="click">
     </div>
     <bbn-input v-if="!native"
-               :disabled="isDisabled"
+               ref="input"
+               class="bbn-no-border bbn-flex-fill"
+               v-model="notext ? placeholder : currentText"
                @keydown="keydown"
                @keyup="keyup"
                @click.stop="click"
                @paste="paste"
-               ref="input"
+               @clickRightButton="click"
+               :disabled="isDisabled"
                autocorrect="off"
                autocapitalize="off"
                spellcheck="false"
                :required="required"
                :nullable="isNullable"
+               :force-nullable="isNullable"
                :placeholder="placeholder"
                :tabindex="isDisabled ? -1 : 0"
-               v-model="notext ? undefined : currentText"
-               autocomplete="off"
                :button-right="currentIcon"
-               @clickRightButton="click"
-               class="bbn-no-border bbn-flex-fill"
                :autosize="autosize"
-               :readonly="!writable"/>
+               :readonly="true"
+               :ellipsis="true"/>
     <template v-else>
       <select v-model="currentSelectValue"
               class="bbn-textbox bbn-no-border bbn-flex-fill bbn-p"
               :required="required"
               ref="input"
               @blur="isOpened = false"
-              @change="isOpened = false"
+              @change="selectOnNative"
               @focus="isOpened = true"
               @click="isOpened = true"
               :disabled="!!isDisabled || !!readonly">
@@ -69,7 +68,7 @@ script.innerHTML = `<div :class="[
       <bbn-button :icon="currentIcon"
                   tabindex="-1"
                   :class="['bbn-dropdown-select-button', 'bbn-button-right', 'bbn-no-vborder', 'bbn-m', 'bbn-top-right', {
-                    'bbn-disabled': !!isDisabled || !!readonly
+                    'bbn-disabled': !filteredData.length || !!isDisabled || !!readonly
                   }]"/>
     </template>
   </div>
@@ -77,38 +76,44 @@ script.innerHTML = `<div :class="[
          v-model="value"
          ref="element"
          :name="name">
-  <bbn-floater v-if="!popup
-                 && filteredData.length
-                 && !isDisabled
-                 && !readonly
-                 && !native
-                 && (isOpened || preload)"
-               v-show="isOpened"
-               :element="asMobile ? undefined : $el"
-               :max-height="asMobile ? undefined : maxHeight"
-               :min-width="$el.clientWidth"
-               :width="asMobile ? '100%' : undefined"
-               :height="asMobile ? '100%' : undefined"
-               ref="list"
-               :auto-hide="asMobile ? false : 500"
-               :uid="sourceValue"
-               :item-component="realComponent"
-               @select="select"
-               :children="null"
-               :suggest="true"
-               :selected="[value]"
-               @close="isOpened = false"
-               :source="filteredData"
-               :source-text="sourceText"
-               :source-value="sourceValue"
-               :source-url="sourceUrl"
-               :source-icon="sourceIcon"
-               :title="floaterTitle"
-               :buttons="asMobile ? realButtons : []"
-               :groupable="groupable"
-               :source-group="sourceGroup"
-               :group-component="groupComponent"
-               :group-style="groupStyle"/>
+  <bbn-portal v-if="portalSelector"
+              :selector="portalSelector">
+    <bbn-floater v-if="!popup
+                  && filteredData.length
+                  && !isDisabled
+                  && !readonly
+                  && ready
+                  && !native
+                  && (isOpened || preload)"
+                v-show="isOpened"
+                :element="asMobile ? undefined : $el"
+                :max-height="asMobile ? undefined : maxHeight"
+                :min-width="$el.clientWidth"
+                :width="asMobile ? '100%' : undefined"
+                :height="asMobile ? '100%' : undefined"
+                ref="list"
+                :uid="sourceValue"
+                :item-component="realComponent"
+                @ready="attachList"
+                @select="select"
+                :children="null"
+                :suggest="true"
+                @mouseenter="isOverDropdown = true"
+                @mouseleave="isOverDropdown = false"
+                :selected="value ? [value] : []"
+                @close="isOpened = false"
+                :source="filteredData"
+                :source-text="sourceText"
+                :source-value="sourceValue"
+                :source-url="sourceUrl"
+                :source-icon="sourceIcon"
+                :title="floaterTitle"
+                :buttons="asMobile ? realButtons : []"
+                :groupable="groupable"
+                :source-group="sourceGroup"
+                :group-component="groupComponent"
+                :group-style="groupStyle"/>
+  </bbn-portal>
 </div>
 `;
 script.setAttribute('id', 'bbn-tpl-component-dropdown');
@@ -169,19 +174,18 @@ document.head.insertAdjacentElement('beforeend', css);
         default: false
       }
     },
+    data() {
+      return {
+        startingTmpValue: '',
+        startingTmpTimeout: null      
+      };
+    },
     /**
      * The current icon.
      *
      * @computed currentIcon
      * @return {String}
     */
-    computed: {
-      currentIcon(){
-        return this.isOpened && !this.isDisabled && !this.readonly && this.filteredData.length ?
-            this.iconUp : this.iconDown;
-        //isOpened && !isDisabled && !readonly && filteredData.length ? iconUp : iconDown
-      }
-    },
     beforeMount() {
       if (this.hasStorage) {
         let v = this.getStorage();
@@ -206,7 +210,8 @@ document.head.insertAdjacentElement('beforeend', css);
         if ( this.commonKeydown(e) ){
           return;
         }
-        else if ((e.key === 'Escape')) {
+        else if (this.isOpened && (e.key === 'Escape')) {
+          e.stopPropagation();
           e.preventDefault();
           this.resetDropdown();
         }
@@ -222,25 +227,41 @@ document.head.insertAdjacentElement('beforeend', css);
           e.preventDefault();
           this.isOpened = !this.isOpened;
         }
+        else if (this.isOpened && (e.key === 'Enter')) {
+          e.preventDefault();
+          this.selectOver();
+        }
       },
       paste(){
         alert("PASTE");
       },
       keyup(e) {
         if ( e.key.match(/^[A-z0-9\s]{1}$/)) {
+          this.startingTmpValue += e.key;
           if (!this.isOpened) {
             this.isOpened = true;
           }
-          if (this.currentText === this.currentTextValue) {
-            this.currentText = '';
-          }
         }
       },
-      onFocusOut(){
-        this.isActive = false;
-        if (this.native) {
-          this.isOpened = false;
+      selectOnNative(ev){
+        if (!ev.defaultPrevented) {
+          let idx = bbn.fn.search(this.filteredData, 'data.' + this.sourceValue, ev.target.value);
+          if (idx > -1) {
+            let item = this.filteredData[idx].data;
+            if (this.sourceAction && item[this.sourceAction] && bbn.fn.isFunction(item[this.sourceAction])) {
+              item[this.sourceAction](item);
+            }
+            else if ((this.sourceUrl !== undefined) && item[this.sourceUrl]) {
+              bbn.fn.link(item[this.sourceUrl]);
+            }
+            else if (item[this.uid || this.sourceValue] !== undefined) {
+              this.emitInput(item[this.uid || this.sourceValue]);
+              this.$emit('change', item[this.uid || this.sourceValue], idx, this.filteredData[idx].index, ev);
+              bbn.fn.log('yes', item[this.uid || this.sourceValue], idx, this.filteredData[idx].index, ev)
+            }
+          }
         }
+        this.isOpened = false;
       }
     },
     /**
@@ -258,7 +279,32 @@ document.head.insertAdjacentElement('beforeend', css);
         }
       })
     },
+    beforeDestroy() {
+      let fl = this.getRef('list');
+      if (fl && fl.$el) {
+        fl.$destroy();
+        fl.$el.parentNode.removeChild(fl.$el);
+      }
+    },
     watch: {
+      startingTmpValue(v) {
+        if (v) {
+          let fl = this.getRef('list');
+          if (fl) {
+            let lst = fl.getRef('list');
+            if (lst) {
+              bbn.fn.log("TEOUVE");
+              lst.overByString(v);
+            }
+          }
+          if (this.startingTmpTimeout) {
+            clearTimeout(this.startingTmpTimeout);
+          }
+          this.startingTmpTimeout = setTimeout(() => {
+            this.startingTmpValue = '';
+          }, 1000)
+        }
+      },
      /**
       * @watch  isActive
       */
@@ -295,10 +341,6 @@ document.head.insertAdjacentElement('beforeend', css);
           });
         }
 
-        if ((this.currentText === this.currentTextValue) && this.writable && !this.native) {
-          this.selectText();
-        }
-
         if (!val && this.preload && !this.native) {
           this.getRef('list').currentVisible = true;
         }
@@ -310,7 +352,6 @@ document.head.insertAdjacentElement('beforeend', css);
         if (this.ready) {
           if (!newVal && this.value && this.isNullable){
             this.emitInput('');
-            this.selectText();
             this.filterString = '';
           }
           else {

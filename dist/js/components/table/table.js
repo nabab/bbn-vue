@@ -7,12 +7,10 @@ script.innerHTML = `<div :class="[{'bbn-overlay': scrollable, 'bbn-block': !scro
        :style="scrollable && groupCols.length ? {} : {
          width: totalWidth
        }"
-       v-if="cols.length"
-  >
+       v-if="cols.length">
     <div v-if="hasToolbar"
          class="bbn-table-toolbar bbn-w-100"
-         ref="toolbar"
-    >
+         ref="toolbar">
       <bbn-toolbar v-if="toolbarButtons.length || search"
                    :source="toolbarButtons"
                    :slot-before="toolbarSlotBefore">
@@ -35,8 +33,7 @@ script.innerHTML = `<div :class="[{'bbn-overlay': scrollable, 'bbn-block': !scro
     <div :class="['bbn-w-100', 'bbn-table-container', {'bbn-flex-fill': scrollable}]">
       <div v-if="initStarted || isResizing"
            class="bbn-overlay bbn-middle bbn-background"
-           style="z-index: 5"
-      >
+           style="z-index: 5">
         <bbn-loadicon class="bbn-vmiddle"
                       :size="24"/>
         <span class="bbn-xl bbn-b bbn-left-sspace"
@@ -46,8 +43,7 @@ script.innerHTML = `<div :class="[{'bbn-overlay': scrollable, 'bbn-block': !scro
                  class="bbn-w-100"
                  ref="scroll"
                  :offset-y="$refs.thead ? [$refs.thead.getBoundingClientRect().height, 0] : [0,0]"
-                 @resize="resizeWidth"
-      >
+                 @resize="resizeWidth">
         <table :style="{width: totalWidth}"
                ref="table"
                v-if="currentColumns.length"
@@ -57,8 +53,7 @@ script.innerHTML = `<div :class="[{'bbn-overlay': scrollable, 'bbn-block': !scro
               <col v-for="(col, i) in groupCol.cols"
                   v-show="!col.hidden"
                   :style="{width: col.realWidth + 'px'}"
-                  :key="groupIndex + '-'+ i"
-              >
+                  :key="groupIndex + '-'+ i">
             </template>
           </colgroup>
           <thead v-if="titles" ref="thead">
@@ -125,8 +120,7 @@ script.innerHTML = `<div :class="[{'bbn-overlay': scrollable, 'bbn-block': !scro
                       'bbn-red': hasFilter(col)
                     }"
                     v-if="showFilterOnColumn(col)"
-                    @click="showFilter(col, $event)"
-                  ></i>
+                    @click="showFilter(col, $event)"/>
                   <div v-if="col.isSelection" :title="_('Check all')">
                     <bbn-checkbox v-model="allRowsChecked"/>
                   </div>
@@ -204,8 +198,7 @@ script.innerHTML = `<div :class="[{'bbn-overlay': scrollable, 'bbn-block': !scro
                     'bbn-header': !!(d.aggregated || d.groupAggregated),
                   }, getTrClass(d.data)]"
                   :style="getTrStyle(d.data)"
-                  ref="rows"
-              >
+                  ref="rows">
                 <!-- Group lines just have the cell with the expander and a single big cell -->
                 <template v-if="groupable && d.group && currentColumns && currentColumns.length">
                   <td :class="[getTrClass(d.data), (currentColumns[0].fixed ? ' ' + cssRuleName + ' bbn-table-fixed-cell bbn-table-fixed-cell-left' : '')]"
@@ -217,8 +210,7 @@ script.innerHTML = `<div :class="[{'bbn-overlay': scrollable, 'bbn-block': !scro
                         class="bbn-table-expander bbn-p bbn-unselectable bbn-spadded bbn-c"
                         v-if="d.expander"
                         @keydown.space="toggleExpanded(d.index)"
-                        tabindex="0"
-                        >
+                        tabindex="0">
                       <i :class="'nf nf-fa-caret_' + (isExpanded(d) ? 'down' : 'right') + ' bbn-lg'"
                       ></i>
                     </div>
@@ -1086,10 +1078,6 @@ document.head.insertAdjacentElement('beforeend', css);
          * @data {Boolean} [false] isTableDataUpdating Will be set to true during the whole update process
          */
         isTableDataUpdating: false,
-        /**
-         * @data {String} [''] searchValue
-         */
-        searchValue: '',
         /**
          * The text shown during loading
          * @data {String} ['Loading...'] currentLoaderText
@@ -3881,7 +3869,7 @@ document.head.insertAdjacentElement('beforeend', css);
           if (bbn.fn.isNumber(oldIndex) && this.items[oldIndex]) {
             let idx = this.items[oldIndex].index;
             if ((this.editedIndex === idx)
-              && this.isModified(idx)
+              && ((idx === -1) || this.isModified(idx))
             ) {
               if (this.autoSave) {
                 this.saveInline();

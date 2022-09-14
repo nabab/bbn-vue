@@ -1,6 +1,4 @@
-.bbn-gallery *,
-.bbn-gallery *:before,
-.bbn-gallery *:after {
+.bbn-gallery a.bbn-gallery-item {
   -webkit-transition: all 0.1s ease-in;
   -moz-transition: all 0.1s ease-in;
   -o-transition: all 0.1s ease-in;
@@ -52,15 +50,35 @@
 .bbn-gallery a.bbn-gallery-item i.bbn-gallery-button-menu {
   font-size: 1.5rem;
   color: white;
-  left: 0.5rem;
-  top: 0.5rem;
   opacity: 0;
-  position: absolute;
   transition: opacity 0.3s ease 0s;
   text-shadow: 1px 1px black;
 }
 .bbn-gallery a.bbn-gallery-item:hover i.bbn-gallery-button-menu {
   opacity: 1;
+}
+.bbn-gallery a.bbn-gallery-item .bbn-gallery-item-position {
+  background-color: var(--primary-border);
+  color: var(--primary-text);
+}
+.bbn-gallery a.bbn-gallery-item.bbn-droppable-over {
+  border-color: var(--secondary-border) !important;
+}
+.bbn-gallery a.bbn-gallery-item.bbn-droppable-over .bbn-gallery-item-position {
+  background-color: var(--secondary-border) !important;
+  color: var(--secondary-text) !important;
+}
+.bbn-gallery.bbn-gallery-sorting .bbn-gallery-item span {
+  display: block;
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  aspect-ratio: 1;
+}
+.bbn-gallery.bbn-gallery-sorting .bbn-gallery-item span img {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
 }
 .bbn-gallery div.bbn-gallery-pager {
   margin-top: 10px;

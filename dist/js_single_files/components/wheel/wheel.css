@@ -1,0 +1,9 @@
+.bbn-wheel .bbn-button {
+  width: 100%;
+}
+.bbn-wheel .bbn-wheel-container {
+  height: 10rem;
+}
+.bbn-wheel .bbn-wheel-container .bbn-wheel-item {
+  height: 2rem;
+}

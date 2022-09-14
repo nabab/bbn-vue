@@ -16,9 +16,9 @@ script.innerHTML = `<component :is="tag"
                tabindex="-1"
                :position="position"
                :content="getContent()"
-               @close="isVisible = false"
+               @close="onClose"
                :component="component"
-               :element="$el"
+               :element="element || $el"
                :element-width="false"
                :arrow="true"
                :distance="distance"
@@ -92,6 +92,13 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
         type: Number,
         default: 10
       },
+      /**
+       * The HTML element to which the floater must bind
+       * @prop {HTMLElement} element
+       */
+      element: {
+        type: HTMLElement
+      }
     },
     data(){
       return {
@@ -109,6 +116,15 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
        */
       getContent() {
         return bbn.fn.isFunction(this.source) ? this.source() : this.source;
+      },
+      /**
+       * The method called after the floater close
+       * @methods onClose
+       * @emit close
+       */
+      onClose(){
+        this.isVisible = false;
+        this.$emit('close', this);
       }
     }
   });

@@ -46,7 +46,8 @@
                 :scrollable="false"
                 :fixed-footer="false"
                 ref="form"
-                @success="onSubmit"
+                @submit="onSubmit"
+                @success="onAfterSubmit"
                 key="form"
                 :validation="validation"
                 v-else
@@ -58,7 +59,7 @@
                       required="required"
                       button-left="nf nf-fa-envelope_o"
                       :nullable="true"
-                      :placeholder="_('Login name')"
+                      :placeholder="loginFieldPlaceholder"
                       v-model="currentFormData.user"/>
           </div>
           <div class="bbn-w-100 bbn-c">
@@ -67,7 +68,7 @@
                        required="required"
                        button-left="nf nf-fa-lock"
                        :nullable="true"
-                       :placeholder="_('Password')"
+                       :placeholder="passwordFieldPlaceholder"
                        v-model="currentFormData.pass"/>
           </div>
           <div class="bbn-c bbn-w-100 bbn-vsmargin bbn-flex-width">
@@ -130,7 +131,10 @@
                       v-model="currentFormData.pass2"
                       @clickRightButton="passwordVisible = !passwordVisible"/>
           </div>
-          <div class="bbn-c bbn-vmargin bbn-flex-width">
+          <div v-if="note"
+               class="bbn-s bbn-i"
+               v-text="note"/>
+          <div class="bbn-c bbn-vmargin bbn-flex-width bbn-w-100">
             <bbn-button type="button"
                         @click="$refs.form.submit()"
                         :text="_('Send')"/>
@@ -270,7 +274,26 @@
         type: [Boolean, String],
         default: bbn._("Password forgotten?")
       },
-
+      /**
+       * @prop {String} ['Login name'] loginFieldPlaceholder
+       */
+      loginFieldPlaceholder: {
+        type: String,
+        default: bbn._('Login name')
+      },
+      /**
+       * @prop {String} ['Password'] passwordFieldPlaceholder
+       */
+       passwordFieldPlaceholder: {
+        type: String,
+        default: bbn._('Password')
+      },
+      /**
+       * @prop {String} note
+       */
+      note: {
+        type: String
+      }
     },
     data(){
       return{
@@ -329,11 +352,26 @@
     methods: {
       /**
        * @method onSubmit
+       * @param {Event} ev
+       * @param {Vue} form
+       * @emit submit
+       */
+       onSubmit(ev, form){
+        this.$emit('submit', ev, form);
+       },
+      /**
+       * @method onAfterSubmit
        * @param d
        * @fires alert
+       * @emit aftersubmit
        */
-      onSubmit(d){
-        if ( d == 1 ){
+      onAfterSubmit(d){
+        let ev = new Event('aftersubmit', {cancelable: true});
+        this.$emit('aftersubmit', ev, d, this.currentMode, this);
+        if (ev.defaultPrevented) {
+          return;
+        }
+        if (d == 1) {
           window.document.location.href = bbn.env.path;
         }
         else if (d.success){

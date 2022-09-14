@@ -2,30 +2,51 @@
 ((bbn) => {
 
 let script = document.createElement('script');
-script.innerHTML = `<div :class="[componentClass, 'bbn-iblock', 'bbn-textbox', {'bbn-disabled': !!isDisabled}]"
-     @mouseleave="leave"
+script.innerHTML = `<div :class="[
+       componentClass,
+       'bbn-iblock',
+       'bbn-textbox',
+       {'bbn-disabled': !!isDisabled}
+     ]"
+     @mouseenter="isOverDropdown = true"
+     @mouseleave="isOverDropdown = false"
      @focusin="isActive = true"
-     @focusout="isActive = false"
->
-  <div class="bbn-flex-width">
-    <div class="bbn-flex-fill"
-         @click.stop="click"
-    >
-      <bbn-input :disabled="isDisabled"
-                class="bbn-unselectable bbn-no-border"
-                :required="required"
-                :readonly="readonly"
-                :placeholder="inputIsVisible || isOpened ? '' : placeholder"
-                autocorrect="off"
-                autocapitalize="off"
-                spellcheck="false"
-                :value="inputIsVisible || isOpened ? filterString : currentText"
-                @focus="_setInputVisible"
-                :style="{display: inputIsVisible ? 'none' : 'inline-block'}"
-      ></bbn-input>
-      <bbn-input v-if="!isDisabled && !readonly"
+     @focusout="onFocusOut">
+  <div :class="['bbn-rel', 'bbn-autocomplete-container', 'bbn-flex-width', 'bbn-vmiddle', currentItemCls, {
+    'bbn-autocomplete-container-native': native
+  }]">
+    <div v-if="sourceIcon && hasValue && !!currentItemIcon"
+         class="bbn-left-xspadded">
+      <i :class="currentItemIcon"
+         @click.stop="click" />
+    </div>
+    <div v-if="sourceImg && hasValue && !!currentItemImg"
+         class="bbn-left-xspadded">
+      <img :src="currentItemImg"
+           @click.stop="click"
+           :alt="currentItemImg">
+    </div>
+    <bbn-input :disabled="isDisabled"
+               class="bbn-no-border bbn-flex-fill bbn-unselectable"
+               :required="required"
+               :readonly="readonly"
+               :placeholder="inputIsVisible || isOpened ? '' : placeholder"
+               autocorrect="off"
+               autocapitalize="off"
+               spellcheck="false"
+               :value="inputIsVisible || isOpened ? filterString : currentText"
+               :button-right="currentIcon"
+               :button-right-disabled="!filteredData.length"
+               :action-right="() => {isOpened = !isOpened}"
+               :autosize="autosize"
+               :nullable="isNullable"
+               :force-nullable="isNullable"
+               @focus="_setInputVisible"
+               v-show="!inputIsVisible"/>
+    <bbn-input v-if="!isDisabled && !readonly"
+               v-show="inputIsVisible"
                 :tabindex="0"
-                class="bbn-no-border"
+                class="bbn-no-border bbn-i"
                 v-model="filterString"
                 ref="input"
                 @focus="selectText"
@@ -35,49 +56,52 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-iblock', 'bbn-textbox', {
                 :readonly="readonly"
                 @keydown.stop="keydown"
                 @change="onChange"
+                :autosize="autosize"
                 autocorrect="off"
                 autocapitalize="off"
                 spellcheck="false"
                 :name="name"
+                :button-right="currentIcon"
+                :button-right-disabled="!filteredData.length"
+                :action-right="() => {isOpened = !isOpened}"
                 :nullable="isNullable"
-                :style="{display: inputIsVisible ? 'inline-block' : 'none'}"
-      ></bbn-input>
-    </div>
-    <div class="bbn-list-component-button">
-      <div v-if="isAjax && isLoading"
-           class="bbn-middle"
-      >
-        <bbn-loadicon size="1.2rem"
-                      tabindex="-1"
-        ></bbn-loadicon>
-      </div>
-      <bbn-button v-else
-                  :icon="isOpened && !isDisabled && !readonly && filteredData.length ? iconUp : iconDown"
-                  class="bbn-button-right bbn-no-vborder bbn-m"
-                  @click.prevent.stop="click"
-                  tabindex="-1"
-                  :disabled="isDisabled"
-      ></bbn-button>
-    </div>
+                :force-nullable="isNullable"/>
   </div>
   <input type="hidden"
          v-model="value"
          ref="element"
-         :name="name"
-  >
-  <bbn-floater v-if="!isDisabled && !readonly && isOpened"
-               :element="$el"
-               :max-height="maxHeight"
-               :min-width="$el.clientWidth"
-               ref="list"
-               :source-value="sourceValue"
-               :source-text="sourceText"
-               :item-component="realComponent"
-               @select="select"
-               :selected="[value]"
-               @close="isOpened = false"
-               :source="filteredData"
-  ></bbn-floater>
+         :name="name">
+  <bbn-portal v-if="portalSelector"
+              :selector="portalSelector">
+    <bbn-floater v-if="!popup
+                    && filteredData.length
+                    && !isDisabled
+                    && !readonly
+                    && !native
+                    && ready
+                    && isOpened"
+                :element="asMobile ? undefined : $el"
+                :max-height="asMobile ? undefined : maxHeight"
+                :min-width="$el.clientWidth"
+                :width="asMobile ? '100%' : undefined"
+                :height="asMobile ? '100%' : undefined"
+                ref="list"
+                :children="null"
+                :source-value="sourceValue"
+                :source-text="sourceText"
+                :source-url="sourceUrl"
+                :source-icon="sourceIcon"
+                :title="floaterTitle"
+                :buttons="asMobile ? realButtons : []"
+                :item-component="realComponent"
+                @mouseenter="isOverDropdown = true"
+                @mouseleave="isOverDropdown = false"
+                @ready="attachList"
+                @select="select"
+                :selected="value ? [value] : []"
+                @close="isOpened = false"
+                :source="filteredData"/>
+  </bbn-portal>
 </div>
 `;
 script.setAttribute('id', 'bbn-tpl-component-autocomplete');
@@ -139,7 +163,7 @@ document.head.insertAdjacentElement('beforeend', css);
        */
       minLength: {
         type: Number,
-        default: 0
+        default: 2
       },
       /**
        * Specifies the time of delay.
@@ -158,6 +182,15 @@ document.head.insertAdjacentElement('beforeend', css);
       filterMode: {
         type: String,
         default: 'startswith'
+      },
+      /**
+       * Autobind defaults at false.
+       *
+       * @prop {Boolean} [false] autobind
+       */
+      autobind: {
+        type: Boolean,
+        default: false
       }
     },
     data(){
@@ -185,7 +218,6 @@ document.head.insertAdjacentElement('beforeend', css);
         if (!this.ready) {
           this.ready = true;
         }
-
       },
       /**
        * Puts the focus on the element.
@@ -259,11 +291,14 @@ document.head.insertAdjacentElement('beforeend', css);
        * @fires keynav
        */
       keydown(e){
-        if ((e.key === ' ') || this.commonKeydown(e)) {
+        if ( this.commonKeydown(e) ){
           return;
         }
-        if (e.key === 'Escape') {
+        else if (this.isOpened && (e.key === 'Escape')) {
+          e.stopPropagation();
+          e.preventDefault();
           this.resetDropdown();
+          return;
         }
         else if (bbn.var.keys.upDown.includes(e.keyCode)) {
           this.keynav(e);
@@ -300,42 +335,44 @@ document.head.insertAdjacentElement('beforeend', css);
         if (!this.ready) {
           this.ready = true;
         }
+
         clearTimeout(this.filterTimeout);
+        bbn.fn.log("CLEARED")
         if (!v && this.nullable && this.inputIsVisible) {
+          bbn.fn.log("NO VALUE")
           this.unfilter();
           this.emitInput(null);
           this.currentText = '';
+          if (this.currentData.length) {
+            this.currentData.splice(0, this.currentData.length);
+          }
         }
-        else if (v !== this.currentText) {
-          this.isOpened = false;
-          this.filterTimeout = setTimeout(() => {
-            // this.filterTimeout = false;
-            // We don't relaunch the source if the component has been left
-            if (this.isActive) {
-              if (v && (v.length >= this.minLength)) {
+        else if (v) {
+          bbn.fn.log("VALUE")
+          if (v.length < this.minLength) {
+            if (this.currentData.length) {
+              this.currentData.splice(0, this.currentData.length);
+            }
+          }
+          else if ((v !== this.currentText)) {
+            bbn.fn.log("MIN PASSED")
+            this.isOpened = false;
+            this.filterTimeout = setTimeout(() => {
+              // this.filterTimeout = false;
+              // We don't relaunch the source if the component has been left
+              if (this.isActive) {
+                bbn.fn.log("UPDATING AUTOC");
                 this.currentFilters.conditions.splice(0, this.currentFilters.conditions.length ? 1 : 0, {
                   field: this.sourceText,
                   operator: this.filterMode,
                   value: v
                 });
-                this.$nextTick(() => {
-                  if ( !this.isOpened ){
-                    this.isOpened = true;
-                  }
-                  else {
-                    let floater = this.getRef('list');
-                    let list = floater ? floater.getRef('scroll') : false;
-                    if (list) {
-                      list.onResize();
-                    }
-                  }
-                });
+                this.updateData().then(() => {
+                  this.isOpened = true;
+                })
               }
-              else {
-                this.unfilter();
-              }
-            }
-          }, this.delay);
+            }, this.delay);
+          }
         }
         else if ( !v ){
           this.unfilter();

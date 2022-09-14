@@ -4,16 +4,14 @@
          ref="element"
          :value="modelValue"
          :disabled="isDisabled"
-         :required="required"
-  >
+         :required="required">
   <div :style="getStyle()">
     <div v-for="(d, idx) in source"
          :class="{
             'bbn-iblock': !vertical,
             'bbn-right-space': !vertical && !separator && source[idx+1],
             'bbn-bottom-sspace': !!vertical && !separator && source[idx+1]
-         }"
-    >
+         }">
       <input :value="d[sourceValue]"
              :name="name"
              class="bbn-radio"
@@ -22,14 +20,15 @@
              :required="required"
              :id="id + '_' + idx"
              @change="changed(d[sourceValue], d, $event)"
-             :checked="d[sourceValue] === modelValue"
-      >
+             :checked="d[sourceValue] === modelValue">
       <label class="bbn-radio-label bbn-iflex bbn-vmiddle"
-             :for="id + '_' + idx"
-      >
-         <span class="bbn-left-sspace"
-               v-html="render ? render(d) : d[sourceText]"
-         ></span>
+             :for="id + '_' + idx">
+        <component v-if="d.component"
+                   :is="d.component"
+                   class="bbn-left-sspace"/>
+        <span v-else
+               class="bbn-left-sspace"
+               v-html="render ? render(d) : d[sourceText]"/>
       </label>
       <br v-if="!vertical && step && ((idx+1) % step === 0)">
       <div v-if="(source[idx+1] !== undefined) && !!separator"
@@ -37,8 +36,7 @@
             'bbn-w-100': vertical,
             'bbn-iblock': !vertical
            }"
-           v-html="separator"
-      ></div>
+           v-html="separator"/>
     </div>
   </div>
 </div>

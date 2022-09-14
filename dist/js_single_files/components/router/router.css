@@ -36,6 +36,9 @@ div.bbn-router .bbn-router-nav .bbn-pane .bbn-router-nav:not(.bbn-router-nav-bc)
 div.bbn-router .bbn-router-nav .bbn-pane .bbn-router-nav:not(.bbn-router-nav-bc) .bbn-router-nav:not(.bbn-router-nav-bc) {
   padding-top: var(--sspace);
 }
+div.bbn-router .bbn-router-nav .bbn-router-nav.bbn-router-nav-verticaltabs {
+  padding-top: 0 !important;
+}
 div.bbn-router .bbn-router-nav div.bbn-router-breadcrumb {
   border: 0 !important;
   overflow: hidden;

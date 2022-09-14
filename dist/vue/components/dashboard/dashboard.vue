@@ -640,6 +640,9 @@
         if ( obj.showable === undefined ){
           obj.showable = true;
         }
+        if (!this.sortable) {
+          obj.sortable = false;
+        }
         obj.storageFullName = (this.storageFullName || this._getStorageRealName()) + '-' + obj.key;
         return obj;
       },

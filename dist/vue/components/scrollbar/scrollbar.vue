@@ -1,5 +1,8 @@
 <template>
-<div :class="componentClass"
+<div :class="[componentClass, {
+            vertical: isVertical,
+            horizontal: !isVertical
+      }]"
       :style="barStyle"
       v-if="isVisible"
       @click="jump($event)"

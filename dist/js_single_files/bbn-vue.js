@@ -1669,6 +1669,14 @@
          */
         groupStyle: {
           type: String
+        },
+        /**
+         * @prop {Number} closeDelay The time it will take for the floater/menu to close when the mouse leaves
+         * This  allows to cancel if the mouse comes back
+         */
+        closeDelay: {
+          type: Number,
+          default: 1000
         }
       },
       data(){
@@ -1726,7 +1734,14 @@
            * @data {String|Number|Boolean} currentSelectValue
            * @memberof dropdownComponent
            */
-          currentSelectValue: this.value
+          currentSelectValue: this.value,
+          /**
+           * The floater component
+           * @data {Vue} list
+           * @memberof dropdownComponent
+           */
+          list: null,
+          portalSelector: null
         };
       },
       computed: {
@@ -1778,6 +1793,15 @@
          */
         asMobile(){
           return this.isMobile && this.mobile;
+        },
+        /**
+         * @computed currentIcon
+         * @memberof dropdownComponent
+         * @return {String}
+         */
+         currentIcon(){
+          return this.isOpened && !this.isDisabled && !this.readonly && this.filteredData.length ?
+              this.iconUp : this.iconDown;
         }
       },
       methods: {
@@ -1834,26 +1858,48 @@
           }
           this.isOpened = false;
         },
+        attachList() {
+          let list = this.getRef('list');
+          bbn.fn.log("attahc", list);
+          if (list) {
+            this.list = list;
+          }
+        },
         /**
          * Defines the behavior of component when the key 'alt' or a common key defined in the object bbn.var.keys is pressed. 
          * @method commonKeydown
          * @memberof dropdownComponent
          * @param {Event} e 
+         * @return {Boolean}
          */
-        commonKeydown(e){
-          if (!this.filteredData.length || e.altKey || e.ctrlKey || e.metaKey) {
-            return;
+        selectOver() {
+          if (this.list) {
+            let lst = this.list.getRef('list');
+            if (lst && (lst.overIdx > -1)) {
+              this.select(lst.filteredData[lst.overIdx].data);
+            }
           }
+        },
+        /**
+         * Defines the behavior of component when the key 'alt' or a common key defined in the object bbn.var.keys is pressed. 
+         * @method commonKeydown
+         * @memberof dropdownComponent
+         * @param {Event} e 
+         * @return {Boolean}
+         */
+        commonKeydown(e) {
+          if (e.altKey || e.ctrlKey || e.metaKey) {
+            return true;
+          }
+
           if ((e.key.length >= 2) && (e.key[0] === 'F')) {
-            return;
+            return true;
           }
+
           if (e.key === 'Tab') {
-            let list = this.find('bbn-list');
-            if ( list && (list.overIdx > -1)) {
-              if ( !this.value ){
-                this.emitInput(list.filteredData[list.overIdx].data[this.uid || this.sourceValue]);
-                return true;
-              }
+            if (this.isOpened) {
+              this.selectOver();
+              return true;
             }
             this.resetDropdown();
             this.isOpened = false;
@@ -1863,17 +1909,12 @@
             this.isOpened && (
               bbn.var.keys.confirm.includes(e.which) || ((e.key === ' ') && !this.isSearching)
             )
-          ){
+          ) {
             e.preventDefault();
-            let list = this.find('bbn-list');
-            if (list && (list.overIdx > -1)) {
-              this.select(list.filteredData[list.overIdx].data);
-            }
-            else if (this.isNullable) {
-              this.selfEmit('');
-            }
+            this.selectOver();
             return true;
           }
+
           return false;
         },
         /**
@@ -1905,6 +1946,9 @@
          */
         unfilter(){
           this.currentFilters.conditions.splice(0, this.currentFilters.conditions.length);
+          if (this.currentFilters.logic && (this.currentFilters.logic.toLowerCase() === 'or')) {
+            this.currentFilters.logic = 'AND';
+          }
         },
         /**
          * Gets the buttons list
@@ -1941,9 +1985,17 @@
          */
         updateButtons(){
           this.realButtons.splice(0, this.realButtons.length, ...this.getRealButtons());
+        },
+        onFocusOut(){
+          this.isActive = false;
+          if (this.native) {
+            this.isOpened = false;
+          }
         }
       },
       beforeMount() {
+        let ct = this.closest('bbn-container');
+        this.portalSelector = ct ? ct.$el : document.body;
         this.updateButtons();
       },
       watch: {
@@ -1962,17 +2014,18 @@
          * @param element 
          * @memberof dropdownComponent
          */
-         isOverDropdown(v) {
-           if (v) {
-             clearTimeout(this.closeTimeout);
-           }
-           else {
+        isOverDropdown(v) {
+          if (v) {
+            clearTimeout(this.closeTimeout);
+          }
+          else {
             this.closeTimeout = setTimeout(() => {
               let lst = this.getRef('list');
               if ( lst ){
+                bbn.fn.log("SHOULD CLOSE");
                 lst.close(true);
               }
-            }, 1000);
+            }, this.closeDelay);
           }
         },
         /**
@@ -2543,7 +2596,7 @@
                   v,
                   (cfg.precision === -4) || (cfg.format && (cfg.format.toLowerCase() === 'k')),
                   cfg.currency || cfg.unit || "",
-                  '-',
+                  !!cfg.novalue ? (bbn.fn.isFunction(cfg.novalue) ? cfg.novalue(data[cfg.field], cfg) : cfg.novalue) : '-',
                   ',',
                   ' ',
                   cfg.precision === -4 ? 3 : (cfg.precision || cfg.decimals || 0)
@@ -2680,6 +2733,12 @@
               o.type = 'enums';
               o.component = 'bbn-dropdown';
               o.componentOptions.source = col.source;
+              o.componentOptions.placeholder = bbn._('Choose');
+            }
+            else if ( col.type === 'boolean' ){
+              o.type = 'enums';
+              o.component = 'bbn-dropdown';
+              o.componentOptions.source = [0, 1];
               o.componentOptions.placeholder = bbn._('Choose');
             }
             else if ( col.type ){
@@ -3260,24 +3319,31 @@
             :source="data"
             :data="obj"
             @success="success"
-            @failure="failure">
+            @failure="failure"
+            @cancel="cancel">
   </bbn-form>`,
                 methods: {
                   success(d, e) {
                     e.preventDefault();
-                    if (table.successEdit(d)) {
+                    if (table.successEdit && table.successEdit(d)) {
                       table.getPopup().close();
                     }
                   },
                   failure(d) {
                     table.$emit('editFailure', d);
                   },
+                  cancel() {
+                    if (table && table.cancel) {
+                      table.cancel();
+                    }
+                  }
                 },
               };
             } else {
               throw new Error(bbn._("Impossible to open a window if either an editor or a URL is not set"))
             }
-            popup.afterClose = () => {
+            popup.onClose = () => {
+              bbn.fn.log("AFTER CLOSER");
               //  this.currentData.push(bbn.fn.clone( this.tmpRow)); // <-- Error. This add a new row into table when it's in edit mode
               this._removeTmp();
               this.editedRow = false;
@@ -3710,7 +3776,7 @@
          * @prop {String} sourceAction
          * @memberof listComponent
          */
-         sourceAction: {
+        sourceAction: {
           type: [String, Function]
         },
         /**
@@ -3718,7 +3784,7 @@
          * @prop {String} sourceUrl
          * @memberof listComponent
          */
-         sourceUrl: {
+        sourceUrl: {
           type: [String, Function]
         },
         /**
@@ -3978,7 +4044,11 @@
           /**
            * @data {null|String} An ID given with the search results
            */
-          searchId: null
+          searchId: null,
+          /**
+           * @data {String} [''] searchValue
+           */
+          searchValue: '',
         };
       },
       computed: {
@@ -4113,20 +4183,33 @@
          * @memberof listComponent
          * @return {String}
          */
-        currentItemIcon(){
+        currentItem() {
           if ((this.value !== undefined)
             && !bbn.fn.isNull(this.value)
             && this.sourceValue
-            && this.sourceIcon
             && this.currentData.length
           ){
             let idx = bbn.fn.search(this.currentData, a => {
               return a.data[this.sourceValue] === this.value;
             });
             if (idx > -1) {
-              return this.currentData[idx].data[this.sourceIcon];
+              return this.currentData[idx].data;
             }
           }
+
+          return null;
+        },
+        /**
+         * Returns the current item icon
+         * @computed currentItemIcon
+         * @memberof listComponent
+         * @return {String}
+         */
+        currentItemIcon() {
+          if (this.currentItem && this.sourceIcon) {
+            return this.currentItem[this.sourceIcon];
+          }
+
           return '';
         },
         /**
@@ -4136,19 +4219,10 @@
          * @return {String}
          */
         currentItemImg(){
-          if ((this.value !== undefined)
-            && !bbn.fn.isNull(this.value)
-            && this.sourceValue
-            && this.sourceImg
-            && this.currentData.length
-          ){
-            let idx = bbn.fn.search(this.currentData, a => {
-              return a.data[this.sourceValue] === this.value;
-            });
-            if (idx > -1) {
-              return this.currentData[idx].data[this.sourceImg];
-            }
+          if (this.currentItem && this.sourceImg) {
+            return this.currentItem[this.sourceImg];
           }
+  
           return '';
         },
         /**
@@ -4158,19 +4232,10 @@
          * @return {String}
          */
         currentItemCls(){
-          if ((this.value !== undefined)
-            && !bbn.fn.isNull(this.value)
-            && this.sourceValue
-            && this.sourceCls
-            && this.currentData.length
-          ){
-            let idx = bbn.fn.search(this.currentData, a => {
-              return a.data[this.sourceValue] === this.value;
-            });
-            if (idx > -1) {
-              return this.currentData[idx].data[this.sourceCls];
-            }
+          if (this.currentItem && this.sourceCls) {
+            return this.currentItem[this.sourceCls];
           }
+  
           return '';
         }
       },
@@ -4542,6 +4607,17 @@
           }
         },
         /**
+         * Deletes all the current data from the view.
+         * @method realDelete
+         * @emit delete
+         * @param {Number} index
+         */
+        emptyData() {
+          if (this.currentData) {
+            this.currentData.splice(0, this.currentData.length);
+          }
+        },
+        /**
          * Deletes the row defined by param index.
          * @method realDelete
          * @emit delete
@@ -4724,7 +4800,10 @@
                 this.start = 0;
               }
 
-              this.updateData();
+              if (this.autobind) {
+                this.updateData();
+              }
+
               if ( bbn.fn.isFunction(this.setConfig) ){
                 this.setConfig(true);
               }
@@ -4970,6 +5049,13 @@
          focused: {
           type: Boolean,
           default: false
+        },
+        /**
+         * @prop {Boolean} [false] ellipsis
+         */
+        ellipsis: {
+          type: Boolean,
+          default: false
         }
       },
       data(){
@@ -4996,7 +5082,7 @@
         isNullable(){
           let isNullable = !!this.nullable;
           if ( this.nullable === null ){
-            isNullable = this.required ? false : !!this.placeholder;
+            isNullable = !this.required;
           }
 
           return isNullable;
@@ -5081,7 +5167,6 @@
                   return true;
                 }
               }
-              
               if ( !validity.valid || specificCase ){
                 // If field is required and empty
                 if ( validity.valueMissing || specificCase ){
@@ -5131,10 +5216,40 @@
                 }
                 if (setError) {
                   this.$emit('error', customMessage || mess);
-                  let border = $elem.style.border;
-                  $elem.style.border = '1px solid red';
+                  this.validationID = bbn.fn.randomString();
+                  if (!this.$el.classList.contains('bbn-state-invalid')) {
+                    this.$el.classList.add('bbn-state-invalid');
+                  let cont = document.createElement('div');
+                  cont.id = this.validationID;
+                  cont.innerHTML = `
+                    <bbn-tooltip source="${customMessage || mess}"
+                                  ref="tooltip"
+                                  @hook:mounted="showContent"
+                                  :icon="false"
+                                  position="bottomLeft"
+                                  @close="removeEle"
+                                  :element="element"/>
+                  `;
+                    this.$el.appendChild(cont);
+                    new Vue({
+                      el: `#${this.validationID}`,
+                      data(){
+                        return {
+                          element: $elem
+                        }
+                      },
+                      methods: {
+                        showContent(){
+                          this.getRef('tooltip').isVisible = true;
+                        },
+                        removeEle(){
+                          this.$el.remove();
+                        }
+                      }
+                    })
+                  }
                   this.$once('blur', () => {
-                    $elem.style.border  = border;
+                    this.$emit('removevalidation');
                     $elem.focus();
                   });
                 }
@@ -5175,6 +5290,17 @@
             ele.focus();
           }
         }, 100)
+        this.$on('removevalidation', () => {
+          if (!!this.validationID
+            && this.$el.classList.contains('bbn-state-invalid')
+          ) {
+            this.$el.classList.remove('bbn-state-invalid');
+            if (document.getElementById(this.validationID)) {
+              document.getElementById(this.validationID).remove();
+            }
+            this.validationID = false;
+          }
+        })
       },
       watch: {
         /**
