@@ -862,7 +862,7 @@
            * @return {String}
            */
           altSrc() {
-            return bbn.fn.basename(this.imgSrc);
+            return bbn.fn.baseName(this.imgSrc);
           },
           /**
            * @computed gallery
