@@ -1,0 +1,42 @@
+<div :class="[componentClass, {'bbn-ovaerlay': scrollable}]">
+  <slot></slot>
+  <div v-if="isLoading"
+      :class="['bbn-background', 'bbn-middle', 'bbn-padded', {
+        'bbn-overlay': scrollable,
+      }]">
+    <bbn-loadicon class="bbn-vmiddle"
+                  :size="24"/>
+    <span class="bbn-xl bbn-b bbn-left-sspace"
+          v-text="_('Loading') + '...'"/>
+  </div>
+  <component :is="scrollable ? 'bbn-scroll' : 'div'"
+             v-else-if="total">
+    <div class="bbn-masonry-columns-container"
+         :style="containerStyle">
+      <masonry-col v-for="(col, index) in cols"
+                   :key="'masonry-col-' + index"
+                   :index="index"
+                   :source="items.filter((it, i) => {
+                     return i % cols === index;
+                   })"
+                   inline-template>
+        <div :style="colStyle"
+             class="bbn-masonry-column">
+          <masonry-item v-for="(item, idx) in source"
+                        :source="item"
+                        :key="'masonry-item-' + index + '-' + idx"
+                        inline-template>
+            <div class="bbn-masonry-column-item"
+                 :style="itemStyle">
+              <component :is="source.data.component"
+                         :source="source.data.source"
+                         v-if="!source.slot"/>
+              <div v-else
+                   v-html="source.content"/>
+            </div>
+          </masonry-item>
+        </div>
+      </masonry-col>
+    </div>
+  </component>
+</div>
