@@ -213,7 +213,7 @@
           if (url.startsWith('watch?v=')) {
             url = bbn.fn.substr(url, 8);
           }
-          return `${document.location.protocol}//youtube.com/embed/${url}?rel=0&amp;autoplay=${this.autoplay ? 1 : 0}&controls=${this.controls ? 1 : 0}&mute=${this.muted || this.autoplay ? 1 : 0}&loop=${this.loop ? 1 : 0}&playlist=${url}`;
+          return `${document.location.protocol}//youtube.com/embed/${url}?rel=0&autoplay=${this.autoplay ? 1 : 0}&controls=${this.controls ? 1 : 0}&mute=${this.muted || this.autoplay ? 1 : 0}&loop=${this.loop ? 1 : 0}`;
         }
         else if (this.isVimeo) {
           let url = this.source.replace(this.vimeoReg, '');
