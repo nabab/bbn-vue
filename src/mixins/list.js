@@ -991,7 +991,7 @@
                     data = this.source;
                   }
                   else if ( bbn.fn.isFunction(this.source) ){
-                    data = this.source(this.sourceIndex);
+                    data = this.source(this.sourceIndex, this.data);
                   }
                   else if ( bbn.fn.isObject(this.source) ){
                     bbn.fn.iterate(this.source, (a, n) => {
