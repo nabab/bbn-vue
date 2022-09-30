@@ -205,7 +205,7 @@
           this.items.splice(idx, 1);
         }
         this.items.push(o);
-        this._updatePositions();
+        this.updatePositions();
         if ( o.delay ){
           setTimeout(() => {
             this.close(o.id);
@@ -213,10 +213,10 @@
         }
       },
       /**
-       * @method _updatePositions
+       * @method updatePositions
        * @fires getRef
        */
-      _updatePositions(){
+      updatePositions(){
         let p = {};
         let pos = 0;
         let ids = [];
@@ -261,7 +261,7 @@
             this.items[idx].onClose(this.items[idx]);
           }
           this.items.splice(idx, 1);
-          this._updatePositions();
+          this.updatePositions();
         }
       },
       /**
@@ -326,10 +326,10 @@
     },
     /**
      * @event beforeMount
-     * @fires _updatePositions
+     * @fires updatePositions
      */
     beforeMount(){
-      this._updatePositions();
+      this.updatePositions();
     }
   };
 

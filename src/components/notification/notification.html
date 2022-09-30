@@ -14,8 +14,8 @@
                :right="isLeft ? undefined : 0"
                :title="false"
                :scrollable="true"
-               @resize="_updatePositions"
-               @hook.destroy="_updatePositions">
+               @resize="updatePositions"
+               @hook.destroy="updatePositions">
     <div :class="{
         'bbn-notification-content': true,
         'bbn-block': true,

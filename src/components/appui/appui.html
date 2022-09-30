@@ -13,9 +13,9 @@
   <div :class="{
     'bbn-flex-height': scrollable,
     'bbn-w-100': !scrollable
-  }" v-else-if="app && ready">
+  }" v-else-if="ready">
     <!-- HEADER -->
-    <div v-if="app.header"
+    <div v-if="app && app.header"
          class="bbn-w-100"
          style="overflow: visible">
       <div :class="['bbn-w-100', 'bbn-flex-width', 'bbn-unselectable', 'bbn-no-border', {
@@ -43,7 +43,8 @@
         <!-- LOGO -->
         <div v-if="!isMobile"
              class="bbn-block bbn-logo-container">
-          <div class="bbn-100 bbn-vmiddle" style="justify-content: center;">
+          <div class="bbn-100 bbn-vmiddle"
+               style="justify-content: center;">
             <img v-if="!!logo"
                  :src="logo"
                  style="background-color: white;"
@@ -74,7 +75,7 @@
           <!-- FISHEYE -->
           <bbn-fisheye v-if="plugins['appui-menu']"
                        style="z-index: 6"
-                       v-show="!searchBar || ('?' !== searchBar.value)"
+                       v-show="!searchBar || ('?' !== searchValue)"
                        :class="{
                          'bbn-invisible': $refs.search && $refs.search.isFocused,
                          'bbn-100': true
@@ -307,18 +308,19 @@
         class="bbn-overlay bbn-secondary"
         style="opacity: 0.9"> </div>
     <bbn-big-search :source="plugins['appui-search'] + '/results'"
-                    :placeholder="searchBar.placeholder"
-                    :select-url="plugins['appui-search'] ? plugins['appui-search'] + '/select' : ''"
+                    :placeholder="searchBar.placeholder || _('Type here your search')"
+                    :select-url="plugins['appui-search'] + '/select'"
                     ref="search"
-                    v-model="searchBar.value"
+                    v-model="searchValue"
                     :suggest="true"
                     @ready="registerSearch"
-                    :source-value="searchBar.sourceValue"
-                    :source-text="searchBar.sourceText"
-                    :min-length="searchBar.minLength"
+                    :delay="searchBar.delay || 500"
+                    :source-value="searchBar.sourceValue || 'value'"
+                    :source-text="searchBar.sourceText || 'text'"
+                    :min-length="searchBar.minLength || 1"
                     @select="searchSelect"
                     @close="searchOn = false"
-                    :limit="50"
+                    :limit="searchBar.limit || 50"
                     :pageable="true"
                     class="bbn-no"/>
     <div class="bbn-top-right bbn-p bbn-spadded bbn-xxxl"
@@ -347,9 +349,6 @@
     <i class="bbn-top-right bbn-p nf nf-fa-times"
        @click="closeBigMessage"/>
   </div>
-  <component ref="app"
-             :is="appComponent"
-             @vue:mount="app = getRef('app')"/>
   <!-- POST-IT COMPONENT -->
   <appui-note-postits v-if="plugins['appui-note'] && showPostIt"
                       :source="postits"

@@ -3580,7 +3580,7 @@
 
       // ---- ADDED 16/12/20 (Mirko) ----
       // Adding bbns-container from the slot
-      let slot = this.$slots.default();
+      let slot = this.$slots.default ? this.$slots.default() : false;
       if (slot) {
         for ( let node of slot ){
           if (

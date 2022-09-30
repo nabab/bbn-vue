@@ -614,7 +614,7 @@
     created(){
       
       if (!this.value) {
-        let slot = this.$slots.default();
+        let slot = bbn.fn.isFunction(this.$slots.default) ? this.$slots.default() : [];
         if (slot.length && slot[0].text.length) {
           this.currentValue = this.$slots.default[0].text;
         }

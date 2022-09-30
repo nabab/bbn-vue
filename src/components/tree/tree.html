@@ -49,7 +49,7 @@
                         :uid="uid"
                         :tree-state="uid !== undefined ? _getTreeState(it.data[uid]) : {}">
           <li :class="['bbn-tree-node', 'bbn-vxxspadded', 'bbn-unselectable', {
-                        'bbn-state-active': (isActive && !isSelected) || (tree.draggable && tree.dragging && (tree.dragging === _self)),
+                        'bbn-state-active': (isActive && !isSelected) || (tree.draggable && tree.dragging && (tree.dragging === $self)),
                         'bbn-state-selected': isSelected
                       }]"
               v-show="isVisible"
@@ -71,7 +71,7 @@
                   @dragleave="leaveDrag"
                   @drop="drop"
                   @dragend="endDrag"
-                  v-droppable:data="{node: _self}"/>
+                  v-droppable:data="{node: $self}"/>
             <!-- The node starts here -->
             <span :class="['bbn-tree-node-block', getCls(source) || '', {'bbn-tree-node-block-no-component': !!component}]">
               <!-- The expander -->
@@ -130,9 +130,9 @@
                       v-draggable.container.data.mode="tree.draggable ? {
                         mode: 'clone',
                         container: tree.getRef('helperContainer'),
-                        data: {node: _self}
+                        data: {node: $self}
                       } : false"
-                      v-droppable:data="tree.selfDrop ? {node: _self} : false"
+                      v-droppable:data="tree.selfDrop ? {node: $self} : false"
                 >
                   <!-- The item component if given -->
                   <component v-if="tree.itemComponent"
@@ -206,7 +206,7 @@
                   @dragleave="leaveDrag"
                   @drop="drop"
                   @dragend="endDrag"
-                  v-droppable:data="{node: _self}"
+                  v-droppable:data="{node: $self}"
             ></span>
           </li>
         </bbn-tree-node>

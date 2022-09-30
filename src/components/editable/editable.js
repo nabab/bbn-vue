@@ -85,7 +85,7 @@
       //taglia originale 100% width,width 50% 33% 25%
       view: `
       <div class="component-container bbn-block-image" :class="alignClass">
-        <a v-if="source.href" target="_self" :href="$parent.linkURL + source.href" class="bbn-c">
+        <a v-if="source.href" target="$self" :href="$parent.linkURL + source.href" class="bbn-c">
           <img :src="$parent.path + source.src"
                 style="heigth:500px;width:100%"
                :style="style"
@@ -932,8 +932,8 @@
               //the template below to take the image from index
               template: `
                 <!--IMPORTANT CHANGE FROM CLICK TO HREF WHEN WILL BE POSSIBLE TO MAKE LINK-->
-                <!--a  target="_self" :href="(source.href ? (linkURL + source.href) : source.src)"-->
-                <a  target="_self" @click="selectImg">
+                <!--a  target="$self" :href="(source.href ? (linkURL + source.href) : source.src)"-->
+                <a  target="$self" @click="selectImg">
                   <!--TO TAKE IMAGE FROM THE INDEX-->
                   <img :src="path + source.src" :alt="source.alt ? source.alt : ''" :style="$parent.source.style">
                   <div v-if="source.caption || (source.title && (type === 'carousel'))"

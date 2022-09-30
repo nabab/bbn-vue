@@ -45,6 +45,9 @@
       limit: {
         type: Number
       },
+      value: {
+        type: Number
+      },
       maxTitleLength: {
         type: Number,
         default: 35

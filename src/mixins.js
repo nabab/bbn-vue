@@ -9,19 +9,28 @@
   }
   bbn.fn.autoExtend("vue", {
     mixin: {
+      inject: ['$vue_parent'],
+      provide() {
+        let cp = this.componentName === 'AsyncComponentWrapper' ?
+            this.$vue_parent : this;
+        return {
+          $vue_parent: Vue.shallowRef(cp)
+        }
+      },
       data() {
         return {
-          _componentName: null,
+          $componentName: null,
+          $self: this,
           $children: []
         }
       },
       computed: {
         componentName() {
-          if (!this._componentName) {
-            this._componentName = this.getComponentName();
+          if (!this.$componentName) {
+            this.$componentName = this.getComponentName();
           }
 
-          return this._componentName;
+          return this.$componentName;
         },
         /**
          * Return the object of the currentPopup.
@@ -351,15 +360,15 @@
           return this;
         }
       },
-      mounted() {
-        if (this.$parent && bbn.fn.isArray(this.$parent.$children)) {
-          this.$parent.$children.push(this);
+      created() {
+        if ((this.componentName !== 'AsyncComponentWrapper') && (this.$vue_parent !== undefined) && bbn.fn.isArray(this.$vue_parent?.$data.$children)) {
+          this.$vue_parent.$data.$children.push(this);
         }
       },
       beforeDestroy() {
-        bbn.fn.each(this.$parent.$children, (a, i) => {
+        bbn.fn.each(this.$vue_parent.$data.$children, (a, i) => {
           if (a === this) {
-            this.$parent.$children.splice(i, 1);
+            this.$vue_parent.$data.$children.splice(i, 1);
             return false;
           }
         });

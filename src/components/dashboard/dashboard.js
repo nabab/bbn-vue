@@ -643,7 +643,7 @@
       init(){
         this.originalSource = [];
         // Adding bbns-widget from the slot.
-        let slot = this.$slots.default ? this.$slots.default() : null;
+        let slot = this.$slots && bbn.fn.isFunction(this.$slots.default) ? this.$slots.default() : null;
         if (slot) {
           for (let node of slot) {
             if (

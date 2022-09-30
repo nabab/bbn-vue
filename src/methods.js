@@ -156,7 +156,7 @@
      */
     queueComponent(name, url, mixins, resolve, reject){
       clearTimeout(this.queueTimer);
-      let def = false;//this.getStorageComponent(name);
+      let def = this.getStorageComponent(name);
       if ( def ){
         this._realDefineComponent(name, def, mixins);
         this.queueTimer = setTimeout(() => {
@@ -653,6 +653,7 @@
       //let res = isReservedTag(tag);
       // Tag is unknown and has never gone through this function
       if (tag) {
+        bbn.fn.log(tag);
         if (bbn.var.tags.includes(tag)) {
           return true;
         }

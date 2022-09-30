@@ -40,7 +40,7 @@
           ></i>
         </template>
         <div class="bbn-flex-fill bbn-middle bbn-calendar-header-title">
-          <span @click="!!titleAction ? titleAction(_self) : false"
+          <span @click="!!titleAction ? titleAction($self) : false"
                 :class="{'bbn-p': !!titleAction}"
           >
             <i v-if="titleIcon"

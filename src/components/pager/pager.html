@@ -1,13 +1,11 @@
 <div v-if="ready && (numPages || extraControls)"
-		 :class="[componentClass, 'bbn-widget', 'bbn-unselectable']"
->
+		 :class="[componentClass, 'bbn-widget', 'bbn-unselectable']">
   <div :class="{
 				 'bbn-block': !isMobile || isTablet,
 				 'bbn-w-100': isMobile && !isTablet,
 				 'bbn-c': isMobile && !isTablet
 			 }"
-			 v-if="element && element.pageable"
-	>
+			 v-if="element && element.pageable">
 		<!-- 1ST BUTTON (FIRST) -->
 		<bbn-button icon="nf nf-fa-angle_double_left"
 								:notext="true"
@@ -18,8 +16,7 @@
 		<!-- OR 1ST ICON -->
 		<span v-else
 					class="bbn-iblock bbn-hxspadded bbn-p bbn-pager-mobile-icon"
-					@click="firstPage"
-		>
+					@click="firstPage">
 			<i :class="[
 									'nf nf-fa-angle_double_left',
 									'bbn-xl',

@@ -15,7 +15,7 @@
         @focus="onFocus(i)"
         @click="clickLi(i, $event)"
         @keydown.stop="onKeyDown(i, $event)"
-        @mouseenter="_enterLi(i)">
+        @mouseenter="enterLi(i)">
       <a v-if="item.data.url"
          :href="item.data.url"
          @click.stop.prevent="clickLi(i, $event)"

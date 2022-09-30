@@ -56,7 +56,7 @@
         default: false
       },
       /**
-       * Set to true to give the attribute target the value '_self'.
+       * Set to true to give the attribute target the value '$self'.
        * @prop {Boolean} [false] self
        */
 			self: {

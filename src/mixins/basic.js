@@ -41,7 +41,6 @@
            */
           isTablet: bbn.fn.isTabletDevice()
         };
-        bbn.fn.log("ON DATA", this);
         /*
         if (this.ctx.$options.name && bbn.vue.defaults[this.ctx.$options.name.slice(4)]) {
           bbn.fn.extend(o, bbn.vue.defaults[this.ctx.$options.name.slice(4)]);

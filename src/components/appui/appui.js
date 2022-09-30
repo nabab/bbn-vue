@@ -30,27 +30,33 @@
     ],
     props: {
       /**
-       * @prop {String} ['bbn.env.path'] url
+       * @prop {String} url for bbn-router
        */
       url: {
         type: String,
         default: bbn.env.path
       },
+      /**
+       * @prop {Vue} popup A root popup component to use
+       */
       popup: {
-        type: Vue
+        type: Object
       },
+      /**
+       * @prop {Boolean} [true] scrollable for bbn-router in scroll-content
+       */
       scrollable: {
         type: Boolean,
         default: true
       },
       /**
-       * @prop {String} def
+       * @prop {String} def for bbn-router
        */
       def: {
         type: String
       },
       /**
-       * @prop {Boolean} [true] autoload
+       * @prop {Boolean} [true] autoload for bbn-router
        */
       autoload: {
         type: Boolean,
@@ -190,6 +196,34 @@
         type: Boolean,
         default: false
       },
+      nav: {
+        type: Boolean,
+        default: false
+      },
+      options: {
+        type: Object
+      },
+      searchBar: {
+        type: Object
+      },
+      shortcuts: {
+        type: Array
+      },
+      list: {
+        type: Array
+      },
+      menus: {
+        type: Array
+      },
+      currentMenu: {
+        type: Number,
+      },
+      setImessage: {
+        type: Array
+      },
+    },
+    setup(props, { attrs, slots, emit, expose }) {
+
     },
     data(){
       let isMobile = bbn.fn.isMobile();
@@ -248,6 +282,7 @@
         bigMessage: false,
         hasBigMessage: false,
         searchOn: false,
+        searchValue: '',
         pressedKey: false,
         pressedTimeout: false,
         longPressed: false,
@@ -266,13 +301,34 @@
       isDev() {
         return bbn.env.isDev;
       },
-      appComponent(){
-        return bbn.fn.extend({
-          mixins: bbn.vue.customMixins || [],
-          render(props, context) {
-            return Vue.h();
-          }
-        }, this.cfg)
+      appComponent() {
+        let cp = this;
+        let app = this.cfg || {};
+        if (!app.mixins) {
+          app.mixins = [];
+        }
+
+        if (bbn.vue.customMixins) {
+          app.mixins.push(bbn.vue.customMixins);
+        }
+
+        if (!app.props) {
+          app.props = {};
+        }
+
+        if (!app.computed) {
+          app.computed = {};
+        }
+
+        bbn.fn.each(['options', 'menus', 'selectedMenu', 'app', 'shortcuts', 'plugins', 'setImessage', 'list', 'searchBar'], a => {
+          app.computed[a] = () => cp[a];
+        });
+
+        app.render = () => {
+          return this.$slots.default;
+        }
+
+        return app;
       },
       footerComponent(){
         return (typeof this.footer !== 'undefined') && !!this.footer ? this.footer : false;

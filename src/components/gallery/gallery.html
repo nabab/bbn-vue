@@ -127,7 +127,7 @@
     </div>
   </div>
   <bbn-pager class="bbn-gallery-pager"
-              :element="_self"
+              :element="$self"
               ref="pager"
               v-if="(pageable || isAjax) && !!pager"/>
   <bbn-floater v-if="showFloater"

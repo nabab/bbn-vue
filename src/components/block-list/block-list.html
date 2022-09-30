@@ -46,7 +46,7 @@
   <div class="bbn-w-100 bbn-c"
         v-if="pageable && (numPages > 1)">
     <div class="bbn-iblock">
-      <bbn-pager :element="_self"
+      <bbn-pager :element="$self"
                  :extra-controls="false"
                  :numeric-selector="false"
                  :buttons="false"/>

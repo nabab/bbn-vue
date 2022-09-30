@@ -66,7 +66,7 @@
         }">
       <div v-if="pageable && ready">
         <bbn-pager class="bbn-table-footer bbn-no-border-right bbn-no-border-left bbn-no-border-bottom"
-                  :element="pagerElement || _self"
+                  :element="pagerElement || $self"
                   @click.stop
                   @mousedown.stop
                   @mouseup.stop
@@ -121,7 +121,7 @@
       </div>
       <div v-if="pageable && ready">
         <bbn-pager class="bbn-table-footer bbn-no-border-right bbn-no-border-left bbn-no-border-bottom"
-                  :element="_self"
+                  :element="$self"
                   @click.stop
                   @mousedown.stop
                   @mouseup.stop

@@ -78,7 +78,7 @@
         default: false
       },
       /**
-       * Set to true to give the attribute target the value '_self'.
+       * Set to true to give the attribute target the value '$self'.
        * @prop {Boolean} [false] self
        */
 			self: {
@@ -508,7 +508,7 @@
           }, !this.blank && !this.self && !this.target ? (xhr, textStatus, errorThrown) => {
             this.$emit('failure', xhr, textStatus, errorThrown);
               this.isLoading = false;
-          } : (this.self ? '_self' : (this.blank ? '_blank' : this.target)));
+          } : (this.self ? '$self' : (this.blank ? '_blank' : this.target)));
         }
         else{
           this.originalData = bbn.fn.clone(this.source);

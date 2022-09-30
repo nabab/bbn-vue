@@ -2,7 +2,7 @@
      @mouseenter="$emit('mouseenter', $event)"
      @dragover="$emit('dragover', $event)"
      @drop="$emit('drop', $event)"
-     v-droppable.data="!!sortable ? {data: {widget: _self}} : false">
+     v-droppable.data="!!sortable ? {data: {widget: $self}} : false">
   <!-- HEADER -->
   <div class="bbn-header bbn-no-border bbn-bordered-bottom bbn-unselectable"
        v-if="title">
@@ -35,7 +35,7 @@
             v-draggable.helper.container.data="!!sortable ? {
               helper: $el,
               container: $el.parentElement,
-              data: {widget: _self}
+              data: {widget: $self}
             } : false"/>
       </div>
       <!-- BUTTONS RIGHT -->

@@ -316,12 +316,10 @@
        * @ignore
        */
       updatePositions(){
-        /*
         bbn.fn.each(this.panes, (pane, i) => {
           this.$children[pane.index].$el.style.gridColumn = this.currentOrientation === 'horizontal' ? pane.position : 1;
           this.$children[pane.index].$el.style.gridRow = this.currentOrientation === 'vertical' ? pane.position : 1;
         })
-        */
       },
       /**
        * Gets the next resizable pane.
@@ -396,7 +394,7 @@
         // We add a timeout which cancels the previous one so it should be only triggered once at mount
         clearTimeout(this.initTimeout);
         this.initTimeout = setTimeout(() => {
-          if (!this.$children) {
+          if (!this.$data.$children) {
             return;
           }
           // Emptying the panes array if it's filled
@@ -408,13 +406,14 @@
               hasPercent      = false,
               hasResizers     = false;
           // If 1st pane is collapsible we add a resizer at the start
-          this.$children.forEach((pane, i) => {
+          this.$data.$children.forEach((pane, i) => {
             // Defining the panes base on the content
-            if ( pane.$vnode.componentOptions.tag === 'bbn-pane' ){
+            if (pane.getComponentName && (pane.getComponentName() === 'bbn-pane')) {
+              bbn.fn.log(pane, pane.$props);
               let isPercent   = false,
                   isFixed     = false,
                   isNumber    = false,
-                  props       = JSON.parse(JSON.stringify(pane.$vnode.componentOptions.propsData)),
+                  props       = JSON.parse(JSON.stringify(pane.$props)),
                   resizable   = (this.resizable || props.resizable) && (props.resizable !== false),
                   collapsible = (this.collapsible || props.collapsible) && (props.collapsible !== false),
                   value       = parseInt(props.size) || 0;

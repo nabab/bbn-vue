@@ -37,10 +37,7 @@
        * @prop {Vue} scroller  
        */
       scroller: {
-        type: Vue,
-        default(){
-          return this.$parent.$options._componentTag === 'bbn-scroll' ? this.$parent : null;
-        }
+        type: Object
       },
       /**
        * The rail.
@@ -199,6 +196,17 @@
       };
     },
     computed: {
+      realScroller() {
+        if (this.scroller) {
+          return this.scroller;
+        }
+
+        if (this.$parent && this.$parent.$options && this.$parent.$options._componentTag) {
+          return this.$parent.$options._componentTag === 'bbn-scroll' ? this.$parent : null;
+        }
+
+        return null;
+      },
       /**
        * @computed showBother
        * @returns Boolean

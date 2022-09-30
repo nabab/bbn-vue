@@ -1252,7 +1252,7 @@
         this.listOnBeforeMount();
       },
       mounted() {
-        if (!this.component && !this.template && this.$slots.default()) {
+        if (!this.component && !this.template && this.$slots && this.$slots.default && this.$slots.default()) {
           let tpl = this.getRef('slot');;
           if (tpl) {
             this.currentTemplate = tpl.innerHTML;

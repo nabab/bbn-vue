@@ -66,7 +66,7 @@
       };
     },
     methods: {
-      _enterLi(idx) {
+      enterLi(idx) {
         //bbn.fn.log("ENTER LI");
         if ((this.overIdx > -1) && (this.overIdx !== idx)) {
           this.overIdx = idx;
