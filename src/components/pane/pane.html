@@ -1,10 +1,10 @@
 <div :class="[componentClass, 'bbn-background']">
   <div :class="{
-    'bbn-overlay': $parent.fullSize && !isCollapsed,
-    'bbn-w-100': ((isCollapsed && title) || !$parent.fullSize) && (($parent.panes && ($parent.panes.length === 1)) || !isHorizontal),
-    'bbn-h-100': ((isCollapsed && title) || !$parent.fullSize) && (($parent.panes && ($parent.panes.length > 1)) && isHorizontal),
-    'bbn-flex-height': $parent.fullSize && title && !isHorizontal && !isCollapsed,
-    'bbn-flex-width': $parent.fullSize && title && isHorizontal && !isCollapsed
+    'bbn-overlay': $vue_parent.fullSize && !isCollapsed,
+    'bbn-w-100': ((isCollapsed && title) || !$vue_parent.fullSize) && (($vue_parent.panes && ($vue_parent.panes.length === 1)) || !isHorizontal),
+    'bbn-h-100': ((isCollapsed && title) || !$vue_parent.fullSize) && (($vue_parent.panes && ($vue_parent.panes.length > 1)) && isHorizontal),
+    'bbn-flex-height': $vue_parent.fullSize && title && !isHorizontal && !isCollapsed,
+    'bbn-flex-width': $vue_parent.fullSize && title && isHorizontal && !isCollapsed
   }">
     <div v-if="title"
          :class="['bbn-light bbn-c bbn-header bbn-block bbn-pane-title bbn-m bbn-spadding', {
@@ -18,15 +18,15 @@
          v-html="title"/>
     <div :class="{
       'bbn-hidden': isCollapsed,
-      'bbn-overlay': $parent.fullSize && !title && !isCollapsed,
-      'bbn-flex-fill': $parent.fullSize && title && !isCollapsed,
-      'bbn-w-100': !$parent.fullSize && (($parent.panes && ($parent.panes.length === 1)) || !isHorizontal),
-      'bbn-h-100': !$parent.fullSize && (($parent.panes && ($parent.panes.length > 1)) && isHorizontal),
+      'bbn-overlay': $vue_parent.fullSize && !title && !isCollapsed,
+      'bbn-flex-fill': $vue_parent.fullSize && title && !isCollapsed,
+      'bbn-w-100': !$vue_parent.fullSize && (($vue_parent.panes && ($vue_parent.panes.length === 1)) || !isHorizontal),
+      'bbn-h-100': !$vue_parent.fullSize && (($vue_parent.panes && ($vue_parent.panes.length > 1)) && isHorizontal),
     }"
          v-show="!isCollapsed">
-      <component :is="scrollable ? 'bbn-scroll' : 'div'"
-                 :class="{'bbn-overlay': $parent.fullSize, 'bbn-w-100': !scrollable && $parent.fullSize}"
-                 ref="scroll">
+      <bbn-scroll :scrollable="scrollable"
+                  :class="{'bbn-overlay': $vue_parent.fullSize, 'bbn-w-100': !scrollable && $vue_parent.fullSize}"
+                  ref="scroll">
         <slot></slot>
       </component>
     </div>

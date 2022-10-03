@@ -275,6 +275,7 @@
             }
           }
 
+          res.name = name;
           bbn.vue.app.component(name, res);
           return true;
         }
@@ -425,6 +426,7 @@
         if (tpl) {
           res.template = '#' + tpl;
         }
+
         res.name = name;
         //res.mixins.unshift(bbn.vue.mixin);
 
@@ -653,7 +655,6 @@
       //let res = isReservedTag(tag);
       // Tag is unknown and has never gone through this function
       if (tag) {
-        bbn.fn.log(tag);
         if (bbn.var.tags.includes(tag)) {
           return true;
         }
@@ -1048,6 +1049,7 @@
      getComponentName(vm, path){
       let o = vm.ctx ? vm.ctx.$options : vm.$options;
       if (!o) {
+        bbn.fn.log("CAN'T FIND NAME!!", vm, Object.keys(vm));
         return null;
       }
 

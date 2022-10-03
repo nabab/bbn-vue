@@ -15,7 +15,7 @@
     'bbn-w-100': !scrollable
   }" v-else-if="ready">
     <!-- HEADER -->
-    <div v-if="app && app.header"
+    <div v-if="header === true"
          class="bbn-w-100"
          style="overflow: visible">
       <div :class="['bbn-w-100', 'bbn-flex-width', 'bbn-unselectable', 'bbn-no-border', {
@@ -129,6 +129,9 @@
         </div>
       </div>
     </div>
+    <component v-else-if="header"
+               :is="header"/>
+    <slot name="header"/>
     <!-- MAIN -->
     <div :class="{
       'bbn-flex-fill': scrollable,

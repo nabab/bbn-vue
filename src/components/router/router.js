@@ -3878,6 +3878,9 @@
             this.onResize();
           }
         })
+      },
+      scrollContent(v) {
+        bbn.fn.log("CHANGE scrollContent " + v)
       }
     },
     components: {

@@ -1,22 +1,21 @@
 <div :class="[componentClass, {
-            vertical: isVertical,
-            horizontal: !isVertical
+        vertical: isVertical,
+        horizontal: !isVertical
       }]"
       :style="barStyle"
       v-if="isVisible"
       @click="jump($event)"
       @dblclick="jump($event, true)"
       @mouseenter="isOverSlider = true"
-      @mouseleave="isOverSlider = false"
->
+      @mouseleave="isOverSlider = false">
   <div :class="{
-        'bbn-scroll-slider': true,
-        'bbn-primary': true,
-        'bbn-scroll-not-dragged': !dragging
-  }"
-        :style="sliderStyle"
-        ref="scrollSlider"
-        @touchstart="startDrag"
-        @mousedown="startDrag">
+         'bbn-scroll-slider': true,
+         'bbn-primary': true,
+         'bbn-scroll-not-dragged': !dragging
+       }"
+       :style="sliderStyle"
+       ref="scrollSlider"
+       @touchstart="startDrag"
+       @mousedown="startDrag">
   </div>
 </div>

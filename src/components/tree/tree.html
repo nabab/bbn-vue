@@ -83,7 +83,7 @@
                       isExpanded = true;
                     }">
                 <!-- If there are no children we leave the white space -->
-                <span v-if="flat || !numChildren || (level < tree.minExpandLevel)" v-html=" "/>
+                <span v-if="flat || !numChildren || (level < tree.minExpandLevel)" v-text=" "/>
                 <i v-else
                    :class="{
                       'nf nf-fa-caret_down': isExpanded,

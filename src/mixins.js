@@ -11,8 +11,13 @@
     mixin: {
       inject: ['$vue_parent'],
       provide() {
-        let cp = this.componentName === 'AsyncComponentWrapper' ?
-            this.$vue_parent : this;
+        let name = this.getComponentName();
+        let cp = name === 'AsyncComponentWrapper' ?
+            this.$vue_parent || this.$root : this;
+        if (cp.getComponentName() === 'bbn-component') {
+          cp = cp.$vue_parent || this.root;
+        }
+
         return {
           $vue_parent: Vue.shallowRef(cp)
         }

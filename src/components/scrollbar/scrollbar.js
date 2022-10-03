@@ -113,13 +113,6 @@
     data() {
       return {
         /**
-         * The container of the scrollbar or the ref scrol.
-         * @data {Vue} realContainer 
-         */
-        realContainer: this.container ?
-          this.container :
-          (this.scroller ? this.scroller.getRef('scrollContainer') : false),
-        /**
          * The container's size.
          * @data {Number} [0] containerSize 
          */  
@@ -196,13 +189,25 @@
       };
     },
     computed: {
+      /**
+       * The container of the scrollbar or the ref scrol.
+       * @data {Vue} realContainer 
+       */
+      realContainer() {
+        return this.container ? 
+            this.container :
+            (this.realScroller ? 
+                this.realScroller.getRef('scrollContainer') :
+                false);
+      },
       realScroller() {
         if (this.scroller) {
           return this.scroller;
         }
 
-        if (this.$parent && this.$parent.$options && this.$parent.$options._componentTag) {
-          return this.$parent.$options._componentTag === 'bbn-scroll' ? this.$parent : null;
+
+        if (this.$vue_parent) {
+          return this.$vue_parent.getComponentName() === 'bbn-scroll' ? this.$vue_parent : null;
         }
 
         return null;
@@ -297,7 +302,7 @@
        * @returns {Boolean}
        */
       isVisible(){
-        return (this.hidden !== true) && ((this.scroller && this.scroller.isFocused) && this.isActive || this.isActive);
+        return (this.hidden !== true) && ((this.realScroller && this.realScroller.isFocused) && this.isActive || this.isActive);
       },
     },
     methods: {
@@ -366,8 +371,8 @@
           let ok = false;
           if (!container) {
             container = this.realContainer;
-            if (this.scroller) {
-              this.containerPos = this.scroller['current' + (this.isVertical ? 'Y' : 'X')];
+            if (this.realScroller) {
+              this.containerPos = this.realScroller['current' + (this.isVertical ? 'Y' : 'X')];
               ok = true;
             }
           }
@@ -396,7 +401,7 @@
           this.$nextTick(() => {
             this.containerPos = (this.sliderPos / this.ratio);
             let prop = this.isVertical ? 'scrollTop' : 'scrollLeft';
-            if (this.scroller) {
+            if (this.realScroller) {
               this.scrollTo(this.containerPos, anim);
             }
             else {
@@ -510,9 +515,9 @@
         if ( this.realContainer ){
           let tmp1,
               tmp2;
-          if (this.scroller) {
-            tmp1 = this.scroller[this.isVertical ? 'lastKnownHeight' : 'lastKnownWidth'];
-            tmp2 = this.scroller[this.isVertical ? 'contentHeight' : 'contentWidth'];
+          if (this.realScroller) {
+            tmp1 = this.realScroller[this.isVertical ? 'lastKnownHeight' : 'lastKnownWidth'];
+            tmp2 = this.realScroller[this.isVertical ? 'contentHeight' : 'contentWidth'];
           }
           else {
             tmp1 = this.isVertical ? this.realContainer.clientHeight : this.realContainer.clientWidth;
@@ -545,18 +550,18 @@
        * @method initContainer
        */
       initContainer(){
-        if ( !this.realContainer && this.scroller ){
-          this.realContainer = this.scroller.getRef('scrollContainer');
+        if ( !this.realContainer && this.realScroller ){
+          this.realContainer = this.realScroller.getRef('scrollContainer');
         }
         if ( this.realContainer && !this.isInit ){
           this.onResize();
-          if ( !this.container && this.scroller ){
-            this.scroller.$on("resize", this.onResize);
+          if ( !this.container && this.realScroller ){
+            this.realScroller.$on("resize", this.onResize);
             this.scrollTo(this.initial);
-            this.scroller.$on("scroll", () => {
+            this.realScroller.$on("scroll", () => {
               this.adjustFromContainer()
             });
-            this.scroller.$on("mousemove", this.overContent);
+            this.realScroller.$on("mousemove", this.overContent);
           }
           else{
             this.realContainer.addEventListener("mousemove", this.overContent);
@@ -693,8 +698,8 @@
               // therefore removing half of the viewport does the trick
               num = ele[this.isVertical ? 'offsetTop' : 'offsetLeft']
                     - Math.round(this.containerSize/2);
-              while (container && (container !== this.scroller.$el)) {
-                if (container.contains(this.scroller.$el)) {
+              while (container && (container !== this.realScroller.$el)) {
+                if (container.contains(this.realScroller.$el)) {
                   break;
                 }
                 else{
@@ -793,8 +798,8 @@
         this.showSlider();
       },
       dragging(v) {
-        if (this.scroller) {
-          this.scroller.isDragging = v
+        if (this.realScroller) {
+          this.realScroller.isDragging = v
         }
       }
     },
@@ -824,10 +829,10 @@
      */
     beforeDestroy() {
       if ( this.realContainer && this.isInit ){
-        if ( !this.container && this.scroller ){
-          this.scroller.$off("resize", this.onResize);
-          this.scroller.$off("scroll", this.adjustFromContainer);
-          this.scroller.$off("mousemove", this.overContent);
+        if ( !this.container && this.realScroller ){
+          this.realScroller.$off("resize", this.onResize);
+          this.realScroller.$off("scroll", this.adjustFromContainer);
+          this.realScroller.$off("mousemove", this.overContent);
         }
         else{
           this.realContainer.removeEventListener('scroll', this.adjust, {passive: true});

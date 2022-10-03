@@ -39,9 +39,7 @@
       /**
        * @prop {Vue} popup A root popup component to use
        */
-      popup: {
-        type: Object
-      },
+      popup: [Object],
       /**
        * @prop {Boolean} [true] scrollable for bbn-router in scroll-content
        */
@@ -52,9 +50,7 @@
       /**
        * @prop {String} def for bbn-router
        */
-      def: {
-        type: String
-      },
+      def: [String],
       /**
        * @prop {Boolean} [true] autoload for bbn-router
        */
@@ -90,9 +86,7 @@
       /**
        * @prop {String} currentMenu
        */
-      currentMenu:{
-        type: String
-      },
+      currentMenu: [String],
       /**
        * @prop {Array} [[]] shortcuts
        */
@@ -163,23 +157,17 @@
        * If this is set, along with componentSource and componentUrl a single container with this component will be created.
        * @prop {(String|Object)} component
        */
-      component: {
-        type: [String, Object]
-      },
+      component: [String, Object],
       /**
        * The source for the component.
        * @prop {Object} componentSource
        */
-      componentSource: {
-        type: Object
-      },
+      componentSource: [Object],
       /**
        * The property to get from the componentSource to use for setting the URL.
        * @prop {String} componentUrl
        */
-      componentUrl: {
-        type: String
-      },
+      componentUrl: [String],
       /**
        * Will be passed to router in order to ignore the dirty parameter.
        * @prop {Boolean} [false] ignoreDirty
@@ -200,27 +188,14 @@
         type: Boolean,
         default: false
       },
-      options: {
-        type: Object
-      },
-      searchBar: {
-        type: Object
-      },
-      shortcuts: {
-        type: Array
-      },
-      list: {
-        type: Array
-      },
-      menus: {
-        type: Array
-      },
-      currentMenu: {
-        type: Number,
-      },
-      setImessage: {
-        type: Array
-      },
+      options: [Object],
+      searchBar: [Object],
+      shortcuts: [Array],
+      list: [Array],
+      menus: [Array],
+      currentMenu: [Number],
+      setImessage: [Array],
+      header: [Object, Boolean, String]
     },
     setup(props, { attrs, slots, emit, expose }) {
 
