@@ -18,8 +18,15 @@
          * Defines the editor to use when a item is in edit mode.
          * @prop {String|Object} editor
          */
-        editor: {
+         editor: {
           type: [String, Object, Function]
+        },
+        /**
+         * Defines the editor options when editor defined.
+         * @prop {Object} editorOptions
+         */
+        editorOptions: {
+          type: Object
         },
         /**
          * Set to true allows to edit inline the fields if no buttons are defined for the table.
@@ -222,12 +229,16 @@
                 data: bbn.fn.isFunction(this.data) ? this.data() : this.data
               }
             }, {
-              title: bbn._('Row edition'),
-              width: 700
+              title: this.tmpRow ? bbn._('Row insertion') : bbn._('Row edition'),
             }, winOptions ? winOptions : {});
             // A component is given as global editor (form)
             if (this.editor) {
               popup.component = bbn.fn.isFunction(this.editor) ? this.editor(row, index) : this.editor;
+              if (this.editorOptions) {
+                popup.componentOptions = bbn.fn.extend({
+                  source: row
+                }, this.editorOptions);
+              }
             }
             // A URL is given and in this case the form will be created automatically with this URL as action
             else if (this.url) {

@@ -68,6 +68,10 @@
        */
       element: {
         type: HTMLElement
+      },
+      raw: {
+        type: Boolean,
+        default: false
       }
     },
     data(){
@@ -85,7 +89,12 @@
        * @return {String}
        */
       getContent() {
-        return bbn.fn.isFunction(this.source) ? this.source() : this.source;
+        let st = bbn.fn.isFunction(this.source) ? this.source() : this.source;
+        if (!this.raw) {
+          st = '<div class="bbn-xsvpadding bbn-shpadding">' + st + '</div>';
+        }
+
+        return st;
       },
       /**
        * The method called after the floater close

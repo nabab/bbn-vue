@@ -2588,7 +2588,7 @@
           })
         }
 
-        if ( this.autoload || this.views[idx].load) {
+        if (this.views[idx].load && !this.views[idx].component) {
           items.push({
             text: bbn._("Reload"),
             key: "reload",
@@ -4004,7 +4004,8 @@
     </div>
     <div v-if="!source.view.static"
           class="bbn-vmiddle bbn-h-100 bbn-hpadded"
-          @click.prevent.stop="close"
+          @mousedown.prevent.stop="close"
+          @mouseup.prevent.stop
           :style="!isHover ? lastColors : {}">
       <i class="nf nf-fa-times_rectangle bbn-lg"/>
     </div>

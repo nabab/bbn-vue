@@ -347,7 +347,7 @@
         /**
          * @todo not used in the component
          */
-         searchFields: {
+        searchFields: {
           type: Array
         },
         /**
@@ -1179,12 +1179,12 @@
          * @param {Number} index
          * @param {Strimg} confirm
          * @fires realDelete
-         * @emit beforeDelete
+         * @emit beforedelete
          */
         delete(index, confirm) {
           if (this.filteredData[index]) {
             let ev = new Event('delete', {cancelable: true});
-            this.$emit('beforeDelete', this.filteredData[index].data, ev);
+            this.$emit('beforedelete', index, this.filteredData[index].data, this, ev);
             if (!ev.defaultPrevented) {
               if (confirm === undefined) {
                 confirm = this.confirmMessage;

@@ -597,7 +597,14 @@
               else {
                 res.push(a)
               }
-            })
+            });
+            if (this.cols[this.colButtons].notext) {
+              bbn.fn.each(res, a => {
+                a.notext = true;
+                return a;
+              });
+            }
+
             return res;
           }
         }
@@ -710,12 +717,44 @@
             ar = [];
           }
           bbn.fn.each(ar, a => {
-            let o = bbn.fn.clone( a);
-            if (o.action) {
+            let o;
+            if (bbn.fn.isString(a)) {
+              switch (a) {
+                case 'insert':
+                  o = {
+                    text: bbn._('Add'),
+                    action: this.insert,
+                    icon: 'nf nf-fa-plus'
+                  };
+                  break;
+                case 'export':
+                  o = {
+                    
+                  };
+                  break;
+                case 'print':
+                  o = {
+                    
+                  };
+                  break;
+                // separator or other toolbar param
+                default:
+                  o = a;
+              }
+            }
+            else if (bbn.fn.isObject(a)) {
+              o = bbn.fn.clone( a);
+            }
+            if (o && bbn.fn.isObject(o) && bbn.fn.isString(o.action)) {
               o.action = () => {
                 this._execCommand(a);
               }
             }
+
+            if (!o) {
+              throw new Error(bbn._("Wrong parameter for toolbar"))
+            }
+
             r.push(o);
           });
         }

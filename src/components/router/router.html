@@ -23,7 +23,7 @@
             :class="['bbn-router-breadcrumb', {'bbn-router-breadcrumb-master': master}]">
           <div v-if="isBreadcrumbMaster"
               class="bbn-router-breadcrumb-container">
-            <div class="bbn-transition-bcolor bbn-spadded bbn-alt bbn-bordered-bottom bbn-no-border-top bbn-no-border-right bbn-vmiddle"
+            <div class="bbn-transition-bcolor bbn-h-100 bbn-alt bbn-bordered-bottom bbn-no-border-top bbn-no-border-right bbn-vmiddle"
                 :style="{
                         backgroundColor: getBackgroundColor(selected),
                         color: getFontColor(selected)
@@ -88,7 +88,8 @@
                                 && !bc.views[bc.selected].static
                                 && !bc.views[bc.selected].pinned"
                           class="nf nf-fa-times bbn-p bbn-router-breadcrumb-close bbn-router-breadcrumb-icon"
-                          @click.prevent.stop="bc.close(bc.selected)"/>
+                          @mousedown.prevent.stop="bc.close(bc.selected)"
+                          @mouseup.prevent.stop/>
                         <bbn-context v-if="isNumber(bc.selected) && bc.views[bc.selected] && bc.views[bc.selected].menu"
                                     :source="() => bc.getMenuFn(bc.selected)"
                                     tag="i"
