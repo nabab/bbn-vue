@@ -18,7 +18,7 @@
          * Defines the editor to use when a item is in edit mode.
          * @prop {String|Object} editor
          */
-         editor: {
+        editor: {
           type: [String, Object, Function]
         },
         /**
@@ -26,6 +26,12 @@
          * @prop {Object} editorOptions
          */
         editorOptions: {
+          type: Object
+        },
+        /**
+         * The popup that will be used for the editor
+         */
+        popup: {
           type: Object
         },
         /**

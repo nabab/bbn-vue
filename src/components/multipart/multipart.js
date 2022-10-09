@@ -42,6 +42,15 @@
         default: false
       },
       /**
+       * A confirmation popup with a costumized message shown before leaving the form.
+       *
+       * @prop {String|Function} confirmLeave
+       */
+      confirmLeave: {
+        type: [Boolean, String, Function],
+        default: bbn._("Are you sure you want to leave?")
+      },
+      /**
        * Set to true to disable the form.
        * @prop {Boolean} [false] disabled
        */
