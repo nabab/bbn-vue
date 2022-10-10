@@ -37,7 +37,8 @@
                :button-right="currentIcon"
                :button-right-disabled="!filteredData.length"
                :action-right="() => {isOpened = !isOpened}"
-               :nullable="true"/>
+               :nullable="true"
+               :placeholder="placeholder"/>
   </div>
   <bbn-portal v-if="portalSelector"
               :selector="portalSelector">
