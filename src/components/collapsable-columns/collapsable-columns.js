@@ -108,6 +108,31 @@
         });
         this.$forceUpdate();
       }
+    },
+    components: {
+      column: {
+        name: 'column',
+        mixins: [bbn.vue.listComponent],
+        props: {
+          column: {
+            type: Object
+          },
+          index: {
+            type: Number
+          }
+        },
+        computed: {
+          items(){
+            if (this.pageable && (!this.isAjax || !this.serverPaging)) {
+              return this.filteredData.slice().splice(this.start, this.currentLimit);
+            }
+            return this.filteredData;
+          }
+        },
+        mounted(){
+          this.ready = true;
+        }
+      }
     }
   });
 })(bbn);
