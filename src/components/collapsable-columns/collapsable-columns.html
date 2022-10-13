@@ -1,91 +1,98 @@
-<div :class="[componentClass, 'bbn-grid', 'bbn-h-100', 'bbn-padded']">
-  <column inline-template
-          v-for="(col, idx) in filteredData"
-          :source="col.data[children]"
-          :column="col"
-          :index="idx"
-          :key="idx"
-          :pageable="pageable"
-          :limit="limit">
-    <div :class="[
-           'bbn-collapsable-columns-column',
-           'bbn-flex-height',
-           'bbn-radius',
-           'bbn-background',
-           {
-             'collapsed': !column.opened
-           }
-         ]"
-         :key="index"
-         :style="{backgroundColor: !!column.data[$parent.sourceBackgroundColor] ? column.data[$parent.sourceBackgroundColor] + '!important' : ''}">
-      <div :class="['bbn-spadded', , 'bbn-vmiddle', 'bbn-unselectable', {
-              'bbn-flex-width': !!column.opened,
-              'bbn-flex-height': !column.opened
-            }]">
-        <bbn-button v-if="!column.opened"
-                    class="bbn-no-border"
-                    :notext="true"
-                    :text="_('Expand')"
-                    icon="nf nf-mdi-arrow_expand"
-                    @click="$parent.expand(column)"
-                    style="height: auto; width: 100%; aspect-ratio: 1"/>
-        <div :class="['bbn-upper', 'bbn-b', 'bbn-tertiary-text-alt', 'bbn-unselectable', 'bbn-m', {
-                'bbn-left-space': !!column.opened,
-                'bbn-top-space': !column.opened,
-                'bbn-right-lspace': !!column.opened,
-                'bbn-bottom-lspace': !column.opened,
-                'verticaltext': !column.opened
-              }]"
-              v-text="column.data.title"
-              :style="{color: !!column.data[$parent.sourceFontColor] ? column.data[$parent.sourceFontColor] + '!important' : ''}"/>
-        <div class="bbn-alt-background bbn-vmiddle bbn-xspadded bbn-radius bbn-flex-fill"
-             :style="{
-               'min-height': '2rem',
-               'justify-content': 'flex-end',
-               'align-items': !column.opened ? 'flex-end': ''
-             }">
-          <component v-if="$parent.toolbar || !!column.data[$parent.sourceToolbar]"
-                     :is="!!column.data[$parent.sourceToolbar] ? column.data[$parent.sourceToolbar] : $parent.toolbar"
-                     :source="column"
-                     :index="index"/>
-        </div>
-        <bbn-button v-if="!!column.opened"
-                    class="bbn-no-border bbn-left-space"
-                    :notext="true"
-                    :text="_('Collapse')"
-                    icon="nf nf-mdi-arrow_collapse"
-                    @click="$parent.collapse(column)"
-                    style="height: 100%; width: auto; aspect-ratio: 1"/>
-      </div>
-      <div v-if="!!column.opened"
-            class="bbn-flex-fill bbn-vpadded">
-        <div class="bbn-100">
-          <bbn-scroll axis="y">
-            <div class="bbn-hpadded">
-              <div v-if="items.length"
-                   v-for="(item, itemIdx) in items"
-                   :class="[
-                     'bbn-collapsable-columns-item',
-                     'bbn-radius',
-                     'bbn-alt-background',
-                     'bbn-spadded',
-                     {
-                       'bbn-bottom-space': !!items[itemIdx+1]
-                     }
-                   ]">
-                <component :is="!!item.data[$parent.sourceComponent] ? item.data[$parent.sourceComponent] : (!!column.data[$parent.sourceComponent] ? column.data[$parent.sourceComponent] : $parent.realComponent)"
-                           :source="item.data"
-                           :index="itemIdx"/>
+<div :class="componentClass">
+  <component :is="scrollable ? 'bbn-scroll' : 'div'"
+             axis="x"
+             ref="scroll">
+    <div :class="['bbn-collapsable-columns-container', 'bbn-grid', 'bbn-padded', {'bbn-h-100': !!scrollable}]">
+      <column inline-template
+              v-for="(col, idx) in filteredData"
+              :source="col.data[children]"
+              :column="col"
+              :index="idx"
+              :key="idx"
+              :pageable="pageable"
+              :limit="limit">
+        <div :class="['bbn-collapsable-columns-column', 'bbn-radius', {'collapsed': !column.opened}]"
+             :key="index"
+             :style="{width: !!column.opened ? main.columnWidth : ''}">
+          <div :class="['bbn-radius', 'bbn-background', {
+                 'bbn-w-100': !main.scrollable,
+                 'bbn-100': !!main.scrollable,
+                 'bbn-flex-height': !!main.scrollable
+               }]"
+               :style="{backgroundColor: !!column.data[main.sourceBackgroundColor] ? column.data[main.sourceBackgroundColor] + '!important' : ''}">
+            <div :class="['bbn-spadded', , 'bbn-vmiddle', 'bbn-unselectable', {
+                    'bbn-flex-width': !!column.opened,
+                    'bbn-flex-height': !column.opened
+                  }]">
+              <bbn-button v-if="!column.opened"
+                          class="bbn-no-border"
+                          :notext="true"
+                          :text="_('Expand')"
+                          icon="nf nf-mdi-arrow_expand"
+                          @click="main.expand(column)"
+                          style="height: auto; width: 100%; aspect-ratio: 1"/>
+              <div :class="['bbn-upper', 'bbn-b', 'bbn-tertiary-text-alt', 'bbn-unselectable', 'bbn-m', {
+                      'bbn-left-space': !!column.opened,
+                      'bbn-top-space': !column.opened,
+                      'bbn-right-lspace': !!column.opened,
+                      'bbn-bottom-lspace': !column.opened,
+                      'verticaltext': !column.opened
+                    }]"
+                    v-text="column.data.title"
+                    :style="{color: !!column.data[main.sourceFontColor] ? column.data[main.sourceFontColor] + '!important' : ''}"/>
+              <div class="bbn-alt-background bbn-vmiddle bbn-xspadded bbn-radius bbn-flex-fill"
+                  :style="{
+                    'min-height': '2rem',
+                    'justify-content': 'flex-end',
+                    'align-items': !column.opened ? 'flex-end': ''
+                  }">
+                <component v-if="main.toolbar || !!column.data[main.sourceToolbar]"
+                          :is="!!column.data[main.sourceToolbar] ? column.data[main.sourceToolbar] : main.toolbar"
+                          :source="column"
+                          :index="index"/>
+              </div>
+              <bbn-button v-if="!!column.opened"
+                          class="bbn-no-border bbn-left-space"
+                          :notext="true"
+                          :text="_('Collapse')"
+                          icon="nf nf-mdi-arrow_collapse"
+                          @click="main.collapse(column)"
+                          style="height: 100%; width: auto; aspect-ratio: 1"/>
+            </div>
+            <div v-if="!!column.opened"
+                :class="['bbn-vpadded', 'bbn-w-100', {'bbn-flex-fill': !!main.scrollable}]">
+              <div class="bbn-100">
+                <component :is="main.scrollable ? 'bbn-scroll' : 'div'"
+                          axis="y"
+                          ref="scroll">
+                  <div class="bbn-hpadded">
+                    <div v-if="items.length"
+                        v-for="(item, itemIdx) in items"
+                        :class="[
+                          'bbn-collapsable-columns-item',
+                          'bbn-radius',
+                          'bbn-alt-background',
+                          'bbn-spadded',
+                          {
+                            'bbn-bottom-space': !!items[itemIdx+1]
+                          }
+                        ]">
+                      <component :is="!!item.data[main.sourceComponent] ? item.data[main.sourceComponent] : (!!column.data[main.sourceComponent] ? column.data[main.sourceComponent] : main.realComponent)"
+                                :source="item.data"
+                                :index="itemIdx"/>
+                    </div>
+                  </div>
+                </component>
               </div>
             </div>
-          </bbn-scroll>
+            <div class="bbn-collapsable-columns-pager-container bbn-w-100">
+              <bbn-pager v-if="!!column.opened && pageable"
+                        :element="_self"
+                        :limit="false"/>
+            </div>
+          </div>
         </div>
-      </div>
-      <div class="bbn-collapsable-columns-pager-container">
-        <bbn-pager v-if="!!column.opened && pageable"
-                   :element="_self"
-                   :limit="false"/>
-      </div>
+      </column>
     </div>
-  </column>
+  </component>
 </div>

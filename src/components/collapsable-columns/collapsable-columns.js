@@ -56,6 +56,18 @@
       sourceComponent: {
         type: String,
         default: 'component'
+      },
+      /**
+       * Defines the behaviour of the columns about the scroll.
+       * @prop [Boolean] {true} scrollable
+       */
+      scrollable: {
+        type: Boolean,
+        default: true
+      },
+      columnWidth: {
+        type: [Number, String],
+        default: '40rem'
       }
     },
     methods: {
@@ -119,6 +131,11 @@
           },
           index: {
             type: Number
+          }
+        },
+        data(){
+          return {
+            main: this.closest('bbn-collapsable-columns')
           }
         },
         computed: {
