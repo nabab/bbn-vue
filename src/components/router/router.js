@@ -2174,7 +2174,8 @@
                 title: view.title,
                 static: view.static,
                 pinned: view.pinned,
-                index: idx
+                index: idx,
+                last: bbn.fn.timestamp()
               };
               if (view.icon) {
                 kept.icon = view.icon;
@@ -3782,6 +3783,8 @@
           if (!this.views[idx].selected && !this.views[idx].pane) {
             this.views[idx].selected = true;
           }
+
+          this.views[idx].last = bbn.fn.timestamp();
           if (this.currentURL !== this.views[idx].current) {
             this.route(this.views[idx].current);
           }
@@ -3809,7 +3812,6 @@
             if (idx !== false) {
               let v = this.views[idx];
               let ct = this.urls[v.url];
-              v.last = bbn.fn.timestamp();
               if (!v.pane) {
                 this.selected = idx;
                 if (ct) {
