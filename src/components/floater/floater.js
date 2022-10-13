@@ -802,7 +802,13 @@
           return new Promise(resolve => {
             // Should be triggered by the inner scroll once mounted
             if (go) {
-              if (this.definedWidth && this.definedHeight) {
+              if (this.definedWidth
+                && this.definedHeight
+                && (this.definedWidth >= this.currentMinWidth)
+                && (this.definedWidth <= this.currentMaxWidth)
+                && (this.definedHeight >= this.currentMinHeight)
+                && (this.definedHeight <= this.currentMaxHeight)
+              ) {
                 if ((this.realWidth !== this.definedWidth)
                   ||(this.realHeight !== this.definedHeight)
                 ) {
