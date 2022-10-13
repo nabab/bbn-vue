@@ -2219,7 +2219,8 @@
               current: url,
               error: false,
               loaded: false,
-              hidden: false
+              hidden: false,
+              last: bbn.fn.timestamp()
             }, idx);
           }
           else if (!this.views[idx].loading) {
