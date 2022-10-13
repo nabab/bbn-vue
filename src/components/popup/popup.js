@@ -188,6 +188,8 @@
           d = obj;
         }
         if (d) {
+          this.setResizeMeasures();
+          this.setContainerMeasures();
           if (d.url) {
             return this.load(d);
           }
