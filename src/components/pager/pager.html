@@ -19,13 +19,9 @@
 		<span v-else
 					class="bbn-iblock bbn-hxspadded bbn-p bbn-pager-mobile-icon"
 					@click="firstPage"
+					:style="{visibility: element.currentPage <= 2 ? 'hidden' : 'visible'}"
 		>
-			<i :class="[
-									'nf nf-fa-angle_double_left',
-									'bbn-xl',
-									'bbn-pager-mobile-icon',
-									{'bbn-invisible': element.currentPage <= 2}
-								 ]"/>
+			<i class="nf nf-fa-angle_double_left bbn-xl bbn-pager-mobile-icon"/>
 		</span>
 		<!-- 2ND BUTTON (PREVIOUS) -->
 		<bbn-button icon="nf nf-fa-angle_left"
@@ -37,13 +33,9 @@
 		<!-- OR 2ND ICON (PREVIOUS) -->
 		<span v-else
 					class="bbn-iblock bbn-hxspadded bbn-p bbn-pager-mobile-icon"
-					@click="prevPage">
-			<i :class="[
-									'nf nf-fa-angle_left',
-									'bbn-xl',
-									'bbn-pager-mobile-icon',
-									{'bbn-invisible': element.currentPage == 1}
-								 ]"/>
+					@click="prevPage"
+					:style="{visibility: element.currentPage == 1 ? 'hidden' : 'visible'}">
+			<i class="nf nf-fa-angle_left bbn-xl bbn-pager-mobile-icon"/>
 		</span>
 		<!-- PAGE + NUMERIC SELECTOR -->
 		<span class="bbn-iblock" v-text="pageName"/>
@@ -69,14 +61,10 @@
 								v-if="buttons"/>
 		<!-- OR 3RD ICON (NEXT) -->
 		<span v-else
-		      class="bbn-iblock bbn-hxspadded bbn-p bbn-pager-mobile-icon">
-			<i :class="[
-									'nf nf-fa-angle_right',
-									'bbn-xl',
-									'bbn-pager-mobile-icon',
-									{'bbn-invisible': element.currentPage == element.numPages}
-								 ]"
-				 @click="nextPage"/>
+		      class="bbn-iblock bbn-hxspadded bbn-p bbn-pager-mobile-icon"
+					@click="nextPage"
+					:style="{visibility: element.currentPage == element.numPages ? 'hidden' : 'visible'}">
+			<i class="nf nf-fa-angle_right bbn-xl bbn-pager-mobile-icon"/>
 		</span>
 		<!-- 4TH BUTTON (LAST) -->
 		<bbn-button icon="nf nf-fa-angle_double_right"
@@ -87,15 +75,10 @@
 								v-if="buttons"/>
 		<!-- OR 4TH ICON (LAST) -->
 		<span v-else
-					class="bbn-iblock bbn-hxspadded bbn-p bbn-pager-mobile-icon">
-			<i :class="[
-									'nf nf-fa-angle_double_right',
-									'bbn-xl',
-									'bbn-pager-mobile-icon',
-									{'bbn-invisible': element.currentPage >= element.numPages - 1}
-								 ]"
-				 @click="lastPage"
-			></i>
+					class="bbn-iblock bbn-hxspadded bbn-p bbn-pager-mobile-icon"
+					@click="lastPage"
+					:style="{visibility: element.currentPage >= element.numPages - 1 ? 'hidden' : 'visible'}">
+			<i class="nf nf-fa-angle_double_right bbn-xl bbn-pager-mobile-icon"/>
 		</span>
 		<span v-if="!!element.limits &&
 								(element.limits.length > 1) &&

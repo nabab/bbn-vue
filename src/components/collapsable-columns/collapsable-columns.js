@@ -56,6 +56,18 @@
       sourceComponent: {
         type: String,
         default: 'component'
+      },
+      /**
+       * Defines the behaviour of the columns about the scroll.
+       * @prop [Boolean] {true} scrollable
+       */
+      scrollable: {
+        type: Boolean,
+        default: true
+      },
+      columnWidth: {
+        type: [Number, String],
+        default: '40rem'
       }
     },
     methods: {
@@ -107,6 +119,36 @@
           this.$emit('expand', c);
         });
         this.$forceUpdate();
+      }
+    },
+    components: {
+      column: {
+        name: 'column',
+        mixins: [bbn.vue.listComponent],
+        props: {
+          column: {
+            type: Object
+          },
+          index: {
+            type: Number
+          }
+        },
+        data(){
+          return {
+            main: this.closest('bbn-collapsable-columns')
+          }
+        },
+        computed: {
+          items(){
+            if (this.pageable && (!this.isAjax || !this.serverPaging)) {
+              return this.filteredData.slice().splice(this.start, this.currentLimit);
+            }
+            return this.filteredData;
+          }
+        },
+        mounted(){
+          this.ready = true;
+        }
       }
     }
   });
