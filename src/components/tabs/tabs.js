@@ -152,12 +152,28 @@
         if (this.router) {
           return this.router.getMenuFn(idx);
         }
+      },
+      onScrollReady() {
+        bbn.fn.log("on scroll, ready");
+        setTimeout(() => {
+          this.updateScroll();
+        }, 1500);
+      },
+      updateScroll() {
+        if (this.scrollable) {
+          let scroll = this.getRef('horizontal-scroll');
+          let tab = this.getRef('tab-' + this.value);
+          if (scroll && tab && tab.offsetLeft) {
+            scroll.scrollTo(tab.offsetLeft, 0, true);
+          }
+        }
       }
     },
     watch: {
       value(v) {
         this.$nextTick(() => {
           this.selectedBarColor = this.source[v] ? this.getFontColor(v) : null;
+          this.updateScroll();
         })
       }
     },

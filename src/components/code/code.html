@@ -16,15 +16,13 @@
         :value="value"
         :name="name"
         :disabled="isDisabled"
-        :required="required"
-  >
+        :required="required">
   <div class="bbn-bg-black bbn-p bbn-middle theme-button"
       v-if="themeButton"
-      ref="theme_button"
-  >
+      ref="theme_button">
     <i class="nf nf-fa-bars" @click="nextTheme"/>
   </div>
-  <bbn-scrollbar v-if="fill && ready"
+  <bbn-scrollbar v-if="fill && ready && $el"
                 orientation="vertical"
                 ref="scrollbar"
                 :container="$el.querySelector('.CodeMirror-scroll')"/>

@@ -1084,7 +1084,9 @@
 
         setTimeout(() => {
           this.widget.refresh();
-          this.ready = true;
+          this.$nextTick(() => {
+            this.ready = true;
+          })
         }, 250);
       }
     },

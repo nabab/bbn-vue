@@ -857,7 +857,7 @@
           ),
           a => {
             let visible = false;
-            if (this.visualShowAll || (idx <= numAvailableSlots) || (this.selected === a.index)) {
+            if (this.visualShowAll || (idx <= numAvailableSlots) || (this.selected === a.idx)) {
               visible = true;
               if (!a.pane) {
                 idx++;
@@ -1547,7 +1547,9 @@
             if ( !this.routed ){
               this.routed = true;
               this.$emit("route1", this);
+              this.$nextTick(this.onResize)
             }
+
             this.activate(url, this.urls[st]);
           }
           if ( this.urls[st] && this.urls[st].isLoaded ){
@@ -2225,6 +2227,7 @@
 
           if (!this.views[idx].pane) {
             this.selected = idx;
+            this.currentURL = this.parseURL(url);
           }
 
           this.$forceUpdate();

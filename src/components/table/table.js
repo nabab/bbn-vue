@@ -1868,31 +1868,26 @@
           <h3>
             <bbn-checkbox :checked="allVisible(tg.value)"
                           @change="checkAll(tg.value)"
-                          :label="tg.text"
-            ></bbn-checkbox>
+                          :label="tg.text"/>
           </h3>
           <ul>
             <li v-for="(col, i) in source.cols"
-                v-if="!col.fixed && (col.group === tg.value) && (col.showable !== false) && (col.title || col.ftitle)"
-            >
+                v-if="!col.fixed && (col.group === tg.value) && (col.showable !== false) && (col.title || col.ftitle)">
               <bbn-checkbox :checked="shownCols[i]"
                             @change="check(col, i)"
                             :label="col.ftitle || col.title"
-                            :contrary="true"
-              ></bbn-checkbox>
+                            :contrary="true"/>
             </li>
           </ul>
         </li>
       </ul>
       <ul v-else>
         <li v-for="(col, i) in source.cols"
-            v-if="!col.fixed && (col.showable !== false) && (col.title || col.ftitle)"
-        >
+            v-if="!col.fixed && (col.showable !== false) && (col.title || col.ftitle)">
           <bbn-checkbox :checked="shownCols[i]"
                         @change="check(col, i)"
                         :label="col.ftitle || col.title"
-                        :contrary="true"
-          ></bbn-checkbox>
+                        :contrary="true"/>
         </li>
       </ul>
     </div>
@@ -2088,6 +2083,9 @@
       save() {
         this.savedConfig = this.jsonConfig;
       },
+      beforeSelect(index, ev) {
+        this.$emit('beforeselect', ev, index, this.items[index]);
+      },
       /**
        * Emits 'select',  'unselect' or 'toggle' at change of checkbox of the row in a selectable table.
        * @method checkSelection
@@ -2098,6 +2096,11 @@
        * @emit toggle
        */
       checkSelection(index, state) {
+        if (this.cancelSelection) {
+          this.cancelSelection = false;
+          return;
+        }
+
         let row = this.items[index];
         if (row) {
           if (this.groupable && row.group) {

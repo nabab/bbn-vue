@@ -260,6 +260,7 @@
                                       :novalue="false"
                                       :strict="true"
                                       @click.stop
+                                      @beforechange="beforeSelect(i, ...arguments)"
                                       @change="checkSelection(i)"
                                       class="bbn-middle bbn-flex"/>
                       </div>
@@ -341,6 +342,7 @@
                                     :novalue="false"
                                     :strict="true"
                                     @click.stop
+                                    @beforechange="beforeSelect(i, ...arguments)"
                                     @change="checkSelection(i)"
                                     class="bbn-middle bbn-flex"/>
                     </div>
