@@ -872,12 +872,20 @@
           let visibleSuggestions = tokens.find(element => element.end <= cursor.ch && element.string === "<");
           /** show hint only inside the tag in the html mode */
           /** or if cursor is between tags, don't show the hint */
-          if (!visibleSuggestions || (beforeCursorToken.string === '>' && afterCursorToken.string === "</")) {
+          if (!visibleSuggestions || (beforeCursorToken
+            && (beforeCursorToken.string === '>')
+            && afterCursorToken
+            && (afterCursorToken.string === "</"))
+          ) {
             return;
           }
         }
         /** replace --> to -> when the suggestion is selected by Enter key */
-        if (this.mode === 'php' && this.eventKey == 'Enter' && beforeCursorToken.string.includes('-->')) {
+        if ((this.mode === 'php')
+            && (this.eventKey == 'Enter')
+            && beforeCursorToken
+            && (beforeCursorToken.string.includes('-->'))
+        ) {
           this.widget.replaceRange("->", {line: cursor.line, ch: beforeCursorToken.start}, {line: cursor.line, ch: beforeCursorToken.end});
           tokens = this.widget.getLineTokens(cursor.line);
         }

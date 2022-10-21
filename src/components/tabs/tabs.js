@@ -161,10 +161,13 @@
       },
       updateScroll() {
         if (this.scrollable) {
-          let scroll = this.getRef('horizontal-scroll');
-          let tab = this.getRef('tab-' + this.value);
-          if (scroll && tab && tab.offsetLeft) {
-            scroll.scrollTo(tab.offsetLeft, 0, true);
+          const scroll = this.getRef('horizontal-scroll');
+          const tab = this.getRef('tab-' + this.value);
+          if (scroll && tab) {
+            const x = tab.offsetLeft;
+            if ((x < scroll.currentX) || (x > (scroll.currentX + scroll.containerWidth))) {
+              scroll.scrollTo(tab.offsetLeft, 0, true);
+            }
           }
         }
       }

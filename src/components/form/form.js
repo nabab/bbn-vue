@@ -411,10 +411,11 @@
         if ( this.buttons ){
           bbn.fn.each(this.buttons.slice(), a => {
             let t = typeof(a);
+            let obj;
             if ( t === 'string' ){
               switch ( a ){
                 case 'cancel':
-                  r.push({
+                  obj = {
                     preset: 'cancel',
                     text: this.cancelText,
                     icon: 'nf nf-fa-times_circle',
@@ -422,10 +423,10 @@
                       this.cancel();
                     },
                     disabled: !this.canCancel
-                  });
+                  };
                   break;
                 case 'reset':
-                  r.push({
+                  obj = {
                     preset: 'reset',
                     text: this.resetText,
                     icon: 'nf nf-fa-refresh',
@@ -433,10 +434,10 @@
                       this.reset();
                     },
                     disabled: !this.dirty && !this.prefilled
-                  });
+                  };
                   break;
                 case 'submit':
-                  r.push({
+                  obj = {
                     preset: 'submit',
                     text: this.submitText,
                     icon: 'nf nf-fa-check_circle',
@@ -444,7 +445,7 @@
                       this.submit();
                     },
                     disabled: !this.canSubmit
-                  });
+                  };
                   break;
               }
             }
@@ -452,7 +453,13 @@
               if ( (typeof a.action === 'string') && bbn.fn.isFunction(this[a.action]) ){
                 a.action = this[a.action];
               }
-              r.push(a);
+              obj = a;
+            }
+            if (obj) {
+              if (this.isLoading) {
+                obj.disabled = true;
+              }
+              r.push(obj);
             }
           });
         }
@@ -1029,6 +1036,9 @@
       },
       mode(v) {
         this.currentMode = v;
+      },
+      isLoading() {
+        this.updateButtons();
       }
     }
   });
