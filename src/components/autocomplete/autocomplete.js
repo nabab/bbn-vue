@@ -141,9 +141,14 @@
        * @emit change
        */
       select(item){
-        if ( item && (item[this.sourceValue] !== undefined) ){
-          this.emitInput(item[this.sourceValue]);
-          this.$emit('change', item[this.sourceValue]);
+        if (item) {
+          const v = item;
+          if (this.sourceValue && (item[this.sourceValue] !== undefined)) {
+            v = item[this.sourceValue];
+          }
+
+          this.emitInput(v);
+          this.$emit('change', v);
           this.currentText = item[this.sourceText];
           this.filterString = item[this.sourceText];
           this.$nextTick(() => {
