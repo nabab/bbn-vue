@@ -7,14 +7,11 @@
  *
  * @copyright BBN Solutions
  */
-(function (Vue, bbn) {
-  "use strict";
   /**
    * Classic input with normalized appearance
    */
-  let isClicked = false;
   //bbn.vue.preloadBBN(['scroll', 'list', 'button']);
-  Vue.component('bbn-floater', {
+  return {
     name: 'bbn-floater',
     /**
      * @mixin bbn.vue.basicComponent
@@ -1629,6 +1626,4 @@
       }
     }
 
-  });
-
-})(window.Vue, window.bbn);
+  };

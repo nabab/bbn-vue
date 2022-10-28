@@ -1181,7 +1181,7 @@
          * @fires realDelete
          * @emit beforedelete
          */
-        delete(index, confirm) {
+        deleteItem(index, confirm) {
           if (this.filteredData[index]) {
             let ev = new Event('delete', {cancelable: true});
             this.$emit('beforedelete', index, this.filteredData[index].data, this, ev);
