@@ -1,6 +1,9 @@
-.bbn-rte{
+.bbn-rte {
   box-sizing: content-box;
   clear: both;
+  .bbn-code .CodeMirror.CodeMirror-wrap {
+    position: relative !important;
+  }
 }
 .bbn-rte-toolbar {
   > .bbn-flex-fill {
@@ -18,4 +21,11 @@
       }
     }
   }
+  .bbn-rte-fontsize {
+    width: 3.5rem;
+  }
+}
+.bbn-rte-fontsize-font {
+  display: block;
+  line-height: normal !important;
 }
