@@ -7,12 +7,7 @@
  */
 
 
-((bbn, Vue) => {
-  "use strict";
-
-  let cp = false;
-
-  Vue.component('bbn-chat', {
+return {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.localStorageComponent
@@ -1990,7 +1985,7 @@
           :source="chat"
           :action="cp.url + '/actions/chat/group'"
 >
-  <component :is="cp.$options.components.info"
+  <bbn-anonymous :is="cp.$options.components.info"
              :info="{
                title: '',
                creator: cp.userId
@@ -2001,7 +1996,7 @@
              :users="cp.users"
              @titleChanged="title => chat.title = title"
              :titleVisible="true"
-  ></component>
+  ></bbn-anonymous>
 </bbn-form>
         `,
         name: 'newGroup',
@@ -2047,6 +2042,4 @@
         }
       }
     }
-  });
-
-})(bbn, Vue);
+  };

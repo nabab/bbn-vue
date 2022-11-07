@@ -82,13 +82,13 @@
                          'bbn-lg',
                          {'bbn-h-100': fullSlide, 'bbn-abs': fullSlide}
                        ]">
-                    <component v-if="it.component"
+                    <bbn-anonymous v-if="it.component"
                                :is="it.component"
                                :data="it.data || {}"
                                v-bind="it.attributes"
                                :key="i"
                                @clickitem="itemClickable ? $emit('clickitem', it) : false"/>
-                    <component v-else-if="component"
+                    <bbn-anonymous v-else-if="component"
                                :is="component"
                                :content="it.content || ''"
                                :data="it.data || {}"
@@ -188,7 +188,7 @@
              :style="{'min-height': typeof(dimensionPreview)=== 'Number' ? dimensionPreview + 'px': dimensionPreview}"
              @mouseover="miniaturePreview(true)"
              @mouseleave="miniaturePreview(false)">
-          <component v-show="showMiniature"
+          <bbn-anonymous v-show="showMiniature"
                      :is="$options.components.miniature"
                      :items="items"
                      :type="preview"

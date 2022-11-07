@@ -7,9 +7,7 @@
  *
  * @author Mirko Argentino
  */
-(function() {
-  "use strict";
-  Vue.component('bbn-editable-content', {
+return {
     name: 'bbn-editable-content',
     /**
      * @mixin bbn.vue.basicComponent
@@ -93,5 +91,4 @@
         this.isEditing = false;
       }
     }
-  })
-})();
+  };

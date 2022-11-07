@@ -26,12 +26,12 @@
               'bbn-disabled': !!li.disabled,
               'bbn-state-selected': item.visible && (idx === selectedIndex)
             }">
-          <component v-if="currentComponent"
+          <bbn-anonymous v-if="currentComponent"
                     :is="currentComponent"
                     :source="li"
                     @remove="remove(idx)">
-          </component>
-          <component v-else
+          </bbn-anonymous>
+          <bbn-anonymous v-else
                     :is="li.url && !li[children] ? 'a' : 'span'"
                     @click.prevent="() => {}"
                     class="bbn-w-100 bbn-vxspadded bbn-hspadded"
@@ -40,7 +40,7 @@
               <i v-if="li.icon" :class="li.icon"></i>
             </span-->
             <span class="text" v-html="li[sourceText]"></span>
-          </component>
+          </bbn-anonymous>
         </li>
       </ul>
     </bbn-scroll>

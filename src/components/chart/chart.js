@@ -11,10 +11,7 @@
  * @created 10/02/2020
  */
 
-(bbn => {
-  "use strict";
-
-  Vue.component('bbn-chart', {
+return {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.resizerComponent
@@ -1418,5 +1415,4 @@
         this.ready = true;
       })
     }
-  });
-})(bbn);
+  };

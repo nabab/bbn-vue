@@ -84,8 +84,7 @@ return {
        * @prop {String} [null] secondaryColor
        */
       secondaryColor: {
-        type: String,
-        default: null
+        type: String
       },
       /**
        * Specifies the type of button.

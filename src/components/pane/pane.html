@@ -24,11 +24,11 @@
       'bbn-h-100': !$parent.fullSize && ($parent.panes.length > 1) && isHorizontal,
     }"
          v-show="!isCollapsed">
-      <component :is="scrollable ? 'bbn-scroll' : 'div'"
+      <bbn-anonymous :is="scrollable ? 'bbn-scroll' : 'div'"
                  :class="{'bbn-overlay': $parent.fullSize, 'bbn-w-100': !scrollable && $parent.fullSize}"
                  ref="scroll">
         <slot></slot>
-      </component>
+      </bbn-anonymous>
     </div>
   </div>
 </div>

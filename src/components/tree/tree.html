@@ -7,7 +7,7 @@
     <bbn-loadicon></bbn-loadicon> <span v-text="_('Loading')"></span>...
   </div>
   <!-- The container: a scroll if root and scrollable, a div otherwise -->
-  <component v-else-if="isInit && isLoaded"
+  <bbn-anonymous v-else-if="isInit && isLoaded"
              :is="isRoot && !!scrollable ? 'bbn-scroll' : 'div'"
              ref="scroll"
   >
@@ -100,7 +100,7 @@
               </span>
 
               <!-- The component if given -->
-              <component v-if="!!component"
+              <bbn-anonymous v-if="!!component"
                           :is="component"
                           :source="data"/>
 
@@ -135,7 +135,7 @@
                       v-droppable:data="tree.selfDrop ? {node: _self} : false"
                 >
                   <!-- The item component if given -->
-                  <component v-if="tree.itemComponent"
+                  <bbn-anonymous v-if="tree.itemComponent"
                              :is="tree.itemComponent"
                              :source="source"/>
                   <!-- Or the default template -->
@@ -212,7 +212,7 @@
         </bbn-tree-node>
       </ul>
     </transition>
-  </component>
+  </bbn-anonymous>
   <h2 v-else-if="isRoot"
       v-html="_('No items') + '...'"
   ></h2>

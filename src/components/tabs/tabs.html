@@ -12,7 +12,7 @@
           </div>
         </div>
         <div class="bbn-flex-fill">
-          <component :is="scrollable ? 'bbn-scroll' : 'div'"
+          <bbn-anonymous :is="scrollable ? 'bbn-scroll' : 'div'"
                      ref="horizontal-scroll"
                      v-bind="scrollCfg"
                      style="height: 100%"
@@ -102,7 +102,7 @@
                 </bbn-context>
               </li>
             </ul>
-          </component>
+          </bbn-anonymous>
         </div>
         <div v-if="scrollable"
             class="bbn-tabs-button bbn-tabs-button-next bbn-p">

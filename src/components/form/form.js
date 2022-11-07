@@ -10,10 +10,7 @@
  * @author BBN Solutions
  */
 
-(function(bbn){
-  "use strict";
-
-  Vue.component('bbn-form', {
+return {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.localStorageComponent
@@ -1041,6 +1038,4 @@
         this.updateButtons();
       }
     }
-  });
-
-})(bbn);
+  };

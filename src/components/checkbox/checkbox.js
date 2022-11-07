@@ -10,9 +10,7 @@
  * @author BBN Solutions
  *
  */
-(bbn => {
-  "use strict";
-  Vue.component('bbn-checkbox', {
+return {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.inputComponent
@@ -235,5 +233,4 @@
         //this.$emit('input', this.novalue);
       }
     }
-  });
-})(bbn);
+  };

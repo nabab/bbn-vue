@@ -10,12 +10,7 @@
  * @created 10/02/2017.
  */
 
-(
-  (bbn, Vue) => {
-
-    "use strict";
-
-    Vue.component('bbn-big-search', {
+return {
       /**
        * @mixin bbn.vue.basicComponent
        * @mixin bbn.vue.eventsComponent
@@ -215,7 +210,7 @@
               data(){
                 return this.source;
               },
-              template: `<component :is="myCp" :source="source"></component>`,
+              template: `<bbn-anonymous :is="myCp" :source="source"></bbn-anonymous>`,
               computed: {
                 myCp() {
                   return this.source.component || 'div';
@@ -527,7 +522,4 @@
       mounted() {
         this.ready = true;
       }
-    });
-
-  }
-)(bbn, Vue);
+    };

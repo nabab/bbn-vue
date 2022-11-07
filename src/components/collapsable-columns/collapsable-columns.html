@@ -1,5 +1,5 @@
 <div :class="componentClass">
-  <component :is="scrollable ? 'bbn-scroll' : 'div'"
+  <bbn-anonymous :is="scrollable ? 'bbn-scroll' : 'div'"
              axis="x"
              ref="scroll">
     <div :class="['bbn-collapsable-columns-container', 'bbn-grid', 'bbn-padded', {'bbn-h-100': !!scrollable}]">
@@ -46,7 +46,7 @@
                     'justify-content': 'flex-end',
                     'align-items': !column.opened ? 'flex-end': ''
                   }">
-                <component v-if="main.toolbar || !!column.data[main.sourceToolbar]"
+                <bbn-anonymous v-if="main.toolbar || !!column.data[main.sourceToolbar]"
                           :is="!!column.data[main.sourceToolbar] ? column.data[main.sourceToolbar] : main.toolbar"
                           :source="column"
                           :index="index"/>
@@ -62,7 +62,7 @@
             <div v-if="!!column.opened"
                 :class="['bbn-vpadded', 'bbn-w-100', {'bbn-flex-fill': !!main.scrollable}]">
               <div class="bbn-100">
-                <component :is="main.scrollable ? 'bbn-scroll' : 'div'"
+                <bbn-anonymous :is="main.scrollable ? 'bbn-scroll' : 'div'"
                           axis="y"
                           ref="scroll">
                   <div class="bbn-hpadded">
@@ -77,12 +77,12 @@
                             'bbn-bottom-space': !!items[itemIdx+1]
                           }
                         ]">
-                      <component :is="!!item.data[main.sourceComponent] ? item.data[main.sourceComponent] : (!!column.data[main.sourceComponent] ? column.data[main.sourceComponent] : main.realComponent)"
+                      <bbn-anonymous :is="!!item.data[main.sourceComponent] ? item.data[main.sourceComponent] : (!!column.data[main.sourceComponent] ? column.data[main.sourceComponent] : main.realComponent)"
                                 :source="item.data"
                                 :index="itemIdx"/>
                     </div>
                   </div>
-                </component>
+                </bbn-anonymous>
               </div>
             </div>
             <div class="bbn-collapsable-columns-pager-container bbn-w-100">
@@ -94,5 +94,5 @@
         </div>
       </column>
     </div>
-  </component>
+  </bbn-anonymous>
 </div>

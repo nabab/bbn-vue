@@ -13,9 +13,7 @@
  * @created 10/02/2020
  */
 
-(bbn => {
-  "use strict";
-  Vue.component('bbn-colorpicker', {
+return {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.inputComponent
@@ -382,5 +380,4 @@
     beforeDestroy(){
       this.destroy();
     }
-  });
-})(bbn);
+  };

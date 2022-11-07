@@ -9,10 +9,7 @@
  *
  * @created 10/07/2017
  */
-(function(bbn, Vue){
-  "use strict";
-
-  Vue.component('bbn-scrollbar', {
+return {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.keepCoolComponent 
@@ -834,6 +831,4 @@
       document.removeEventListener("mouseup", this.stopDrag);
       document.removeEventListener("touchend", this.stopDrag);
     },
-  });
-
-})(window.bbn, window.Vue);
+  };

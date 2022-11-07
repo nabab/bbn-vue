@@ -22,7 +22,7 @@
           class="bbn-list-group-li bbn-m bbn-header bbn-hspadded bbn-unselectable bbn-vmiddle"
           :style="groupStyle"
           :group="li.data[sourceGroup]">
-        <component v-if="groupComponent"
+        <bbn-anonymous v-if="groupComponent"
                    :is="groupComponent"
                    v-bind="li"
                    :key="'groupComponent' + li.key"/>
@@ -47,7 +47,7 @@
             'bbn-state-hover': (overIdx === idx),
             'bbn-alt': alternateBackground && (idx % 2)
           }">
-        <component v-if="currentComponent"
+        <bbn-anonymous v-if="currentComponent"
                    :is="currentComponent"
                    v-bind="componentOptions"
                    :source="li.data"
@@ -55,7 +55,7 @@
                    @remove="remove(idx)"
                    @hook:mounted="selfEmit(true)"
                    :key="li.key"/>
-        <component v-else
+        <bbn-anonymous v-else
                   :is="li.data && li.data.url && !li.data[children] ? 'a' : 'span'"
                   @click.prevent="() => {}"
                   class="bbn-w-100"
@@ -73,7 +73,7 @@
           </span>
           <span class="text"
                 v-html="li.data[sourceText]"></span>
-        </component>
+        </bbn-anonymous>
         <div v-if="!currentComponent && li.data[children] && li.data[children].length"
              :class="['bbn-block', 'bbn-top-right', 'bbn-hspadded', 'bbn-h-100', {
               'bbn-vmiddle': (origin === 'floater')

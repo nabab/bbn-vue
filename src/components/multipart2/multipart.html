@@ -26,7 +26,7 @@
             <div class="bbn-block"
                  :style="item.style">
               <div class="bbn-h-100">
-                <component :is="item.component || 'bbn-input'"
+                <bbn-anonymous :is="item.component || 'bbn-input'"
                             v-bind="item.getOptions()"
                             @keydown.enter.prevent.stop="clickNext()"
                             :required="item.required === undefined ? true : item.required"

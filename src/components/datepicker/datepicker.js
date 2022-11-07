@@ -8,10 +8,7 @@
   *
   * @author Mirko Argentino
   */
-(function(bbn){
-  "use strict";
-
-  Vue.component('bbn-datepicker', {
+return {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.inputComponent
@@ -438,6 +435,4 @@
         this.setInputValue(newVal);
       }
     }
-  });
-
-})(bbn);
+  };

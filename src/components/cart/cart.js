@@ -10,9 +10,7 @@
   * @created 10/02/2017
   */
 
-  (function(bbn){
-    "use strict";
-    Vue.component('bbn-cart', {
+return {
       name: 'bbn-cart',
       /**
        * @mixin bbn.vue.basicComponent
@@ -45,7 +43,5 @@
       },
       watch: {
       }
-    });
-  
-  })(bbn);
+    };
   

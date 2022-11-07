@@ -13,11 +13,11 @@
        v-html="source.content"
   >
   </div-->
-  <component v-if="ready" 
+  <bbn-anonymous v-if="ready" 
             :is="component(type)"
             :source="source"
             :class="['bbn-cms-block-component', {'edit-block' : over || edit}]">
-  </component>
+  </bbn-anonymous>
   <div class="bbn-cms-block-icons bbn-vmiddle">
     <div class="bbn-nowrap bbn-block">
       <i class="bbn-p nf nf-fa-edit inline bbn-xlarge bbn-white"

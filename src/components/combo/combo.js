@@ -5,10 +5,7 @@
  * @author BBN Solutions
  * @created 10/02/2017.
  */
-(function(bbn){
-  "use strict";
-
-  Vue.component('bbn-combo', {
+return {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.eventsComponent
@@ -215,6 +212,4 @@
         }
       }
     }
-  });
-
-})(bbn);
+  };

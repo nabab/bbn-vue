@@ -4,55 +4,53 @@
  * @copyright BBN Solutions
  * @author BBN Solutions
  */
- (function(bbn, Vue){
-  "use strict";
-
-  // Orientations of the thumbnails for visual mode
-  const possibleOrientations = [
-    {
-      name: 'auto',
-      text: bbn._("Position automatically")
-    }, {
-      name: 'left',
-      text: bbn._("Position on the left side")
-    }, {
-      name: 'top',
-      text: bbn._("Position on the top side")
-    }, {
-      name: 'bottom',
-      text: bbn._("Position on the bottom side")
-    }, {
-      name: 'right',
-      text: bbn._("Position on the right side")
-    }
-  ];
-
-  // IndexedDb access for storing thumbnails in visual mode
-  let db = false;
-  if (bbn.db && bbn.db.ok && window.html2canvas) {
-    db = true;
-    if (!bbn.db._structures.bbn || !bbn.db._structures.bbn.containers) {
-      bbn.db.add('bbn', 'containers', {
-        keys: {
-          PRIMARY: {
-            columns: ['url'],
-            unique: true
-          }
-        },
-        fields: {
-          url: {
-
-          },
-          image: {
-
-          }
-        }
-      });
-    }
-  }
-  
-  Vue.component("bbn-router", {
+return {
     name: 'bbn-router',
+    static() {
+      // IndexedDb access for storing thumbnails in visual mode
+      let db = false;
+      if (bbn.db && bbn.db.ok && window.html2canvas) {
+        db = true;
+        if (!bbn.db._structures.bbn || !bbn.db._structures.bbn.containers) {
+          bbn.db.add('bbn', 'containers', {
+            keys: {
+              PRIMARY: {
+                columns: ['url'],
+                unique: true
+              }
+            },
+            fields: {
+              url: {
+
+              },
+              image: {
+
+              }
+            }
+          });
+        }
+      }
+      return {
+        possibleOrientations: [
+          {
+            name: 'auto',
+            text: bbn._("Position automatically")
+          }, {
+            name: 'left',
+            text: bbn._("Position on the left side")
+          }, {
+            name: 'top',
+            text: bbn._("Position on the top side")
+          }, {
+            name: 'bottom',
+            text: bbn._("Position on the bottom side")
+          }, {
+            name: 'right',
+            text: bbn._("Position on the right side")
+          }
+        ]
+      };
+    },
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.localStorageComponent
@@ -4109,6 +4107,5 @@
         }
       }
     }
-  });
-
-})(bbn, Vue);
+  };
+  

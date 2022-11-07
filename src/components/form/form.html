@@ -12,7 +12,7 @@
          'bbn-flex-height': !scrollable && hasFooter,
          'bbn-overlay': scrollable && !!window,
        }">
-    <component :is="scrollable ? 'bbn-scroll' : 'div'"
+    <bbn-anonymous :is="scrollable ? 'bbn-scroll' : 'div'"
                :class="{'bbn-overlay': !!fullSize, 'bbn-form-container': true}"
                :axis="scrollable ? 'y' : null"
                ref="container">
@@ -22,14 +22,14 @@
             v-if="schema && schema.length">
           <template v-for="field in currentSchema"
                     v-if="field.field && !field.buttons && (field.editable !== false)">
-            <component v-if="field.lineComponent"
+            <bbn-anonymous v-if="field.lineComponent"
                       :is="field.lineComponent"
                       :source="source"/>
             <template v-else>
               <label v-html="field.title"
                     :for="field.id"
                     :title="field.ftitle || field.title || field.field"/>
-              <component v-if="field.editor"
+              <bbn-anonymous v-if="field.editor"
                         :is="field.editor"
                         v-bind="field.options"
                         v-model="source[field.field]"/>
@@ -78,7 +78,7 @@
                     :style="{width: '10em'}"
                     v-bind="button"/>
       </div>
-    </component>
+    </bbn-anonymous>
   </div>
   <div v-if="hasFooter && !popup"
        class="bbn-form-footer bbn-header">

@@ -10,10 +10,7 @@
   * @created 13/06/2017.
   */
 
-(bbn => {
-  "use strict";
-
-  Vue.component('bbn-file', {
+return {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.inputComponent
@@ -294,6 +291,4 @@
         this.$emit('change', this.getValue);
       }
     }
-  });
-
-})(bbn);
+  };

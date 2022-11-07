@@ -9,13 +9,7 @@
  * @created 15/02/2017.
  */
 
-(bbn => {
-  "use strict";
-
-  /**
-   * Classic input with normalized appearance.
-   */
-  Vue.component('bbn-context', {
+return {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.listComponent
@@ -251,6 +245,4 @@
         }
       }
     }
-  });
-
-})(bbn);
+  };

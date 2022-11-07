@@ -8,7 +8,7 @@
         },
         componentClass
       ]"
-      v-if="isVisible"
+      v-show="isVisible"
       @resize.stop="onResize"
       @mouseleave="isOver = false"
       @mouseenter="isOver = true"
@@ -86,7 +86,7 @@
                     :min-width="currentMinWidth || null"
                     :min-height="currentMinHeight > outHeight ? currentMinHeight - outHeight : null"
                     @resizecontent="scrollResize">
-          <component v-if="component"
+          <bbn-anonymous v-if="component"
                     ref="component"
                     :is="component"
                     v-bind="realComponentOptions"/>
@@ -129,7 +129,7 @@
                   @keyup.stop
                   :extra-controls="false"/>
       </div>
-      <component is="style"
+      <bbn-anonymous is="style"
                 v-if="css"
                 scoped="scoped"
                 v-html="css"/>

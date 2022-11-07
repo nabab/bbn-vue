@@ -11,14 +11,7 @@
   * @created 15/02/2017.
   */
 
-(function(bbn){
-  "use strict";
-
-  var limits = [5, 10, 15, 20, 25, 30, 40, 50];
-  /**
-   * Classic input with normalized appearance
-   */
-  Vue.component('bbn-dashboard', {
+return {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.resizerComponent
@@ -30,6 +23,11 @@
       bbn.vue.resizerComponent, 
       bbn.vue.localStorageComponent
     ],
+    static() {
+      return {
+        limits: [5, 10, 15, 20, 25, 30, 40, 50]
+      };
+    },
     props: {
       /**
        * @prop {Object} [{}] components

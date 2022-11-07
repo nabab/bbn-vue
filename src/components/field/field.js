@@ -14,13 +14,7 @@
   *
   * @created 15/02/2017.
   */
-(bbn => {
-
-  "use strict";
-  /**
-   * Classic input with normalized appearance
-   */
-  Vue.component('bbn-field', {
+return {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.fieldComponent
@@ -245,6 +239,4 @@
     created(){
       this.init();
     }
-  });
-
-})(bbn);
+  };

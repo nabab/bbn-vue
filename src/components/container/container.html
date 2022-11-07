@@ -82,12 +82,12 @@
                         'bbn-w-100': !router.scrollContent
                       }">
             <!-- This is an ad hoc component with unique name -->
-            <component v-if="isComponent"
+            <bbn-anonymous v-if="isComponent"
                       :is="$options.components[componentName]"
                       :source="source"
                       ref="component"/>
             <!-- This is a classic component -->
-            <component v-else-if="component"
+            <bbn-anonymous v-else-if="component"
                       :is="component"
                       :source="source"
                       ref="component"
@@ -99,7 +99,7 @@
             <!-- This is the slot -->
             <slot v-else></slot>
             <!-- Adding style as a component -->
-            <component is="style"
+            <bbn-anonymous is="style"
                       v-if="css"
                       scoped="scoped"
                       v-html="css"/>

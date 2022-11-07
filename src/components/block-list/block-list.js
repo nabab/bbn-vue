@@ -5,10 +5,7 @@
  * @author BBN Solutions
  * @created 10/02/2017.
  */
-(function(bbn){
-  "use strict";
-
-  Vue.component('bbn-block-list', {
+return {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.listComponent
@@ -93,6 +90,4 @@
         this.windowWidth = window.innerWidth;
       }
     }
-  });
-
-})(bbn);
+  };

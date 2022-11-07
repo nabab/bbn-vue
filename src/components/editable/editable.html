@@ -3,23 +3,23 @@
      @mouseenter="over = true"
      @mouseleave="over = false"
      >
-  <component v-if="isEditing && component"
+  <bbn-anonymous v-if="isEditing && component"
             :is="component"
             v-model="currentValue"
             v-bind="componentOptions"/>
-  <component v-else-if="isEditing"
+  <bbn-anonymous v-else-if="isEditing"
             :is="componentObject"
             v-model="currentValue"
             :source="source"
             :class="{'edit-block' : isEditing}"
           
-  ></component>
-  <component v-else
+  ></bbn-anonymous>
+  <bbn-anonymous v-else
              :is="componentObject"
              v-model="currentValue"
              :source="source"
              :class="{'edit-block' : isEditing}"
-  ></component>
+  ></bbn-anonymous>
   <div :style="{
       position: 'absolute',
       top: '0px',

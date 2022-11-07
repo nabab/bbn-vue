@@ -165,7 +165,7 @@
           while (parentResizer && (parentResizer.onResize === undefined)) {
             parentResizer = parentResizer.$parent;
           }
-          return parentResizer.onResize !== undefined ? parentResizer : false;
+          return parentResizer?.onResize !== undefined ? parentResizer : false;
         },
         /**
          * Defines the resize emitter and launches process when it resizes.

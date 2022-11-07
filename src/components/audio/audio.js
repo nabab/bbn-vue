@@ -5,9 +5,7 @@
  * @author Mirko Argentino
  * * @created 11/08/2020.
  */
-(function(bbn){
-  "use strict";
-  Vue.component('bbn-audio', {
+return {
     /**
      * @mixin bbn.vue.basicComponent
      */
@@ -232,5 +230,4 @@
         this.widget.loop = !!newVal;
       }
     }
-  });
-})(bbn);
+  };

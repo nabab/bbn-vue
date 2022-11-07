@@ -8,10 +8,7 @@
  * @author BBN Solutions
  */
 
-(function(bbn){
-  "use strict";
-
-  Vue.component('bbn-tooltip', {
+return {
     /**
      * @mixin bbn.vue.basicComponent
      */
@@ -106,6 +103,4 @@
         this.$emit('close', this);
       }
     }
-  });
-
-})(bbn);
+  };

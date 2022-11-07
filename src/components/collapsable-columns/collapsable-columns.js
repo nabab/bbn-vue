@@ -6,9 +6,7 @@
  * @created 11/10/2022
  */
 
- (bbn => {
-  "use strict";
-  Vue.component('bbn-collapsable-columns', {
+return {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.listComponent
@@ -151,5 +149,5 @@
         }
       }
     }
-  });
-})(bbn);
+  };
+  

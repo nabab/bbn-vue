@@ -5,10 +5,7 @@
  * @author Loredana Bruno
  * @created 09/11/2020.
  */
-(function(bbn){
-  "use strict";
-
-  Vue.component('bbn-cursor', {
+return {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.eventsComponent
@@ -79,5 +76,4 @@
         return this.value
       }
     }
-  });
-})(bbn);
+  };

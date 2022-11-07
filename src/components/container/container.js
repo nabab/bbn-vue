@@ -10,9 +10,6 @@
  * @created 15/02/2017
  */
 
- (function(bbn, Vue){
-  "use strict";
-
   /**
    * @component
    * @param {string} url - The URL on which the tabNav will be initialized.
@@ -34,9 +31,7 @@
    */
 
   // Will hold all the current rendered components random names to avoid doubles
-  let componentsList = [];
-
-  Vue.component("bbn-container", {
+return {
     name: 'bbn-container',
     /**
      * @mixin bbn.vue.basicComponent
@@ -44,6 +39,11 @@
      * @mixin bbn.vue.viewComponent
      * @mixin bbn.vue.observerComponent
      */
+    static() {
+      return {
+        componentsList: []
+      }
+    },
     mixins: 
     [
       bbn.vue.basicComponent, 
@@ -339,7 +339,7 @@
        */
       randomName(){
         let n = bbn.fn.randomString(20, 15).toLowerCase();
-        while ( componentsList.indexOf(n) > -1 ){
+        while (bbnContainerPrivate.componentsList.indexOf(n) > -1 ){
           n = bbn.fn.randomString(20, 15).toLowerCase();
         }
         return n;
@@ -804,7 +804,7 @@
     created(){
       this.componentClass.push('bbn-resize-emitter');
       if ( this.isComponent ){
-        componentsList.push(this.componentName);
+        bbnContainerPrivate.componentsList.push(this.componentName);
       }
       else if ( this.isComponent === null ){
         // The default onMount function is to do nothing.
@@ -847,9 +847,9 @@
     beforeDestroy(){
       this.router.unregister(this);
       if ( this.isComponent ){
-        let idx = componentsList.indexOf(this.componentName);
+        let idx = bbnContainerPrivate.componentsList.indexOf(this.componentName);
         if ( idx > -1 ){
-          componentsList.splice(idx, 1);
+          bbnContainerPrivate.componentsList.splice(idx, 1);
         }
       }
     },
@@ -1001,6 +1001,4 @@
       }
     },
 
-  });
-
-})(bbn, Vue);
+  };

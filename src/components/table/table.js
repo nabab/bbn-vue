@@ -15,9 +15,7 @@
  * @copyright BBN Solutions
  */
 
-(function (bbn, Vue) {
-  "use strict";
-  Vue.component('bbn-table', {
+return {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.resizerComponent
@@ -3512,6 +3510,4 @@
         }
       }
     }
-  });
-
-})(window.bbn, window.Vue);
+  };

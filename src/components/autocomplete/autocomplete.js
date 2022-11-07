@@ -7,10 +7,7 @@
  */
 
 
-(function(bbn){
-  "use strict";
-
-  Vue.component('bbn-autocomplete', {
+return {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.eventsComponent
@@ -264,6 +261,4 @@
         }
       }
     }
-  });
-
-})(bbn);
+  };

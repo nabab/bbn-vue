@@ -1,4 +1,4 @@
-<component v-if="mode === 'write'"
+<bbn-anonymous v-if="mode === 'write'"
            :is="renderedComponent"
            v-bind="renderedOptions"
            v-model="currentValue"
@@ -7,11 +7,11 @@
 
 >
   <div v-if="renderedContent" v-html="renderedContent"></div>
-</component>
-<component v-else
+</bbn-anonymous>
+<bbn-anonymous v-else
            :is="renderedComponent"
            v-bind="renderedOptions"
            :class="componentClass"
 >
   <div v-if="renderedContent" v-html="renderedContent"></div>
-</component>
+</bbn-anonymous>

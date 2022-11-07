@@ -14,7 +14,7 @@
          */
         value: {
           default(){
-            return this.default !== undefined ? this.default : ''
+            return this.defaultValue !== undefined ? this.defaultValue : ''
           }
         },
         /**
@@ -113,10 +113,10 @@
           default: false
         },
         /**
-         * @prop {Number|String} default
+         * @prop {Number|String} defaultValue
          * @memberof inputComponent
          */
-        default: {
+        defaultValue: {
           type: [String, Number]
         },
         /**
@@ -137,7 +137,7 @@
          * If true the element will focus on insert
          * @prop {Boolean} autofocus
          */
-         focused: {
+        focused: {
           type: Boolean,
           default: false
         },
@@ -392,6 +392,23 @@
             this.validationID = false;
           }
         })
+        const input = this.getRef('element');
+        bbn.fn.log("FOUND INPUT", input)
+        input.addEventListener('input', e => {
+          e.stopImmediatePropagation();
+          if (this.value !== input.value) {
+            Object.defineProperty(this, 'value', {
+              value: input.value,
+              writable: false,
+              configurable: true
+            });
+            this.currentValue = input.value;
+            this.$emit('input', this.value);
+          }
+        })
+        input.addEventListener('change', e => {
+          this.$emit('change', this.value);
+        })
       },
       watch: {
         /**
@@ -400,6 +417,9 @@
          * @memberof inputComponent
          */
         value(newVal){
+          if (newVal !== this.currentValue) {
+            this.currentValue = newVal;
+          }
           if ( this.widget && (this.widget.value !== undefined) ){
             if (bbn.fn.isFunction(this.widget.value) ){
               if ( this.widget.value() !== newVal ){
@@ -415,7 +435,12 @@
           if ( !!newVal !== this.hasValue ){
             this.hasValue = !!newVal;
           }
-        }
+        },
+        currentValue(newVal) {
+          if (newVal !== this.currentValue) {
+            this.currentValue = newVal;
+          }
+        },
       }
     }
   });

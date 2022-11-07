@@ -8,10 +8,7 @@
  * @author Mirko Argentino
  */
 
-(bbn => {
-  "use strict";
-
-  Vue.component('bbn-calendar', {
+return {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.listComponent
@@ -983,5 +980,4 @@
         this.init();
       }
     }
-  })
-})(bbn);
+  };

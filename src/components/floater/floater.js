@@ -1222,7 +1222,7 @@
           this.scrollResized = true;
         }
         e.preventDefault();
-        if ((dimensions.width !== this.scrollWidth) || (dimensions.height !== this.scrollHeight)) {
+        if (!dimensions || (dimensions.width !== this.scrollWidth) || (dimensions.height !== this.scrollHeight)) {
           this.onResize(true);
         }
       },

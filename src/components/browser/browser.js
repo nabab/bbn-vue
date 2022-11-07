@@ -5,10 +5,7 @@
  * @author BBN Solutions
  * @ignore
  */
-(function(bbn){
-  "use strict";
-
-  Vue.component('bbn-browser', {
+return {
     /**
      * @mixin bbn.vue.basicComponent
      */
@@ -119,6 +116,4 @@
         }
       }
     }
-  });
-
-})(bbn);
+  };

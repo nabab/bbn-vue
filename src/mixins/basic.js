@@ -112,6 +112,7 @@
           if ( newVal ){
             let ev = new CustomEvent('subready', {bubbles: true, detail: {cp: this}});
             this.$el.dispatchEvent(ev);
+            bbn.fn.log("EMITTING READY")
             this.$emit('ready', this);
           }
         }

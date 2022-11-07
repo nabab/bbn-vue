@@ -14,71 +14,72 @@
 
  console.log(formatted);*/
 
-(function(bbn){
-  "use strict";
-
-  const VALUES = [{
-    name: 'year',
-    title: bbn._('year'),
-    titles: bbn._('years'),
-    code: 'y',
-    separator: 'y',
-    timeout: 3600000
-  }, {
-    name: 'month',
-    title: bbn._('month'),
-    titles: bbn._('months'),
-    code: 'm',
-    separator: 'm',
-    diff: 12,
-    timeout: 3600000
-  }, {
-    name: 'day',
-    title: bbn._('day'),
-    titles: bbn._('days'),
-    code: 'd',
-    diff: 31,
-    separator: 'd',
-    timeout: 3600000
-  }, {
-    name: 'hour',
-    title: bbn._('hour'),
-    titles: bbn._('hours'),
-    code: 'h',
-    diff: 24,
-    separator: ':',
-    timeout: 3600000
-  }, {
-    name: 'minute',
-    title: bbn._('minute'),
-    titles: bbn._('minutes'),
-    code: 'i',
-    diff: 60,
-    separator: ':',
-    timeout: 60000
-  }, {
-    name: 'second',
-    title: bbn._('second'),
-    titles: bbn._('seconds'),
-    code: 's',
-    diff: 60,
-    separator: '.',
-    timeout: 1000
-  }, {
-    name: 'millisecond',
-    title: bbn._('millisecond'),
-    titles: bbn._('milliseconds'),
-    code: 'x',
-    diff: 1000,
-    separator: '',
-    timeout: 50
-  }];
-
-  Vue.component('bbn-countdown', {
+return {
     /**
      * @mixin bbn.vue.basicComponent
      */
     mixins: [bbn.vue.basicComponent],
+    static() {
+      return {
+        VALUES: [{
+          name: 'year',
+          title: bbn._('year'),
+          titles: bbn._('years'),
+          code: 'y',
+          separator: 'y',
+          timeout: 3600000
+        }, {
+          name: 'month',
+          title: bbn._('month'),
+          titles: bbn._('months'),
+          code: 'm',
+          separator: 'm',
+          diff: 12,
+          timeout: 3600000
+        }, {
+          name: 'day',
+          title: bbn._('day'),
+          titles: bbn._('days'),
+          code: 'd',
+          diff: 31,
+          separator: 'd',
+          timeout: 3600000
+        }, {
+          name: 'hour',
+          title: bbn._('hour'),
+          titles: bbn._('hours'),
+          code: 'h',
+          diff: 24,
+          separator: ':',
+          timeout: 3600000
+        }, {
+          name: 'minute',
+          title: bbn._('minute'),
+          titles: bbn._('minutes'),
+          code: 'i',
+          diff: 60,
+          separator: ':',
+          timeout: 60000
+        }, {
+          name: 'second',
+          title: bbn._('second'),
+          titles: bbn._('seconds'),
+          code: 's',
+          diff: 60,
+          separator: '.',
+          timeout: 1000
+        }, {
+          name: 'millisecond',
+          title: bbn._('millisecond'),
+          titles: bbn._('milliseconds'),
+          code: 'x',
+          diff: 1000,
+          separator: '',
+          timeout: 50
+        }]
+
+      }
+    },
     props: {
       /**
        * The precision of the countdown.
@@ -198,25 +199,25 @@
     },
     computed: {
       /**
-       * The index of the 'precision' property in the array of the constant VALUES.
+       * The index of the 'precision' property in the array of the constant bbnCountdownPrivate.VALUES.
        * @return {Number} [5] precisionIdx
        */
       precisionIdx(){
-        return bbn.fn.search(VALUES, this.precision.length === 1 ? 'code' : 'name', this.precision);
+        return bbn.fn.search(bbnCountdownPrivate.VALUES, this.precision.length === 1 ? 'code' : 'name', this.precision);
       },
       /**
-       * The index of the 'scale' property in the array of the constant VALUES.
+       * The index of the 'scale' property in the array of the constant bbnCountdownPrivate.VALUES.
        * @return {Number} [5] scaleIdx
        */
       scaleIdx(){
-        return bbn.fn.search(VALUES, this.scale.length === 1 ? 'code' : 'name', this.scale);
+        return bbn.fn.search(bbnCountdownPrivate.VALUES, this.scale.length === 1 ? 'code' : 'name', this.scale);
       },
       /**
        * List type of periods.
        * @return {Array} periods
        */
       periods() {
-        return VALUES;
+        return bbnCountdownPrivate.VALUES;
       },
       // @todo incomplete
       rendered(){
@@ -257,7 +258,7 @@
           }
           this.realTarget = new dayjs(tmp);
           this.time = this.realTarget.unix();
-          let timeout = VALUES[this.precisionIdx].timeout;
+          let timeout = bbnCountdownPrivate.VALUES[this.precisionIdx].timeout;
           this.update();
           this.interval = setInterval(this.update, timeout);
         }
@@ -275,7 +276,7 @@
           let secs = this.time - d.unix();
           if ( secs <= 0 ){
             if (this.isValid) {
-              bbn.fn.each(VALUES, (a, i) => {
+              bbn.fn.each(bbnCountdownPrivate.VALUES, (a, i) => {
                 this[a.name] = 0;
               });
               this.isValid = false;
@@ -284,7 +285,7 @@
           else if (secs) {
             let diff = dayjs.duration(secs, 'seconds');
             let diffs = {};
-            bbn.fn.each(VALUES, (a, i) => {
+            bbn.fn.each(bbnCountdownPrivate.VALUES, (a, i) => {
               diffs[a.name] = diff['as' + a.name[0].toUpperCase() + bbn.fn.substr(a.name, 1) + 's']();
               if ((i >= this.scaleIdx) && (i <= this.precisionIdx)) {
                 let round = Math.floor(diffs[a.name]);
@@ -314,7 +315,7 @@
        */
       getShown(){
         let res = {};
-        bbn.fn.each(VALUES, (a, i) => {
+        bbn.fn.each(bbnCountdownPrivate.VALUES, (a, i) => {
           res[a.name] = (this.showZero || this[a.name] || this.zeroFill)
                         && ((this.precisionIdx >= i) && (this.scaleIdx <= i));
         })
@@ -328,7 +329,7 @@
        */
       getText(){
         let res = {};
-        bbn.fn.each(VALUES, (a, i) =>  {
+        bbn.fn.each(bbnCountdownPrivate.VALUES, (a, i) =>  {
           res[a.name] = this[a.name] || 0;
           if (
             this.zeroFill
@@ -365,5 +366,4 @@
         this.init()
       }
     }
-  });
-})(bbn);
+  };

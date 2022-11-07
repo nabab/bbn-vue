@@ -19,13 +19,13 @@
           'bbn-state-selected': isSelected(idx),
           'bbn-state-hover': overIdx === idx
         }">
-      <component v-if="currentComponent"
+      <bbn-anonymous v-if="currentComponent"
                  :is="currentComponent"
                  :source="li.data"
                  @remove="remove(idx)"
                  @hook:mounted="selfEmit(true)">
-      </component>
-      <component v-else
+      </bbn-anonymous>
+      <bbn-anonymous v-else
                 :is="li.data.url && !li.data[children] ? 'a' : 'span'"
                 @click.prevent="() => {}"
                 class="bbn-w-100 bbn-vxspadded bbn-hspadded"
@@ -38,7 +38,7 @@
           <i v-if="li.data.icon" :class="li.data.icon"></i>
         </span>
         <span class="text" v-html="li.data[sourceText]"></span>
-      </component>
+      </bbn-anonymous>
       <div v-if="!currentComponent && li.data[children] && li.data[children].length"
           class="bbn-block bbn-abs bbn-vxspadded bbn-hspadded"
           style="right: 0px"

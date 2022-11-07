@@ -111,7 +111,7 @@
                               :placeholder="_('Pick an operator')"/>
               </div>
               <div :class="[{'bbn-hidden': !!no_value}, 'bbn-block', 'bbn-filter-padding', 'bbn-db-value', 'bbn-top-xsspace']">
-                <component v-if="type && currentComponent"
+                <bbn-anonymous v-if="type && currentComponent"
                            :is="currentComponent"
                            :disabled="no_value"
                            name="value"

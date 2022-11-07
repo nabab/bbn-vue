@@ -11,13 +11,7 @@
  * @created 15/02/2017
  */
 
-(function(bbn){
-  "use strict";
-
-  /**
-   * Classic input with normalized appearance
-   */
-  Vue.component('bbn-pane', {
+  return {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.resizerComponent
@@ -143,6 +137,5 @@
         }, 40)
       }
     },
-  });
+  };
 
-})(bbn);

@@ -5,10 +5,7 @@
  * @copyright BBN Solutions
  * @created 13/11/2020
  */
-((bbn, Vue) => {
-  "use strict";
-
-  Vue.component('bbn-emoji', {
+return {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.resizerComponent
@@ -1497,5 +1494,4 @@
         })
       }
     }
-  })
-})(bbn, Vue)
+  };

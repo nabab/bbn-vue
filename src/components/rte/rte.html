@@ -34,7 +34,7 @@
 		<div class="bbn-flex-fill"
 				 :style="textboxStyle"
 				 @mouseup.stop="getRef('element').focus()">
-			<component :is="currentHeight ? 'bbn-scroll' : 'div'">
+			<bbn-anonymous :is="currentHeight ? 'bbn-scroll' : 'div'">
 				<div class="bbn-spadded bbn-rte-element"
 						 style="min-height: max(4rem, 100%)"
 						 contenteditable="true"
@@ -58,7 +58,7 @@
 									:value="value"
 									class="bbn-hidden"
 									:disabled="isDisabled"/>
-			</component>
+			</bbn-anonymous>
 		</div>
 	</div>
 </div>

@@ -23,7 +23,7 @@
       </bbn-toolbar>
       <div v-else-if="typeof toolbar === 'function'"
            v-html="toolbar()"/>
-      <component v-else
+      <bbn-anonymous v-else
                  :is="toolbar"/>
     </div>
     <div :class="['bbn-w-100', 'bbn-table-container', {'bbn-flex-fill': scrollable}]">
@@ -35,7 +35,7 @@
         <span class="bbn-xl bbn-b bbn-left-sspace"
               v-text="_('Loading') + '...'"/>
       </div>
-      <component :is="scrollable ? 'bbn-scroll' : 'div'"
+      <bbn-anonymous :is="scrollable ? 'bbn-scroll' : 'div'"
                  class="bbn-w-100"
                  ref="scroll"
                  :offset-y="$refs.thead ? [$refs.thead.getBoundingClientRect().height, 0] : [0,0]"
@@ -73,10 +73,10 @@
                         && (i === 0)
                     }]"
                     :title="col.text">
-                  <component v-if="col.component"
+                  <bbn-anonymous v-if="col.component"
                             :is="col.component"
                             :source="col"
-                  ></component>
+                  ></bbn-anonymous>
                   <div class="bbn-100 bbn-table-title-group" v-else>
                     <div :class="[col.cls, 'bbn-ellipsis']"
                         :style="col.style"
@@ -123,7 +123,7 @@
                   <div v-else-if="col.isExpander" :title="_('Expand all')">
                     <!-- @todo an icon for expanding all/none -->
                   </div>
-                  <component v-else-if="col.tcomponent"
+                  <bbn-anonymous v-else-if="col.tcomponent"
                             :is="col.tcomponent"
                             :source="col"/>
                   <span class="bbn-p"
@@ -224,7 +224,7 @@
                             backgroundColor: 'transparent !important'
                           }">
                       <!--span v-if="!isGroupedCell(groupIndex, d)"></span-->
-                      <component v-if="cols[group].component"
+                      <bbn-anonymous v-if="cols[group].component"
                                 :is="cols[group].component"
                                 class="bbn-spadded"
                                 :source="d.data"/>
@@ -278,11 +278,11 @@
                             width: lastKnownWidth - groupCols[currentColumns[0].isLeft ? 0 : 1].cols[0].realWidth - borderLeft - borderRight + 'px',
                             backgroundColor: 'transparent !important'
                           }">
-                      <component v-if="typeof(expander) !== 'function'"
+                      <bbn-anonymous v-if="typeof(expander) !== 'function'"
                                 :is="expander"
                                 class="bbn-spadded"
                                 :source="d.data"/>
-                      <component v-else-if="(typeof(expander(d)) === 'object')"
+                      <bbn-anonymous v-else-if="(typeof(expander(d)) === 'object')"
                                 :is="expander(d)"
                                 :source="d.data"/>
                       <div v-else
@@ -295,7 +295,7 @@
                 </template>
                 <td v-else-if="d.full"
                     :colspan="currentColumns.length">
-                  <component v-if="d.component"
+                  <bbn-anonymous v-if="d.component"
                             :is="d.component"
                             v-bind="d.options || {}"
                             :source="col.mapper ? col.mapper(d.data) : d.data"/>
@@ -306,7 +306,7 @@
                     :colspan="currentColumns.length">
                   <div v-if="typeof groupFooter === 'function'"
                        v-html="groupFooter(d.data)"/>
-                  <component v-else
+                  <bbn-anonymous v-else
                              :is="groupFooter"
                              :source="d.data"/>
                 </td>
@@ -384,7 +384,7 @@
                                       @click.prevent.stop="cancel"
                                       style="margin: 0 .1rem"/>
                         </div>
-                        <component v-else-if="(editMode === 'inline') && isValidField(col.field) && (col.editable !== false)"
+                        <bbn-anonymous v-else-if="(editMode === 'inline') && isValidField(col.field) && (col.editable !== false)"
                                    v-bind="getEditableOptions(col, d.data)"
                                    :is="getEditableComponent(col, d.data)"
                                    @click.stop
@@ -408,7 +408,7 @@
                              v-html="render(d.data, col, i)"/>
                         <div v-else> </div>
                       </div>
-                      <component v-else-if="col.component"
+                      <bbn-anonymous v-else-if="col.component"
                                 :is="col.component"
                                 v-bind="getColOptions(d.data, col, i)"
                                 :source="col.mapper ? col.mapper(d.data) : d.data"/>
@@ -458,7 +458,7 @@
             </template>
           </tbody>
         </table>
-      </component>
+      </bbn-anonymous>
     </div>
     <!-- Footer -->
     <bbn-pager class="bbn-table-footer bbn-no-border-right bbn-no-border-left bbn-no-border-bottom"
@@ -467,7 +467,7 @@
                :item-name="itemName"
                :page-name="pageName"
                :buttons="footerButtons"/>
-    <component v-else-if="(typeof footer === 'string') || (typeof footer === 'object')"
+    <bbn-anonymous v-else-if="(typeof footer === 'string') || (typeof footer === 'object')"
                :is="footer"
                class="bbn-table-footer bbn-no-border-right bbn-no-border-left bbn-no-border-bottom"/>
     <div v-else-if="(typeof footer === 'function') && footer()"

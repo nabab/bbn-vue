@@ -22,7 +22,7 @@
              :checked="d[sourceValue] === modelValue">
       <label class="bbn-radio-label bbn-iflex bbn-vmiddle"
              :for="id + '_' + idx">
-        <component v-if="d.component"
+        <bbn-anonymous v-if="d.component"
                    :is="d.component"
                    class="bbn-left-sspace"/>
         <span v-else

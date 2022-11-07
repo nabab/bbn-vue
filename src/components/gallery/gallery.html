@@ -1,7 +1,7 @@
 <div :class="[componentClass, {'bbn-flex-height': scrollable, 'bbn-gallery-sorting': isSorting}]">
   <div v-if="toolbar"
        class="bbn-l bbn-widget bbn-gallery-toolbar bbn-spadded bbn-vmiddle">
-    <component v-if="isObject(toolbar) || isVue(toolbar)"
+    <bbn-anonymous v-if="isObject(toolbar) || isVue(toolbar)"
                :is="toolbar"/>
     <template v-else>
       <div class="bbn-flex-width bbn-vmiddle">
@@ -111,7 +111,7 @@
           <span class="bbn-xl bbn-b bbn-left-sspace"
                 v-text="_('Loading') + '...'"/>
         </div>
-        <component :is="scrollable ? 'bbn-scroll' : 'div'"
+        <bbn-anonymous :is="scrollable ? 'bbn-scroll' : 'div'"
                   v-else-if="total">
           <div class="bbn-gallery-columns-container"
                :style="{margin: '0 auto', textAlign: align}">
@@ -122,7 +122,7 @@
                             return i % cols === index;
                           })"/>
           </div>
-        </component>
+        </bbn-anonymous>
       </div>
     </div>
   </div>

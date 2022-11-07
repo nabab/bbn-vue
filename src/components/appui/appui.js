@@ -6,12 +6,7 @@
  * @ignore
  * @created 10/02/2017.
  */
-(function(bbn){
-  "use strict";
-
-  let app;
-  let registeredComponents = {};
-  Vue.component('bbn-appui', {
+return {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.resizerComponent
@@ -1210,6 +1205,4 @@
         }
       }
     }
-  });
-
-})(window.bbn);
+  };

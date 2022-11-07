@@ -6,10 +6,7 @@
   * @created 10/03/2020
   * @ignore
   */
- (function(bbn, Vue){
-  "use strict";
-
-  Vue.component("bbn-breadcrumb", {
+return {
     name: 'bbn-breadcrumb',
     mixins: [
       /**
@@ -509,5 +506,5 @@
         }
       }
     }
-  });
-})(bbn, Vue);
+  };
+  

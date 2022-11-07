@@ -11,9 +11,7 @@
  * @created 15/02/2017
  */
 
-(function(bbn){
-  "use strict";
-  Vue.component('bbn-splitter', {
+return {
     /**
      * @mixin bbn.vue.basicComponent 
      * @mixin bbn.vue.resizerComponent
@@ -77,7 +75,8 @@
         default: true
       }
     },
-    data(){
+    data() {
+      bbn.fn.log("LAUNCHIN data FN")
       return  {
         /**
          * The timeout used to launch the initial process (reset each time a new pane is added).
@@ -89,11 +88,6 @@
          * @data {Boolean} [false] isResized
          */
         isResized: false,
-        /**
-         * Will be set to true when the splitter is being resized by the user.
-         * @data {Boolean} [false] isResizing
-         */
-        isResizing: false,
         /**
          * An object containing info about current user resizing when it occurs.
          * @data {Boolean} [null] resizeCfg
@@ -113,7 +107,10 @@
          * The configuration of the panes.
          * @data {Array} [[]] panes
          */
-        panes: []
+        panes: [],
+        drag: this.resizeDrag.bind(this),
+        dragEnd: this.resizeEnd.bind(this),
+        isSplitterResizing: false
       };
     },
     computed: {
@@ -196,7 +193,7 @@
        * @method getFormatted
        * @return {String}
        */
-      getFormatted(){
+      getFormatted() {
         /**
          * The position of the panes, starting at 1; gapos will be created for resizers.
          * 
@@ -285,8 +282,10 @@
        * @fires getOrientation
        */
       onResize(){
-        if ( !this.isResizing ){
+        bbn.fn.log("On resize")
+        if ( !this.resizing && !this.isSplitterResizing){
           this.isResizing = true;
+          bbn.fn.log("On resize 2")
           this.setContainerMeasures();
           this.setResizeMeasures();
           if ( this.orientation === 'auto' ){
@@ -405,11 +404,11 @@
           // If 1st pane is collapsible we add a resizer at the start
           this.$children.forEach((pane, i) => {
             // Defining the panes base on the content
-            if ( pane.$vnode.componentOptions.tag === 'bbn-pane' ){
+            if ( pane.$options.name === 'bbn-pane' ){
               let isPercent   = false,
                   isFixed     = false,
                   isNumber    = false,
-                  props       = JSON.parse(JSON.stringify(pane.$vnode.componentOptions.propsData)),
+                  props       = pane.$props,
                   resizable   = (this.resizable || props.resizable) && (props.resizable !== false),
                   collapsible = (this.collapsible || props.collapsible) && (props.collapsible !== false),
                   value       = parseInt(props.size) || 0;
@@ -645,7 +644,7 @@
        * @param {Event} e 
        */
       resizeDrag(e){
-        if ( this.isResizing && this.resizeCfg && this.resizeCfg.panes ){
+        if ( this.isSplitterResizing && this.resizeCfg && this.resizeCfg.panes ){
           e.preventDefault();
           e.stopImmediatePropagation();
           let diff = (e['client' + this.currentAxis.toUpperCase()] || (e.touches.length ? e.touches[0] : e.changedTouches[0])['page' + this.currentAxis.toUpperCase()]) - this.resizeCfg[this.currentOffsetType];
@@ -657,6 +656,7 @@
           }
           this.panes[this.resizeCfg.resizer.pane1].currentDiff = diff;
           this.panes[this.resizeCfg.resizer.pane2].currentDiff = - diff;
+          this.$updateComponent();
         }
       },
       /**
@@ -665,7 +665,8 @@
        * @param {Event} e 
        */  
       resizeEnd(e){
-        if ( this.isResizing && this.resizeCfg && this.resizeCfg.panes ){
+        bbn.fn.log("ENDING RESIZE", this);
+        if ( this.isSplitterResizing && this.resizeCfg && this.resizeCfg.panes ){
           let diff = (e['client' + this.currentAxis.toUpperCase()] || (e.touches.length ? e.touches[0] : e.changedTouches[0])['page' + this.currentAxis.toUpperCase()]) - this.resizeCfg[this.currentOffsetType];
           if ( diff >= this.resizeCfg.max ){
             diff = this.resizeCfg.max;
@@ -677,13 +678,14 @@
           this.panes[this.resizeCfg.resizer.pane2].currentDiff = 0;
           this.panes[this.resizeCfg.resizer.pane1].savedDiff = this.panes[this.resizeCfg.resizer.pane1].savedDiff + diff;
           this.panes[this.resizeCfg.resizer.pane2].savedDiff = this.panes[this.resizeCfg.resizer.pane2].savedDiff - diff;
-          this.isResizing = false;
-          document.body.removeEventListener("touchmove", this.resizeDrag);
-          document.body.removeEventListener("mousemove", this.resizeDrag);
-          document.body.removeEventListener("touchend", this.resizeEnd);
-          document.body.removeEventListener("touchcancel", this.resizeEnd);
-          document.body.removeEventListener("mouseup", this.resizeEnd);
-          document.body.removeEventListener("mouseleave", this.resizeEnd);
+          bbn.fn.log("JHJHHJHHJ");
+          this.isSplitterResizing = false;
+          document.body.removeEventListener("touchmove", this.drag);
+          document.body.removeEventListener("mousemove", this.drag);
+          document.body.removeEventListener("touchend", this.dragEnd);
+          document.body.removeEventListener("touchcancel", this.dragEnd);
+          document.body.removeEventListener("mouseup", this.dragEnd);
+          document.body.removeEventListener("mouseleave", this.dragEnd);
           this.panes[this.resizeCfg.resizer.pane1].pane.selfEmit(true);
           this.panes[this.resizeCfg.resizer.pane2].pane.selfEmit(true);
           this.resizeCfg = null;
@@ -705,26 +707,29 @@
        * @param {Object} rs 
        */
       resizeStart(e, rs){
+        bbn.fn.log("STARTING RESIZE", this)
         if ( e.target.tagName.toLowerCase() === 'i' ){
           e.target.click();
           return
         }
         if (this.isResizable
-           && !this.isResizing
+           && !this.isSplitterResizing
            && this.panes[rs.pane1]
            && !this.panes[rs.pane1].collapsed
            && this.panes[rs.pane2]
            && !this.panes[rs.pane2].collapsed
         ){
-          this.isResizing = true;
-          document.body.addEventListener("touchmove", this.resizeDrag);
-          document.body.addEventListener("mousemove", this.resizeDrag);
-          document.body.addEventListener("touchend", this.resizeEnd);
-          document.body.addEventListener("touchcancel", this.resizeEnd);
-          document.body.addEventListener("mouseup", this.resizeEnd);
-          document.body.addEventListener("mouseleave", this.resizeEnd);
-          let vue1 = bbn.vue.find(this, 'bbn-pane', rs.pane1),
-              vue2 = bbn.vue.find(this, 'bbn-pane', rs.pane2),
+          this.isSplitterResizing = true;
+          bbn.fn.log("THIS IS RESIZING")
+          const cp = this;
+          document.body.addEventListener("touchmove", this.drag);
+          document.body.addEventListener("mousemove", this.drag);
+          document.body.addEventListener("touchend", this.dragEnd);
+          document.body.addEventListener("touchcancel", this.dragEnd);
+          document.body.addEventListener("mouseup", this.dragEnd);
+          document.body.addEventListener("mouseleave", this.dragEnd);
+          let vue1 = this.find('bbn-pane', rs.pane1),
+              vue2 = this.find('bbn-pane', rs.pane2),
               pos = e.target.getBoundingClientRect(),
               pos1 = vue1.$el.getBoundingClientRect(),
               pos2 = vue2.$el.getBoundingClientRect();
@@ -737,9 +742,9 @@
             resizer: rs,
             panes: [vue1, vue2],
             min: -pos1[this.currentSizeType.toLowerCase()] + this.minPaneSize,
-            max: pos2[this.currentSizeType.toLowerCase()] - this.minPaneSize - this.resizerSize
+            max: pos2[this.currentSizeType.toLowerCase()] - this.minPaneSize - this.resizerSize,
+            [this.currentOffsetType]: pos[this.currentOffsetType]
           };
-          this.resizeCfg[this.currentOffsetType] = pos[this.currentOffsetType];
           //bbn.fn.log("START", this.resizeCfg, e, "------------");
         }
         /*
@@ -924,7 +929,8 @@
       currentOrientation(){
         this.init();
       },
+      isSplitterResizing(v) {
+        bbn.fn.log("isSplitterResizing changed to " + v)
+      }
     },
-  });
-
-})(bbn);
+  };

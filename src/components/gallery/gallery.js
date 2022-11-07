@@ -5,10 +5,7 @@
  * @copyright BBN Solutions
  * @author Mirko Argentino
  */
-(bbn => {
-  "use strict";
-
-  Vue.component('bbn-gallery', {
+return {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.resizerComponent
@@ -481,7 +478,7 @@
         name: 'gallery-col',
         template: `
 <div :style="colStyle">
-  <component :is="gallery.itemComponent || 'gallery-item'"
+  <bbn-anonymous :is="gallery.itemComponent || 'gallery-item'"
              v-for="(item, idx) in source"
              :source="item"
              :key="'gallery-item-'+index+'-'+idx"/>
@@ -923,5 +920,4 @@
         }
       }
     }
-  })
-})(bbn);
+  };
