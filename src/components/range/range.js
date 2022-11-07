@@ -4,10 +4,7 @@
  * @copyright BBN Solutions
  * @author BBN Solutions
  */
- (function(bbn, Vue){
-  "use strict";
-
-  Vue.component("bbn-range", {
+return {
     name: 'bbn-range',
     /**
      * @mixin bbn.vue.basicComponent
@@ -260,5 +257,5 @@
         }
       }
     }
-  });
-})(bbn, Vue);
+  };
+  

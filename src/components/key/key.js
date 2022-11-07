@@ -9,21 +9,16 @@
  * @created 15/02/2017.
  */
 
-(bbn => {
-  "use strict";
-
-  const DIRECTIONS = ['left', 'right', 'up', 'down'];
-
-  /**
-   * Classic input with normalized appearance.
-   */
-  Vue.component('bbn-key', {
+return {
     /**
      * @mixin bbn.vue.basicComponent
      */
     mixins: [
       bbn.vue.basicComponent,
     ],
+    static() {
+      const DIRECTIONS = ['left', 'right', 'up', 'down'];
+    },
     props: {
       /**
        * The content of the context menu.
@@ -71,7 +66,7 @@
         return this.isSpecial && (bbn.fn.substr(this.k, 0, 1) === 'f');
       },
       isArrow(){
-        return (this.k.indexOf('arrow') === 0) || DIRECTIONS.includes(this.k)
+        return (this.k.indexOf('arrow') === 0) || bbnKeyPrivate.DIRECTIONS.includes(this.k)
       },
       rendered(){
         let st = bbn.fn.correctCase(this.k);
@@ -92,7 +87,7 @@
       arrowClass(){
         let cls = '';
         if (this.isArrow) {
-          bbn.fn.each(DIRECTIONS, a => {
+          bbn.fn.each(bbnKeyPrivate.DIRECTIONS, a => {
             if (this.k.indexOf(a) > -1) {
               cls = 'nf nf-fa-long_arrow_' + a;
               return false;
@@ -102,6 +97,4 @@
         return cls;
       }
     }
-  });
-
-})(bbn);
+  };

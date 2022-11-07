@@ -10,13 +10,7 @@
  * @created 11/01/2017
  */
 
-(function($){
-  "use strict";
-
-  /**
-   * Classic input with normalized appearance
-   */
-  Vue.component('bbn-jodit', {
+return {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.positionComponent
@@ -136,5 +130,4 @@
         }
       }
     }
-  });
-})();
+  };

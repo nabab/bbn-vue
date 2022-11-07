@@ -4,10 +4,18 @@
  * @copyright BBN Solutions
  * @author BBN Solutions
  */
-(function(bbn, Vue){
-  "use strict";
-
-  const img = `<svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+return {
+    /**
+     * @mixin bbn.vue.basicComponent
+     * @mixin bbn.vue.localStorageComponent
+     */
+    mixins: 
+    [
+      bbn.vue.basicComponent,
+      bbn.vue.localStorageComponent,
+    ],
+    static() {
+      const img = `<svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
   viewBox="0 0 58 58" style="enable-background:new 0 0 58 58;" xml:space="preserve">
 <g>
  <path d="M57,6H1C0.448,6,0,6.447,0,7v44c0,0.553,0.448,1,1,1h56c0.552,0,1-0.447,1-1V7C58,6.447,57.552,6,57,6z M56,50H2V8h54V50z"
@@ -53,17 +61,7 @@
 </svg>
 
 `;
-
-  Vue.component("bbn-router-config", {
-    /**
-     * @mixin bbn.vue.basicComponent
-     * @mixin bbn.vue.localStorageComponent
-     */
-    mixins: 
-    [
-      bbn.vue.basicComponent,
-      bbn.vue.localStorageComponent,
-    ],
+    },
     props: {
       router: {
         type: Vue,
@@ -96,7 +94,7 @@
 
       return {
         numModes: num,
-        svg: img,
+        svg: bbnRouterConfigPrivate.img,
         visualSelected: 2,
         breadcrumbSelected: 2,
         tabsSelected: 2,
@@ -223,6 +221,4 @@
     },
     watch: {
     }
-  });
-
-})(bbn, Vue);
+  };

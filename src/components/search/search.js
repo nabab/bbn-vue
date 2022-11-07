@@ -7,10 +7,7 @@
  */
 
 
- (function(bbn){
-  "use strict";
-
-  Vue.component('bbn-search', {
+ return {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.eventsComponent
@@ -273,6 +270,4 @@
         }
       }
     }
-  });
-
-})(bbn);
+  };

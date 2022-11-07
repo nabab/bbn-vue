@@ -8,13 +8,7 @@
  * 
  * @author BBN Solutions
  */
-(function(bbn){
-  "use strict";
-
-  /**
-   * Classic textarea with normalized appearance
-   */
-  Vue.component('bbn-terminal', {
+return {
     mixins: [bbn.vue.basicComponent],
     props: {
     },
@@ -46,6 +40,4 @@
       this.widget.open(this.$el);
       this.fitter.fit();
     }
-  });
-
-})(bbn);
+  };

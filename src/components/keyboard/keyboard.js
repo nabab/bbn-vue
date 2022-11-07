@@ -11,10 +11,7 @@
  */
 
 
-(bbn => {
-  "use strict";
-
-  Vue.component('bbn-keyboard', {
+return {
     /**
      * @mixin bbn.vue.basicComponent
      */
@@ -127,6 +124,5 @@
 
     watch: {
     }
-  });
-
-})(bbn);
+  };
+  

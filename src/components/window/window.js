@@ -9,10 +9,7 @@
  *
  * @created 15/02/2017
  */
-(function(bbn){
-  "use strict";
-
-  Vue.component('bbn-window', {
+return {
     name: 'bbn-window',
     /**
      * @mixin bbn.vue.basicComponent
@@ -351,6 +348,4 @@
         })
       },
     }
-  });
-
-})(bbn);
+  };

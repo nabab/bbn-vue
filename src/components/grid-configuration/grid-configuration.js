@@ -7,9 +7,7 @@
  *
  * @author Mirko Argentino
  */
- (function() {
-  "use strict";
-  Vue.component('bbn-grid-configuration', {
+ return {
     name: 'bbn-grid-configuration',
     /**
      * @mixin bbn.vue.basicComponent
@@ -61,6 +59,5 @@
         this.currentCol = -1;
       }
     }
-  });
-})();
+  };
 

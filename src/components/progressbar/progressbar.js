@@ -6,10 +6,7 @@
  * @created 10/02/2017
  */
 
-(function(bbn){
-  "use strict";
-
-  Vue.component('bbn-progressbar', {
+return {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.inputComponent
@@ -293,6 +290,4 @@
       }
     }
 
-  });
-
-})(bbn);
+  };

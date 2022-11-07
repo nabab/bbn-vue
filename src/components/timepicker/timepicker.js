@@ -8,10 +8,7 @@
  *
  * @copyright BBN Solutions
  */
-(function(bbn){
-  "use strict";
-
-  Vue.component('bbn-timepicker', {
+return {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.inputComponent
@@ -329,6 +326,4 @@
         this.setInputValue(newVal);
       }
     }
-  });
-
-})(bbn);
+  };

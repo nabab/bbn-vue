@@ -9,10 +9,7 @@
  *
  * @created 10/02/2017
  */
-(function(bbn){
-  "use strict";
-
-  Vue.component('bbn-multiselect', {
+return {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.inputComponent
@@ -278,6 +275,4 @@
     mounted(){
       this.ready = true;
     }
-  });
-
-})(bbn);
+  };

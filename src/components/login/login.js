@@ -6,10 +6,7 @@
  * @created 31/05/2021
  */
 
-(function(bbn){
-  "use strict";
-
-  Vue.component('bbn-login', {
+return {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.resizerComponent
@@ -356,6 +353,4 @@
         this.resetForm();
       }
     }
-  });
-
-})(bbn);
+  };

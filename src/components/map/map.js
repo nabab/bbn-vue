@@ -11,10 +11,7 @@
  */
 
 
-(bbn => {
-  "use strict";
-
-  Vue.component('bbn-map', {
+return {
     /**
      * @mixin bbn.vue.basicComponent
      */
@@ -52,6 +49,5 @@
 
     watch: {
     }
-  });
-
-})(bbn);
+  };
+  

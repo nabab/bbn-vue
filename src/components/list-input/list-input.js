@@ -7,13 +7,7 @@
  *
  * @copyright BBN Solutions
  */
-(function(Vue, bbn){
-  "use strict";
-  /**
-   * Classic input with normalized appearance
-   */
-  let isClicked = false;
-  Vue.component('bbn-list-input', {
+return {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.listComponent
@@ -27,6 +21,9 @@
       bbn.vue.keynavComponent, 
       bbn.vue.inputComponent
     ],
+    static() {
+      let isClicked = false;
+    },
     props: {
       //@todo not used.
       unique: {
@@ -63,7 +60,4 @@
      */
     mounted(){
     }
-  });
-
-})(window.Vue, window.bbn);
-
+  };

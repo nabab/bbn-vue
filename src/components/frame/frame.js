@@ -7,10 +7,7 @@
  *
  * @author BBN Solutions
  */
-(function(bbn){
-  "use strict";
-
-  Vue.component('bbn-frame', {
+return {
     /**
      * @mixin bbn.vue.basicComponent
      */
@@ -114,6 +111,4 @@
         window.removeEventListener('message', this.listen);
       }
     }
-  });
-
-})(bbn);
+  };

@@ -6,10 +6,7 @@
  * @author Mirko Argentino
  */
 
-(function(bbn){
-  "use strict"
-
-  Vue.component('bbn-masked', {
+return {
 	/**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.inputComponent
@@ -795,6 +792,4 @@
         });
       }
     }
-  });
-
-})(bbn);
+  };

@@ -7,8 +7,7 @@
  *
  * @copyright BBN Solutions
  */
-(function(Vue, bbn){
-  Vue.component('bbn-slider-menu', {
+return {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.listComponent
@@ -251,7 +250,4 @@
       }
     }
 
-  });
-
-})(window.Vue, window.bbn);
-
+  };

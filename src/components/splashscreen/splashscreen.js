@@ -5,9 +5,7 @@
  * @copyright BBN Solutions
  */
 
- (function (bbn, Vue) {
-  "use strict";
-  Vue.component('bbn-splashscreen', {
+return {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.listComponent
@@ -234,5 +232,5 @@
         }
       }
     }
-  })
-})(window.bbn, window.Vue);
+  };
+  

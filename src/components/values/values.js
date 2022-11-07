@@ -9,12 +9,7 @@
  * @created 15/02/2017.
  */
 
-(bbn => {
-  "use strict";
-  /**
-   * Classic input with normalized appearance.
-   */
-  Vue.component('bbn-values', {
+return {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.inputComponent
@@ -143,6 +138,4 @@
         this.emitInput(this.isJSON ? JSON.stringify(this.obj) : this.obj);
       }
     }
-  });
-
-})(bbn);
+  };

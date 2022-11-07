@@ -4,10 +4,7 @@
  * @author Mirko Argentino
  * @copyright BBN Solutions
  */
- (function(bbn){
-  "use strict";
-
-  Vue.component('bbn-timewheel', {
+ return {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.listComponent
@@ -309,6 +306,4 @@
         this.ready = val;
       }
     }
-  });
-
-})(bbn);
+  };

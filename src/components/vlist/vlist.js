@@ -9,14 +9,7 @@
  *
  * @created 15/52/2017.
  */
-(function(bbn){
-  "use strict";
-
-  /**
-   * Classic input with normalized appearance
-   */
-  let isClicked = false;
-  Vue.component('bbn-vlist', {
+return {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.positionComponent
@@ -26,6 +19,9 @@
       bbn.vue.basicComponent,
       bbn.vue.positionComponent
     ],
+    static() {
+      let isClicked = false;
+    },
     props: {
       /**
        * @prop {(Function|Array)} source
@@ -182,16 +178,16 @@
         }
       },
       leaveList: function(e){
-        if ( !isClicked ){
+        if ( !bbnVlistPrivate.isClicked ){
           this.close();
         }
       },
       beforeClick(){
-        isClicked = true;
+        bbnVlistPrivate.isClicked = true;
       },
       afterClick(){
         setTimeout(function(){
-          isClicked = false;
+          bbnVlistPrivate.isClicked = false;
         })
       },
 
@@ -315,6 +311,4 @@
         }
       }
     }
-  });
-
-})(bbn);
+  };

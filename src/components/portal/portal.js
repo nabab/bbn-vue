@@ -5,47 +5,45 @@
 
 /* jshint esversion: 6 */
 
-(function(bbn){
-  "use strict";
-
-  let config = {
-    selector: "bbn-portal-target-" + bbn.fn.randomString(20, 30)
-  };
-
-  let TargetContainer = Vue.extend({
-    // as an abstract component, it doesn't appear in
-    // the $parent chain of components.
-    // which means the next parent of any component rendered inside of this oen
-    // will be the parent from which is was sent
-    // @ts-expect-error
-    abstract: true,
-    name: 'PortalOutlet',
-    props: ['nodes', 'tag'],
-    data: vm => ({
-      updatedNodes: vm.nodes,
-    }),
-    render(h) {
-      const nodes = this.updatedNodes && this.updatedNodes();
-      if (!nodes) {
-        return h();
-      }
-
-      return nodes.length === 1 && !nodes[0].text
-        ? nodes
-        : h(this.tag || 'DIV', nodes);
-    },
-    destroyed() {
-      bbn.fn.log("DESTROYING PORTAL TARGET", this);
-      const { $el: el } = this;
-      el && el.parentNode && el.parentNode.removeChild(el);
-    },
-  });
-
-  Vue.component('bbn-portal', {
+return {
     /**
      * @mixin bbn.vue.basicComponent
      */
     mixins: [bbn.vue.basicComponent],
+    static() {
+      let config = {
+        selector: "bbn-portal-target-" + bbn.fn.randomString(20, 30)
+      };
+    
+      let TargetContainer = Vue.extend({
+        // as an abstract component, it doesn't appear in
+        // the $parent chain of components.
+        // which means the next parent of any component rendered inside of this oen
+        // will be the parent from which is was sent
+        // @ts-expect-error
+        abstract: true,
+        name: 'PortalOutlet',
+        props: ['nodes', 'tag'],
+        data: vm => ({
+          updatedNodes: vm.nodes,
+        }),
+        render(h) {
+          const nodes = this.updatedNodes && this.updatedNodes();
+          if (!nodes) {
+            return h();
+          }
+    
+          return nodes.length === 1 && !nodes[0].text
+            ? nodes
+            : h(this.tag || 'DIV', nodes);
+        },
+        destroyed() {
+          bbn.fn.log("DESTROYING PORTAL TARGET", this);
+          const { $el: el } = this;
+          el && el.parentNode && el.parentNode.removeChild(el);
+        },
+      });
+    },
     props: {
       /**
        * @prop {Boolean} disabled
@@ -138,7 +136,7 @@
         else {
           target.appendChild(el);
         }
-        this.container = new TargetContainer({
+        this.container = new bbnPortalPrivate.TargetContainer({
           el,
           parent: this,
           propsData: {
@@ -155,5 +153,4 @@
         }
       },
     },
-  });
-})(bbn);
+  };

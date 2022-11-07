@@ -9,10 +9,7 @@
   *
   * @created 10/02/2017
   */
-(function(){
-  "use strict";
-
-  Vue.component('bbn-grapes', {
+return {
     /**
      * @mixin bbn.vue.basicComponent
      */
@@ -44,6 +41,4 @@
         style: this.css || ''
       })
     }
-  });
-
-})();
+  };

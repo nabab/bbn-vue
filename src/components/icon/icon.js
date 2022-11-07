@@ -7,9 +7,7 @@
  *
  * @author Mirko Argentino
  */
-(function() {
-  "use strict";
-  Vue.component('bbn-icon', {
+return {
     name: 'bbn-icon',
     /**
      * @mixin bbn.vue.basicComponent
@@ -66,5 +64,4 @@
         return o;
       }
     }
-  })
-})();
+  };

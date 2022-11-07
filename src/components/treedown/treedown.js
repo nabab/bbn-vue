@@ -11,10 +11,7 @@
  */
 
 
-(function(bbn){
-  "use strict";
-
-  Vue.component('bbn-treedown', {
+return {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.inputComponent
@@ -463,6 +460,4 @@
         this.updateData();
       }
     }
-  });
-
-})(bbn);
+  };

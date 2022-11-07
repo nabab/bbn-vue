@@ -7,13 +7,7 @@
  *
  * @copyright BBN Solutions
  */
-(function(Vue, bbn){
-  "use strict";
-  /**
-   * Classic input with normalized appearance
-   */
-  let isClicked = false;
-  Vue.component('bbn-list', {
+return {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.listComponent
@@ -34,6 +28,9 @@
       bbn.vue.eventsComponent,
       bbn.vue.componentInsideComponent
     ],
+    static() {
+      let isClicked = false;
+    },
     props: {
       /**
        * @prop {} origin
@@ -688,7 +685,4 @@
       */
     }
 
-  });
-
-})(window.Vue, window.bbn);
-
+  };

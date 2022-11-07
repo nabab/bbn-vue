@@ -10,13 +10,7 @@
  * @created 15/02/2017
  */
 
-(function(bbn){
-  "use strict";
-
-  /**
-   * Classic input with normalized appearance
-   */
-  Vue.component('bbn-loader', {
+return {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.resizerComponent 
@@ -132,6 +126,4 @@
       }
     }
 
-  });
-
-})(bbn);
+  };

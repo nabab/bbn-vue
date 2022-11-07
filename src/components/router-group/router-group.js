@@ -4,10 +4,7 @@
  * @copyright BBN Solutions
  * @author BBN Solutions
  */
-(function(bbn, Vue){
-  "use strict";
-
-  Vue.component("bbn-router-group", {
+return {
     name: 'bbn-router-group',
     /**
      * @mixin bbn.vue.basicComponent
@@ -66,6 +63,5 @@
     },
     watch: {
     }
-  });
-
-})(bbn, Vue);
+  };
+  

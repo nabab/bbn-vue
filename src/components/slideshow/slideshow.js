@@ -8,9 +8,7 @@
  * @created 10/02/2017
  */
 
-(() => {
-  "use strict";
-  Vue.component('bbn-slideshow', {
+return {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.resizerComponent
@@ -928,5 +926,4 @@
         },
       }
     }
-  });
-})();
+  };

@@ -10,9 +10,7 @@
   * @cretaed 13/06/2017
   */
 
- (bbn => {
-  "use strict";
-  Vue.component('bbn-upload', {
+ return {
     /**
      * @mixin bbn.vue.inputComponent
      * @mixin bbn.vue.basicComponent
@@ -973,5 +971,5 @@
         }
       }
     }
-  });
-})(bbn);
+  };
+  

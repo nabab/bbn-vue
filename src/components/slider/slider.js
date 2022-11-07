@@ -7,32 +7,7 @@
  *
  * @author Vito Fava
  */
-(function(bbn){
-  "use strict";
-  const orientations = {
-    left: {
-      shadow: '2px 0 20px 0',
-      size: 'width',
-      prop: 'top'
-    },
-    right: {
-      shadow: '-2px 0 20px 0',
-      size: 'width',
-      prop: 'top'
-    },
-    top: {
-      shadow: '2px 0 20px 0',
-      size: 'height',
-      prop: 'left'
-    },
-    bottom: {
-      shadow: '2px 0 20px 0',
-      size: 'height',
-      prop: 'left'
-    }
-  };
-
-  Vue.component('bbn-slider', {
+return {
     /**
      * @mixin bbn.vue.basicComponent 
      * @mixin bbn.vue.toggleComponent
@@ -44,6 +19,30 @@
       bbn.vue.resizerComponent, 
       bbn.vue.toggleComponent
     ],
+    static() {
+      const orientations = {
+        left: {
+          shadow: '2px 0 20px 0',
+          size: 'width',
+          prop: 'top'
+        },
+        right: {
+          shadow: '-2px 0 20px 0',
+          size: 'width',
+          prop: 'top'
+        },
+        top: {
+          shadow: '2px 0 20px 0',
+          size: 'height',
+          prop: 'left'
+        },
+        bottom: {
+          shadow: '2px 0 20px 0',
+          size: 'height',
+          prop: 'left'
+        }
+      };
+    },
     props: {
       /**
        * The orientation of the slider.
@@ -132,11 +131,11 @@
        * @returns {String}
        */
       currentStyle(){
-        if (!orientations[this.orientation]) {
+        if (!bbnSliderPrivate.orientations[this.orientation]) {
           throw new Error(bbn._("Impossible to get an orientation for the slider"));
         }
         let o = {};
-        let or = orientations[this.orientation];
+        let or = bbnSliderPrivate.orientations[this.orientation];
         if (this.showShadow) {
           o['-webkit-box-shadow'] = o['-moz-box-shadow'] = o['box-shadow'] = or.shadow + ' !important';
         }

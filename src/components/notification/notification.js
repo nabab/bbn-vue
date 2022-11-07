@@ -5,10 +5,7 @@
  * @copyright BBN Solutions
  * @created 11/01/2017
  */
-(bbn => {
-  "use strict";
-
-  Vue.component('bbn-notification', {
+return {
     /**
      * @mixin bbn.vue.basicComponent
      */
@@ -330,5 +327,4 @@
     beforeMount(){
       this._updatePositions();
     }
-  });
-})(window.bbn);
+  };

@@ -4,16 +4,7 @@
  * @copyright BBN Solutions
  * @author Mirko Argentino
  */
- (bbn => {
-  "use strict";
-
-  if (Vue.options.components['bbns-masonry'] === undefined) {
-    Vue.component('bbns-masonry', {
-      template: '<div class="bbns-masonry bbn-hidden"><slot></slot></div>'
-    });
-  }
-
-  Vue.component('bbn-masonry', {
+ return {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.resizerComponent
@@ -227,5 +218,5 @@
         }
       }
     }
-  });
-})(bbn);
+  };
+  

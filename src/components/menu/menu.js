@@ -6,10 +6,7 @@
  * @created 10/02/2017
  */
 
-(function(bbn, Vue) {
-  "use strict";
-
-  Vue.component('bbn-menu', {
+return {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.listComponent
@@ -143,6 +140,4 @@
     mounted() {
       this.ready = true;
     }
-  });
-
-})(window.bbn, window.Vue);
+  };

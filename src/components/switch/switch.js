@@ -9,9 +9,7 @@
   *
   * @created 13/02/2017
   */
-(bbn => {
-  "use strict";
-  Vue.component('bbn-switch', {
+return {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.inputComponent
@@ -253,5 +251,4 @@
         this.$emit('input', this.novalue);
       }
     }
-  });
-})(bbn);
+  };

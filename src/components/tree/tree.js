@@ -7,32 +7,7 @@
  * @created 10/02/2017
  */
 
-(function(bbn){
-"use strict";
-
-const NODE_PROPERTIES = [
-  'text',
-  'icon',
-  'num',
-  'numChildren',
-  'data',
-  'cls',
-  'selectedClass',
-  'activeClass',
-  'selection',
-  'selectable',
-  'multiple',
-  'filterable',
-  'sortable',
-  'selected',
-  'expanded',
-  'component',
-  'tooltip',
-  'path',
-  'visible'
-];
-
-Vue.component('bbn-tree', {
+return {
   /**
    * @mixin bbn.vue.basicComponent
    * @mixin bbn.vue.localStorageComponent
@@ -44,6 +19,29 @@ Vue.component('bbn-tree', {
     bbn.vue.localStorageComponent,
     bbn.vue.listComponent
   ],
+  static() {
+    const NODE_PROPERTIES = [
+      'text',
+      'icon',
+      'num',
+      'numChildren',
+      'data',
+      'cls',
+      'selectedClass',
+      'activeClass',
+      'selection',
+      'selectable',
+      'multiple',
+      'filterable',
+      'sortable',
+      'selected',
+      'expanded',
+      'component',
+      'tooltip',
+      'path',
+      'visible'
+    ];
+  },
   props: {
     /**
      *  @prop {Boolean} [false] excludedSectionFilter
@@ -491,7 +489,7 @@ Vue.component('bbn-tree', {
         if ( this.tree.map ){
           item = this.tree.map(item.data !== undefined ? item.data : item, this.level + 1, item.data !== undefined ? item : {});
         }
-        bbn.fn.each(NODE_PROPERTIES, p => {
+        bbn.fn.each(bbnTreePrivate.NODE_PROPERTIES, p => {
           o[p] = p === 'text' ? item[this.tree.sourceText] : item[p];
         });
         if (!!item.data && !!item.data[this.tree.children]) {
@@ -1028,7 +1026,7 @@ Vue.component('bbn-tree', {
     toData(data){
       let r = {};
       for ( let n in data ){
-        if ( NODE_PROPERTIES.indexOf(n) === -1 ){
+        if ( bbnTreePrivate.NODE_PROPERTIES.indexOf(n) === -1 ){
           r[n] = data[n];
         }
       }
@@ -2363,6 +2361,4 @@ Vue.component('bbn-tree', {
       }
     }
   }
-});
-
-})(bbn);
+};

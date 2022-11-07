@@ -7,29 +7,7 @@
  *
  * @author BBN Solutions
  */
-(function(bbn, Vue){
-  "use strict";
-
-  /**
-   * @component
-   * @param {string} url - The URL on which the tabNav will be initialized.
-   * @param {boolean} autoload - Defines if the tab will be automatically loaded based on URLs. False by default
-   * except if it is true for the parent.
-   * @param {string} orientation - The position of the views' titles: top (default) or bottom.
-   * @param {string} root - The root URL of the tabNav, will be only taken into account for the top parents'
-   * tabNav, will be automatically calculated for the children.
-   * @param {boolean} scrollable - Sets if the views' titles will be scrollable in case they have a greater width
-   * than the page (true), or if they will be shown multilines (false, default).
-   * @param {array} source - The views shown at init.
-   * @param {string} currentURL - The URL to which the tabnav currently corresponds (its selected tab).
-   * @param {string} baseURL - The parent TabNav's URL (if any) on top of which the tabNav has been built.
-   * @param {array} parents - The views shown at init.
-   * @param {array} views - The views configuration and state.
-   * @param {boolean} parentTab - If the tabNav has a tabNav parent, the tab Vue object in which it stands, false
-   * otherwise.
-   * @param {boolean|number} selected - The index of the currently selected tab, and false otherwise.
-   */
-  Vue.component("bbn-split-tabs", {
+return {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.localStorageComponent
@@ -1078,7 +1056,4 @@
         }
       }
     }
-  });
-
-})(bbn, Vue);
-
+  };

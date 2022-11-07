@@ -10,10 +10,18 @@
   *
   * @created 10/02/2017.
   */
-(function(bbn){
-  "use strict";
-/**@todo add prefix for flexbox and inline flex http://ptb2.me/flexbox/ also for justify content and align items*/
-  const
+return {
+    /**
+     * @mixin bbn.vue.basicComponent
+     * @mixin bbn.vue.dataEditorComponent
+     */
+    mixins: 
+    [
+      bbn.vue.basicComponent, 
+      bbn.vue.dataEditorComponent
+    ],
+    static() {
+      const
     get_operator_type = function(field){
       if ( typeof field === 'object' ){
         switch ( field.type ){
@@ -69,18 +77,13 @@
    // var  borders = ['red', 'green', 'yellow', 'pink', 'blue']
   var borders = ['#e47777','#fa4a4a', '#8d0e0e','#b44f4f','#c16262'],
     bg_colors = ['rgba(228,119,119,0.2)', 'rgba(250,74,74,0.2)', 'rgba(141,14,14,0.2)', 'rgba(180,79,79,0.2)', 'rgba(193,98,98,0.2)'];
-
-
-  Vue.component('bbn-filter', {
-    /**
-     * @mixin bbn.vue.basicComponent
-     * @mixin bbn.vue.dataEditorComponent
-     */
-    mixins: 
-    [
-      bbn.vue.basicComponent, 
-      bbn.vue.dataEditorComponent
-    ],
+      return {
+        get_operator_type,
+        get_component_type,
+        borders,
+        bg_colors
+      }
+    },
     name: 'bbn-filter',
     props: {
       /**
@@ -206,11 +209,11 @@
        * @return {String}
        */
       border_color(){
-        if ( this.num > borders.length ){
-          return borders[this.num % borders.length]
+        if ( this.num > bbnFilterPrivate.borders.length ){
+          return bbnFilterPrivate.borders[this.num % bbnFilterPrivate.borders.length]
         }
         else{
-          return borders[this.num]
+          return bbnFilterPrivate.borders[this.num]
         }
       },
       /**
@@ -306,7 +309,7 @@
             st += '<strong>' +
               (f.ftitle ? f.ftitle : (f.title ? f.title : cd.field)) +
               '</strong> ' +
-              this.editorOperators[get_operator_type(f)][cd.operator] +
+              this.editorOperators[bbnFilterPrivate.get_operator_type(f)][cd.operator] +
               ' <em>';
             if ( cd.value ){
               if ( cd.value === true ){
@@ -845,6 +848,4 @@
         }
       }
     }
-  });
-
-})(bbn);
+  };

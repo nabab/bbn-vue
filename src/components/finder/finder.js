@@ -2,44 +2,7 @@
  * Created by BBN on 15/08/2019.
  */
 
-(function(bbn){
-  "use strict";
-
-  let app;
-  /**
-   * Classic input with normalized appearance
-   */
-
-  let fields = ['host', 'user', 'pass'],
-  
-  filesRules = {
-    pdf: 'nf nf-mdi-file_pdf bbn-red',
-    php: 'nf nf-mdi-language_php bbn-blue',
-    doc: 'nf nf-mdi-file_word bbn-blue',
-    docx: 'nf nf-mdi-file_word bbn-blue',
-    xls: 'nf nf-mdi-file_excel bbn-green',
-    xlsx: 'nf nf-mdi-file_excel bbn-green',
-    ppt: 'nf nf-mdi-file_powerpoint bbn-red',
-    pptx: 'nf nf-mdi-file_powerpoint bbn-red',
-    psd: 'nf nf-dev-photoshop bbn-blue',
-    js: 'nf nf-mdi-language_javascript bbn-red',
-    html: 'nf nf-mdi-language_html5 bbn-green',
-    txt: 'nf nf-oct-file_text',
-    css: 'nf nf-dev-css3 bbn-orange',
-    less: 'nf nf-dev-css3 bbn-orange',
-    zip: 'nf nf-mdi-archive bbn-orange',
-    gz: 'nf nf-mdi-archive',
-    gzip: 'nf nf-mdi-archive',
-    png: 'nf nf-mdi-file_image bbn-purple',
-    jpeg: 'nf nf-mdi-file_image bbn-blue',
-    jpg: 'nf nf-mdi-file_image bbn-blue',
-    gif: 'nf nf-mdi-file_image bbn-pink',
-    tiff: 'nf nf-mdi-file_image bbn-brown',
-    json: 'nf nf-mdi-json bbn-red'
-  },
-  imageExt = ['jpeg', 'png', 'jpg', 'tiff', 'gif'];
-
-  Vue.component('bbn-finder', {
+return {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.localStorageComponent
@@ -49,6 +12,36 @@
       bbn.vue.basicComponent, 
       bbn.vue.localStorageComponent
     ],
+    static() {
+      let fields = ['host', 'user', 'pass'],
+  
+      filesRules = {
+        pdf: 'nf nf-mdi-file_pdf bbn-red',
+        php: 'nf nf-mdi-language_php bbn-blue',
+        doc: 'nf nf-mdi-file_word bbn-blue',
+        docx: 'nf nf-mdi-file_word bbn-blue',
+        xls: 'nf nf-mdi-file_excel bbn-green',
+        xlsx: 'nf nf-mdi-file_excel bbn-green',
+        ppt: 'nf nf-mdi-file_powerpoint bbn-red',
+        pptx: 'nf nf-mdi-file_powerpoint bbn-red',
+        psd: 'nf nf-dev-photoshop bbn-blue',
+        js: 'nf nf-mdi-language_javascript bbn-red',
+        html: 'nf nf-mdi-language_html5 bbn-green',
+        txt: 'nf nf-oct-file_text',
+        css: 'nf nf-dev-css3 bbn-orange',
+        less: 'nf nf-dev-css3 bbn-orange',
+        zip: 'nf nf-mdi-archive bbn-orange',
+        gz: 'nf nf-mdi-archive',
+        gzip: 'nf nf-mdi-archive',
+        png: 'nf nf-mdi-file_image bbn-purple',
+        jpeg: 'nf nf-mdi-file_image bbn-blue',
+        jpg: 'nf nf-mdi-file_image bbn-blue',
+        gif: 'nf nf-mdi-file_image bbn-pink',
+        tiff: 'nf nf-mdi-file_image bbn-brown',
+        json: 'nf nf-mdi-json bbn-red'
+      },
+      imageExt = ['jpeg', 'png', 'jpg', 'tiff', 'gif'];
+    },
     props: {
       /**
        * @prop {String} ['.'] path
@@ -379,7 +372,7 @@
               }
 
               //isImage
-              if ( !imageExt.includes(ext) ){
+              if ( !bbnFinderPrivate.imageExt.includes(ext) ){
                 this.post( this.root + 'actions/finder/file', {
                   node: node.data,
                   path: this.currentPath,
@@ -427,8 +420,8 @@
         if ( node.dir) {
           node.icon = this.folderIcon;
         }
-        else if (filesRules[ext]) {
-          node.icon = filesRules[ext];
+        else if (bbnFinderPrivate.filesRules[ext]) {
+          node.icon = bbnFinderPrivate.filesRules[ext];
         }
         return node;
       },
@@ -1030,6 +1023,4 @@
         
       }
     }  
-  });
-})(window.bbn);
-
+  };

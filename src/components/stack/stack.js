@@ -1,9 +1,6 @@
 
 
-(function(bbn){
-    "use strict";
-    
-    Vue.component('bbn-stack', {
+return {
       /**
        * @mixin bbn.vue.listComponent
        */
@@ -33,6 +30,5 @@
 					this.current = a;
 				}
 			}
-    });
-  })(bbn);
+    };
   

@@ -7,9 +7,7 @@
  *
  * @author Mirko Argentino
  */
-(function() {
-  "use strict";
-  Vue.component('bbn-flag', {
+return {
     name: 'bbn-flag',
     /**
      * @mixin bbn.vue.basicComponent
@@ -100,5 +98,4 @@
         return 'auto';
       }
     }
-  })
-})();
+  };

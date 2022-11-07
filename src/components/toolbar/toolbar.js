@@ -7,10 +7,7 @@
  * @author BBN Solutions
  */
 
-(function(bbn){
-  "use strict";
-
-  Vue.component('bbn-toolbar', {
+return {
     /**
      * @mixin bbn.vue.basicComponent
      */
@@ -128,6 +125,4 @@
         }
       }
     }
-  });
-
-})(bbn);
+  };
