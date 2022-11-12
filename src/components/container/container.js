@@ -248,7 +248,7 @@ return {
         return false;
       },
       isVisualVisible() {
-        if (this.router.isVisual) {
+        if (this.router?.isVisual) {
           let row = bbn.fn.getRow(this.router.visualList, 'view.idx', this.currentIndex);
           if (row) {
             return row.visible;
@@ -811,13 +811,15 @@ return {
         this.onMount = () => {
           return false;
         };
-        let res;
       }
 
+    },
+    beforeMount() {
       // The router is needed
-      this.router = this.closest('bbn-router');
       this.updateScreenshot()
       this._screenshotInterval = false;
+      bbn.fn.log("HJHHHH", this.$parent, this.$parent.closest('bbn-router'), this.closest('bbn-router'));
+      this.router = this.$parent.closest('bbn-router');
     },
     /**
      * @event mounted
@@ -845,7 +847,10 @@ return {
      * @fires router.unregister
      */
     beforeDestroy(){
-      this.router.unregister(this);
+      if (this.router) {
+        this.router.unregister(this);
+      }
+
       if ( this.isComponent ){
         let idx = bbnContainerPrivate.componentsList.indexOf(this.componentName);
         if ( idx > -1 ){

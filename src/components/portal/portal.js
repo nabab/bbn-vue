@@ -15,6 +15,7 @@ return {
         selector: "bbn-portal-target-" + bbn.fn.randomString(20, 30)
       };
     
+      /*
       let TargetContainer = Vue.extend({
         // as an abstract component, it doesn't appear in
         // the $parent chain of components.
@@ -43,6 +44,7 @@ return {
           el && el.parentNode && el.parentNode.removeChild(el);
         },
       });
+      */
     },
     props: {
       /**
@@ -50,6 +52,7 @@ return {
        */
       disabled: {
         type: Boolean,
+        default: false
       },
       /**
        * @prop {Boolean} prepend
@@ -80,27 +83,68 @@ return {
         randomId: bbn.fn.randomString(20, 30)
       }
     },
-    render(h) {
-      if (this.disabled) {
-        const nodes = this.$scopedSlots && bbn.fn.isFunction(this.$scopedSlots.default) && this.$scopedSlots.default();
-        if (nodes) {
-          return nodes.length < 2 && !nodes[0].text ? nodes : h(this.tag, nodes);
+    computed: {
+      element() {
+        if (this.selector) {
+          let sel = this.selector;
+          if (bbn.fn.isString(this.selector)) {
+            sel = document.querySelector(this.selector)
+          }
+          if (sel === document.body) {
+            return null;
+          }
+
+          return sel;
+        }
+
+        return null;
+      }
+    },
+    methods: {
+      mount() {
+        bbn.fn.log("on Mount", this.element)
+        if (this.element) {
+          this.$el.childNodes.forEach(node => {
+            this.element.appendChild(node);
+          });
+        }
+      },
+      unmount() {
+        if (this.element) {
+          this.element.childNodes.forEach(node => {
+            this.$el.appendChild(node);
+          });
+        }
+      },
+      onRegisterChild(child) {
+        if (!this.disabled && this.element) {
+          this.element.appendChild(child.$el ? child.$el : child);
         }
       }
-
-      return h();
     },
-    updated() {
-      // We only update the target container component
-      // if the scoped slot function is a fresh one
-      // The new slot syntax (since Vue 2.6) can cache unchanged slot functions
-      // and we want to respect that here.
-      this.$nextTick(() => {
-        if (!this.disabled && this.slotFn !== this.$scopedSlots.default) {
-          this.container.updatedNodes = this.$scopedSlots.default;
+    beforeMount() {
+      /*
+      bbn.fn.log("on beforeMount");
+      const observer = new MutationObserver(mutations_list => {
+        mutations_list.forEach(mutation => {
+          bbn.fn.log("MUTATION", mutation);
+          if (mutation.addedNodes) {
+            const unknown = [];
+            mutation.addedNodes.forEach(node => {
+              const tag = node.tagName ? node.tagName.toLowerCase() : null;
+              bbn.fn.log(tag + ' added, with parent ' + node.parentNode.tagName.toLowerCase(), mutation);
+            });
+            //checkUnknown(unknown);
+          }
+        });
+      });
+      observer.observe(this.$el, { subtree: true, childList: true });
+      setTimeout(() => {
+        if (!this.disabled) {
+          this.mount();
         }
-        this.slotFn = this.$scopedSlots.default;
-      })
+      }, 125)
+      */
     },
     beforeDestroy() {
       this.unmount()
@@ -119,38 +163,6 @@ return {
             this.$nextTick(this.mount)
           }
         },
-      },
-    },
-    methods: {
-      // This returns the element into which the content should be mounted.
-      getTargetEl() {
-        return bbn.fn.isString(this.selector) ? document.querySelector(this.selector) : this.selector;
-      },
-      mount() {
-        //bbn.fn.log("MOUNT PORTAL");
-        const target = this.getTargetEl();
-        const el = document.createElement('DIV');
-        if (this.prepend && target.firstChild) {
-          target.insertBefore(el, target.firstChild);
-        }
-        else {
-          target.appendChild(el);
-        }
-        this.container = new bbnPortalPrivate.TargetContainer({
-          el,
-          parent: this,
-          propsData: {
-            tag: this.tag,
-            nodes: this.$scopedSlots.default,
-          },
-        });
-      },
-      unmount() {
-        if (this.container) {
-          this.container.$destroy();
-          //this.target.removeChild(this.container.$el);
-          delete this.container;
-        }
       },
     },
   };

@@ -6,7 +6,7 @@
  */
 return {
     name: 'bbn-router',
-    static() {
+    static: () => {
       // IndexedDb access for storing thumbnails in visual mode
       let db = false;
       if (bbn.db && bbn.db.ok && window.html2canvas) {
@@ -31,6 +31,7 @@ return {
         }
       }
       return {
+        db,
         possibleOrientations: [
           {
             name: 'auto',
@@ -281,7 +282,7 @@ return {
           return 'auto'
         },
         validator(v) {
-          return !!bbn.fn.getRow(possibleOrientations, {name: v})
+          return !!bbn.fn.getRow(bbnRouterPrivate.possibleOrientations, {name: v})
         }
       },
       /**
@@ -918,6 +919,16 @@ return {
        * @return {Number|Boolean}
        */
       numProperties: bbn.fn.numProperties,
+      getPortalSelector(view) {
+        if (!this.disabled && this.panes.length) {
+          let pane = this.getPane(view);
+          if (pane) {
+            return '#' + pane + slashToHyphen(this.isVisual ? view.view.url : view.url);
+          }
+        }
+
+        return null;
+      },
       /**
        * Removes an element from the views
        * 
@@ -1236,6 +1247,7 @@ return {
         }
 
         if (!bbn.fn.isString(cp.url)) {
+          bbn.fn.log(cp);
           throw Error(bbn._('The component bbn-container must have a URL defined'));
         }
         if (this.urls[cp.url]) {
@@ -3555,7 +3567,7 @@ return {
       // Case where the rooter is at root level
       else {
         // Opening the database for the visual mode multiview
-        if (!this.single && db) {
+        if (!this.single && bbnRouterPrivate.db) {
           bbn.db.open('bbn').then(r => {
             this.db = r;
           }, err => {

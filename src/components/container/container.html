@@ -1,32 +1,32 @@
 <div :class="[componentClass, {
-  'bbn-container-ratio': router.visualShowAll,
-  'bbn-overlay': !visual && router.scrollContent,
-  'bbn-w-100': !router.scrollContent && !router.visualShowAll
+  'bbn-container-ratio': router?.visualShowAll,
+  'bbn-overlay': !visual && router?.scrollContent,
+  'bbn-w-100': !router?.scrollContent && !router?.visualShowAll
 }]"
      @subready.stop
      :style="visual ? visualStyle : {}"
-     v-show="(!router.isVisual && isVisible) || isVisualVisible || isPane">
+     v-show="(!router?.isVisual && isVisible) || isVisualVisible || isPane">
   <div :class="{
-    'bbn-overlay': router.scrollContent,
+    'bbn-overlay': router?.scrollContent,
     'bbn-container-full-screen': fullScreen,
-    'bbn-w-100': !router.scrollContent
+    'bbn-w-100': !router?.scrollContent
   }">
     <transition name="fade"
                 v-on:enter="enter"
                 v-on:after-enter="onResize">
       <div :class="{
-        'bbn-overlay': (isPane || !router.isVisual) && router.scrollContent,
-        'bbn-flex-height': (!isPane && (router.isVisual || fullScreen)) && router.scrollContent,
-        'bbn-w-100': visual || !router.scrollContent
+        'bbn-overlay': (isPane || !router?.isVisual) && router?.scrollContent,
+        'bbn-flex-height': (!isPane && (router?.isVisual || fullScreen)) && router?.scrollContent,
+        'bbn-w-100': visual || !router?.scrollContent
       }"
-          v-show="isVisible || router.isVisual">
+          v-show="isVisible || router?.isVisual">
         <!-- The header -->
         <div v-if="!isPane && (visual || fullScreen)"
             :class="'bbn-transition-bcolor bbn-b bbn-spadded bbn-flex-width ' + (isVisible ? ' bbn-m' : '')"
             :style="{
-              fontSize: isVisible && !router.visualShowAll ? null : '10rem',
-              backgroundColor: bcolor || router.bcolor,
-              color: fcolor || router.fcolor
+              fontSize: isVisible && !router?.visualShowAll ? null : '10rem',
+              backgroundColor: bcolor || router?.bcolor,
+              color: fcolor || router?.fcolor
             }">
           <div class="bbn-flex-fill bbn-vmiddle">
             <bbn-context v-if="isVisible"
@@ -50,7 +50,7 @@
             <i class="nf nf-mdi-arrow_collapse bbn-lg"/>
           </div>
           <!-- Icon for closing  -->
-          <div v-else-if="isVisible && !isPane && !static && !pinned && !router.visualShowAll"
+          <div v-else-if="isVisible && !isPane && !static && !pinned && !router?.visualShowAll"
               class="bbn-block bbn-p bbn-vmiddle bbn-h-100"
               @click="close">
             <i class="nf nf-fa-times bbn-lg"/>
@@ -59,9 +59,9 @@
         <!-- The main container (the one we take screenshots of) -->
         <div :class="{
           'bbn-background': true,
-          'bbn-overlay': !fullScreen && !router.isVisual && !isPane && router.scrollContent,
-          'bbn-flex-fill': (fullScreen || (router.isVisual && !isPane)) && router.scrollContent,
-          'bbn-w-100': !router.scrollContent,
+          'bbn-overlay': !fullScreen && !router?.isVisual && !isPane && router?.scrollContent,
+          'bbn-flex-fill': (fullScreen || (router?.isVisual && !isPane)) && router?.scrollContent,
+          'bbn-w-100': !router?.scrollContent,
           'bbn-container-visible': isVisible
         }"
             ref="canvasSource">
@@ -71,15 +71,15 @@
                     v-if="ready"
                     v-show="!hidden && isLoaded && (isVisible || cached) && popups.length"/>
           <!-- This is shown when it's ready -->
-          <bbn-scroll v-if="isLoaded && (isVisible || ((real || cached) && ready) || router.isVisual)"
-                      v-show="ready && isVisible || (router.isVisual && !thumbnail)"
+          <bbn-scroll v-if="isLoaded && (isVisible || ((real || cached) && ready) || router?.isVisual)"
+                      v-show="ready && isVisible || (router?.isVisual && !thumbnail)"
                       ref="scroll"
                       @ready="init"
-                      :scrollable="scrollable && router.scrollContent"
+                      :scrollable="scrollable && router?.scrollContent"
                       axis="y"
                       :class="{
-                        'bbn-overlay': router.scrollContent,
-                        'bbn-w-100': !router.scrollContent
+                        'bbn-overlay': router?.scrollContent,
+                        'bbn-w-100': !router?.scrollContent
                       }">
             <!-- This is an ad hoc component with unique name -->
             <bbn-anonymous v-if="isComponent"
@@ -133,14 +133,14 @@
       </div>
     </transition>
     <!-- When in visual mode a layer prevents interaction with the content -->
-    <div v-if="router.isVisual && (!isVisible || router.visualShowAll) && !isPane"
+    <div v-if="router?.isVisual && (!isVisible || router?.visualShowAll) && !isPane"
         class="bbn-overlay"
         style="z-index: 12; background-color: black; opacity: 0.2;">
     </div>
     <!-- When in visual mode this is the interaction layer -->
-    <div v-if="router.isVisual && (!isVisible || router.visualShowAll)"
+    <div v-if="router?.isVisual && (!isVisible || router?.visualShowAll)"
         class="bbn-overlay"
-        @click="router.activateIndex(currentIndex)"
+        @click="router?.activateIndex(currentIndex)"
         @mouseenter="isOver = true"
         @mouseleave="isOver = false"
         style="z-index: 12">
@@ -148,7 +148,7 @@
         <div class="bbn-bottom-left bbn-w-100"
             v-show="isOver"
             :style="{
-                fontSize: isVisible && !router.visualShowAll ? null : '10rem'
+                fontSize: isVisible && !router?.visualShowAll ? null : '10rem'
               }">
           <!-- Semi-transparent dark layer these buttons are not used -->
           <div class="bbn-bottom-left bbn-w-100 bbn-bg-black"

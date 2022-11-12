@@ -156,7 +156,7 @@
             <bbn-portal v-for="a in isVisual ? visualList : views"
                         :key="isVisual ? a.view.uid : (component && componentSource && componentUrl ? componentSource[componentUrl] : a.uid)"
                         :disabled="!routed || !getPane(a)"
-                        :selector="getPane(a) ? '#' + getPane(a) + slashToHyphen(isVisual ? a.view.url : a.url) : null">
+                        :selector="getPortalSelector(a)">
               <bbn-container v-if="(isVisual ? !a.view.real : !a.real) && !component && (!a.pane || routed)"
                             :key="isVisual ? a.view.uid : a.uid"
                             :visual="isVisual"
@@ -173,7 +173,7 @@
         <!-- END OF CONTENT -->
         <bbn-loader v-else/>
         <!-- START OF RIGHT|BOTTOM TABS -->
-        <bbn-tabs v-else-if="nav && !isBreadcrumb && !isVisual && ((orientation === 'right') || (orientation === 'bottom'))"
+        <bbn-tabs v-if="nav && !isBreadcrumb && !isVisual && ((orientation === 'right') || (orientation === 'bottom'))"
                   ref="tabs"
                   v-model="selectedTab"
                   @close="closeTab"

@@ -227,7 +227,7 @@ return {
         widgets: {},
         loaders: [],
         notifications: [],
-        root: bbn.vue.defaults.appui.root,
+        root: bbn.vue.defaults.appui.root || '',
         menuOpened: false,
         poller: false,
         debug: false,
