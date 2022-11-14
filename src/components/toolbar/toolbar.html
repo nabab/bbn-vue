@@ -1,64 +1,70 @@
 <div :class="['bbn-header', 'bbn-unselectable', componentClass, {
         'bbn-w-100': (orientation === 'horizontal'),
-        'bbn-h-100': (orientation === 'vertical'),
-        'bbn-flex-width': (orientation === 'horizontal'),
-        'bbn-flex-height': (orientation === 'vertical'),
-        'bbn-vmiddle': (orientation === 'horizontal')
+        'bbn-h-100': (orientation === 'vertical')
       }]"
      :style="style">
-  <slot v-if="slotBefore"></slot>
-  <div class="bbn-flex-fill">
-    <template v-for="(s, i) in source">
-      <component v-if="!s.end && s.component"
-                :is="s.component"
-                v-bind="s.options"
-                :key="'item' + i"/>
-      <div v-else-if="!s.end && (s.content !== undefined)"
-          class="bbn-block bbn-spadded"
-          v-html="s.content"
-          :key="'item' + i"
-          :ref="'item' + i"/>
-      <bbn-button v-else-if="!s.end && ((s.url || s.action || s.items) && (s.text || s.icon))"
-                  v-bind="s"
-                  :class="{
-                    'bbn-hxsmargin': buttonSpace
-                  }"
-                  @click.prevent="clickButton(s)"
-                  :key="'item' + i"
-                  :ref="'item' + i"/>
-      <div v-else-if="!s.end"
-          class="bbn-toolbar-separator"
-          :key="'item' + i"/>
-      <bbn-floater v-if="s.items && $refs['item' + i]"
-                   :source="items"
-                   :element="'item' + i"/>
-    </template>
-  </div>
-  <div class="bbn-block bbn-nowrap">
-    <template v-for="(s, i) in source">
-      <component v-if="s.end && s.component"
-                :is="s.component"
-                v-bind="s.options"
-                :key="'item' + i"/>
-      <div v-else-if="s.end && (s.content !== undefined)"
-          class="bbn-block bbn-spadded"
-          v-html="s.content"
-          :key="'item' + i"/>
-      <bbn-button v-else-if="s.end && ((s.url || s.action) && (s.text || s.icon))"
-                  :class="{
-                    'bbn-hxsmargin': true
-                  }"
-                  v-bind="s"
+  <fieldset :class="['bbn-toolbar-fieldset', 'bbn-no-border', 'bbn-no-radius', 'bbn-no-margin', 'bbn-no-padding', {
+              'bbn-w-100': (orientation === 'horizontal'),
+              'bbn-h-100': (orientation === 'vertical'),
+              'bbn-flex-width': (orientation === 'horizontal'),
+              'bbn-flex-height': (orientation === 'vertical'),
+              'bbn-vmiddle': (orientation === 'horizontal')
+            }]"
+            :disabled="disabled">
+    <slot v-if="slotBefore"></slot>
+    <div class="bbn-flex-fill">
+      <template v-for="(s, i) in source">
+        <component v-if="!s.end && s.component"
+                  :is="s.component"
+                  v-bind="s.options"
                   :key="'item' + i"/>
-      <div v-else-if="s.end"
-          class="bbn-toolbar-separator"
-          :key="'item' + i"
-      >|</div>
-      <bbn-floater v-if="s.items && $refs['item' + i]"
-                   :source="items"
-                   :element="'item' + i"/>
-    </template>
-  </div>
-  <slot v-if="!slotBefore"></slot>
-  <slot name="right"></slot>
+        <div v-else-if="!s.end && (s.content !== undefined)"
+            class="bbn-block bbn-spadded"
+            v-html="s.content"
+            :key="'item' + i"
+            :ref="'item' + i"/>
+        <bbn-button v-else-if="!s.end && ((s.url || s.action || s.items) && (s.text || s.icon))"
+                    v-bind="s"
+                    :class="{
+                      'bbn-hxsmargin': buttonSpace
+                    }"
+                    @click.prevent="clickButton(s)"
+                    :key="'item' + i"
+                    :ref="'item' + i"/>
+        <div v-else-if="!s.end"
+            class="bbn-toolbar-separator"
+            :key="'item' + i"/>
+        <bbn-floater v-if="s.items && $refs['item' + i]"
+                    :source="items"
+                    :element="'item' + i"/>
+      </template>
+    </div>
+    <div class="bbn-block bbn-nowrap">
+      <template v-for="(s, i) in source">
+        <component v-if="s.end && s.component"
+                  :is="s.component"
+                  v-bind="s.options"
+                  :key="'item' + i"/>
+        <div v-else-if="s.end && (s.content !== undefined)"
+            class="bbn-block bbn-spadded"
+            v-html="s.content"
+            :key="'item' + i"/>
+        <bbn-button v-else-if="s.end && ((s.url || s.action) && (s.text || s.icon))"
+                    :class="{
+                      'bbn-hxsmargin': true
+                    }"
+                    v-bind="s"
+                    :key="'item' + i"/>
+        <div v-else-if="s.end"
+            class="bbn-toolbar-separator"
+            :key="'item' + i"
+        >|</div>
+        <bbn-floater v-if="s.items && $refs['item' + i]"
+                    :source="items"
+                    :element="'item' + i"/>
+      </template>
+    </div>
+    <slot v-if="!slotBefore"></slot>
+    <slot name="right"></slot>
+  </fieldset>
 </div>

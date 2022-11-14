@@ -19,7 +19,8 @@
 										:title="false">
 					<bbn-toolbar :source="currentButtons"
 											class="bbn-rte-toolbar bbn-header bbn-radius-top bbn-no-border"
-											:button-space="false"/>
+											:button-space="false"
+											:disabled="disabled || readonly"/>
 				</bbn-floater>
 			</div>
 		</bbn-portal>
@@ -29,7 +30,8 @@
 			 style="min-height: 100%; width: 100%;">
 		<bbn-toolbar :source="currentButtons"
 								 class="bbn-rte-toolbar bbn-header bbn-radius-top bbn-no-border bbn-spadded"
-								 :button-space="false"/>
+								 :button-space="false"
+								 :disabled="disabled || readonly"/>
 		<div class="bbn-flex-fill"
 				 :style="textboxStyle"
 				 @mouseup.stop="getRef('element').focus()">
@@ -37,7 +39,7 @@
 								 :class="{'bbn-hidden': showSource}">
 				<div class="bbn-spadded bbn-rte-element"
 						 style="min-height: max(4rem, 100%)"
-						 contenteditable="true"
+						 :contenteditable="!readonly && !disabled"
 						 ref="element"
 						 @input="rteOnInput"
 						 @keydown="rteOnKeydown"

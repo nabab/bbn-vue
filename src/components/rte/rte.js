@@ -234,15 +234,22 @@
       component: {
         name: 'bbn-rte-fontcolor',
         template: `
-          <span class="bbn-rte-fontcolor bbn-vmiddle bbn-bordered bbn-radius">
+          <span :class="['bbn-rte-fontcolor', 'bbn-vmiddle', 'bbn-iflex', 'bbn-bordered', 'bbn-radius', {
+                  'disabled': !!isDisabled || !!isReadOnly,
+                  'bbn-background': !isDisabled && !isReadOnly
+                }]">
             <i class="nf nf-mdi-format_color_text bbn-hxsspace"/>
             <bbn-colorpicker @change="setColor"
-                             v-model="currentColor"/>
+                             v-model="currentColor"
+                             :disabled="isDisabled"
+                             :readonly="isReadOnly"/>
           </span>
         `,
         data(){
           return {
-            currentColor: bbn.fn.rgb2hex(window.getComputedStyle(document.body).color)
+            currentColor: bbn.fn.rgb2hex(window.getComputedStyle(document.body).color),
+            isDisabled: false,
+            isReadOnly: false
           }
         },
         methods: {
@@ -251,7 +258,16 @@
           }
         },
         mounted(){
-          this.closest('bbn-rte').fontColorComponent = this;
+          const rte = this.closest('bbn-rte');
+          rte.fontColorComponent = this;
+          this.isDisabled = !!rte.disabled;
+          this.isReadOnly = !!rte.readonly;
+          this.disWatch = rte.$watch('disabled', val => this.isDisabled = !!val);
+          this.readWatch = rte.$watch('readonly', val => this.isDisabled = !!val);
+        },
+        beforeDestroy(){
+          this.disWatch();
+          this.readWatch();
         }
       }
     },
@@ -262,15 +278,22 @@
       component: {
         name: 'bbn-rte-fontbgcolor',
         template: `
-        <span class="bbn-rte-fontbgcolor bbn-vmiddle bbn-bordered bbn-radius">
+        <span :class="['bbn-rte-fontbgcolor', 'bbn-vmiddle', 'bbn-iflex', 'bbn-bordered', 'bbn-radius', {
+                'disabled': !!isDisabled || !!isReadOnly,
+                'bbn-background': !isDisabled && !isReadOnly
+              }]">
             <i class="nf nf-mdi-format_color_fill bbn-hxsspace bbn-lg"/>
             <bbn-colorpicker @change="setColor"
-                             v-model="currentColor"/>
+                             v-model="currentColor"
+                             :disabled="isDisabled"
+                             :readonly="isReadOnly"/>
           </span>
         `,
         data(){
           return {
-            currentColor: ''
+            currentColor: '',
+            isDisabled: false,
+            isReadOnly: false
           }
         },
         methods: {
@@ -279,7 +302,16 @@
           }
         },
         mounted(){
-          this.closest('bbn-rte').fontBgColorComponent = this;
+          const rte = this.closest('bbn-rte');
+          rte.fontBgColorComponent = this;
+          this.isDisabled = !!rte.disabled;
+          this.isReadOnly = !!rte.readonly;
+          this.disWatch = rte.$watch('disabled', val => this.isDisabled = !!val);
+          this.readWatch = rte.$watch('readonly', val => this.isDisabled = !!val);
+        },
+        beforeDestroy(){
+          this.disWatch();
+          this.readWatch();
         }
       }
     },

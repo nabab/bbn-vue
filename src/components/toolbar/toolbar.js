@@ -57,6 +57,13 @@
       size: {
         type: [Number, String],
       },
+      /**
+       * @prop {Boolean} [false] disabled
+       */
+      disabled: {
+        type: Boolean,
+        default: false
+      }
     },
     data: function(){
       return {

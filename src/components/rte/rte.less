@@ -6,18 +6,32 @@
   }
 }
 .bbn-rte-toolbar {
-  > .bbn-flex-fill {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    > * {
-      margin: 0 .15rem;
-    }
-    .bbn-rte-fontcolor, .bbn-rte-fontbgcolor {
-      background-color: var(--default-background);
-      .bbn-colorpicker-input {
-        border: 0;
+  .bbn-toolbar-fieldset {
+    > .bbn-flex-fill {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      > * {
+        margin: 0 .15rem;
+      }
+      .bbn-rte-fontcolor, .bbn-rte-fontbgcolor {
+        .bbn-colorpicker-input {
+          border: 0;
+        }
+        .bbn-colorpicker-input {
+          display: flex;
+          align-items: center;
+          padding: 0;
+        }
+        &.disabled {
+          .bbn-textbox {
+            background-color: transparent !important;
+          }
+          .bbn-colorpicker-icon {
+            visibility: hidden;
+          }
+        }
       }
     }
   }
