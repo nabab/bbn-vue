@@ -1,5 +1,5 @@
 (() => {
-  Vue.directive('focused', {
+  bbn.vue.directives.focused = {
     inserted(el, binding) {
       if (binding.value === false) {
         return;
@@ -13,6 +13,6 @@
         }
       }, 250);
     }
-  });
+  };
 })()
 

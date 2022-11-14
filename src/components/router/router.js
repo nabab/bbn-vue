@@ -927,7 +927,7 @@ return {
           }
         }
 
-        return null;
+        return undefined;
       },
       /**
        * Removes an element from the views
@@ -1078,7 +1078,6 @@ return {
         let index;
         //obj must be an object with property url
         if (bbn.fn.isObject(obj) && bbn.fn.isString(obj.url)) {
-          obj.url = bbn.fn.replaceAll('//', '/', obj.url);
           // This is a component
           if (obj.$options) {
             if (!obj.current && !obj.currentURL) {
@@ -1094,7 +1093,7 @@ return {
                 obj.currentURL = bbn.fn.replaceAll(obj.currentURL);
               }
             }
-            let obj2 = bbn.fn.extend(true, {}, obj.$options.propsData),
+            let obj2 = bbn.fn.extend(true, {}, obj.$props),
                 props = obj.$options.props;
             bbn.fn.iterate(props, (v, i) => {
               if (!(i in obj2) && ('default' in v)) {
@@ -1223,11 +1222,9 @@ return {
           if (this.numRegistered) {
             this.isInit = true;
           }
-          setTimeout(() => {
-            if (this.auto) {
-              this.route(url, true);
-            }
-          }, 50)
+          if (this.auto) {
+            this.route(url, true);
+          }
         }
       },
       /**
@@ -1648,9 +1645,7 @@ return {
             }
             else if (scroll) {
               scroll.$on('ready', sc => {
-                setTimeout(() => {
-                  sc.scrollTo(this.getRef('tab-' + container.currentIndex));
-                }, 100);
+                sc.scrollTo(this.getRef('tab-' + container.currentIndex));
               })
             }
           }
@@ -3470,12 +3465,11 @@ return {
 
         this.$set(this.views[containerIdx], "pane", paneId);
         pane.tabs.push(view);
-        setTimeout(() => {
-          if (containerIdx === this.selected) {
-            this.selectClosest(containerIdx);
-          }
-          pane.selected = pane.tabs.length - 1;
-        }, 250);
+        this.$forceUpdate();
+        if (containerIdx === this.selected) {
+          this.selectClosest(containerIdx);
+        }
+        pane.selected = pane.tabs.length - 1;
       },
       removeFromPane(containerIdx) {
         let view = this.views[containerIdx];
@@ -3556,6 +3550,7 @@ return {
       // The root
       this.router = this.parents.length ? this.parents[this.parents.length-1] : this;
       // Case where the rooter is not at the root level
+
       if ( this.parent ){
         this.parentContainer = this.closest('bbn-container');
         let uri = this.parentContainer.url;

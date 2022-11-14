@@ -458,7 +458,7 @@
     }
   };
 
-  Vue.directive('draggable', {
+  bbn.vue.directive.draggable = {
     inserted: inserted,
     update: (el, binding) => {
       if ((binding.value !== false)
@@ -501,5 +501,5 @@
         }
       }
     }
-  });
+  };
 })();

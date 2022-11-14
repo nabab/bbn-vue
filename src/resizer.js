@@ -78,24 +78,23 @@
 
             }
             this.isResizing = true;
-            this.$nextTick(() => {
-              if (this.$el.offsetHeight) {
-                // Setting initial dimensions
-                let ms1 = this.setResizeMeasures();
-                let ms2 = this.setContainerMeasures();
-                if (ms1 || ms2) {
-                  if (!this.ready) {
-                    setTimeout(() => {
-                      this.onResize();
-                    }, 100)
-                  }
-                  else {
-                    this.$emit('resize');
-                  }
+            this.$forceUpdate();
+            if (this.$el.offsetHeight) {
+              // Setting initial dimensions
+              let ms1 = this.setResizeMeasures();
+              let ms2 = this.setContainerMeasures();
+              if (ms1 || ms2) {
+                if (!this.ready) {
+                  setTimeout(() => {
+                    this.onResize();
+                  }, 100)
+                }
+                else {
+                  this.$emit('resize');
                 }
               }
-              resolve();
-            })
+            }
+            resolve();
           });
         },
         /**
@@ -167,24 +166,17 @@
           //this.setResizeMeasures();
           // Creating the callback function which will be used in the timeout in the listener
           this.onParentResizerEmit = () => {
-            // Removing previous timeout
-            if (this.resizerTimeout) {
-              clearTimeout(this.resizerTimeout);
-            }
-              // Creating a new one
-            this.resizerTimeout = setTimeout(() => {
-              if (this.$el.parentNode && this.$el.offsetWidth) {
-                // Checking if the parent hasn't changed (case where the child is mounted before)
-                let tmp = this.closest(".bbn-resize-emitter");
-                if ( tmp !== this.parentResizer ){
-                  // In that case we reset
-                  this.unsetResizeEvent();
-                  this.setResizeEvent();
-                  return;
-                }
+            if (this.$el.parentNode && this.$el.offsetWidth) {
+              // Checking if the parent hasn't changed (case where the child is mounted before)
+              let tmp = this.closest(".bbn-resize-emitter");
+              if ( tmp !== this.parentResizer ){
+                // In that case we reset
+                this.unsetResizeEvent();
+                this.setResizeEvent();
+                return;
               }
-              this.onResize();
-            }, 50);
+            }
+            this.onResize();
           };
           if ( this.parentResizer ){
             this.parentResizer.$on("resize", this.onParentResizerEmit);

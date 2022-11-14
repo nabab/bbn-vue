@@ -1034,6 +1034,26 @@ return {
         if (this.$refs.app) {
           this.app = this.$refs.app;
         }
+        this.onResize();
+        this.ready = true;
+        this.opacity = 1;
+        this._postMessage({
+          type: 'initCompleted'
+        });
+        this.updatePostIts();
+        if (!this.single) {
+          this.registerChannel('appui', true);
+          if (this.plugins['appui-chat']){
+            this.registerChannel('appui-chat');
+          }
+          if (this.plugins['appui-notification']) {
+            this.registerChannel('appui-notification');
+            this.browserNotificationURL = this.plugins['appui-notification'];
+            this.browserNotificationSW = true;
+          }
+          this.poll();
+        }
+  /*
         this.intervalBugChrome = setInterval(() => {
           if (this.isFocused && this.$el.scrollLeft) {
             this.$el.scrollLeft = 0;
@@ -1060,6 +1080,7 @@ return {
             this.poll();
           }, 5000);
         }, this.app && this.app.header ? 1000 : 10);
+        */
       }
     },
     beforeDestroy(){

@@ -136,7 +136,7 @@
     }
   };
 
-  Vue.directive('droppable', {
+  bbn.vue.directive.droppable = {
     inserted: inserted,
     update: (el, binding) => {
       if ((binding.value !== false)
@@ -185,5 +185,5 @@
         }
       }
     }
-  });
+  };
 })();

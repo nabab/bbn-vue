@@ -974,11 +974,9 @@ return {
      * @fires waitReady
      */
     mounted(){
-      setTimeout(() => {
-        if (!this.readyDelay && !this.ready) {
-          this.waitReady();
-        }
-      }, 100)
+      if (!this.readyDelay && !this.ready) {
+        this.waitReady();
+      }
     },
     beforeDestroy(){
       if (this.interval) {

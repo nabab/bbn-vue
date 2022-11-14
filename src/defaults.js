@@ -90,6 +90,7 @@
       code: {
         defaultTheme: 'pastel-on-dark'
       }
-    }
+    },
+    directives:{}
   })
 })(window.bbn);

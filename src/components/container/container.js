@@ -91,7 +91,9 @@ return {
       screenshotDelay: {
         type: Number,
         default: 43200000
-      }
+      },
+      pane: {},
+      error: {}
     },
     data(){
       return {
@@ -596,7 +598,7 @@ return {
             // and the object returned as component definition
             // Adding also a few funciton to interact with the tab
             let cont = this;
-            let o = bbn.fn.extend(true, res ? res : {}, {
+            this.$el.bbnCfg = normalizeComponent(bbn.fn.extend(true, res ? res : {}, {
               template: '<div class="' + (this.router.scrollContent ? '' : 'bbn-w-100') + '">' + this.currentView.content + '</div>',
               methods: {
                 getContainer(){
@@ -616,32 +618,30 @@ return {
                 }
               },
               props: ['source']
-            });
+            }));
             // The local anonymous component gets defined
-            this.$options.components[this.componentName] = o;
+            this.$options.components[this.componentName] = this.$el.bbnCfg;
           }
           else {
             this.isComponent = false;
           }
 
-          setTimeout(() => {
-            if (bbn.env.url.indexOf('#')) {
-              let scroll = this.getRef('scroll');
-              /**
-               * @todo  Does it mean the scroll manage the hash? Check it out
-               */
-              if (scroll && (scroll.currentY || scroll.currentX)) {
-                return;
-              }
-              let hash = bbn.env.url.split('#')[1];
-              if (hash) {
-                hash = '#' + hash;
-                location.hash = null;
-                location.hash = hash;
-              }
-              
+          if (bbn.env.url.indexOf('#')) {
+            let scroll = this.getRef('scroll');
+            /**
+             * @todo  Does it mean the scroll manage the hash? Check it out
+             */
+            if (scroll && (scroll.currentY || scroll.currentX)) {
+              return;
             }
-          }, 2000);
+            let hash = bbn.env.url.split('#')[1];
+            if (hash) {
+              hash = '#' + hash;
+              location.hash = null;
+              location.hash = hash;
+            }
+            
+          }
           if (this.visual) {
             this.setScreenshot();
           }

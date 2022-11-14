@@ -529,9 +529,7 @@
             action($ev, btn) {
               btn.closest('bbn-floater').close(true);
               if (onNo) {
-                setTimeout(() => {
-                  onNo($ev, btn);
-                }, 0);
+                onNo($ev, btn);
               }
             }
           }, {
@@ -540,11 +538,10 @@
             icon: 'nf nf-fa-check_circle',
             action($ev, btn) {
               btn.closest('bbn-floater').close(true);
-              setTimeout(() => {
-                onYes($ev, btn);
-              }, 0);
+              onYes($ev, btn);
             }
           }];
+
           this.open(bbn.fn.extend(o, options, {
             resizable: false,
             maximizable: false,

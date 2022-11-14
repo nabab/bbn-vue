@@ -282,10 +282,8 @@ return {
        * @fires getOrientation
        */
       onResize(){
-        bbn.fn.log("On resize")
         if ( !this.resizing && !this.isSplitterResizing){
           this.isResizing = true;
-          bbn.fn.log("On resize 2")
           this.setContainerMeasures();
           this.setResizeMeasures();
           if ( this.orientation === 'auto' ){
