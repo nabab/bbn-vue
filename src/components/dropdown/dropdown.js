@@ -147,7 +147,7 @@
             return a.data[this.sourceValue] === this.value;
           });
           if ( row ){
-            this.currentText = row.data[this.sourceText];
+            this.currentText = this.clearHtml ? bbn.fn.html2text(row.data[this.sourceText]) : row.data[this.sourceText];
           }
         }
       })

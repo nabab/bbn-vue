@@ -156,18 +156,50 @@
     },
     methods: {
       /**
+       * Private method to manage the "touchstart" event
+       * @method _touchStart
+       */
+      _touchStart(){
+        this.touchStart = true;
+        this.touchMove = false;
+      },
+      /**
+       * Private method to manage the "touchmove" event
+       * @method _touchMove
+       */
+      _touchMove(){
+        this.touchMove = true;
+      },
+      /**
+       * Private method to manage the "touchend" event
+       * @method _touchEnd
+       * @param {Event} e
+       * @fires checkClick
+       */
+      _touchEnd(e){
+        if (!this.touchMove) {
+          this.checkClick(e);
+        }
+        this.touchStart = false;
+        this.touchMove = false;
+      },
+      /**
        * Adds or removes the event listener for mousedown and touchstart.
        * @method _setEvents
-       * @param add 
+       * @param add
        */
       _setEvents(add){
         if ( add ){
           document.addEventListener('mouseup', this.checkClick);
-          document.addEventListener('touchend', this.checkClick);
+          document.addEventListener('touchstart', this._touchStart);
+          document.addEventListener('touchmove', this._touchMove);
+          document.addEventListener('touchend', this._touchEnd);
         }
         else{
           document.removeEventListener('mouseup', this.checkClick);
-          document.removeEventListener('touchend', this.checkClick);
+          document.removeEventListener('touchstart', this._touchStart);
+          document.removeEventListener('touchmove', this._touchMove);
+          document.removeEventListener('touchend', this._touchEnd);
         }
       },
       /**
