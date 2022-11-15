@@ -818,8 +818,8 @@ return {
       // The router is needed
       this.updateScreenshot()
       this._screenshotInterval = false;
-      bbn.fn.log("HJHHHH", this.$parent, this.$parent.closest('bbn-router'), this.closest('bbn-router'));
-      this.router = this.$parent.closest('bbn-router');
+      this.router = this.closest('bbn-router');
+      const cp = this.getRef('component');
     },
     /**
      * @event mounted
@@ -943,7 +943,14 @@ return {
        */
       content(newVal, oldVal){
         if ( newVal ){
+          bbn.fn.log("GT CONTENT")
           this.isComponentActive = false;
+          const cp = this.getRef('component')
+          if (cp) {
+            bbn.fn.log("COUND CP{")
+            cp.$el.bbnTpl = stringToTemplate(newVal)
+          }
+    
           /*
           setTimeout(() => {
             this.onMount = () => {

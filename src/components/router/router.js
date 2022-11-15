@@ -1078,6 +1078,7 @@ return {
         let index;
         //obj must be an object with property url
         if (bbn.fn.isObject(obj) && bbn.fn.isString(obj.url)) {
+          bbn.fn.warning("ADDING CONTAINER 0 " + obj.url);
           // This is a component
           if (obj.$options) {
             if (!obj.current && !obj.currentURL) {
@@ -1170,7 +1171,7 @@ return {
             }
 
             index = this.search(obj.url);
-            //bbn.fn.warning("ADDING CONTAINER " + obj.current + " (" + index + ")");
+            bbn.fn.warning("ADDING CONTAINER " + obj.current + " (" + index + ")");
             if ( index !== false ){
               let o = this.views[index],
                   cn = this.urls[this.views[index].url];
@@ -2213,6 +2214,7 @@ return {
           }
 
           if (toAdd){
+            bbn.fn.warning("BEFORE")
             this.add({
               url: url,
               title: view && view.title ? view.title : bbn._('Loading'),
@@ -2227,6 +2229,7 @@ return {
               hidden: false,
               last: bbn.fn.timestamp()
             }, idx);
+            bbn.fn.warning("AFTER")
           }
           else if (!this.views[idx].loading) {
             this.views[idx].loading = true;
@@ -2245,6 +2248,7 @@ return {
             finalURL,
             dataObj,
             d => {
+              bbn.fn.warning("OK")
               let callRealInit = true;
               this.isLoading = false;
               //this.remove(url);
@@ -2273,7 +2277,7 @@ return {
                 delete d.data;
               }
               if ( (d.url !== d.current) && this.urls[d.current] ){
-                //bbn.fn.warning("DELETING VIEW CASE.... " + d.current + ' ' + this.urls[d.current].currentIndex, d.url, bbn.fn.search(this.views, {idx: this.urls[d.current].idx}));
+                bbn.fn.warning("DELETING VIEW CASE.... " + d.current + ' ' + this.urls[d.current].currentIndex, d.url, bbn.fn.search(this.views, {idx: this.urls[d.current].idx}));
                 this.remove(this.urls[d.current].currentIndex, true);
                 callRealInit = false;
                 /*
@@ -2314,9 +2318,10 @@ return {
                 let searchIndex = this.search(o.url);
                 //bbn.fn.log("Looking for " + o.url);
                 if (searchIndex !== false) {
-                  //bbn.fn.log("FOUND AND REMOVED " + idx);
+                  bbn.fn.warning("FOUND AND REMOVED " + idx);
                   this.remove(idx, true);
                 }
+                bbn.fn.warning("ADDEDD " + idx);
                 this.add(o, idx);
                 if (o.title && !o.pane) {
                   this.currentTitle = o.title;
