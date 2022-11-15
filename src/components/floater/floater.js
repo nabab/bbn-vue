@@ -340,6 +340,10 @@
        */
       groupStyle: {
         type: String
+      },
+      closeIcon: {
+        type: String,
+        default: 'nf nf-fa-times'
       }
     },
     data() {
