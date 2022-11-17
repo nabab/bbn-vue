@@ -81,7 +81,6 @@
       collapse(column){
         this.$set(column, 'opened', false);
         this.$emit('collapse', column);
-        this.$forceUpdate();
       },
       /**
        * Collapses all columns
@@ -94,7 +93,6 @@
           this.$set(c, 'opened', false);
           this.$emit('collapse', c);
         });
-        this.$forceUpdate();
       },
       /**
        * Expands a column
@@ -105,7 +103,6 @@
       expand(column){
         this.$set(column, 'opened', true);
         this.$emit('collapse', column);
-        this.$forceUpdate();
       },
       /**
        * Expands all columns
@@ -118,7 +115,6 @@
           this.$set(c, 'opened', true);
           this.$emit('expand', c);
         });
-        this.$forceUpdate();
       }
     },
     components: {
