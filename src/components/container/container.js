@@ -570,7 +570,18 @@ return {
        * @method init
        */
       init() {
+        if (this.script) {
+          const cfg = this.script();
+          // Component
+          if (bbn.fn.isObject(cfg)) {
 
+          }
+          // Function to execute
+          else if (bbn.fn.isFunction(cfg)) {
+
+          }
+
+        }
         if (this.isPane) {
         }
         if (this.isVisible && (this.real || (this.isLoaded && !this.ready))) {
