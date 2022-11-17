@@ -339,7 +339,7 @@
     }
   };
 
-  bbn.vue.directive.resizable = {
+  bbn.vue.directives.resizable = {
     inserted: inserted,
     update: (el, binding) => {
       if ((binding.value !== false)

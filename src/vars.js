@@ -31,5 +31,6 @@
     queueBBN: [],
     components: {},
     loadDelay: 5,
+    directives: {}
   })
 })(window.bbn);

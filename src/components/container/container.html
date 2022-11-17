@@ -5,23 +5,23 @@
 }]"
      @subready.stop
      :style="visual ? visualStyle : {}"
-     v-show="(!router?.isVisual && isVisible) || isVisualVisible || isPane">
+     bbn-show="(!router?.isVisual && isVisible) || isVisualVisible || isPane">
   <div :class="{
     'bbn-overlay': router?.scrollContent,
     'bbn-container-full-screen': fullScreen,
     'bbn-w-100': !router?.scrollContent
   }">
     <transition name="fade"
-                v-on:enter="enter"
-                v-on:after-enter="onResize">
+                bbn-on:enter="enter"
+                bbn-on:after-enter="onResize">
       <div :class="{
         'bbn-overlay': (isPane || !router?.isVisual) && router?.scrollContent,
         'bbn-flex-height': (!isPane && (router?.isVisual || fullScreen)) && router?.scrollContent,
         'bbn-w-100': visual || !router?.scrollContent
       }"
-          v-show="isVisible || router?.isVisual">
+          bbn-show="isVisible || router?.isVisual">
         <!-- The header -->
-        <div v-if="!isPane && (visual || fullScreen)"
+        <div bbn-if="!isPane && (visual || fullScreen)"
             :class="'bbn-transition-bcolor bbn-b bbn-spadded bbn-flex-width ' + (isVisible ? ' bbn-m' : '')"
             :style="{
               fontSize: isVisible && !router?.visualShowAll ? null : '10rem',
@@ -29,28 +29,28 @@
               color: fcolor || router?.fcolor
             }">
           <div class="bbn-flex-fill bbn-vmiddle">
-            <bbn-context v-if="isVisible"
+            <bbn-context bbn-if="isVisible"
                         class="bbn-right-sspace bbn-lg bbn-p"
                         :floater-title="_('Container menu')"
                         tag="span"
                         :source="showMenu">
               <i class="nf nf-fa-bars"/>
             </bbn-context>
-            <span v-if="icon"
+            <span bbn-if="icon"
                   class="bbn-right-sspace bbn-lg">
               <i :class="icon"/>
             </span>
-            <span v-text="title"
+            <span bbn-text="title"
                   style="overflow: hidden"/>
           </div>
           <!-- Icon for restoring size when in full screen mode -->
-          <div v-if="isVisible && fullScreen"
+          <div bbn-if="isVisible && fullScreen"
               class="bbn-block bbn-p bbn-vmiddle bbn-h-100"
               @click="fullScreen = false">
             <i class="nf nf-mdi-arrow_collapse bbn-lg"/>
           </div>
           <!-- Icon for closing  -->
-          <div v-else-if="isVisible && !isPane && !static && !pinned && !router?.visualShowAll"
+          <div bbn-elseif="isVisible && !isPane && !static && !pinned && !router?.visualShowAll"
               class="bbn-block bbn-p bbn-vmiddle bbn-h-100"
               @click="close">
             <i class="nf nf-fa-times bbn-lg"/>
@@ -68,11 +68,11 @@
           <!-- The container's popup, from which each floater will come -->
           <bbn-popup ref="popup"
                     :source="popups"
-                    v-if="ready"
-                    v-show="!hidden && isLoaded && (isVisible || cached) && popups.length"/>
+                    bbn-if="ready"
+                    bbn-show="!hidden && isLoaded && (isVisible || cached) && popups.length"/>
           <!-- This is shown when it's ready -->
-          <bbn-scroll v-if="isLoaded && (isVisible || ((real || cached) && ready) || router?.isVisual)"
-                      v-show="ready && isVisible || (router?.isVisual && !thumbnail)"
+          <bbn-scroll bbn-if="isLoaded && (isVisible || ((real || cached) && ready) || router?.isVisual)"
+                      bbn-show="ready && isVisible || (router?.isVisual && !thumbnail)"
                       ref="scroll"
                       @ready="init"
                       :scrollable="scrollable && router?.scrollContent"
@@ -82,36 +82,36 @@
                         'bbn-w-100': !router?.scrollContent
                       }">
             <!-- This is an ad hoc component with unique name -->
-            <bbn-anonymous v-if="isComponent"
+            <bbn-anonymous bbn-if="isComponent"
                       is="div"
                       :source="source"
                       ref="component"/>
             <!-- This is a classic component -->
-            <bbn-anonymous v-else-if="component"
+            <bbn-anonymous bbn-elseif="component"
                       :is="component"
                       :source="source"
                       ref="component"
-                      v-bind="options"/>
+                      bbn-bind="options"/>
             <!-- This is just HTML content -->
-            <div v-else-if="content"
-                 v-html="content">
+            <div bbn-elseif="content"
+                 bbn-html="content">
             </div>
             <!-- This is the slot -->
-            <slot v-else></slot>
+            <slot bbn-else></slot>
             <!-- Adding style as a component -->
             <bbn-anonymous is="style"
-                      v-if="css"
+                      bbn-if="css"
                       scoped="scoped"
-                      v-html="css"/>
+                      bbn-html="css"/>
           </bbn-scroll>
           <!-- If loading showing loader -->
-          <div v-else-if="isVisible && errorStatus"
+          <div bbn-elseif="isVisible && errorStatus"
                class="bbn-overlay bbn-middle bbn-lg">
             <div class="bbn-lpadded bbn-state-error bbn-block bbn-nowrap">
-              <h1 v-text="errorStatus.status"/>
-              <div v-text="url"/>
+              <h1 bbn-text="errorStatus.status"/>
+              <div bbn-text="url"/>
               <div class="bbn-vlpadded bbn-b"
-                   v-text="errorStatus.statusText"/>
+                   bbn-text="errorStatus.statusText"/>
               <div class="bbn-c">
                 <bbn-button @click="close"
                             icon="nf nf-fa-times"
@@ -121,9 +121,9 @@
             </div>
           </div>
           <!-- If loading showing loader -->
-          <bbn-loader v-else-if="isVisible && !isLoaded"/>
+          <bbn-loader bbn-elseif="isVisible && !isLoaded"/>
           <!-- Thumbnail image -->
-          <div v-if="!isVisible && visual && thumbnail"
+          <div bbn-if="!isVisible && visual && thumbnail"
               style="overflow: hidden"
               class="bbn-overlay">
             <img :src="thumbnail"
@@ -133,12 +133,12 @@
       </div>
     </transition>
     <!-- When in visual mode a layer prevents interaction with the content -->
-    <div v-if="router?.isVisual && (!isVisible || router?.visualShowAll) && !isPane"
+    <div bbn-if="router?.isVisual && (!isVisible || router?.visualShowAll) && !isPane"
         class="bbn-overlay"
         style="z-index: 12; background-color: black; opacity: 0.2;">
     </div>
     <!-- When in visual mode this is the interaction layer -->
-    <div v-if="router?.isVisual && (!isVisible || router?.visualShowAll)"
+    <div bbn-if="router?.isVisual && (!isVisible || router?.visualShowAll)"
         class="bbn-overlay"
         @click="router?.activateIndex(currentIndex)"
         @mouseenter="isOver = true"
@@ -146,7 +146,7 @@
         style="z-index: 12">
       <transition name="fade">
         <div class="bbn-bottom-left bbn-w-100"
-            v-show="isOver"
+            bbn-show="isOver"
             :style="{
                 fontSize: isVisible && !router?.visualShowAll ? null : '10rem'
               }">
@@ -160,11 +160,11 @@
             </div>
             <div class="bbn-w-50 bbn-right bbn-spadded">
               <span class="bbn-spadded bbn-p"
-                    v-if="!pinned && !static">
+                    bbn-if="!pinned && !static">
                 <i class="nf nf-fa-times"/>
               </span>
               <span class="bbn-spadded bbn-p"
-                    v-else-if="pinned">
+                    bbn-elseif="pinned">
                 <i class="nf nf-mdi-pin"/>
               </span>
               <span class="bbn-spadded bbn-p">
@@ -184,19 +184,19 @@
               </bbn-context-->
             </div>
             <div class="bbn-w-50 bbn-right bbn-spadded">
-              <span v-if="!pinned && !static"
+              <span bbn-if="!pinned && !static"
                     @click.stop="pin"
                     class="bbn-spadded bbn-p">
                 <i class="nf nf-oct-pin"/>
               </span>
               <span class="bbn-spadded bbn-p"
                     @click.stop="close"
-                    v-if="!pinned && !static">
+                    bbn-if="!pinned && !static">
                 <i class="nf nf-fa-times"/>
               </span>
               <span class="bbn-spadded bbn-p"
                     @click.stop="unpin"
-                    v-else-if="pinned && !static">
+                    bbn-elseif="pinned && !static">
                 <i class="nf nf-mdi-pin_off"/>
               </span>
               &nbsp;
