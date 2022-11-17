@@ -79,7 +79,7 @@
        * @emits collapse
        */
       collapse(column){
-        column.opened = false;
+        this.$set(column, 'opened', false);
         this.$emit('collapse', column);
         this.$forceUpdate();
       },
@@ -91,7 +91,7 @@
        */
       collapseAll(){
         bbn.fn.each(this.currentData, c => {
-          c.opened = false;
+          this.$set(c, 'opened', false);
           this.$emit('collapse', c);
         });
         this.$forceUpdate();
@@ -103,7 +103,7 @@
        * @emits expand
        */
       expand(column){
-        column.opened = true;
+        this.$set(column, 'opened', true);
         this.$emit('collapse', column);
         this.$forceUpdate();
       },
@@ -115,7 +115,7 @@
        */
       expandAll(){
         bbn.fn.each(this.currentData, c => {
-          c.opened = true;
+          this.$set(c, 'opened', true);
           this.$emit('expand', c);
         });
         this.$forceUpdate();
