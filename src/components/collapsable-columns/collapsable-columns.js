@@ -20,14 +20,14 @@
     props: {
       /**
        * The component to use for the toolbar
-       * @prop [String|Object|Vue] toolbar
+       * @prop {String|Object|Vue} toolbar
        */
       toolbar: {
         type: [String, Object, Vue]
       },
       /**
        * The name of the property used to specify the color to use as the background
-       * @prop [String] {'backgroundColor'} sourceBackgroundColor
+       * @prop {String} ['backgroundColor'] sourceBackgroundColor
        */
       sourceBackgroundColor: {
         type: String,
@@ -35,7 +35,7 @@
       },
       /**
        * The name of the property used to specify the color to use for the font
-       * @prop [String] {'fontColor'} sourceFontColor
+       * @prop {String} ['fontColor'] sourceFontColor
        */
       sourceFontColor: {
         type: String,
@@ -43,7 +43,7 @@
       },
       /**
        * The name of the property used to specify the component for the toolbar
-       * @prop [String] {'toolbar'} sourceToolbar
+       * @prop {String} ['toolbar'] sourceToolbar
        */
       sourceToolbar: {
         type: String,
@@ -51,7 +51,7 @@
       },
       /**
        * The name of the property used to specify the item component
-       * @prop [String] {'component'} sourceComponent
+       * @prop {String} ['component'] sourceComponent
        */
       sourceComponent: {
         type: String,
@@ -59,23 +59,58 @@
       },
       /**
        * Defines the behaviour of the columns about the scroll.
-       * @prop [Boolean] {true} scrollable
+       * @prop {Boolean} [true] scrollable
        */
       scrollable: {
         type: Boolean,
         default: true
       },
+      /**
+       * The column's width
+       * @prop {Number|String} ['40rem'] columnWidth
+       */
       columnWidth: {
         type: [Number, String],
         default: '40rem'
+      },
+      /**
+       * Set to true allows the columns children to be filtered.
+       * @prop {Boolean} [false] childrenFilterable
+       */
+      childrenFilterable: {
+        type: Boolean,
+        default: false
+      },
+      /**
+       * Defines the filters of the columns' children.
+       * @prop {Object} [{logic: 'AND',conditions: []}] filters
+       * @memberof listComponent
+       */
+      childrenFilters: {
+        type: [Object, Function],
+        default () {
+          return {
+            logic: 'AND',
+            conditions: []
+          };
+        }
+      },
+      /**
+       * On first dataloaded event collapse empty columns
+       * @prop {Boolean} [true] collapseEmpty
+       */
+      collapseEmpty: {
+        type: Boolean,
+        default: true
       }
     },
     methods: {
+      randomString: bbn.fn.randomString,
       /**
        * Collapses a column
        * @method collapse
        * @param {Object} column
-       * @fires $forceUpdate
+       * @fires $set
        * @emits collapse
        */
       collapse(column){
@@ -85,7 +120,7 @@
       /**
        * Collapses all columns
        * @method collapseAll
-       * @fires $forceUpdate
+       * @fires $set
        * @emits collapse
        */
       collapseAll(){
@@ -97,7 +132,7 @@
       /**
        * Expands a column
        * @method collapseAll
-       * @fires $forceUpdate
+       * @fires $set
        * @emits expand
        */
       expand(column){
@@ -107,7 +142,7 @@
       /**
        * Expands all columns
        * @method expandAll
-       * @fires $forceUpdate
+       * @fires $set
        * @emits expand
        */
       expandAll(){
@@ -142,8 +177,34 @@
             return this.filteredData;
           }
         },
+        methods: {
+          checkCollapse(){
+            if (this.main.collapseEmpty) {
+              this.$once('dataloaded', () => {
+                if (!this.filteredData.length) {
+                  this.$set(this.column, 'opened', false);
+                }
+              });
+            }
+          }
+        },
+        beforeMount(){
+          this.checkCollapse();
+          this.main.$on('dataloaded', this.checkCollapse);
+        },
         mounted(){
           this.ready = true;
+        },
+        beforeDestroy(){
+          this.main.$off('dataloaded', this.checkCollapse);
+        },
+        watch: {
+          data: {
+            deep: true,
+            handler(){
+              this.updateData();
+            }
+          }
         }
       }
     }
