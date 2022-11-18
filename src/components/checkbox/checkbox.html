@@ -13,7 +13,7 @@
 				 tabindex="0">
   <label class="bbn-checkbox-label bbn-iflex bbn-vmiddle"
          :for="id"
-         @click="onClick">
+         @click.stop="onClick">
 		<span class="bbn-left-spadded"
 					v-html="label"
 					v-if="label"/>
