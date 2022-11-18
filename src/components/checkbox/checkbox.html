@@ -7,13 +7,15 @@
          :required="required"
          :disabled="isDisabled"
          :readonly="readonly"
+         @mousedown.prevent.stop
          @change="toggle"
          :checked="state"
          ref="element"
 				 tabindex="0">
   <label class="bbn-checkbox-label bbn-iflex bbn-vmiddle"
          :for="id"
-         @click="onClick">
+         @mousedown.prevent.stop
+         @click.stop="onClick">
 		<span class="bbn-left-spadded"
 					v-html="label"
 					v-if="label"/>
