@@ -1,4 +1,4 @@
-<div :class="componentClass">
+<div :class="[componentClass, {'bbn-overlay': !!scrollable}]">
   <component :is="scrollable ? 'bbn-scroll' : 'div'"
              axis="x"
              ref="scroll">
@@ -6,10 +6,13 @@
       <column inline-template
               v-for="(col, idx) in filteredData"
               :source="col.data[children]"
+              :data="data"
               :column="col"
               :index="idx"
               :key="idx"
               :pageable="pageable"
+              :filterable="childrenFilterable"
+              :filters="typeof childrenFilters === 'function' ? childrenFilters(col.data, data, idx) : childrenFilters"
               :limit="limit">
         <div :class="['bbn-collapsable-columns-column', 'bbn-radius', {'collapsed': !column.opened}]"
              :key="index"
@@ -49,6 +52,7 @@
                 <component v-if="main.toolbar || !!column.data[main.sourceToolbar]"
                           :is="!!column.data[main.sourceToolbar] ? column.data[main.sourceToolbar] : main.toolbar"
                           :source="column"
+                          :total="total"
                           :index="index"/>
               </div>
               <bbn-button v-if="!!column.opened"
@@ -76,7 +80,8 @@
                           {
                             'bbn-bottom-space': !!items[itemIdx+1]
                           }
-                        ]">
+                        ]"
+                        :key="itemIdx">
                       <component :is="!!item.data[main.sourceComponent] ? item.data[main.sourceComponent] : (!!column.data[main.sourceComponent] ? column.data[main.sourceComponent] : main.realComponent)"
                                 :source="item.data"
                                 :index="itemIdx"/>
