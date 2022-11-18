@@ -613,7 +613,7 @@
           set(val) {
             if ( this.ready ) {
               this.start = val > 1 ? (val - 1) * this.currentLimit : 0;
-              this.updateData();
+              this.updateData(!this.serverPaging);
             }
           }
         },
@@ -960,7 +960,7 @@
             return o;
           });
         },
-        async updateData() {
+        async updateData(preventLoad) {
           if (this.beforeUpdate() !== false) {
             this._dataPromise = new Promise(resolve => {
               let prom;
@@ -977,12 +977,26 @@
                   return;
                 }
 
-                this.isLoading = true;
-                this.$emit('startloading');
-                let data = this.getData();
-                loadingRequestID = bbn.fn.getRequestId(this.source, data);
-                this.loadingRequestID = loadingRequestID;
-                prom = this.post(this.source, data);
+                if (this._1strun && (preventLoad === true)) {
+                  prom = new Promise((resolve) => {
+                    setTimeout(() => {
+                      resolve({
+                        data: this.currentData,
+                        total: this.currentTotal
+                      })
+                    })
+                  })
+
+                }
+                else {
+                  this.isLoading = true;
+                  this.$emit('startloading');
+                  let data = this.getData();
+                  loadingRequestID = bbn.fn.getRequestId(this.source, data);
+                  this.loadingRequestID = loadingRequestID;
+                  prom = this.post(this.source, data);
+                }
+
               }
               else{
                 prom = new Promise((resolve2) => {
@@ -1181,7 +1195,7 @@
          * @fires realDelete
          * @emit beforedelete
          */
-        delete(index, confirm) {
+        deleteItem(index, confirm) {
           if (this.filteredData[index]) {
             let ev = new Event('delete', {cancelable: true});
             this.$emit('beforedelete', index, this.filteredData[index].data, this, ev);
