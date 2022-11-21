@@ -372,7 +372,7 @@ return {
               }
 
               //isImage
-              if ( !bbnFinderPrivate.imageExt.includes(ext) ){
+              if ( !bbnFinderObject.imageExt.includes(ext) ){
                 this.post( this.root + 'actions/finder/file', {
                   node: node.data,
                   path: this.currentPath,
@@ -420,8 +420,8 @@ return {
         if ( node.dir) {
           node.icon = this.folderIcon;
         }
-        else if (bbnFinderPrivate.filesRules[ext]) {
-          node.icon = bbnFinderPrivate.filesRules[ext];
+        else if (bbnFinderObject.filesRules[ext]) {
+          node.icon = bbnFinderObject.filesRules[ext];
         }
         return node;
       },

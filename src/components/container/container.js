@@ -341,7 +341,7 @@ return {
        */
       randomName(){
         let n = bbn.fn.randomString(20, 15).toLowerCase();
-        while (bbnContainerPrivate.componentsList.indexOf(n) > -1 ){
+        while (bbnContainerObject.componentsList.indexOf(n) > -1 ){
           n = bbn.fn.randomString(20, 15).toLowerCase();
         }
         return n;
@@ -815,7 +815,7 @@ return {
     created(){
       this.componentClass.push('bbn-resize-emitter');
       if ( this.isComponent ){
-        bbnContainerPrivate.componentsList.push(this.componentName);
+        bbnContainerObject.componentsList.push(this.componentName);
       }
       else if ( this.isComponent === null ){
         // The default onMount function is to do nothing.
@@ -863,9 +863,9 @@ return {
       }
 
       if ( this.isComponent ){
-        let idx = bbnContainerPrivate.componentsList.indexOf(this.componentName);
+        let idx = bbnContainerObject.componentsList.indexOf(this.componentName);
         if ( idx > -1 ){
-          bbnContainerPrivate.componentsList.splice(idx, 1);
+          bbnContainerObject.componentsList.splice(idx, 1);
         }
       }
     },

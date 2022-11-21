@@ -558,6 +558,7 @@
        * @return {Boolean}
        */
       isVisible(){
+        bbn.fn.log("isVisible", this)
         return this.currentVisible && this.hasContent;
       },
       /**

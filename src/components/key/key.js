@@ -66,7 +66,7 @@ return {
         return this.isSpecial && (bbn.fn.substr(this.k, 0, 1) === 'f');
       },
       isArrow(){
-        return (this.k.indexOf('arrow') === 0) || bbnKeyPrivate.DIRECTIONS.includes(this.k)
+        return (this.k.indexOf('arrow') === 0) || bbnKeyObject.DIRECTIONS.includes(this.k)
       },
       rendered(){
         let st = bbn.fn.correctCase(this.k);
@@ -87,7 +87,7 @@ return {
       arrowClass(){
         let cls = '';
         if (this.isArrow) {
-          bbn.fn.each(bbnKeyPrivate.DIRECTIONS, a => {
+          bbn.fn.each(bbnKeyObject.DIRECTIONS, a => {
             if (this.k.indexOf(a) > -1) {
               cls = 'nf nf-fa-long_arrow_' + a;
               return false;

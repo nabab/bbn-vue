@@ -96,7 +96,7 @@ return {
             },
             methods: {
               setStyle(style, a,b){
-                exec(bbnRtePrivate.formatBlock, style);
+                exec(bbnRteObject.formatBlock, style);
               }
             },
             mounted(){
@@ -112,7 +112,7 @@ return {
           notext: true,
           active: false,
           action: () => {
-            let current = parseInt(bbnRtePrivate.queryCommandValue('fontSize'));
+            let current = parseInt(bbnRteObject.queryCommandValue('fontSize'));
             if (current < 7) {
               exec('fontSize', current + 1);
             }
@@ -124,7 +124,7 @@ return {
           notext: true,
           active: false,
           action: () => {
-            let current = parseInt(bbnRtePrivate.queryCommandValue('fontSize'));
+            let current = parseInt(bbnRteObject.queryCommandValue('fontSize'));
             if (current > 1) {
               exec('fontSize', current - 1);
             }
@@ -316,16 +316,16 @@ return {
       };
       const defaultStates = {
         bold: {
-          active: () => bbnRtePrivate.queryCommandState('bold'),
+          active: () => bbnRteObject.queryCommandState('bold'),
         },
         italic: {
-          active: () => bbnRtePrivate.queryCommandState('italic'),
+          active: () => bbnRteObject.queryCommandState('italic'),
         },
         underline: {
-          active: () => bbnRtePrivate.queryCommandState('underline'),
+          active: () => bbnRteObject.queryCommandState('underline'),
         },
         strikethrough: {
-          active: () => bbnRtePrivate.queryCommandState('strikeThrough'),
+          active: () => bbnRteObject.queryCommandState('strikeThrough'),
         },
       };
       
@@ -486,7 +486,7 @@ return {
        * @method setButtons
        */
       setButtons() {
-        let tmp = bbnRtePrivate.setButtons(this.buttons);
+        let tmp = bbnRteObject.setButtons(this.buttons);
         if (this.floating) {
           tmp.push({
             icon: 'nf nf-fa-times',
@@ -526,8 +526,8 @@ return {
           event.stopPropagation();
           event.stopImmediatePropagation();
         }
-        if (event.key === 'Enter' && bbnRtePrivate.queryCommandValue(bbnRtePrivate.formatBlock) === 'blockquote') {
-          setTimeout(() => exec(bbnRtePrivate.formatBlock, `<${this.defaultParagraphSeparator}>`), 0);
+        if (event.key === 'Enter' && bbnRteObject.queryCommandValue(bbnRteObject.formatBlock) === 'blockquote') {
+          setTimeout(() => exec(bbnRteObject.formatBlock, `<${this.defaultParagraphSeparator}>`), 0);
         }
         this.setColors();
         this.setStyle();
@@ -548,7 +548,7 @@ return {
       rteOnInput(target) {
         let firstChild = target.firstChild;
         if (firstChild && firstChild.nodeType === 3) {
-          exec(bbnRtePrivate.formatBlock, `<${this.defaultParagraphSeparator}>`);
+          exec(bbnRteObject.formatBlock, `<${this.defaultParagraphSeparator}>`);
         }
         else if (this.content.innerHTML === '<br>') {
           this.content.innerHTML = ''
@@ -562,7 +562,7 @@ return {
        */
       setStyle(){
         if (this.styleComponent) {
-          let style = bbnRtePrivate.queryCommandValue(bbnRtePrivate.formatBlock);
+          let style = bbnRteObject.queryCommandValue(bbnRteObject.formatBlock);
           this.styleComponent.currentStyle =  !!style ? `<${style}>` : '<div>';
         }
       },
@@ -571,12 +571,12 @@ return {
        */
       setColors(){
         if (this.fontColorComponent) {
-          this.fontColorComponent.currentColor = bbn.fn.rgb2hex(bbnRtePrivate.queryCommandValue('foreColor'));
+          this.fontColorComponent.currentColor = bbn.fn.rgb2hex(bbnRteObject.queryCommandValue('foreColor'));
         }
         if (this.fontBgColorComponent) {
-          this.fontBgColorComponent.currentColor = bbn.fn.rgb2hex(bbnRtePrivate.queryCommandValue('hiliteColor'));
+          this.fontBgColorComponent.currentColor = bbn.fn.rgb2hex(bbnRteObject.queryCommandValue('hiliteColor'));
           if (!this.fontBgColorComponent.currentColor) {
-            this.fontBgColorComponent.currentColor = bbn.fn.rgb2hex(bbnRtePrivate.queryCommandValue('backColor'));
+            this.fontBgColorComponent.currentColor = bbn.fn.rgb2hex(bbnRteObject.queryCommandValue('backColor'));
           }
         }
       },
@@ -620,7 +620,7 @@ return {
         this.currentValue = this.$slots.default[0].text;
       }
       this.setButtons();
-      this.defaultParagraphSeparator = this[bbnRtePrivate.defaultParagraphSeparatorString] || 'div'
+      this.defaultParagraphSeparator = this[bbnRteObject.defaultParagraphSeparatorString] || 'div'
     },
     /**
      * Initializes the component

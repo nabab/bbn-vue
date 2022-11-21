@@ -489,7 +489,7 @@ return {
         if ( this.tree.map ){
           item = this.tree.map(item.data !== undefined ? item.data : item, this.level + 1, item.data !== undefined ? item : {});
         }
-        bbn.fn.each(bbnTreePrivate.NODE_PROPERTIES, p => {
+        bbn.fn.each(bbnTreeObject.NODE_PROPERTIES, p => {
           o[p] = p === 'text' ? item[this.tree.sourceText] : item[p];
         });
         if (!!item.data && !!item.data[this.tree.children]) {
@@ -1026,7 +1026,7 @@ return {
     toData(data){
       let r = {};
       for ( let n in data ){
-        if ( bbnTreePrivate.NODE_PROPERTIES.indexOf(n) === -1 ){
+        if ( bbnTreeObject.NODE_PROPERTIES.indexOf(n) === -1 ){
           r[n] = data[n];
         }
       }

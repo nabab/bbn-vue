@@ -251,7 +251,7 @@ return {
           languages: {}
         };
         if (bbn.env.lang) {
-          cfg.languages[bbn.env.lang || 'en'] = bbnJsonEditorPrivate.lang;
+          cfg.languages[bbn.env.lang || 'en'] = bbnJsonEditorObject.lang;
         }
         if ( !this.readonly ){
           let cp = this;

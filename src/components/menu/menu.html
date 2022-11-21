@@ -26,7 +26,7 @@
             class="nf nf-fa-chevron_down"/>
     </li>
   </ul>
-  <bbn-floater v-if="ready && filteredData[overIdx] && filteredData[overIdx].data[children]"
+  <bbn-floater v-if="ready && filteredData?.[overIdx] && filteredData[overIdx].data[children]"
                class="bbn-menu-floater"
                ref="floater"
                :min-width="getRef('li' + overIdx).clientWidth"

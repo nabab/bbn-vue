@@ -383,7 +383,7 @@ return {
         }
         if ( this.limit ){
           let items = [];
-          bbn.fn.each(bbnWidgetPrivate.limits, (a, i) => {
+          bbn.fn.each(bbnWidgetObject.limits, (a, i) => {
             items.push({
               text: a.toString() + " " + bbn._("Items"),
               selected: a === this.limit,

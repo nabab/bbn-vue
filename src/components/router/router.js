@@ -282,7 +282,7 @@ return {
           return 'auto'
         },
         validator(v) {
-          return !!bbn.fn.getRow(bbnRouterPrivate.possibleOrientations, {name: v})
+          return !!bbn.fn.getRow(bbnRouterObject.possibleOrientations, {name: v})
         }
       },
       /**
@@ -3567,7 +3567,7 @@ return {
       // Case where the rooter is at root level
       else {
         // Opening the database for the visual mode multiview
-        if (!this.single && bbnRouterPrivate.db) {
+        if (!this.single && bbnRouterObject.db) {
           bbn.db.open('bbn').then(r => {
             this.db = r;
           }, err => {

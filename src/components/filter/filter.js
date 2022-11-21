@@ -209,11 +209,11 @@ return {
        * @return {String}
        */
       border_color(){
-        if ( this.num > bbnFilterPrivate.borders.length ){
-          return bbnFilterPrivate.borders[this.num % bbnFilterPrivate.borders.length]
+        if ( this.num > bbnFilterObject.borders.length ){
+          return bbnFilterObject.borders[this.num % bbnFilterObject.borders.length]
         }
         else{
-          return bbnFilterPrivate.borders[this.num]
+          return bbnFilterObject.borders[this.num]
         }
       },
       /**
@@ -309,7 +309,7 @@ return {
             st += '<strong>' +
               (f.ftitle ? f.ftitle : (f.title ? f.title : cd.field)) +
               '</strong> ' +
-              this.editorOperators[bbnFilterPrivate.get_operator_type(f)][cd.operator] +
+              this.editorOperators[bbnFilterObject.get_operator_type(f)][cd.operator] +
               ' <em>';
             if ( cd.value ){
               if ( cd.value === true ){
