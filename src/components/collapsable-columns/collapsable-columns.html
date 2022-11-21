@@ -8,7 +8,7 @@
               :source="col.data[children]"
               :data="data"
               :column="col"
-              :index="idx"
+              :index="col.index"
               :key="idx"
               :pageable="pageable"
               :filterable="childrenFilterable"
@@ -84,7 +84,7 @@
                         :key="itemIdx">
                       <component :is="!!item.data[main.sourceComponent] ? item.data[main.sourceComponent] : (!!column.data[main.sourceComponent] ? column.data[main.sourceComponent] : main.realComponent)"
                                 :source="item.data"
-                                :index="itemIdx"/>
+                                :index="item.index"/>
                     </div>
                   </div>
                 </component>
