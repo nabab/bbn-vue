@@ -10,7 +10,7 @@
  * @author BBN Solutions
  *
  */
-(bbn => {
+ (bbn => {
   "use strict";
   Vue.component('bbn-checkbox', {
     /**
@@ -177,6 +177,8 @@
           let emitVal = !this.state ? this.valueToSet : this.novalue;
           this.$emit('input', emitVal);
           this.$emit('change', emitVal, this);
+          //this.$emit('change', event);
+          //this.selfEmit(emitVal);
         }
       },
       /**
@@ -189,7 +191,7 @@
           ev.preventDefault();
         }
         else {
-          this.$emit('beforechange', ev, this.checked);
+          this.click(ev);
         }
       },
       /**
