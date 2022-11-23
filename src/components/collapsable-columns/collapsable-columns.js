@@ -105,7 +105,6 @@
       }
     },
     methods: {
-      randomString: bbn.fn.randomString,
       /**
        * Collapses a column
        * @method collapse
@@ -178,6 +177,7 @@
           }
         },
         methods: {
+          randomString: bbn.fn.randomString,
           checkCollapse(){
             if (this.main.collapseEmpty) {
               this.$once('dataloaded', () => {

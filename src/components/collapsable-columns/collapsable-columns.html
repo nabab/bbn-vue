@@ -81,7 +81,7 @@
                             'bbn-bottom-space': !!items[itemIdx+1]
                           }
                         ]"
-                        :key="itemIdx">
+                        :key="randomString()">
                       <component :is="!!item.data[main.sourceComponent] ? item.data[main.sourceComponent] : (!!column.data[main.sourceComponent] ? column.data[main.sourceComponent] : main.realComponent)"
                                 :source="item.data"
                                 :index="item.index"/>
