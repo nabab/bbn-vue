@@ -171,7 +171,7 @@
      */
     mounted(){
       if (this.element){
-        if (this.element.ready && !this.ready){
+        if (this.element.ready) {
           this.ready = true;
         }
         else {
@@ -184,7 +184,7 @@
       }
     },
     beforeDestroy() {
-      this.element.$off('dataloaded');
+      this.element.$off('dataloaded', this.updatePager);
     },
     watch: {
       currentPage(v) {

@@ -9,14 +9,15 @@
               :data="data"
               :column="col"
               :index="col.index"
-              :key="idx"
+              :key="symbol()"
               :pageable="pageable"
               :filterable="childrenFilterable"
               :filters="typeof childrenFilters === 'function' ? childrenFilters(col.data, data, idx) : childrenFilters"
               :limit="limit">
         <div :class="['bbn-collapsable-columns-column', 'bbn-radius', {'collapsed': !column.opened}]"
              :key="index"
-             :style="{width: !!column.opened ? main.columnWidth : ''}">
+             :style="{width: !!column.opened ? main.columnWidth : ''}"
+             v-show="isVisible">
           <div :class="['bbn-radius', 'bbn-background', {
                  'bbn-w-100': !main.scrollable,
                  'bbn-100': !!main.scrollable,
@@ -70,7 +71,8 @@
                           axis="y"
                           ref="scroll">
                   <div class="bbn-hpadded">
-                    <div v-if="items.length"
+                    <bbn-loader v-if="isLoading"/>
+                    <div v-if="items.length && !isLoading"
                         v-for="(item, itemIdx) in items"
                         :class="[
                           'bbn-collapsable-columns-item',
@@ -81,7 +83,7 @@
                             'bbn-bottom-space': !!items[itemIdx+1]
                           }
                         ]"
-                        :key="randomString()">
+                        :key="main.symbol()">
                       <component :is="!!item.data[main.sourceComponent] ? item.data[main.sourceComponent] : (!!column.data[main.sourceComponent] ? column.data[main.sourceComponent] : main.realComponent)"
                                 :source="item.data"
                                 :index="item.index"/>
@@ -93,7 +95,8 @@
             <div class="bbn-collapsable-columns-pager-container bbn-w-100">
               <bbn-pager v-if="!!column.opened && pageable"
                         :element="_self"
-                        :limit="false"/>
+                        :limit="false"
+                        :key="main.symbol()"/>
             </div>
           </div>
         </div>
