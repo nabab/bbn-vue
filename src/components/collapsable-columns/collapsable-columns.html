@@ -43,7 +43,11 @@
                       'verticaltext': !column.opened
                     }]"
                     v-text="column.data.title"
-                    :style="{color: !!column.data[main.sourceFontColor] ? column.data[main.sourceFontColor] + '!important' : ''}"/>
+                    :style="{
+                      color: !!column.data[main.sourceFontColor] ? column.data[main.sourceFontColor] + '!important' : '',
+                      maxHeight: main.isMobile && !column.opened ? '20rem' : '',
+                      letterSpacing: !column.opened ? (main.isMobile ? '' : '-0.2rem') : ''
+                    }"/>
               <div class="bbn-alt-background bbn-vmiddle bbn-xspadded bbn-radius bbn-flex-fill"
                   :style="{
                     'min-height': '2rem',
