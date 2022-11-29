@@ -94,7 +94,7 @@ return {
 
       return {
         numModes: num,
-        svg: bbnRouterConfigObject.img,
+        svg: bbnRouterConfigCreator.img,
         visualSelected: 2,
         breadcrumbSelected: 2,
         tabsSelected: 2,

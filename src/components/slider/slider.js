@@ -131,11 +131,11 @@ return {
        * @returns {String}
        */
       currentStyle(){
-        if (!bbnSliderObject.orientations[this.orientation]) {
+        if (!bbnSliderCreator.orientations[this.orientation]) {
           throw new Error(bbn._("Impossible to get an orientation for the slider"));
         }
         let o = {};
-        let or = bbnSliderObject.orientations[this.orientation];
+        let or = bbnSliderCreator.orientations[this.orientation];
         if (this.showShadow) {
           o['-webkit-box-shadow'] = o['-moz-box-shadow'] = o['box-shadow'] = or.shadow + ' !important';
         }

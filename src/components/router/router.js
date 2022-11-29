@@ -282,7 +282,7 @@ return {
           return 'auto'
         },
         validator(v) {
-          return !!bbn.fn.getRow(bbnRouterObject.possibleOrientations, {name: v})
+          return !!bbn.fn.getRow(bbnRouterCreator.possibleOrientations, {name: v})
         }
       },
       /**
@@ -1641,7 +1641,7 @@ return {
           if (this.scrollable && this.nav && !this.breadcrumb) {
             let scroll = this.getRef('horizontal-scroll');
             let tab = this.getRef('tab-' + container.currentIndex);
-            if (scroll.ready) {
+            if (scroll?.ready) {
               scroll.scrollTo(tab);
             }
             else if (scroll) {
@@ -3567,7 +3567,7 @@ return {
       // Case where the rooter is at root level
       else {
         // Opening the database for the visual mode multiview
-        if (!this.single && bbnRouterObject.db) {
+        if (!this.single && bbnRouterCreator.db) {
           bbn.db.open('bbn').then(r => {
             this.db = r;
           }, err => {

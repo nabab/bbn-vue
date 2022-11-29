@@ -1,10 +1,11 @@
 <div :class="[componentClass, 'bbn-background']">
-  <div :class="{
-    'bbn-overlay': $parent.fullSize && !isCollapsed,
-    'bbn-w-100': ((isCollapsed && title) || !$parent.fullSize) && (($parent.panes.length === 1) || !isHorizontal),
-    'bbn-h-100': ((isCollapsed && title) || !$parent.fullSize) && ($parent.panes.length > 1) && isHorizontal,
-    'bbn-flex-height': $parent.fullSize && title && !isHorizontal && !isCollapsed,
-    'bbn-flex-width': $parent.fullSize && title && isHorizontal && !isCollapsed
+  <div v-if="splitter"
+       :class="{
+    'bbn-overlay': splitter.fullSize && !isCollapsed,
+    'bbn-w-100': ((isCollapsed && title) || !splitter.fullSize) && ((splitter.panes.length === 1) || !isHorizontal),
+    'bbn-h-100': ((isCollapsed && title) || !splitter.fullSize) && (splitter.panes.length > 1) && isHorizontal,
+    'bbn-flex-height': splitter.fullSize && title && !isHorizontal && !isCollapsed,
+    'bbn-flex-width': splitter.fullSize && title && isHorizontal && !isCollapsed
   }">
     <div v-if="title"
          :class="['bbn-light bbn-c bbn-header bbn-block bbn-pane-title bbn-m bbn-spadding', {
@@ -18,15 +19,15 @@
          v-html="title"/>
     <div :class="{
       'bbn-hidden': isCollapsed,
-      'bbn-overlay': $parent.fullSize && !title && !isCollapsed,
-      'bbn-flex-fill': $parent.fullSize && title && !isCollapsed,
-      'bbn-w-100': !$parent.fullSize && (($parent.panes.length === 1) || !isHorizontal),
-      'bbn-h-100': !$parent.fullSize && ($parent.panes.length > 1) && isHorizontal,
+      'bbn-overlay': splitter.fullSize && !title && !isCollapsed,
+      'bbn-flex-fill': splitter.fullSize && title && !isCollapsed,
+      'bbn-w-100': !splitter.fullSize && ((splitter.panes.length === 1) || !isHorizontal),
+      'bbn-h-100': !splitter.fullSize && (splitter.panes.length > 1) && isHorizontal,
     }"
          v-show="!isCollapsed">
       <bbn-anonymous :is="scrollable ? 'bbn-scroll' : 'div'"
-                 :class="{'bbn-overlay': $parent.fullSize, 'bbn-w-100': !scrollable && $parent.fullSize}"
-                 ref="scroll">
+                     :class="{'bbn-overlay': splitter.fullSize, 'bbn-w-100': !scrollable && splitter.fullSize}"
+                     ref="scroll">
         <slot></slot>
       </bbn-anonymous>
     </div>

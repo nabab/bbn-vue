@@ -7,10 +7,10 @@
      :style="visual ? visualStyle : {}"
      bbn-show="(!router?.isVisual && isVisible) || isVisualVisible || isPane">
   <div :class="{
-    'bbn-overlay': router?.scrollContent,
+    'bbn-overlay': true,
     'bbn-container-full-screen': fullScreen,
-    'bbn-w-100': !router?.scrollContent
-  }">
+  }"
+       bbn-forget="!router?.scrollContent">
     <transition name="fade"
                 bbn-on:enter="enter"
                 bbn-on:after-enter="onResize">
@@ -82,8 +82,9 @@
                         'bbn-w-100': !router?.scrollContent
                       }">
             <!-- This is an ad hoc component with unique name -->
-            <bbn-anonymous bbn-if="isComponent"
+            <bbn-anonymous bbn-if="isComponent && bbnCfg"
                       is="div"
+                      bbn-cfg="bbnCfg"
                       :source="source"
                       ref="component"/>
             <!-- This is a classic component -->
@@ -93,7 +94,7 @@
                       ref="component"
                       bbn-bind="options"/>
             <!-- This is just HTML content -->
-            <div bbn-elseif="content"
+            <div bbn-elseif="!isComponent && content"
                  bbn-html="content">
             </div>
             <!-- This is the slot -->

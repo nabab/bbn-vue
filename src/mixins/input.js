@@ -393,22 +393,23 @@
           }
         })
         const input = this.getRef('element');
-        bbn.fn.log("FOUND INPUT", input)
-        input.addEventListener('input', e => {
-          e.stopImmediatePropagation();
-          if (this.value !== input.value) {
-            Object.defineProperty(this, 'value', {
-              value: input.value,
-              writable: false,
-              configurable: true
-            });
-            this.currentValue = input.value;
-            this.$emit('input', this.value);
-          }
-        })
-        input.addEventListener('change', e => {
-          this.$emit('change', this.value);
-        })
+        if (input) {
+          input.addEventListener('input', e => {
+            e.stopImmediatePropagation();
+            if (this.value !== input.value) {
+              Object.defineProperty(this, 'value', {
+                value: input.value,
+                writable: false,
+                configurable: true
+              });
+              this.currentValue = input.value;
+              this.$emit('input', this.value);
+            }
+          })
+          input.addEventListener('change', e => {
+            this.$emit('change', this.value);
+          })
+        }
       },
       watch: {
         /**

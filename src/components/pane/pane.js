@@ -124,13 +124,15 @@
       this.componentClass.push('bbn-resize-emitter');
     },
     mounted(){
-      if (bbn.fn.isFunction(this.$parent.init) ){
+      this.splitter = this.closest('bbn-splitter');
+      bbn.fn.warning("MOUNTED PANE");
+      bbn.fn.log(this.splitter)
+      if (this.splitter){
         if (this.resizable === undefined) {
-          this.isResizable = this.$parent.resizable;
+          this.isResizable = this.splitter.resizable;
         }
 
         this.selfEmit(true);
-        this.splitter = this.closest('bbn-splitter');
         this.splitter.init();
         setTimeout(() => {
           this.ready = true;

@@ -142,7 +142,7 @@ return {
           singleLineBreaks: true,
           codeSyntaxHighlighting: true,
         },
-        toolbar: this.toolBar || bbnMarkdownObject.toolbar,
+        toolbar: this.toolBar || bbnMarkdownCreator.toolbar,
         status: false,
         tabSize: this.cfg.tabSize || 2,
         toolbarTips: true,

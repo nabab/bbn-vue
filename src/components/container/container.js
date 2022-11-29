@@ -200,7 +200,9 @@ return {
          * The index in the router's views
          * @data {Number} currentIndex
          */
-        currentIndex: this.idx
+        currentIndex: this.idx,
+        bbnCfg: false,
+        bbnTpl: false
       };
     },
     computed: {
@@ -341,7 +343,7 @@ return {
        */
       randomName(){
         let n = bbn.fn.randomString(20, 15).toLowerCase();
-        while (bbnContainerObject.componentsList.indexOf(n) > -1 ){
+        while (bbnContainerCreator.componentsList.indexOf(n) > -1 ){
           n = bbn.fn.randomString(20, 15).toLowerCase();
         }
         return n;
@@ -570,20 +572,6 @@ return {
        * @method init
        */
       init() {
-        if (this.script) {
-          const cfg = this.script();
-          // Component
-          if (bbn.fn.isObject(cfg)) {
-
-          }
-          // Function to execute
-          else if (bbn.fn.isFunction(cfg)) {
-
-          }
-
-        }
-        if (this.isPane) {
-        }
         if (this.isVisible && (this.real || (this.isLoaded && !this.ready))) {
           let res;
 
@@ -597,6 +585,8 @@ return {
             // Otherwise if it's an object we assume it is a component
             else if (res && (typeof(res) === 'object')) {
               this.isComponent = true;
+              this.bbnCfg = res;
+              this.bbnTpl = this.content;
             }
           }
           else if ( this.content ){
@@ -609,7 +599,7 @@ return {
             // and the object returned as component definition
             // Adding also a few funciton to interact with the tab
             let cont = this;
-            this.$el.bbnCfg = normalizeComponent(bbn.fn.extend(true, res ? res : {}, {
+            this.$el.bbnCfg = bbn.components.normalizeComponent(bbn.fn.extend(true, res ? res : {}, {
               template: '<div class="' + (this.router.scrollContent ? '' : 'bbn-w-100') + '">' + this.currentView.content + '</div>',
               methods: {
                 getContainer(){
@@ -630,6 +620,7 @@ return {
               },
               props: ['source']
             }));
+            bbn.fn.log()
             // The local anonymous component gets defined
             this.$options.components[this.componentName] = this.$el.bbnCfg;
           }
@@ -815,7 +806,7 @@ return {
     created(){
       this.componentClass.push('bbn-resize-emitter');
       if ( this.isComponent ){
-        bbnContainerObject.componentsList.push(this.componentName);
+        bbnContainerCreator.componentsList.push(this.componentName);
       }
       else if ( this.isComponent === null ){
         // The default onMount function is to do nothing.
@@ -863,9 +854,9 @@ return {
       }
 
       if ( this.isComponent ){
-        let idx = bbnContainerObject.componentsList.indexOf(this.componentName);
+        let idx = bbnContainerCreator.componentsList.indexOf(this.componentName);
         if ( idx > -1 ){
-          bbnContainerObject.componentsList.splice(idx, 1);
+          bbnContainerCreator.componentsList.splice(idx, 1);
         }
       }
     },

@@ -178,16 +178,16 @@ return {
         }
       },
       leaveList: function(e){
-        if ( !bbnVlistObject.isClicked ){
+        if ( !bbnVlistCreator.isClicked ){
           this.close();
         }
       },
       beforeClick(){
-        bbnVlistObject.isClicked = true;
+        bbnVlistCreator.isClicked = true;
       },
       afterClick(){
         setTimeout(function(){
-          bbnVlistObject.isClicked = false;
+          bbnVlistCreator.isClicked = false;
         })
       },
 

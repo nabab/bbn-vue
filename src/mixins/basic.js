@@ -79,7 +79,121 @@
           }
           st += bbn.fn.repeat('  ', lv) + '</' + this.$options._componentTag + '>' + "\n";
           return st;
-        }
+        },
+        /**
+        * Opens the closest object popup.
+        * @method getPopup
+        * @return {Object}
+        */
+        getPopup() {
+          return;
+          let popup = bbn.vue.getPopup(this);
+          if (arguments.length && popup) {
+            let cfg = arguments[0];
+            let args = [];
+            if (bbn.fn.isObject(cfg)) {
+              cfg.opener = this;
+            }
+
+            args.push(cfg);
+            for (let i = 1; i < arguments.length; i++) {
+              args.push(arguments[i]);
+            }
+
+            return popup.open.apply(popup, args);
+          }
+
+          return popup;
+        },
+        /**
+        * Opens a confirmation from the closest popup
+        * @method confirm
+        */
+        confirm() {
+          return;
+          let popup = this.getPopup();
+          if (arguments.length && popup) {
+            let cfg = arguments[0];
+            let args = [];
+            if (bbn.fn.isObject(cfg)) {
+              cfg.opener = this;
+            }
+
+            args.push(cfg);
+            for (let i = 1; i < arguments.length; i++) {
+              args.push(arguments[i]);
+            }
+
+            if (!bbn.fn.isObject(cfg)) {
+              args.push(this);
+            }
+
+            return popup.confirm.apply(popup, args)
+          }
+        },
+        /**
+        * Opens an alert from the closest popup
+        * @method alert
+        */
+        alert() {
+          alert(...arguments);
+          return;
+          let popup = this.getPopup();
+          if (arguments.length && popup) {
+            let cfg = arguments[0];
+            let args = [];
+            if (bbn.fn.isObject(cfg)) {
+              cfg.opener = this;
+            }
+
+            args.push(cfg);
+            for (let i = 1; i < arguments.length; i++) {
+              args.push(arguments[i]);
+            }
+
+            if (!bbn.fn.isObject(cfg)) {
+              args.push(this);
+            }
+
+            return popup.alert.apply(popup, args)
+          }
+        },
+        /**
+        * Executes bbn.fn.post
+        * @method post
+        * @see {@link https://bbn.io/bbn-js/doc/ajax/post|bbn.fn.post} documentation
+        * @todo Stupid idea, it should be removed.
+        * @return {Promise}
+        */
+        post() {
+          let ct = this.closest('bbn-container');
+          let referer = ct ? ct.getFullCurrentURL()
+            : document.location.pathName;
+          let cfg = bbn.fn.treatAjaxArguments(arguments);
+          if (!referer && bbn.env.path) {
+            referer = bbn.env.path;
+          }
+          cfg.obj = bbn.fn.extend({}, cfg.obj || {}, { _bbn_referer: referer, _bbn_key: bbn.fn.getRequestId(cfg.url, cfg.obj, 'json') });
+          return bbn.fn.post(cfg);
+        },
+        /**
+        * Executes bbn.fn.postOut
+        * @method postOut
+        * @see {@link https://bbn.io/bbn-js/doc/ajax/postOut|bbn.fn.postOut} documentation
+        * @todo Stupid idea, it should be removed.
+        * @return {void}
+        */
+        postOut(url, obj, onSuccess, target) {
+          let ct = this.closest('bbn-container');
+          let referer = ct ? ct.getFullCurrentURL()
+            : document.location.pathName;
+          let cfg = bbn.fn.treatAjaxArguments(arguments);
+          if (!referer && bbn.env.path) {
+            referer = bbn.env.path;
+          }
+          obj = bbn.fn.extend({}, obj || {}, { _bbn_referer: referer, _bbn_key: bbn.fn.getRequestId(url, obj, 'json') });
+          return bbn.fn.postOut(url, obj, onSuccess, target);
+        },
       },
       /**
        * If not defined, defines component's template
