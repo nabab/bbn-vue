@@ -165,7 +165,7 @@
                               :key="isVisual ? a.view.uid : a.uid"
                               :visual="isVisual"
                               v-bind="isVisual ? a.view : a"/>
-                <bbn-container v-else-if="component && componentSource && componentUrl"
+                <bbn-container v-else
                               :source="componentSource"
                               :visual="isVisual"
                               :component="component"
