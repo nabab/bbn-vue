@@ -194,7 +194,7 @@
           <!-- POST ITS -->
           <div v-if="plugins['appui-note']"
                class="bbn-right-space">
-            <i class="bbn-p nf nf-fa-sticky_note"
+            <i class="bbn-p nf nf-fa-sticky_note appui-statusbar-icon"
                :title="_('Show my post-its')"
                @click="showPostIt = true"/>
           </div>
@@ -219,14 +219,14 @@
           <!-- NOTIFICATIONS -->
           <div v-if="plugins['appui-notification'] && pollerObject['appui-notification']"
                class="bbn-right-space">
-            <appui-notification-tray ref="notificationsTray"/>
+            <appui-notification-tray ref="notificationTray"/>
           </div>
           <!-- CLIPBOARD BUTTON -->
           <div v-if="plugins['appui-clipboard'] && clipboard"
               @click.stop.prevent="getRef('clipboard').toggle()"
               ref="clipboardButton"
               class="bbn-appui-clipboard-button bbn-right-space bbn-p bbn-rel">
-            <i class="nf nf-fa-clipboard bbn-m"
+            <i class="nf nf-fa-clipboard bbn-m appui-statusbar-icon"
                tabindex="-1"/>
             <input class="bbn-invisible bbn-overlay bbn-p"
                   @keydown.space.enter.prevent="getRef('clipboard').toggle()"
@@ -235,7 +235,7 @@
           <!-- DEBUGGER -->
           <div v-if="plugins['appui-ide'] && ready && app.user && app.user.isAdmin"
                class="bbn-right-space">
-            <i class="bbn-p nf nf-mdi-bug"
+            <i class="bbn-p nf nf-mdi-bug appui-statusbar-icon"
                :title="_('Show the debugger')"
                @click="toggleDebug"/>
           </div>
@@ -244,7 +244,7 @@
                        :title="appMode"
                        tag="div"
                        :source="powerMenu">
-            <i class="nf nf-fa-power_off bbn-m"
+            <i class="nf nf-fa-power_off bbn-m appui-statusbar-icon"
                tabindex="-1"
                :style="{color: powerColor}"/>
           </bbn-context>

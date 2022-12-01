@@ -104,8 +104,47 @@
         default: true
       }
     },
+    data(){
+      return {
+        columns: []
+      }
+    },
     methods: {
-      randomString: bbn.fn.randomString,
+      /**
+       * Alias of Symbol
+       * @method symbol
+       */
+      symbol: Symbol,
+      /**
+         * Normalizes the data
+         * @method _map
+         * @param {Array} data
+         * @return {Array}
+         */
+       _map(data) {
+        if (bbn.fn.isArray(data)) {
+          if (data.length
+            && !bbn.fn.isObject(data[0])
+            && !bbn.fn.isArray(data[0])
+            && this.sourceValue
+            && this.sourceText
+          ) {
+            data = data.map(a => {
+              return {
+                [this.sourceValue]: a,
+                [this.sourceText]: a
+              };
+            });
+          }
+          data = data.map(a => {
+            a.opened = false;
+            return a;
+          });
+
+          return (this.map ? data.map(this.map) : data).slice();
+        }
+        return [];
+      },
       /**
        * Collapses a column
        * @method collapse
@@ -150,6 +189,13 @@
           this.$set(c, 'opened', true);
           this.$emit('expand', c);
         });
+      },
+      /**
+       * Fires setCheckCollapse method on every columns
+       * @method setAllCheckCollapse
+       */
+      setAllCheckCollapse(){
+        bbn.fn.each(this.columns, c => c.setCheckCollapse());
       }
     },
     components: {
@@ -166,7 +212,9 @@
         },
         data(){
           return {
-            main: this.closest('bbn-collapsable-columns')
+            main: this.closest('bbn-collapsable-columns'),
+            isVisible: false,
+            uuid: Symbol()
           }
         },
         computed: {
@@ -178,31 +226,39 @@
           }
         },
         methods: {
-          checkCollapse(){
+          setCheckCollapse(){
             if (this.main.collapseEmpty) {
               this.$once('dataloaded', () => {
-                if (!this.filteredData.length) {
-                  this.$set(this.column, 'opened', false);
-                }
+                this.$set(this.column, 'opened', !!this.filteredData.length);
               });
             }
           }
         },
         beforeMount(){
-          this.checkCollapse();
-          this.main.$on('dataloaded', this.checkCollapse);
+          this.setCheckCollapse();
+          this.main.columns.push(this);
         },
         mounted(){
-          this.ready = true;
+          this.$nextTick(() => {
+            this.ready = true;
+          });
         },
         beforeDestroy(){
-          this.main.$off('dataloaded', this.checkCollapse);
+          this.main.columns.splice(bbn.fn.search(this.main.columns, 'uuid', this.uuid), 1);
         },
         watch: {
           data: {
             deep: true,
             handler(){
               this.updateData();
+            }
+          },
+          isLoaded: {
+            immediate: true,
+            handler(newVal){
+              this.$once('dataloaded', () => {
+                this.isVisible = true;
+              });
             }
           }
         }

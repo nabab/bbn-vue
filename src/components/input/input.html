@@ -51,7 +51,13 @@
           @mouseenter="over"
           @mouseleave="out"
           :tabindex="tabindex"
-          :class="{'bbn-flex-fill' : (buttonLeft || buttonRight || isNullable), 'bbn-ellipsis': ellipsis}"
+          :class="{
+            'bbn-flex-fill' : (buttonLeft || buttonRight || isNullable),
+            'bbn-ellipsis': ellipsis,
+            'bbn-radius': !buttonLeft && !buttonRight,
+            'bbn-radius-left': !buttonLeft,
+            'bbn-radius-right': !buttonRight
+          }"
           :size="currentInputSize"
           :inputmode="inputmode"
           :min="min"
