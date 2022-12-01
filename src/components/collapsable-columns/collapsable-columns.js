@@ -84,15 +84,32 @@
       /**
        * Defines the filters of the columns' children.
        * @prop {Object} [{logic: 'AND',conditions: []}] filters
-       * @memberof listComponent
        */
       childrenFilters: {
         type: [Object, Function],
-        default () {
+        default(){
           return {
             logic: 'AND',
             conditions: []
           };
+        }
+      },
+      /**
+       * Set to true allows columns' children to be sortable.
+       * @prop {Boolean} [false] childrenSortable
+       */
+      childrenSortable: {
+        type: Boolean,
+        default: false
+      },
+      /**
+       * Defines the order of the columns' children.
+       * @prop {Array|Object} [[]] ChildrenOrder
+       */
+      childrenOrder: {
+        type: [Array, Object],
+        default(){
+          return [];
         }
       },
       /**

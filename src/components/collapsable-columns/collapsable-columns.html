@@ -13,6 +13,8 @@
               :pageable="pageable"
               :filterable="childrenFilterable"
               :filters="typeof childrenFilters === 'function' ? childrenFilters(col.data, data, idx) : childrenFilters"
+              :sortable="childrenSortable"
+              :order="childrenOrder"
               :limit="limit">
         <div :class="['bbn-collapsable-columns-column', 'bbn-radius', {'collapsed': !column.opened}]"
              :key="index"
