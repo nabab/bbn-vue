@@ -958,79 +958,92 @@
               this.messageFromChannel(data);
           }
         })
-        // appui-chat
-        this.$on('appui-chat', (type, data) => {
-          let chat = this.getRef('chat');
-          switch (type) {
-            case 'message':
-              if (bbn.fn.isVue(chat) && bbn.fn.numProperties(data)) {
-                chat.receive(data);
-              }
-              break;
-            case 'messageFromChannel':
-              if (bbn.fn.isVue(chat)) {
-                chat.messageFromChannel(data);
-              }
-              break;
-          }
-        })
-        // appui-core
-        this.$on('appui-core', (type, data) => {
-          if ((type === 'message') && data.observers) {
-            bbn.fn.each(
-              data.observers,
-              obs => bbn.fn.each(
-                bbn.fn.filter(
-                  this.observers,
-                  {id: obs.id}
-                ),
-                o => this.observerEmit(obs.result, o)
-              )
-            );
-          }
-        })
-        // appui-notification
-        this.$on('appui-notification', (type, data) => {
-          if (this.plugins['appui-notification']) {
-            if (type === 'message') {
-              let tray = this.getRef('notificationTray')
-              if (bbn.fn.isVue(tray) && bbn.fn.isFunction(tray.receive)) {
-                tray.receive(data);
-              }
-              if ('browser' in data) {
-                bbn.fn.each(data.browser, n => this.browserNotify(n.title, {
-                  body: bbn.fn.html2text(n.content),
-                  tag: n.id,
-                  timestamp: n.browser,
-                  requireInteraction: true
-                }));
-              }
-            }
-          }
-        });
-        // appui-cron
-        this.$on('appui-cron', (type, data) => {
-          if (type === 'message') {
-            let cron = appui.getRegistered('appui-cron');
-            if (bbn.fn.isVue(cron) && bbn.fn.isFunction(cron.receive)) {
-              cron.receive(data);
-            }
-          }
-        });
 
-        // Set plugins pollerObject
-        if (!this.pollerObject.token) {
-          this.pollerObject.token = bbn.env.token;
-        }
-        if (this.plugins['appui-chat']){
-          this.$set(this.pollerObject, 'appui-chat', {
-            online: null,
-            usersHash: false,
-            chatsHash: false
+        if (this.plugins['appui-core']) {
+          // appui-chat
+          this.$on('appui-chat', (type, data) => {
+            let chat = this.getRef('chat');
+            switch (type) {
+              case 'message':
+                if (bbn.fn.isVue(chat) && bbn.fn.numProperties(data)) {
+                  chat.receive(data);
+                }
+                break;
+              case 'messageFromChannel':
+                if (bbn.fn.isVue(chat)) {
+                  chat.messageFromChannel(data);
+                }
+                break;
+            }
           })
-        }
-        if (this.plugins['appui-notification']) {
-          this.$set(this.pollerObject, 'appui-notification', {unreadHash: false});
+          // appui-core
+          this.$on('appui-core', (type, data) => {
+            if ((type === 'message') && data.observers) {
+              bbn.fn.each(
+                data.observers,
+                obs => bbn.fn.each(
+                  bbn.fn.filter(
+                    this.observers,
+                    {id: obs.id}
+                  ),
+                  o => this.observerEmit(obs.result, o)
+                )
+              );
+            }
+          })
+          // appui-notification
+          this.$on('appui-notification', (type, data) => {
+            if (this.plugins['appui-notification']) {
+              if (type === 'message') {
+                let tray = this.getRef('notificationTray')
+                if (bbn.fn.isVue(tray) && bbn.fn.isFunction(tray.receive)) {
+                  tray.receive(data);
+                }
+                if ('browser' in data) {
+                  bbn.fn.each(data.browser, n => this.browserNotify(n.title, {
+                    body: bbn.fn.html2text(n.content),
+                    tag: n.id,
+                    timestamp: n.browser,
+                    requireInteraction: true
+                  }));
+                }
+              }
+            }
+          });
+          // appui-cron
+          this.$on('appui-cron', (type, data) => {
+            if (type === 'message') {
+              let cron = appui.getRegistered('appui-cron');
+              if (bbn.fn.isVue(cron) && bbn.fn.isFunction(cron.receive)) {
+                cron.receive(data);
+              }
+            }
+          });
+
+          // appui-email
+          this.$on('appui-email', (type, data) => {
+            if (type === 'message') {
+              const email = appui.getRegistered('appui-email');
+              if (bbn.fn.isVue(email) && bbn.fn.isFunction(email.receive)) {
+                email.receive(data);
+              }
+            }
+          });
+
+          // Set plugins pollerObject
+          if (!this.pollerObject.token) {
+            this.pollerObject.token = bbn.env.token;
+          }
+          if (this.plugins['appui-chat']){
+            this.$set(this.pollerObject, 'appui-chat', {
+              online: null,
+              usersHash: false,
+              chatsHash: false
+            })
+          }
+          if (this.plugins['appui-notification']) {
+            this.$set(this.pollerObject, 'appui-notification', {unreadHash: false});
+          }
         }
       }
     },
