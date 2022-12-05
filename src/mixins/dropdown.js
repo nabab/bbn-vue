@@ -106,7 +106,7 @@
          * @prop {Boolean|Vue} popup
          */
         popup: {
-          type: [Boolean, Vue],
+          type: [Boolean, Object],
           default: false
         },
         /**

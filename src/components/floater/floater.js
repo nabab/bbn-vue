@@ -246,7 +246,7 @@
         default: false
       },
       opener: {
-        type: Vue
+        type: Object
       },
       /**
        * Whatever will be given as arguments to the function action.
@@ -259,7 +259,7 @@
         default: false
       },
       pagerElement: {
-        type: Vue
+        type: Object
       },
       headerTitle: {
         type: Boolean,

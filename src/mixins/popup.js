@@ -13,7 +13,7 @@
          * @prop {Object} Vue
          */
         popup: {
-          type: Vue
+          type: Object
         }
       },
       methods: {

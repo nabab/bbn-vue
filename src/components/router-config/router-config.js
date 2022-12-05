@@ -64,7 +64,7 @@ return {
     },
     props: {
       router: {
-        type: Vue,
+        type: Object,
         required: true
       },
       visual: {

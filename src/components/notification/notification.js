@@ -91,6 +91,13 @@ return {
           return [];
         }
       },
+      /**
+       * @prop {Number} [10] zIndex
+       */
+       zIndex: {
+        type: Number,
+        default: 10
+      },
     },
     data(){
       let bits = this.position.split('-');

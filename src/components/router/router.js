@@ -342,6 +342,10 @@ return {
       resizable: {
         type: Boolean,
         default: true
+      },
+      disabled: {
+        type: Boolean,
+        default: false
       }
     },
     data(){

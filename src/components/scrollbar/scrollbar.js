@@ -33,9 +33,9 @@ return {
        * @prop {Vue} scroller  
        */
       scroller: {
-        type: Vue,
+        type: Object,
         default(){
-          return this.$parent.$options._componentTag === 'bbn-scroll' ? this.$parent : null;
+          return this.$parent.$options.name === 'bbn-scroll' ? this.$parent : null;
         }
       },
       /**

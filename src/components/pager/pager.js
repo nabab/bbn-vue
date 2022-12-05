@@ -15,7 +15,7 @@ return {
        * @props {Vue} element
        */
       element: {
-        type: Vue,
+        type: Object,
         required: true
       },
       /**

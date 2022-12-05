@@ -31,7 +31,7 @@ return {
         default: bbn.env.path
       },
       popup: {
-        type: Vue
+        type: Object
       },
       scrollable: {
         type: Boolean,
