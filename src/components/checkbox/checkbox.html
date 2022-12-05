@@ -14,8 +14,12 @@
   <label class="bbn-checkbox-label bbn-iflex bbn-vmiddle"
          :for="id"
          @click="onClick">
-		<span class="bbn-left-spadded"
-					v-html="label"
-					v-if="label"/>
+    <component v-if="component"
+               :is="component"
+               v-bind="componentOptions"
+               class="bbn-left-spadded"/>
+		<span v-else-if="label"
+          class="bbn-left-spadded"
+					v-html="label"/>
 	</label>
 </span>

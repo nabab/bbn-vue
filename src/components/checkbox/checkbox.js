@@ -17,13 +17,13 @@
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.inputComponent
      * @mixin bbn.vue.eventsComponent
-     *
+     * @mixin bbn.vue.componentInsideComponent
      */
-    mixins: 
-    [
+    mixins: [
       bbn.vue.basicComponent,
       bbn.vue.inputComponent,
-      bbn.vue.eventsComponent
+      bbn.vue.eventsComponent,
+      bbn.vue.componentInsideComponent
     ],
     props: {
       value: {
