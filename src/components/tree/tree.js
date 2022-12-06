@@ -565,9 +565,6 @@ Vue.component('bbn-tree', {
         if (expand && !this.isRoot && !this.node.isExpanded) {
           this.node.isExpanded = true;
         }
-        else if (!this.node.isExpanded) {
-          return false;
-        }
 
         let cp = this.isRoot && this.scrollable ? this.getRef('scroll') : this;
         if (cp.$children) {
@@ -1111,7 +1108,6 @@ Vue.component('bbn-tree', {
       }
     },
     _setCurrentState(state) {
-      //bbn.fn.log("State", this, state);
       this.currentState = state;
     },
     initStorage(){
@@ -1215,7 +1211,7 @@ Vue.component('bbn-tree', {
               }
             }
             else {
-              delete this.currentState[uid];
+             delete this.currentState[uid];
             }
           })
         }, 50);
