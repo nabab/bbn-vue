@@ -125,17 +125,16 @@
                   :position="orientation === 'auto' ? undefined : orientation"/>
         <!-- END OF LEFT|TOP TABS -->
         <!-- START OF CONTENT -->
-        <bbn-scroll v-if="ready"
-            :class="{
+        <bbn-scroll :class="{
                     'bbn-router-scroller': isVisual,
                     'bbn-flex-fill': scrollContent,
-                    'bbn-w-100': !scrollContent,
                     }"
             :scrollable="visualShowAll"
             :style="{
               overflow: 'auto',
               height: visualShowAll ? '100%' : 'auto'
             }"
+            bbn-forget="!scrollContent"
             ref="visualListContainer">
           <div :class="{
                       'bbn-overlay': scrollContent && !visualShowAll,
@@ -143,6 +142,7 @@
                       'bbn-router-visual': isVisual
                     }"
               :style="isVisual ? visualStyle : {}"
+              v-if="ready"
               ref="visualRouter"
               @keydown.esc="onEscape"
               :tabindex="isVisual && visualShowAll ? 0 : -1">
@@ -156,10 +156,10 @@
               </div>
             </div>
             <slot></slot>
-            <template v-for="a in isVisual ? visualList : views"
-                      :key="isVisual ? a.view.uid : (component && componentSource && componentUrl ? componentSource[componentUrl] : a.uid)">
+            <template v-for="a in isVisual ? visualList : views">
               <bbn-portal :disabled="!routed || !getPane(a)"
                           bbn-forget="!splittable"
+                          :key="isVisual ? a.view.uid : (component && componentSource && componentUrl ? componentSource[componentUrl] : a.uid)"
                           :selector="getPortalSelector(a)">
                 <bbn-container v-if="(isVisual ? !a.view.real : !a.real) && !component && (!a.pane || routed)"
                               :key="isVisual ? a.view.uid : a.uid"
@@ -176,7 +176,7 @@
           </div>
         </bbn-scroll>
         <!-- END OF CONTENT -->
-        <bbn-loader v-else/>
+        <bbn-loader v-if="!ready"/>
         <!-- START OF RIGHT|BOTTOM TABS -->
         <bbn-tabs v-if="nav && !isBreadcrumb && !isVisual && ((orientation === 'right') || (orientation === 'bottom'))"
                   ref="tabs"
