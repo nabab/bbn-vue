@@ -944,6 +944,9 @@ return {
         }
         bbn.vue.preloadBBN(preloaded);
 
+        this.$on('focusin', () => this.isFocused = true);
+        this.$on('focusout', () => this.isFocused = false);
+
         document.addEventListener('keydown', this.keydown);
         document.addEventListener('keyup', () => {
           this.pressedKey = false;
@@ -1036,6 +1039,16 @@ return {
           this.$set(this.pollerObject, 'appui-notification', {unreadHash: false});
         }
       }
+    },
+    beforeMount() {
+      this.componentClass.push(
+        'bbn-background',
+        this.scrollable ? 'bbn-overlay' : 'bbn-w-100'
+      );
+      if (this.isMobile) {
+        this.componentClass.push('bbn-desktop');
+      }
+
     },
     mounted(){
       if ( this.cool ){
