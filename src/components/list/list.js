@@ -649,7 +649,7 @@
        */
       overIdx(newVal) {
         this.keepCool(() => {
-          if (this.hasScroll && newVal && !this.isOver) {
+          if (this.hasScroll && (newVal !== -1) && !this.isOver) {
             this.closest('bbn-scroll').scrollTo(null, this.getRef('li' + newVal));
           }
         }, 'overIdx', 50)
