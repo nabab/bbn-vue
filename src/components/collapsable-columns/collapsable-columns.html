@@ -2,7 +2,8 @@
   <component :is="scrollable ? 'bbn-scroll' : 'div'"
              axis="x"
              ref="scroll">
-    <div :class="['bbn-collapsable-columns-container', 'bbn-grid', 'bbn-padded', {'bbn-h-100': !!scrollable}]">
+    <div :class="['bbn-collapsable-columns-container', 'bbn-grid', 'bbn-padded', {'bbn-h-100': !!scrollable}]"
+         :style="{'grid-auto-rows': !!scrollable ? '100%': ''}">
       <column inline-template
               v-for="(col, idx) in filteredData"
               :source="col.data[children]"
@@ -37,7 +38,7 @@
                           icon="nf nf-mdi-arrow_expand"
                           @click="main.expand(column)"
                           style="height: auto; width: 100%; aspect-ratio: 1"/>
-              <div :class="['bbn-upper', 'bbn-b', 'bbn-tertiary-text-alt', 'bbn-unselectable', 'bbn-m', {
+              <div :class="['bbn-upper', 'bbn-b', 'bbn-tertiary-text-alt', 'bbn-unselectable', 'bbn-m', 'bbn-ellipsis', {
                       'bbn-left-space': !!column.opened,
                       'bbn-top-space': !column.opened,
                       'bbn-right-lspace': !!column.opened,
@@ -45,6 +46,7 @@
                       'verticaltext': !column.opened
                     }]"
                     v-text="column.data.title"
+                    :title="column.data.title"
                     :style="{
                       color: !!column.data[main.sourceFontColor] ? column.data[main.sourceFontColor] + '!important' : '',
                       maxHeight: main.isMobile && !column.opened ? '20rem' : '',
@@ -52,7 +54,7 @@
                     }"/>
               <div class="bbn-alt-background bbn-vmiddle bbn-xspadded bbn-radius bbn-flex-fill"
                   :style="{
-                    'min-height': '2rem',
+                    'min-height': !!column.opened ? '2rem' : '4rem',
                     'justify-content': 'flex-end',
                     'align-items': !column.opened ? 'flex-end': ''
                   }">
@@ -98,11 +100,11 @@
                 </component>
               </div>
             </div>
-            <div class="bbn-collapsable-columns-pager-container bbn-w-100">
-              <bbn-pager v-if="!!column.opened && pageable"
-                        :element="_self"
-                        :limit="false"
-                        :key="main.symbol()"/>
+            <div v-if="!!column.opened && pageable"
+                 class="bbn-collapsable-columns-pager-container bbn-w-100">
+              <bbn-pager :element="_self"
+                         :limit="false"
+                         :key="main.symbol()"/>
             </div>
           </div>
         </div>
