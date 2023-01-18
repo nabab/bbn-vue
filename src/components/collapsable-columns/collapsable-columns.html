@@ -92,7 +92,8 @@
                         :key="main.symbol()">
                       <component :is="!!item.data[main.sourceComponent] ? item.data[main.sourceComponent] : (!!column.data[main.sourceComponent] ? column.data[main.sourceComponent] : main.realComponent)"
                                 :source="item.data"
-                                :index="item.index"/>
+                                :index="item.index"
+                                v-bind="!!item.data[main.sourceComponentOptions] ? item.data[main.sourceComponentOptions] : (!!column.data[main.sourceComponentOptions] ? column.data[main.sourceComponentOptions] : main.componentOptions)"/>
                     </div>
                   </div>
                 </component>

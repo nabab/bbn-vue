@@ -119,7 +119,22 @@
       collapseEmpty: {
         type: Boolean,
         default: true
-      }
+      },
+      /**
+       * The options for the component
+       * @prop {Object} componentOptions
+       */
+      componentOptions: {
+        type: Object
+      },
+      /**
+       * The name of the property used to specify the component's options of the item
+       * @prop {String} ['componentOptions'] sourceComponentOptions
+       */
+      sourceComponentOptions: {
+        type: String,
+        default: 'componentOptions'
+      },
     },
     data(){
       return {
