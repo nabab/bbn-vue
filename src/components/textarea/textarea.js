@@ -43,6 +43,14 @@
        */
 			maxlength: {
 				type: Number
+      },
+      /**
+       * Sets the textarea resizable
+       * @prop {Boolean} [true] resizable
+       */
+      resizable: {
+        type: Boolean,
+        default: true
       }
     },
     methods: {
