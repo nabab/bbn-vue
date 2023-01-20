@@ -39,7 +39,9 @@
                               min-width="10rem"
                               tabindex="0"
                               :item-component="$options.components.listItem"
-                              class="bbn-h-100 bbn-vmiddle"
+                              :class="['bbn-h-100', 'bbn-vmiddle', {
+                                'bbn-flex-fill': i === breadcrumbs.length - 1
+                              }]"
                               :attach="itsMaster ? (itsMaster.getRef('breadcrumb') || undefined) : undefined"
                               :autobind="false"
                               :style="{
