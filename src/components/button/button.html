@@ -31,7 +31,7 @@
           paddingRight: icon && (iconPosition === 'right') ? (secondary ? '1rem' : '0.3rem') : ''
         }"
         :class="{'bbn-ellipsis': ellipsis}"/>
-  <span v-else-if="!notext"><slot></slot></span>
+  <span v-else-if="!notext"><slot/></span>
   <span v-if="icon && (iconPosition === 'right')" class="bbn-iblock bbn-m">
     <i :class="icon"/>
   </span>
