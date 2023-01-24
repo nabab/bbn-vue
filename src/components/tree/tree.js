@@ -1354,6 +1354,13 @@ Vue.component('bbn-tree', {
         this.overNode = false;
         this.overOrder = false;
       }
+    },
+    quickFilter(newVal){
+      if (!this.isAjax && this.nodes.length) {
+        bbn.fn.each(this.nodes, n => {
+          n.isExpanded = !!newVal.length;
+        });
+      }
     }
   },
   components: {
@@ -1521,15 +1528,12 @@ Vue.component('bbn-tree', {
         },
         isVisible(){
           let tree = this.getRef('tree');
-          return !this.quickFilter ||
-            ((this.source.text.toLowerCase().indexOf(this.quickFilter.toLowerCase()) > -1) && !this.numChildren) ||
-            ((this.source.text.toLowerCase().indexOf(this.quickFilter.toLowerCase()) > -1) && !this.tree.excludedSectionFilter) ||
-            (
-              (this.source.text.toLowerCase().indexOf(this.quickFilter.toLowerCase()) > -1) &&
-              !!this.tree.excludedSectionFilter &&
-              !!(tree && tree.nodes && tree.nodes.filter(n => !!n.isVisible).length)
-            ) ||
-            !!(tree && tree.nodes && tree.nodes.filter(n => !!n.isVisible).length)
+          return !this.quickFilter
+            || (this.source.text.toLowerCase().includes(this.quickFilter.toLowerCase())
+              && (!this.numChildren
+                || !this.tree.excludedSectionFilter
+                || (tree && tree.nodes && bbn.fn.filter(tree.nodes, n => !!n.isVisible).length)))
+            || (tree && tree.nodes && bbn.fn.filter(tree.nodes, n => !!n.isVisible).length)
         },
         isExpanded: {
           get(){
