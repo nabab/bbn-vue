@@ -193,19 +193,19 @@
         <div class="bbn-vmiddle">
           <!-- POST ITS -->
           <div v-if="plugins['appui-note']"
-               class="bbn-right-space">
-            <i class="bbn-p nf nf-fa-sticky_note appui-statusbar-icon"
+               class="bbn-right-smargin">
+            <i class="bbn-p nf nf-fa-sticky_note"
                :title="_('Show my post-its')"
                @click="showPostIt = true"/>
           </div>
           <!-- TASK TRACKER -->
           <div v-if="plugins['appui-task']"
-              class="bbn-right-space">
+              class="bbn-right-smargin">
             <appui-task-tracker/>
           </div>
           <!-- CHAT -->
           <div v-if="plugins['appui-chat']"
-               class="bbn-right-space">
+               class="bbn-right-smargin">
             <bbn-chat ref="chat"
                       :url="plugins['appui-chat']"
                       :user-id="app.user.id"
@@ -218,15 +218,15 @@
           </div>
           <!-- NOTIFICATIONS -->
           <div v-if="plugins['appui-notification'] && pollerObject['appui-notification']"
-               class="bbn-right-space">
+               class="bbn-right-smargin">
             <appui-notification-tray ref="notificationTray"/>
           </div>
           <!-- CLIPBOARD BUTTON -->
           <div v-if="plugins['appui-clipboard'] && clipboard"
               @click.stop.prevent="getRef('clipboard').toggle()"
               ref="clipboardButton"
-              class="bbn-appui-clipboard-button bbn-right-space bbn-p bbn-rel">
-            <i class="nf nf-fa-clipboard bbn-m appui-statusbar-icon"
+              class="bbn-appui-clipboard-button bbn-right-smargin bbn-p bbn-rel">
+            <i class="nf nf-fa-clipboard"
                tabindex="-1"/>
             <input class="bbn-invisible bbn-overlay bbn-p"
                   @keydown.space.enter.prevent="getRef('clipboard').toggle()"
@@ -234,17 +234,17 @@
           </div>
           <!-- DEBUGGER -->
           <div v-if="plugins['appui-ide'] && ready && app.user && app.user.isAdmin"
-               class="bbn-right-space">
-            <i class="bbn-p nf nf-mdi-bug appui-statusbar-icon"
+               class="bbn-right-smargin">
+            <i class="bbn-p nf nf-mdi-bug"
                :title="_('Show the debugger')"
                @click="toggleDebug"/>
           </div>
           <!-- POWER/ENV ICON -->
-          <bbn-context class="bbn-iblock bbn-right-space bbn-p bbn-rel"
+          <bbn-context class="bbn-iblock bbn-right-smargin bbn-p bbn-rel"
                        :title="appMode"
                        tag="div"
                        :source="powerMenu">
-            <i class="nf nf-fa-power_off bbn-m appui-statusbar-icon"
+            <i class="nf nf-fa-power_off"
                tabindex="-1"
                :style="{color: powerColor}"/>
           </bbn-context>
@@ -322,7 +322,7 @@
                     :limit="50"
                     :pageable="true"
                     class="bbn-no"/>
-    <div class="bbn-top-right bbn-p bbn-spadded bbn-xxxl"
+    <div class="bbn-top-right bbn-p bbn-spadded bbn-xl"
          @click.stop="searchOn = false">
       <i class="nf nf-fa-times"/>
     </div>
