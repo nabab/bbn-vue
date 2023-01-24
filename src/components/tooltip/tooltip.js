@@ -15,7 +15,7 @@
     /**
      * @mixin bbn.vue.basicComponent
      */
-    mixins: [bbn.vue.basicComponent],
+    mixins: [bbn.vue.basicComponent, bbn.vue.toggleComponent],
     props: {
       /**
        * @prop {(String|Object|Vue)} component
@@ -77,9 +77,9 @@
     data(){
       return {
         /**
-         * @data {Boolean} [false] isVisible
+         * @data {Boolean} [false] currentVisible
          */
-        isVisible: false,
+        currentVisible: false,
       };
     },
     methods: {
@@ -95,15 +95,6 @@
         }
 
         return st;
-      },
-      /**
-       * The method called after the floater close
-       * @methods onClose
-       * @emit close
-       */
-      onClose(){
-        this.isVisible = false;
-        this.$emit('close', this);
       }
     }
   });

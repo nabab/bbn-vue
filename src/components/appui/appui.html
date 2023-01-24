@@ -88,20 +88,20 @@
                        :fixed-left="leftShortcuts"/>
           <div v-else v-html="' '"/>
         </div>
-        <!-- SEARCHBAR (MOBILE) -->
+        <!-- SEARCHBAR -->
         <div class="bbn-appui-search bbn-vmiddle bbn-hpadded">
           <div class="bbn-block bbn-p"
                @click="searchOn = true"
                tabindex="0">
             <i ref="icon"
-               class="nf nf-oct-search bbn-xxxl"> </i>
+               class="nf nf-oct-search bbn-xxl"> </i>
           </div>
           <div class="bbn-block bbn-right-lspace"> </div>
           <bbn-context tag="div"
                        class="bbn-block"
                        :source="userMenu">
             <bbn-initial font-size="2rem" :user-name="app.user.name"/>
-            <div style="position: absolute; bottom: -0.4rem; right: -0.4rem; border: #CCC 1px solid; width: 1.1rem; height: 1.1e"
+            <div style="position: absolute; bottom: -0.4rem; right: -0.4rem; border: #CCC 1px solid; width: 1.1rem; height: 1.1rem"
                  class="bbn-bg-white bbn-black bbn-middle">
               <i class="nf nf-fa-bars bbn-xs"/>
             </div>
