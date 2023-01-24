@@ -77,7 +77,8 @@
           <component v-if="itemComponent"
                       :is="itemComponent"
                       v-bind="options"
-                      :source="it"/>
+                      :source="it"
+                      :key="options.uid ? it[options.uid] : idx"/>
           <a v-else-if="it && it.text && it.url" :href="it.url" v-html="it.text"/>
           <span v-else-if="it && it.text" v-html="it.text"/>
           <span v-else
