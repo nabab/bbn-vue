@@ -1,0 +1,91 @@
+<div :class="['bbn-collapsable-columns-column', 'bbn-radius', {'collapsed': !column.opened}]"
+      :key="index"
+      :style="{width: !!column.opened ? main.columnWidth : ''}"
+      v-show="isVisible">
+  <div :class="['bbn-radius', 'bbn-background', {
+          'bbn-w-100': !main.scrollable,
+          'bbn-100': !!main.scrollable,
+          'bbn-flex-height': !!main.scrollable
+        }]"
+        :style="{backgroundColor: !!column.data[main.sourceBackgroundColor] ? column.data[main.sourceBackgroundColor] + '!important' : ''}">
+    <div :class="['bbn-spadded', , 'bbn-vmiddle', 'bbn-unselectable', {
+            'bbn-flex-width': !!column.opened,
+            'bbn-flex-height': !column.opened
+          }]">
+      <bbn-button v-if="!column.opened"
+                  class="bbn-no-border"
+                  :notext="true"
+                  :text="_('Expand')"
+                  icon="nf nf-mdi-arrow_expand"
+                  @click="main.expand(column)"
+                  style="height: auto; width: 100%; aspect-ratio: 1"/>
+      <div :class="['bbn-upper', 'bbn-b', 'bbn-tertiary-text-alt', 'bbn-unselectable', 'bbn-m', 'bbn-ellipsis', {
+              'bbn-left-space': !!column.opened,
+              'bbn-top-space': !column.opened,
+              'bbn-right-lspace': !!column.opened,
+              'bbn-bottom-lspace': !column.opened,
+              'verticaltext': !column.opened
+            }]"
+            v-text="column.data.title"
+            :title="column.data.title"
+            :style="{
+              color: !!column.data[main.sourceFontColor] ? column.data[main.sourceFontColor] + '!important' : '',
+              maxHeight: main.isMobile && !column.opened ? '20rem' : '',
+              letterSpacing: !column.opened ? (main.isMobile ? '' : '-0.2rem') : ''
+            }"/>
+      <div class="bbn-alt-background bbn-vmiddle bbn-xspadded bbn-radius bbn-flex-fill"
+          :style="{
+            'min-height': !!column.opened ? '2rem' : '4rem',
+            'justify-content': 'flex-end',
+            'align-items': !column.opened ? 'flex-end': ''
+          }">
+        <component v-if="main.toolbar || !!column.data[main.sourceToolbar]"
+                  :is="!!column.data[main.sourceToolbar] ? column.data[main.sourceToolbar] : main.toolbar"
+                  :source="column"
+                  :total="total"
+                  :index="index"/>
+      </div>
+      <bbn-button v-if="!!column.opened"
+                  class="bbn-no-border bbn-left-space"
+                  :notext="true"
+                  :text="_('Collapse')"
+                  icon="nf nf-mdi-arrow_collapse"
+                  @click="main.collapse(column)"
+                  style="height: 100%; width: auto; aspect-ratio: 1"/>
+    </div>
+    <div v-if="!!column.opened"
+        :class="['bbn-vpadded', 'bbn-w-100', {'bbn-flex-fill': !!main.scrollable}]">
+      <div class="bbn-100">
+        <component :is="main.scrollable ? 'bbn-scroll' : 'div'"
+                  axis="y"
+                  ref="scroll">
+          <div class="bbn-hpadded">
+            <bbn-loader v-if="isLoading"/>
+            <div v-if="items.length && !isLoading"
+                v-for="(item, itemIdx) in items"
+                :class="[
+                  'bbn-collapsable-columns-item',
+                  'bbn-radius',
+                  {
+                    'bbn-bottom-space': !!items[itemIdx+1]
+                  }
+                ]"
+                :key="main.symbol()">
+              <component :is="!!item.data[main.sourceComponent] ? item.data[main.sourceComponent] : (!!column.data[main.sourceComponent] ? column.data[main.sourceComponent] : main.realComponent)"
+                        :source="item.data"
+                        :index="item.index"
+                        v-bind="!!item.data[main.sourceComponentOptions] ? item.data[main.sourceComponentOptions] : (!!column.data[main.sourceComponentOptions] ? column.data[main.sourceComponentOptions] : main.componentOptions)"
+                        :key="main.componentOptions && main.componentOptions.uid && item.data && item.data[main.componentOptions.uid] ? item.data[main.componentOptions.uid] : main.symbol()"/>
+            </div>
+          </div>
+        </component>
+      </div>
+    </div>
+    <div v-if="!!column.opened && pageable"
+          class="bbn-collapsable-columns-pager-container bbn-w-100">
+      <bbn-pager :element="_self"
+                  :limit="false"
+                  :key="main.symbol()"/>
+    </div>
+  </div>
+</div>
