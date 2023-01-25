@@ -45,8 +45,10 @@
           options.helper.style.width = rect.width + 'px';
           options.helper.style.height = rect.height + 'px';
           options.container[isSelf ? 'appendChild' : 'append'](options.helper);
+          /*
           let scroll = options.container.closest('.bbn-scroll');
           options.scroll = !!scroll && (scroll.__vue__ !== undefined) ? scroll.__vue__ : false;
+          */
           let v = new Vue({
             el: '#bbn-draggable-current > *'
           });
@@ -185,6 +187,8 @@
         options.helper.style.left = e.pageX + 'px';
         options.helper.style.top = e.pageY + 'px';
       }
+      let scroll = e.target.closest('.bbn-scroll');
+          options.scroll = !!scroll && (scroll.__vue__ !== undefined) ? scroll.__vue__ : false;
       if (!!options.scroll
         && (options.scroll.hasScrollY || options.scroll.hasScrollX)
         && !options.scroll.isScrolling
