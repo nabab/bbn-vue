@@ -12,20 +12,20 @@
         <i v-if="isClosable"
             :title="_('Close')"
             @click="close"
-            class="bbn-lg nf nf-fa-times"/>
+            class="nf nf-fa-times"/>
         <bbn-context v-if="hasMenu"
                       :source="finalMenu">
           <i :title="_('Menu')"
-              class="bbn-lg nf nf-fa-caret_down"/>
+              class="nf nf-fa-caret_down"/>
         </bbn-context>
         <i v-for="(b, idx) in realButtonsLeft"
             :title="b.text"
             @click="actionButton(b.action, uid)"
-            :class="['bbn-lg', b.icon]"/>
+            :class="b.icon"/>
       </div>
       <!-- TITLE -->
       <div :class="['bbn-widget-title', 'bbn-flex-fill', 'bbn-hpadded', {'bbn-middle': !!icon}]">
-        <i v-if="icon" :class="[icon, 'bbn-right-sspace', 'bbn-m']"/>
+        <i v-if="icon" :class="[icon, 'bbn-right-sspace']"/>
         <h3 :style="dashboard && dashboard.sortable ? 'cursor: move' : ''"
             :class="['bbn-no-margin', {'bbn-iblock': !!icon}]"
             v-html="title"
@@ -43,7 +43,7 @@
         <i v-for="(b, idx) in realButtonsRight"
             :title="b.text"
             @click="actionButton(b.action, uid)"
-            :class="['bbn-lg', b.icon]"/>
+            :class="[b.icon]"/>
       </div>
     </div>
   </div>

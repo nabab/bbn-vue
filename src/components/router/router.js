@@ -897,7 +897,10 @@
        * @return {Array} 
        */
       tabsList() {
-        return this.splittable ? bbn.fn.filter(this.views, a => !a.pane) : this.views;
+        return bbn.fn.multiorder(
+          this.splittable ? bbn.fn.filter(this.views, a => !a.pane) : this.views,
+          {static: 'desc', pinned: 'desc', idx: 'asc'}
+        );
       },
       hasVerticalTabs(){
         return !this.isVisual
