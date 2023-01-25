@@ -7,7 +7,7 @@
       <bbn-column-list  v-for="(col, idx) in filteredData"
                         :source="col.data[children]"
                         :data="data"
-                        :column="col"
+                        :children="children"
                         :index="col.index"
                         :key="symbol()"
                         :pageable="pageable"
@@ -15,7 +15,22 @@
                         :filters="typeof childrenFilters === 'function' ? childrenFilters(col.data, data, idx) : childrenFilters"
                         :sortable="childrenSortable"
                         :order="childrenOrder"
-                        :limit="limit"/>
+                        :limit="limit"
+                        :collapsable="true"
+                        :auto-collapse="collapseEmpty"
+                        :width="columnWidth"
+                        :scrollable="scrollable"
+                        :background-color="col.data[sourceBackgroundColor]"
+                        :font-color="col.data[sourceFontColor]"
+                        :title="col.data.title"
+                        :toolbar="!!col.data[sourceToolbar] ? col.data[sourceToolbar] : toolbar"
+                        :toolbar-source="col.data"
+                        :component="!!col.data[sourceComponent] ? col.data[sourceComponent] : realComponent"
+                        :component-options="!!col.data[sourceComponentOptions] ? col.data[sourceComponentOptions] : componentOptions"
+                        @beforemount="c => columns.push(c)"
+                        @beforedestroy="removeColumn"
+                        @expanded="c => $emit('expanded', c)"
+                        @collapse="c => $emit('collapsed', c)"/>
     </div>
   </component>
 </div>

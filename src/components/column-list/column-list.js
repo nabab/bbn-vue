@@ -10,18 +10,56 @@
       bbn.vue.listComponent
     ],
     props: {
-      column: {
-        type: Object
-      },
       index: {
         type: Number
-      }
+      },
+      collapsable: {
+        type: Boolean,
+        default: false
+      },
+      autoCollapse: {
+        type: Boolean,
+        default: false
+      },
+      /**
+       * The width
+       * @prop {Number|String} ['100%'] width
+       */
+      width: {
+        type: [Number, String],
+        default: '100%'
+      },
+      scrollable: {
+        type: Boolean,
+        default: true
+      },
+      backgroundColor: {
+        type: String
+      },
+      fontColor: {
+        type: String
+      },
+      title: {
+        type: String
+      },
+      toolbar: {
+        type: [String, Vue, Object]
+      },
+      toolbarSource: {
+        type: Object
+      },
+      /**
+       * The options for the component
+       * @prop {Object} componentOptions
+       */
+      componentOptions: {
+        type: Object
+      },
     },
     data(){
       return {
-        main: this.closest('bbn-collapsable-columns'),
         isVisible: false,
-        uuid: Symbol()
+        collapsed: false
       }
     },
     computed: {
@@ -33,17 +71,37 @@
       }
     },
     methods: {
-      setCheckCollapse(){
-        if (this.main.collapseEmpty) {
+      symbol: Symbol,
+      setCheckCollapse(force){
+        if (this.autoCollapse || force) {
           this.$once('dataloaded', () => {
-            this.$set(this.column, 'opened', !!this.filteredData.length);
+            if (this.filteredData.length) {
+              this.expand(force);
+            }
+            else {
+              this.collapse(force);
+            }
           });
+        }
+      },
+      expand(force){
+        if (this.collapsable || force) {
+          this.collapsed = false;
+          this.$emit('expanded', this);
+        }
+      },
+      collapse(force){
+        if (this.collapsable || force) {
+          this.collapsed = true;
+          this.$emit('collapsed', this);
         }
       }
     },
     beforeMount(){
-      this.setCheckCollapse();
-      this.main.columns.push(this);
+      if (this.collapsable) {
+        this.setCheckCollapse();
+      }
+      this.$emit('beforemount', this);
     },
     mounted(){
       this.$nextTick(() => {
@@ -51,12 +109,7 @@
       });
     },
     beforeDestroy(){
-      if (this.main && this.main.columns && this.uuid) {
-        let idx = bbn.fn.search(this.main.columns, 'uuid', this.uuid);
-        if (idx > -1) {
-          this.main.columns.splice(idx, 1);
-        }
-      }
+      this.$emit('beforedestroy', this);
     },
     watch: {
       data: {
