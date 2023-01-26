@@ -104,28 +104,22 @@
     </div>
     <!-- NAVIGATION IN LIST -->
     <div v-if="currentPage"
-          class="nav bbn-unselectable">
-      <div class="content-buttons nav-first">
-        <i class="nf nf-fa-angle_double_left"
-            @click="nav('first')"
-            :style="{visibility: currentStart > 0 ? 'visible' : 'hidden'}"/>
-      </div>
-      <div class="content-buttons nav-prev">
-        <i class="nf nf-fa-angle_left"
-            @click="nav('prev')"
-            :style="{visibility: currentStart > 0 ? 'visible' : 'hidden'}"/>
-      </div>
+          class="bbn-widget-nav bbn-unselectable">
+      <i class="nf nf-md-chevron_double_left bbn-p bbn-reactive-text"
+          @click="nav('first')"
+          :style="{visibility: currentStart > 0 ? 'visible' : 'hidden'}"/>
+      <i class="nf nf-md-chevron_left bbn-p bbn-reactive-text"
+          @click="nav('prev')"
+          :style="{visibility: currentStart > 0 ? 'visible' : 'hidden'}"/>
+
       <span v-text="currentPage + '/' + totalPages"></span>
-      <div class="content-buttons nav-next">
-        <i class="nf nf-fa-angle_right"
-            @click="nav('next')"
-            :style="{visibility: currentStart < (currentTotal-limit) ? 'visible' : 'hidden'}"/>
-      </div>
-      <div class="content-buttons nav-last">
-        <i class="nf nf-fa-angle_double_right"
-            @click="nav('last')"
-            :style="{visibility: currentStart < (currentTotal-limit) ? 'visible' : 'hidden'}"/>
-      </div>
+
+      <i class="nf nf-md-chevron_right bbn-p bbn-reactive-text"
+          @click="nav('next')"
+          :style="{visibility: currentStart < (currentTotal-limit) ? 'visible' : 'hidden'}"/>
+      <i class="nf nf-md-chevron_double_right bbn-p bbn-reactive-text"
+          @click="nav('last')"
+          :style="{visibility: currentStart < (currentTotal-limit) ? 'visible' : 'hidden'}"/>
     </div>
     <!-- LOADING -->
     <div v-if="isLoading" class="bbn-overlay" style="opacity: 0.5">
