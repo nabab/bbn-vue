@@ -3945,7 +3945,7 @@
           </div>
         </div>
         <div>
-          <i class="nf nf-fa-angle_right bbn-hsmargin bbn-large bbn-router-breadcrumb-arrow"/>
+          <i class="nf nf-fa-angle_right bbn-hsmargin bbn-router-breadcrumb-arrow"/>
         </div>
       </div>
 
@@ -4016,7 +4016,7 @@
           @mousedown.prevent.stop="close"
           @mouseup.prevent.stop
           :style="!isHover ? lastColors : {}">
-      <i class="nf nf-fa-times_rectangle bbn-lg"/>
+      <i class="nf nf-fa-times_rectangle"/>
     </div>
   </div>
 </div>
