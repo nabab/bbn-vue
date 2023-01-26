@@ -270,7 +270,7 @@
       visualSize: {
         type: Number,
         default(){
-          return Math.min(120, Math.round(Math.min(bbn.env.width, bbn.env.height) / 5))
+          return Math.min(60, Math.round(Math.min(bbn.env.width, bbn.env.height) / 5))
         }
       },
       /**
