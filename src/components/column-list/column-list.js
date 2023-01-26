@@ -54,7 +54,7 @@
        */
       componentOptions: {
         type: Object
-      },
+      }
     },
     data(){
       return {
@@ -68,6 +68,9 @@
           return this.filteredData.slice().splice(this.start, this.currentLimit);
         }
         return this.filteredData;
+      },
+      headerVisible(){
+        return !!this.collapsable || (this.title !== undefined) || !!this.toolbar;
       }
     },
     methods: {
@@ -94,6 +97,22 @@
         if (this.collapsable || force) {
           this.collapsed = true;
           this.$emit('collapsed', this);
+        }
+      },
+      expandAll(){
+        if (!!this.component && this.currentData.length) {
+          let items = this.findAll(this.component);
+          bbn.fn.each(items, item => {
+            item.$set(item, 'collapsed', false);
+          });
+        }
+      },
+      collapseAll(){
+        if (!!this.component && this.currentData.length) {
+          let items = this.findAll(this.component);
+          bbn.fn.each(items, item => {
+            item.$set(item, 'collapsed', true);
+          });
         }
       }
     },

@@ -30,7 +30,8 @@
                         @beforemount="c => columns.push(c)"
                         @beforedestroy="removeColumn"
                         @expanded="c => $emit('expanded', c)"
-                        @collapse="c => $emit('collapsed', c)"/>
+                        @collapse="c => $emit('collapsed', c)"
+                        :uid="uid"/>
     </div>
   </component>
 </div>
