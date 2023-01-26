@@ -2,13 +2,15 @@
       :key="index"
       :style="{width: !collapsed ? width : '', height: scrollable ? '100%' : 'auto'}"
       v-show="isVisible">
-  <div :class="['bbn-radius', 'bbn-background', {
-          'bbn-w-100': !scrollable,
-          'bbn-100': !!scrollable,
+  <div :class="['bbn-radius', 'bbn-background', 'bbn-rel', {
           'bbn-flex-height': !!scrollable
         }]"
-        :style="{backgroundColor: !!backgroundColor ? (backgroundColor + ' !important') : ''}">
-    <div :class="['bbn-spadded', , 'bbn-vmiddle', 'bbn-unselectable', {
+        :style="{
+          backgroundColor: !!backgroundColor ? (backgroundColor + ' !important') : '',
+          height: '100%',
+          width: '100%'
+        }">
+    <div :class="['bbn-column-list-header', 'bbn-spadded', , 'bbn-vmiddle', 'bbn-unselectable', {
            'bbn-flex-width': !collapsed,
            'bbn-flex-height': collapsed
          }]"
@@ -20,7 +22,7 @@
                   icon="nf nf-mdi-arrow_expand"
                   @click="expand"
                   style="height: auto; width: 100%; aspect-ratio: 1"/>
-      <div :class="['bbn-upper', 'bbn-b', 'bbn-tertiary-text-alt', 'bbn-unselectable', 'bbn-m', 'bbn-ellipsis', {
+      <div :class="['bbn-column-list-title', 'bbn-upper', 'bbn-b', 'bbn-tertiary-text-alt', 'bbn-unselectable', 'bbn-m', 'bbn-ellipsis', {
              'bbn-left-space': !collapsed,
              'bbn-top-space': collapsed,
              'bbn-right-lspace': !collapsed,
@@ -57,13 +59,17 @@
                   style="height: 100%; width: auto; aspect-ratio: 1"/>
     </div>
     <div v-if="!collapsed"
-        :class="['bbn-vpadded', 'bbn-w-100', {'bbn-flex-fill': !!scrollable}]">
-      <div class="bbn-100">
+        :class="['bbn-column-list-main', 'bbn-vpadded', 'bbn-rel', {'bbn-flex-fill': !!scrollable}]"
+        style="width: 100%">
+      <div class="bbn-rel"
+           style="width: 100%; height: 100%">
         <component :is="scrollable ? 'bbn-scroll' : 'div'"
                   axis="y"
                   ref="scroll">
-          <div class="bbn-hpadded">
-            <bbn-loader v-if="isLoading"/>
+          <div :class="['bbn-column-list-items', 'bbn-hpadded', {'bbn-overlay': !!scrollable}]">
+            <bbn-loader :style="{position: !scrollable ? 'relative !important' : ''}"
+                        :class="{'bbn-margin': !!scrollable}"
+                        v-if="isLoading"/>
             <div v-if="items.length && !isLoading"
                 v-for="(item, itemIdx) in items"
                 :class="[
@@ -85,7 +91,7 @@
       </div>
     </div>
     <div v-if="!collapsed && pageable"
-          class="bbn-column-list-pager-container bbn-w-100">
+          class="bbn-column-list-footer">
       <bbn-pager :element="_self"
                   :limit="false"
                   :key="symbol()"/>

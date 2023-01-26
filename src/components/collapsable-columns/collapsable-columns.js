@@ -135,6 +135,14 @@
         type: String,
         default: 'componentOptions'
       },
+      limit: {
+        type: Number,
+        default: 0
+      },
+      childrenLimit: {
+        type: Number,
+        default: 10
+      }
     },
     data(){
       return {
