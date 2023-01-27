@@ -1,0 +1,100 @@
+<div :class="[componentClass, 'bbn-radius', {'collapsed': collapsed}]"
+      :key="index"
+      :style="{width: !collapsed ? width : '', height: scrollable ? '100%' : 'auto'}"
+      v-show="isVisible">
+  <div :class="['bbn-column-list-container', 'bbn-radius', 'bbn-background', 'bbn-rel', {
+          'bbn-flex-height': !!scrollable
+        }]"
+        :style="{
+          backgroundColor: !!backgroundColor ? (backgroundColor + ' !important') : '',
+          height: '100%',
+          width: '100%'
+        }">
+    <div :class="['bbn-column-list-header', 'bbn-spadded', , 'bbn-vmiddle', 'bbn-unselectable', {
+           'bbn-flex-width': !collapsed,
+           'bbn-flex-height': collapsed
+         }]"
+         v-if="headerVisible">
+      <bbn-button v-if="collapsable && collapsed"
+                  class="bbn-no-border"
+                  :notext="true"
+                  :text="_('Expand')"
+                  icon="nf nf-mdi-arrow_expand"
+                  @click="expand"
+                  style="height: auto; width: 100%; aspect-ratio: 1"/>
+      <div :class="['bbn-column-list-title', 'bbn-upper', 'bbn-b', 'bbn-tertiary-text-alt', 'bbn-unselectable', 'bbn-m', 'bbn-ellipsis', {
+             'bbn-left-space': !collapsed,
+             'bbn-top-space': collapsed,
+             'bbn-right-lspace': !collapsed,
+             'bbn-bottom-lspace': collapsed,
+             'verticaltext': collapsed
+           }]"
+           v-text="title"
+           :title="title"
+           :style="{
+             color: !!fontColor ? (fontColor + ' !important') : '',
+             maxHeight: isMobile && collapsed ? '20rem' : '',
+             letterSpacing: collapsed ? (isMobile ? '' : '-0.2rem') : ''
+           }"
+           v-if="title !== undefined"/>
+      <div class="bbn-column-list-toolbar bbn-alt-background bbn-vmiddle bbn-xspadded bbn-radius bbn-flex-fill"
+          :style="{
+            'min-height': !collapsed ? '2rem' : '4rem',
+            'justify-content': 'flex-end',
+            'align-items': collapsed ? 'flex-end': ''
+          }"
+          v-if="toolbar">
+        <component :is="toolbar"
+                   :source="toolbarSource"
+                   :total="total"
+                   class="bbn-vmiddle"
+                   :style="{'flex-direction': collapsed ? 'column': ''}"/>
+      </div>
+      <bbn-button v-if="collapsable && !collapsed"
+                  class="bbn-no-border bbn-left-space"
+                  :notext="true"
+                  :text="_('Collapse')"
+                  icon="nf nf-mdi-arrow_collapse"
+                  @click="collapse"
+                  style="height: 100%; width: auto; aspect-ratio: 1"/>
+    </div>
+    <div v-if="!collapsed"
+        :class="['bbn-column-list-main', 'bbn-vpadded', 'bbn-rel', {'bbn-flex-fill': !!scrollable}]"
+        style="width: 100%">
+      <div class="bbn-rel"
+           style="width: 100%; height: 100%">
+        <component :is="scrollable ? 'bbn-scroll' : 'div'"
+                  axis="y"
+                  ref="scroll">
+          <div :class="['bbn-column-list-items', 'bbn-hpadded', {'bbn-overlay': !!scrollable}]">
+            <bbn-loader :style="{position: !scrollable ? 'relative !important' : ''}"
+                        :class="{'bbn-margin': !!scrollable}"
+                        v-if="isLoading"/>
+            <div v-if="items.length && !isLoading"
+                v-for="(item, itemIdx) in items"
+                :class="[
+                  'bbn-column-list-item',
+                  'bbn-radius',
+                  {
+                    'bbn-bottom-space': !!items[itemIdx+1]
+                  }
+                ]"
+                :key="symbol()">
+              <component :is="component"
+                         :source="item.data"
+                         :index="item.index"
+                         v-bind="componentOptions"
+                         :key="!!uid && item.data && (item.data[uid] !== undefined) ? item.data[uid] : symbol()"/>
+            </div>
+          </div>
+        </component>
+      </div>
+    </div>
+    <div v-if="!collapsed && pageable"
+          class="bbn-column-list-footer">
+      <bbn-pager :element="_self"
+                  :limit="false"
+                  :key="symbol()"/>
+    </div>
+  </div>
+</div>
