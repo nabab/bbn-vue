@@ -45,7 +45,7 @@
           }"
           v-if="toolbar">
         <component :is="toolbar"
-                   :source="toolbarSource"
+                   :source="toolbarSource || (!isAjax ? source : undefined)"
                    :total="total"
                    class="bbn-vmiddle"
                    :style="{'flex-direction': collapsed ? 'column': ''}"/>
