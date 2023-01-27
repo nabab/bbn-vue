@@ -2,7 +2,7 @@
       :key="index"
       :style="{width: !collapsed ? width : '', height: scrollable ? '100%' : 'auto'}"
       v-show="isVisible">
-  <div :class="['bbn-radius', 'bbn-background', 'bbn-rel', {
+  <div :class="['bbn-column-list-container', 'bbn-radius', 'bbn-background', 'bbn-rel', {
           'bbn-flex-height': !!scrollable
         }]"
         :style="{
@@ -37,7 +37,7 @@
              letterSpacing: collapsed ? (isMobile ? '' : '-0.2rem') : ''
            }"
            v-if="title !== undefined"/>
-      <div class="bbn-alt-background bbn-vmiddle bbn-xspadded bbn-radius bbn-flex-fill"
+      <div class="bbn-column-list-toolbar bbn-alt-background bbn-vmiddle bbn-xspadded bbn-radius bbn-flex-fill"
           :style="{
             'min-height': !collapsed ? '2rem' : '4rem',
             'justify-content': 'flex-end',
