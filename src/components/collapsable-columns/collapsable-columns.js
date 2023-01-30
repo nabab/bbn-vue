@@ -135,6 +135,14 @@
         type: String,
         default: 'componentOptions'
       },
+      limit: {
+        type: Number,
+        default: 0
+      },
+      childrenLimit: {
+        type: Number,
+        default: 10
+      }
     },
     data(){
       return {
@@ -178,48 +186,21 @@
         return [];
       },
       /**
-       * Collapses a column
-       * @method collapse
-       * @param {Object} column
-       * @fires $set
-       * @emits collapse
-       */
-      collapse(column){
-        this.$set(column, 'opened', false);
-        this.$emit('collapse', column);
-      },
-      /**
        * Collapses all columns
        * @method collapseAll
-       * @fires $set
-       * @emits collapse
        */
       collapseAll(){
-        bbn.fn.each(this.currentData, c => {
-          this.$set(c, 'opened', false);
-          this.$emit('collapse', c);
+        bbn.fn.each(this.columns, c => {
+          c.collapse();
         });
-      },
-      /**
-       * Expands a column
-       * @method collapseAll
-       * @fires $set
-       * @emits expand
-       */
-      expand(column){
-        this.$set(column, 'opened', true);
-        this.$emit('collapse', column);
       },
       /**
        * Expands all columns
        * @method expandAll
-       * @fires $set
-       * @emits expand
        */
       expandAll(){
-        bbn.fn.each(this.currentData, c => {
-          this.$set(c, 'opened', true);
-          this.$emit('expand', c);
+        bbn.fn.each(this.columns, c => {
+          c.expand();
         });
       },
       /**
@@ -227,71 +208,18 @@
        * @method setAllCheckCollapse
        */
       setAllCheckCollapse(){
-        bbn.fn.each(this.columns, c => c.setCheckCollapse());
-      }
-    },
-    components: {
-      column: {
-        name: 'column',
-        mixins: [bbn.vue.listComponent],
-        props: {
-          column: {
-            type: Object
-          },
-          index: {
-            type: Number
-          }
-        },
-        data(){
-          return {
-            main: this.closest('bbn-collapsable-columns'),
-            isVisible: false,
-            uuid: Symbol()
-          }
-        },
-        computed: {
-          items(){
-            if (this.pageable && (!this.isAjax || !this.serverPaging)) {
-              return this.filteredData.slice().splice(this.start, this.currentLimit);
-            }
-            return this.filteredData;
-          }
-        },
-        methods: {
-          setCheckCollapse(){
-            if (this.main.collapseEmpty) {
-              this.$once('dataloaded', () => {
-                this.$set(this.column, 'opened', !!this.filteredData.length);
-              });
-            }
-          }
-        },
-        beforeMount(){
-          this.setCheckCollapse();
-          this.main.columns.push(this);
-        },
-        mounted(){
-          this.$nextTick(() => {
-            this.ready = true;
-          });
-        },
-        beforeDestroy(){
-          this.main.columns.splice(bbn.fn.search(this.main.columns, 'uuid', this.uuid), 1);
-        },
-        watch: {
-          data: {
-            deep: true,
-            handler(){
-              this.updateData();
-            }
-          },
-          isLoaded: {
-            immediate: true,
-            handler(newVal){
-              this.$once('dataloaded', () => {
-                this.isVisible = true;
-              });
-            }
+        bbn.fn.each(this.columns, c => c.setCheckCollapse(true));
+      },
+      /**
+       * Removes a column form the columns list
+       * @method removeColumn
+       * @param {Object} column
+       */
+      removeColumn(column){
+        if (this.columns.length && column.bbnUid) {
+          let idx = bbn.fn.search(this.columns, 'bbnUid', column.bbnUid);
+          if (idx > -1) {
+            this.columns.splice(idx, 1);
           }
         }
       }

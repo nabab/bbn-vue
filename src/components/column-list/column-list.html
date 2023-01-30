@@ -45,7 +45,7 @@
           }"
           v-if="toolbar">
         <component :is="toolbar"
-                   :source="toolbarSource"
+                   :source="toolbarSource || (!isAjax ? source : undefined)"
                    :total="total"
                    class="bbn-vmiddle"
                    :style="{'flex-direction': collapsed ? 'column': ''}"/>
@@ -70,7 +70,7 @@
             <bbn-loader :style="{position: !scrollable ? 'relative !important' : ''}"
                         :class="{'bbn-margin': !!scrollable}"
                         v-if="isLoading"/>
-            <div v-if="items.length && !isLoading"
+            <div v-else-if="items.length"
                 v-for="(item, itemIdx) in items"
                 :class="[
                   'bbn-column-list-item',
@@ -86,6 +86,9 @@
                          v-bind="componentOptions"
                          :key="!!uid && item.data && (item.data[uid] !== undefined) ? item.data[uid] : symbol()"/>
             </div>
+            <div v-else-if="isLoaded"
+                 class="bbn-c bbn-background bbn-radius bbn-spadded"
+                 v-text="noData"/>
           </div>
         </component>
       </div>
