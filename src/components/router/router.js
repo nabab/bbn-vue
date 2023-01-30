@@ -270,7 +270,7 @@
       visualSize: {
         type: Number,
         default(){
-          return Math.min(120, Math.round(Math.min(bbn.env.width, bbn.env.height) / 5))
+          return Math.max(60, Math.min(120, Math.round(Math.min(bbn.env.width, bbn.env.height) / 7)))
         }
       },
       /**
@@ -897,7 +897,10 @@
        * @return {Array} 
        */
       tabsList() {
-        return this.splittable ? bbn.fn.filter(this.views, a => !a.pane) : this.views;
+        return bbn.fn.multiorder(
+          this.splittable ? bbn.fn.filter(this.views, a => !a.pane) : this.views,
+          {static: 'desc', pinned: 'desc', idx: 'asc'}
+        );
       },
       hasVerticalTabs(){
         return !this.isVisual
@@ -3942,7 +3945,7 @@
           </div>
         </div>
         <div>
-          <i class="nf nf-fa-angle_right bbn-hsmargin bbn-large bbn-router-breadcrumb-arrow"/>
+          <i class="nf nf-fa-angle_right bbn-hsmargin bbn-router-breadcrumb-arrow"/>
         </div>
       </div>
 
@@ -4013,7 +4016,7 @@
           @mousedown.prevent.stop="close"
           @mouseup.prevent.stop
           :style="!isHover ? lastColors : {}">
-      <i class="nf nf-fa-times_rectangle bbn-lg"/>
+      <i class="nf nf-fa-times_rectangle"/>
     </div>
   </div>
 </div>

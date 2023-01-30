@@ -1,12 +1,6 @@
 <span :class="['bbn-iblock', 'bbn-unselectable', componentClass]"
       :title="currentName"
-      :style="{
-        'background-color': currentColor,
-        width: currentWidth,
-        height: currentHeight,
-        'border-radius': currentRadius,
-        '-moz-border-radius': currentRadius
-      }">
+      :style="currentStyle">
   <div class="bbn-100 bbn-middle">
     <div class="bbn-block"
          :style="fontStyle"

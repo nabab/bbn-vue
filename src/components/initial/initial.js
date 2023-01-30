@@ -164,6 +164,18 @@
       }
     },
     computed: {
+      currentStyle() {
+        const res = {
+          width: this.currentWidth,
+          height: this.currentHeight,
+          borderRadius: this.currentRadius
+        };
+        if (this.currentColor) {
+          res.backgroundColor = this.currentColor;
+        }
+
+        return res;
+      },
       /**
        * Defines the style of the text based on the properties 'textColor', 'fontWeight', 'fontSize' and 'fontFamily'.
        * @computed fontStyle
@@ -234,7 +246,7 @@
           let colorIndex = Math.floor(sum % this.colors.length);
           col = this.colors[colorIndex]
         }
-        return col ? col : '#000'
+        return col ? col : null;
       },
       /**
        * The font-size.
