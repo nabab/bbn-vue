@@ -70,22 +70,23 @@
                    axis="y"
                    ref="scroll">
           <div :class="['bbn-column-list-items', 'bbn-hpadded', {'bbn-overlay': !!scrollable}]">
-            <div v-if="items.length"
-                v-for="(item, itemIdx) in items"
-                :class="[
-                  'bbn-column-list-item',
-                  'bbn-radius',
-                  {
-                    'bbn-bottom-space': !!items[itemIdx+1]
-                  }
-                ]"
-                :key="symbol()">
-              <component :is="component"
-                         :source="item.data"
-                         :index="item.index"
-                         v-bind="componentOptions"
-                         :key="!!uid && item.data && (item.data[uid] !== undefined) ? item.data[uid] : symbol()"/>
-            </div>
+            <template v-if="items.length">
+              <div v-for="(item, itemIdx) in items"
+                  :class="[
+                    'bbn-column-list-item',
+                    'bbn-radius',
+                    {
+                      'bbn-bottom-space': !!items[itemIdx+1]
+                    }
+                  ]"
+                  :key="symbol()">
+                <component :is="component"
+                           :source="item.data"
+                           :index="item.index"
+                           v-bind="componentOptions"
+                           :key="!!uid && item.data && (item.data[uid] !== undefined) ? item.data[uid] : symbol()"/>
+              </div>
+            </template>
             <div v-else-if="isLoaded"
                  class="bbn-c bbn-background bbn-radius bbn-spadded"
                  v-text="noData"/>
