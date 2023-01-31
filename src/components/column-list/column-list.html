@@ -63,14 +63,14 @@
         style="width: 100%">
       <div class="bbn-rel"
            style="width: 100%; height: 100%">
-        <component :is="scrollable ? 'bbn-scroll' : 'div'"
-                  axis="y"
-                  ref="scroll">
+        <bbn-loader v-if="isLoading"
+                    class="bbn-column-list-loader bbn-margin bbn-background"/>
+        <component v-else
+                   :is="scrollable ? 'bbn-scroll' : 'div'"
+                   axis="y"
+                   ref="scroll">
           <div :class="['bbn-column-list-items', 'bbn-hpadded', {'bbn-overlay': !!scrollable}]">
-            <bbn-loader :style="{position: !scrollable ? 'relative !important' : ''}"
-                        :class="{'bbn-margin': !!scrollable}"
-                        v-if="isLoading"/>
-            <div v-else-if="items.length"
+            <div v-if="items.length"
                 v-for="(item, itemIdx) in items"
                 :class="[
                   'bbn-column-list-item',

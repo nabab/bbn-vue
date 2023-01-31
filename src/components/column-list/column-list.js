@@ -7,7 +7,9 @@
      */
     mixins: [
       bbn.vue.basicComponent,
-      bbn.vue.listComponent
+      bbn.vue.listComponent,
+      bbn.vue.keepCoolComponent,
+      bbn.vue.resizerComponent
     ],
     props: {
       index: {
@@ -143,6 +145,16 @@
           this.$once('dataloaded', () => {
             this.isVisible = true;
           });
+        }
+      },
+      currentPage(newVal){
+        if (!this.scrollable) {
+          let externalScroll = this.closest('bbn-scroll');
+          if (externalScroll && externalScroll.hasScrollY) {
+            this.$once('dataloaded', () => {
+              externalScroll.scrollTo(null, this.$el);
+            })
+          }
         }
       }
     }
