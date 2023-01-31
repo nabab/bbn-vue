@@ -142,7 +142,7 @@
        */
       select(item){
         if (item) {
-          const v = item;
+          let v = item;
           if (this.sourceValue && (item[this.sourceValue] !== undefined)) {
             v = item[this.sourceValue];
           }
