@@ -31,7 +31,8 @@
                         @beforedestroy="removeColumn"
                         @expanded="c => $emit('expanded', c)"
                         @collapse="c => $emit('collapsed', c)"
-                        :uid="uid"/>
+                        :uid="uid"
+                        :start-hidden="true"/>
     </div>
   </component>
 </div>

@@ -135,10 +135,18 @@
         type: String,
         default: 'componentOptions'
       },
+      /**
+       * The limit of rows to be shown in a page of the list.
+       * @prop {Number} [0] limit
+       */
       limit: {
         type: Number,
         default: 0
       },
+      /**
+       * The limit of rows to be shown in a page of the children list.
+       * @prop {Number} [10] limit
+       */
       childrenLimit: {
         type: Number,
         default: 10
@@ -146,6 +154,9 @@
     },
     data(){
       return {
+        /**
+         * @data {Array} [[]] columns
+         */
         columns: []
       }
     },
@@ -156,12 +167,12 @@
        */
       symbol: Symbol,
       /**
-         * Normalizes the data
-         * @method _map
-         * @param {Array} data
-         * @return {Array}
-         */
-       _map(data) {
+       * Normalizes the data
+       * @method _map
+       * @param {Array} data
+       * @return {Array}
+       */
+      _map(data) {
         if (bbn.fn.isArray(data)) {
           if (data.length
             && !bbn.fn.isObject(data[0])
