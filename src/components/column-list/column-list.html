@@ -87,7 +87,7 @@
                            :key="!!uid && item.data && (item.data[uid] !== undefined) ? item.data[uid] : symbol()"/>
               </div>
             </template>
-            <div v-else-if="isLoaded"
+            <div v-else-if="isLoaded && !!noData"
                  class="bbn-c bbn-background bbn-radius bbn-spadded"
                  v-text="noData"/>
           </div>
