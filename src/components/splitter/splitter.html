@@ -13,8 +13,7 @@
        gridTemplateRows: rowsCfg,
      }"
      @scroll.prevent.stop="preventScroll"
-     v-show="panes.length"
->
+     v-show="panes.length">
   <slot></slot>
   <div v-for="(rs, i) in resizers"
        :class="[
