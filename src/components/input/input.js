@@ -253,7 +253,9 @@
           v = bbn.fn.substr(v, this.prefix.length);
         }
 
-        this.currentValue = v;
+        if (this.currentValue !== v) {
+          this.currentValue = v;
+        }
       },
       currentValue(v) {
         if (this.value !== (this.prefix || '') + this.currentValue) {
