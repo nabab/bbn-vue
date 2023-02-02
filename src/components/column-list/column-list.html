@@ -79,12 +79,12 @@
                       'bbn-bottom-space': !!items[itemIdx+1]
                     }
                   ]"
-                  :key="symbol()">
+                  :key="itemIdx">
                 <component :is="component"
                            :source="item.data"
                            :index="item.index"
                            v-bind="componentOptions"
-                           :key="!!uid && item.data && (item.data[uid] !== undefined) ? item.data[uid] : symbol()"/>
+                           :key="!!uid && item.data && (item.data[uid] !== undefined) ? item.data[uid] : itemIdx"/>
               </div>
             </template>
             <div v-else-if="isLoaded && !!noData"
@@ -97,8 +97,7 @@
     <div v-if="!collapsed && pageable"
           class="bbn-column-list-footer">
       <bbn-pager :element="_self"
-                  :limit="false"
-                  :key="symbol()"/>
+                 :limit="false"/>
     </div>
   </div>
 </div>

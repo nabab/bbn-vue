@@ -125,11 +125,6 @@
     },
     methods: {
       /**
-       * Alias of Symbol
-       * @method symbol
-       */
-      symbol: Symbol,
-      /**
        * @method setCheckCollapse
        * @param {Boolean} force
        * @fires $once
