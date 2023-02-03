@@ -14,7 +14,7 @@
     "Is greater than": "",
     "Is less than or equal to": "",
     "Is inferior to": "",
-    "Is greater than or equal to": "",
+    "Is after than or equal to": "",
     "Is after": "",
     "Is prior to or equal to": "",
     "Is older than": "",

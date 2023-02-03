@@ -1,0 +1,19 @@
+{
+    "Clipboard is empty": "Gli appunti sono vuoti",
+    "Search clipboard": "Cerca negli appunti",
+    "Clear all": "Cancella tutto",
+    "Copy plain text": "Copia testo normale",
+    "Copy rich text": "Copia testo ricco",
+    "Copy as image": "Copia come immagine",
+    "Save": "Salva",
+    "Save as...": "Salva come...",
+    "Share": "Condividi",
+    "Remove": "Rimuovi",
+    "Paste or drop something...": "Incolla o rilascia qualcosa...",
+    "Enter the file name": "Inserisci il nome del file",
+    "Other": "Altro",
+    "Are you sure you want to delete the whole content of the clipboard?": "Sei sicuro di voler eliminare l'intero contenuto degli appunti?",
+    "Pin": "Fissa",
+    "Unpin": "Sblocca",
+    "Limit reached, unpin elements to add new ones": "Limite raggiunto, sblocca gli elementi per aggiungerne di nuovi"
+}

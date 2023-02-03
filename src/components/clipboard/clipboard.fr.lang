@@ -12,5 +12,8 @@
     "Paste or drop something...": "Coller ou d\u00e9placer quelque chose ici...",
     "Enter the file name": "Entrez le nom du fichier",
     "Other": "Autre",
-    "Are you sure you want to delete the whole content of the clipboard?": "\u00cates-vous s\u00fbr de vouloir supprimer l'int\u00e9gralit\u00e9 du contenu du presse-papier?"
+    "Are you sure you want to delete the whole content of the clipboard?": "\u00cates-vous s\u00fbr de vouloir supprimer l'int\u00e9gralit\u00e9 du contenu du presse-papier?",
+    "Pin": "",
+    "Unpin": "",
+    "Limit reached, unpin elements to add new ones": ""
 }

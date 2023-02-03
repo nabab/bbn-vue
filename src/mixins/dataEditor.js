@@ -14,7 +14,7 @@
     number: {
       eq: bbn._('Is equal to'),
       neq: bbn._('Is not equal to'),
-      gte: bbn._('Est supérieur ou égal àIs greater than or equal to'),
+      gte: bbn._('Is greater than or equal to'),
       gt: bbn._('Is greater than'),
       lte: bbn._('Is less than or equal to'),
       lt: bbn._('Is inferior to'),
@@ -22,7 +22,7 @@
     date: {
       eq: bbn._('Is equal to'),
       neq: bbn._('Is not equal to'),
-      gte: bbn._('Is greater than or equal to'),
+      gte: bbn._('Is after than or equal to'),
       gt: bbn._('Is after'),
       lte: bbn._('Is prior to or equal to'),
       lt: bbn._('Is older than'),

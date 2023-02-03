@@ -1,0 +1,18 @@
+{
+    "years": "anni",
+    "year": "anno",
+    "months": "mesi",
+    "month": "mese",
+    "days": "giorni",
+    "day": "giorno",
+    "hours": "ore",
+    "hour": "ora",
+    "minutes": "minuti",
+    "minute": "minuto",
+    "seconds": "secondi",
+    "second": "secondo",
+    "milliseconds": "millisecondi",
+    "millisecond": "millisecondo",
+    "The precision is incorrect": "La precisione non è corretta",
+    "The scale is incorrect": "La scala non è corretta"
+}

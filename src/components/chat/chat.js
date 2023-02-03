@@ -1691,7 +1691,7 @@
                   this.$set(this.info, 'title', this.currentTitle)
                 }
                 else {
-                  this.alert(bbn._("Impossible to save the chat'stitle"));
+                  this.alert(bbn._("Impossible to save the chat's title"));
                 }
               })
             }

@@ -12,5 +12,7 @@
     "seconds": "secondes",
     "second": "seconde",
     "milliseconds": "millisecondes",
-    "millisecond": "milliseconde"
+    "millisecond": "milliseconde",
+    "The precision is incorrect": "",
+    "The scale is incorrect": ""
 }

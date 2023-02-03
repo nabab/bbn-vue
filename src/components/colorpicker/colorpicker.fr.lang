@@ -1,6 +1,7 @@
 {
-    "Save": "Enregistrer",
     "Close": "Fermer",
     "Empty": "Vider",
-    "Show palette": "Afficher la palette"
+    "Show palette": "Afficher la palette",
+    "Close palette": "",
+    "Confirm": ""
 }
