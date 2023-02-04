@@ -8,7 +8,7 @@
                 ]"
         ref="element"
         :aria-label="text"
-        @click="click($event)"
+        @click.stop="click($event)"
         @focus="focus($event)"
         @blur="blur($event)"
         @keydown="keydown($event)"

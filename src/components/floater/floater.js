@@ -558,7 +558,6 @@
        * @return {Boolean}
        */
       isVisible(){
-        bbn.fn.log("isVisible", this)
         return this.currentVisible && this.hasContent;
       },
       /**
@@ -949,6 +948,7 @@
               if (!this.isResized) {
                 this.isResized = true;
               }
+              bbn.fn.log("AFTER PROMISE ++++++++++++++", this.isResized = true)
 
               this.$emit('resize');
               if (!wasInit) {

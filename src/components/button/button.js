@@ -7,7 +7,8 @@
  *
  * @author BBN Solutions
  */
-return {
+  return {
+    tag: 'button',
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.eventsComponent
