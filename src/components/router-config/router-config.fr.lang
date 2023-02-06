@@ -13,14 +13,10 @@
     "On the top of the main content": "En haut du contenu principal",
     "On the right of the main content": "A droite du contenu principal",
     "On the bottom of the main content" : "Au bas du contenu principal",
-    "Untitled": "Sans titre",
-    "Loading": "Chargement",
-    "Impossible to find the container for URL": "Impossible de trrouver un conteneur correspondant \u00e0 cette URL",
-    "Untitled site": "Site sans titre",
-    "You have unsaved data, are you sure you want to leave?": "Vous avez des donn\u00e9es non sauvegard\u00e9es, \u00eates-vous sûr de vouloir quitter?",
     "Auto": "Auto",
     "Left": "Gauche",
     "Right": "Droite",
     "Top": "Haut",
-    "Bottom": "Bas"
+    "Bottom": "Bas",
+    "You cannot have more then one mode disabled": ""
 }

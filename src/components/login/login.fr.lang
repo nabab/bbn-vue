@@ -11,6 +11,12 @@
   "Send": "Envoyer",
   "Refresh the page": "Rafraîchissez la page",
   "to be able to log in": "afin de vous connecter",
-  "or click here": "ou cliquez ici",
-  "This login form will expire in 5 minutes": "Ce formulaire d'identification expirera dans 5 minutes"
+  "or click": "ou cliquez",
+  "here": "ici",
+  "This login form will expire in 5 minutes": "Ce formulaire d'identification expirera dans 5 minutes",
+  "Back to the login page": "",
+  "Mandatory field, 8 characters minimum": "",
+  "An email has been sent to %s": "",
+  "Your password has been changed": "",
+  "Passwords must match!": ""
 }

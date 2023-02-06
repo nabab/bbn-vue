@@ -1,0 +1,22 @@
+{
+  "The link is not valid": "Il link non è valido",
+  "Login name": "Nome utente",
+  "Password": "Password",
+  "Password forgotten?": "Password dimenticata?",
+  "Enter your e-mail address": "Inserisci il tuo indirizzo e-mail",
+  "Cancel": "Annulla",
+  "Choose your new password": "Scegli la tua nuova password",
+  "Confirm your new password": "Conferma la tua nuova password",
+  "Log in": "Accesso",
+  "Send": "Invia",
+  "Refresh the page": "Ricarica la pagina",
+  "to be able to log in": "per poter accedere",
+  "or click": "o clicca",
+  "here": "qui",
+  "This login form will expire in 5 minutes": "Questo modulo di accesso scadrà tra 5 minuti",
+  "Back to the login page": "Torna alla pagina di accesso",
+  "Mandatory field, 8 characters minimum": "Campo obbligatorio, minimo 8 caratteri",
+  "An email has been sent to %s": "Un'email è stata inviata a %s",
+  "Your password has been changed": "La tua password è stata cambiata",
+  "Passwords must match!": "Le password devono coincidere!"
+}

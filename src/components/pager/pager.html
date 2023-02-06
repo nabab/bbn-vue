@@ -11,7 +11,7 @@
 		<!-- 1ST BUTTON (FIRST) -->
 		<bbn-button icon="nf nf-fa-angle_double_left"
 								:notext="true"
-								:title="_('Go to the first') + ' ' + pageName"
+								:title="_('Go to the first %s', pageName)"
 								:disabled="element.currentPage <= 2"
 								@click="firstPage"
 								v-if="buttons"/>
@@ -26,7 +26,7 @@
 		<!-- 2ND BUTTON (PREVIOUS) -->
 		<bbn-button icon="nf nf-fa-angle_left"
 								:notext="true"
-								:title="_('Go to the previous') + ' ' + pageName"
+								:title="_('Go to the previous %s', pageName)"
 								:disabled="element.currentPage == 1"
 								@click="prevPage"
 								v-if="buttons"/>
@@ -55,7 +55,7 @@
 		<!-- 3RD BUTTON (NEXT) -->
 		<bbn-button icon="nf nf-fa-angle_right"
 								:notext="true"
-								:title="_('Go to the next') + ' ' + pageName"
+								:title="_('Go to the next %s', pageName)"
 								:disabled="element.currentPage == element.numPages"
 								@click="nextPage"
 								v-if="buttons"/>
@@ -69,7 +69,7 @@
 		<!-- 4TH BUTTON (LAST) -->
 		<bbn-button icon="nf nf-fa-angle_double_right"
 								:notext="true"
-								:title="_('Go to the last') + ' ' + pageName"
+								:title="_('Go to the last %s', pageName)"
 								@click="lastPage"
 								:disabled="element.currentPage >= element.numPages - 1"
 								v-if="buttons"/>
