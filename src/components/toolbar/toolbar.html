@@ -9,7 +9,7 @@
   <slot v-if="slotBefore"></slot>
   <div class="bbn-flex-fill">
     <template v-for="(s, i) in source">
-      <bbn-anonymous v-if="!s.end && s.component"
+      <component v-if="!s.end && s.component"
                 :is="s.component"
                 v-bind="s.options"
                 :key="'item' + i"/>
@@ -36,7 +36,7 @@
   </div>
   <div class="bbn-block bbn-nowrap">
     <template v-for="(s, i) in source">
-      <bbn-anonymous v-if="s.end && s.component"
+      <component v-if="s.end && s.component"
                 :is="s.component"
                 v-bind="s.options"
                 :key="'item' + i"/>

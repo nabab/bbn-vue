@@ -189,14 +189,14 @@
         <div class="bbn-flex-height">
           <div class="bbn-flex-fill">
             <bbn-scroll>
-              <bbn-anonymous :is="cp.$options.components.info"
+              <component :is="cp.$options.components.info"
                     :info="info"
                     :participants="participants"
                     :admins="admins"
                     :user-id="userId"
                     :chat-id="chatId"
                     :users="users"
-              ></bbn-anonymous>
+              ></component>
             </bbn-scroll>
           </div>
           <bbn-button class="bbn-no-hborder bbn-no-radius bbn-no-border-bottom"

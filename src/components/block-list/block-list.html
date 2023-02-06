@@ -10,14 +10,14 @@
          :key="li.key"
          :class="[getComponentName() + '-items']"
     >
-      <bbn-anonymous v-if="currentComponent"
+      <component v-if="currentComponent"
                   :is="currentComponent"
                   v-bind="componentOptions"
                   :source="li.data"
                   :index="li.index"
                   @remove="remove(idx)"
                   :key="li.key"/>
-      <bbn-anonymous v-else
+      <component v-else
                 :is="li.data && li.data.url && !li.data[children] ? 'a' : 'span'"
                 @click.prevent="() => {}"
                 class="bbn-block bbn-padded"
@@ -40,7 +40,7 @@
         <p v-if="li.data.desc"
            :class="componentClass + '-desc'"
            v-html="li.data.desc"/>
-      </bbn-anonymous>
+      </component>
     </div>
   </div>
   <div class="bbn-w-100 bbn-c"

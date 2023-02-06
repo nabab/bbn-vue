@@ -82,13 +82,13 @@
                         'bbn-w-100': !router?.scrollContent
                       }">
             <!-- This is an ad hoc component with unique name -->
-            <bbn-anonymous bbn-if="isComponent && bbnCfg"
+            <component bbn-if="isComponent && bbnCfg"
                       is="div"
                       bbn-cfg="bbnCfg"
                       :source="source"
                       ref="component"/>
             <!-- This is a classic component -->
-            <bbn-anonymous bbn-elseif="component"
+            <component bbn-elseif="component"
                       :is="component"
                       :source="source"
                       ref="component"
@@ -100,7 +100,7 @@
             <!-- This is the slot -->
             <slot bbn-else></slot>
             <!-- Adding style as a component -->
-            <bbn-anonymous is="style"
+            <component is="style"
                       bbn-if="css"
                       scoped="scoped"
                       bbn-html="css"/>

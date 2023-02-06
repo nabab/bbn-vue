@@ -1985,7 +1985,7 @@ return {
           :source="chat"
           :action="cp.url + '/actions/chat/group'"
 >
-  <bbn-anonymous :is="cp.$options.components.info"
+  <component :is="cp.$options.components.info"
              :info="{
                title: '',
                creator: cp.userId
@@ -1996,7 +1996,7 @@ return {
              :users="cp.users"
              @titleChanged="title => chat.title = title"
              :titleVisible="true"
-  ></bbn-anonymous>
+  ></component>
 </bbn-form>
         `,
         name: 'newGroup',

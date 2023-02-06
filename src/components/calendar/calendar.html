@@ -8,9 +8,9 @@
   ></div>
   <div :class="['bbn-widget', 'bbn-flex-height', {'bbn-overlay': type === 'weeks'}]">
     <div class="bbn-calendar-header bbn-header bbn-xspadded bbn-no-border-left bbn-no-border-right bbn-no-border-top">
-      <bbn-anonymous v-if="headerComponent"
+      <component v-if="headerComponent"
                  :is="headerComponent"
-      ></bbn-anonymous>
+      ></component>
       <div v-else
            class="bbn-flex-width bbn-vmiddle"
       >
@@ -122,12 +122,12 @@
               >
                 <span v-text="item.text"></span>
               </div>
-              <bbn-anonymous v-if="itemComponent"
+              <component v-if="itemComponent"
                         :is="itemComponent"
                         :source="item"
                         :selected="currentValue"
                         class="bbn-flex-fill"
-              ></bbn-anonymous>
+              ></component>
             </div>
             <template v-else>
               <i v-if="item.events && item.events.length && eventIcon"

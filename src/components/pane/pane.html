@@ -25,11 +25,11 @@
       'bbn-h-100': !splitter.fullSize && (splitter.panes.length > 1) && isHorizontal,
     }"
          v-show="!isCollapsed">
-      <bbn-anonymous :is="scrollable ? 'bbn-scroll' : 'div'"
+      <component :is="scrollable ? 'bbn-scroll' : 'div'"
                      :class="{'bbn-overlay': splitter.fullSize, 'bbn-w-100': !scrollable && splitter.fullSize}"
                      ref="scroll">
         <slot></slot>
-      </bbn-anonymous>
+      </component>
     </div>
   </div>
 </div>

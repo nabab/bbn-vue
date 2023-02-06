@@ -9,7 +9,7 @@
     <span class="bbn-xl bbn-b bbn-left-sspace"
           v-text="_('Loading') + '...'"/>
   </div>
-  <bbn-anonymous :is="scrollable ? 'bbn-scroll' : 'div'"
+  <component :is="scrollable ? 'bbn-scroll' : 'div'"
              v-else-if="total">
     <div class="bbn-masonry-columns-container"
          :style="containerStyle">
@@ -28,7 +28,7 @@
                         inline-template>
             <div class="bbn-masonry-column-item"
                  :style="itemStyle">
-              <bbn-anonymous :is="source.data.component"
+              <component :is="source.data.component"
                          :source="source.data.source"
                          v-if="!source.slot"/>
               <div v-else
@@ -38,5 +38,5 @@
         </div>
       </masonry-col>
     </div>
-  </bbn-anonymous>
+  </component>
 </div>

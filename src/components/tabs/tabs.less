@@ -1,4 +1,4 @@
-div.bbn-tabs {
+.bbn-tabs {
   border: 0 !important;
   overflow: hidden;
   position: relative;
@@ -9,15 +9,15 @@ div.bbn-tabs {
   &:not(.bbn-tabs-vertical) {
     width: 100%;
   }
-  div.bbn-tabs-ul-container{
+  .bbn-tabs-ul-container{
     width: 100%;
     height: auto;
     //height: 100%;
     //height: 2.4rem;
   }
   &.bbn-tabs-scrollable{
-    > div.bbn-tabs-container{
-      div.bbn-tabs-ul-container{
+    > .bbn-tabs-container{
+      .bbn-tabs-ul-container{
         padding: 0 !important;
         height: 2.4rem;
         ul.bbn-tabs-tabs:first-child{
@@ -25,12 +25,12 @@ div.bbn-tabs {
           overflow: hidden;
         }
       }
-      > div.bbn-tabs-ul-container{
+      > .bbn-tabs-ul-container{
         //padding: 0 2.5rem !important;
       }
     }
   }
-  > div.bbn-tabs-container{
+  > .bbn-tabs-container{
     width:100%;
     ul.bbn-tabs-tabs:first-child{
       height: 100%;
@@ -83,7 +83,7 @@ div.bbn-tabs {
           border-left-color: transparent !important;
           animation: bbn-tabs-tab-loader 1.2s linear infinite;
         }
-        div.bbn-tabs-tab{
+        .bbn-tabs-tab{
           cursor: pointer;
           color: inherit;
           padding: 0.3rem 1.15rem 0.5rem 1.15rem;
@@ -103,7 +103,7 @@ div.bbn-tabs {
             content: "*";
           }
         }
-        div.bbn-tabs-icon{
+        .bbn-tabs-icon{
           position: absolute;
           right: 0px;
           top: 0px;
@@ -125,7 +125,7 @@ div.bbn-tabs {
             }
           }
         }
-        div.bbn-tabs-selected {
+        .bbn-tabs-selected {
           display: none;
           position: absolute;
           bottom: 1px;
@@ -133,20 +133,20 @@ div.bbn-tabs {
           right: 1.15rem;
           height: 3px;
         }
-        &.bbn-tabs-static div.bbn-tabs-icons i.bbn-router-tab-close {
+        &.bbn-tabs-static .bbn-tabs-icons i.bbn-router-tab-close {
           display: none
         }
         &.bbn-tabs-active {
-          div.bbn-tabs-icons i.bbn-router-tab-menu {
+          .bbn-tabs-icons i.bbn-router-tab-menu {
             display: block
           }
-          div.bbn-tabs-selected {
+          .bbn-tabs-selected {
             display: block;
           }
         }
       }
     }
-    > div.bbn-loader {
+    > .bbn-loader {
       align-items: center;
       justify-content: center;
       opacity: 0.5;
@@ -211,7 +211,7 @@ div.bbn-tabs {
         }
       }
     }
-    div.bbn-tabs-button{
+    .bbn-tabs-button{
       //position: absolute;
       width: 2.5rem;
       height: 2.4rem;
@@ -230,11 +230,11 @@ div.bbn-tabs {
   }
   &.bbn-tabs-vertical {
     height: 100%;
-    div.bbn-tabs-ul-container{
+    .bbn-tabs-ul-container{
       width: auto;
       height: 100%;
     }
-    > div.bbn-tabs-container{
+    > .bbn-tabs-container{
       height: 100%;
       ul.bbn-tabs-tabs:first-child{
         > li {

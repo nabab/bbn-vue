@@ -55,7 +55,7 @@
          minHeight: isLoading && (!currentItems || !currentItems.length) ? '15em' : null
        }">
     <!-- COMPONENT -->
-    <bbn-anonymous v-if="component"
+    <component v-if="component"
                 :is="component"
                 :source="currentSource"
                 @hook:mounted="$emit('loaded')"
@@ -74,7 +74,7 @@
             v-if="limit ? idx < limit : true"
             :style="itemStyle"
             :key="uid ? it[uid] : idx">
-          <bbn-anonymous v-if="itemComponent"
+          <component v-if="itemComponent"
                       :is="itemComponent"
                       v-bind="options"
                       :source="it"/>
@@ -88,7 +88,7 @@
       </template>
     </ul>
     <!-- NO DATA MESSAGE -->
-    <bbn-anonymous v-else-if="noDataComponent"
+    <component v-else-if="noDataComponent"
                :is="noDataComponent"/>
     <div v-else>
       <slot>

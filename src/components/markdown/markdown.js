@@ -156,20 +156,20 @@ return {
         this.widget.codemirror.setOption('disableInput', !!v);
         if ( !v && !this.readonly ){
           this.widget.codemirror.setOption('readOnly', false);
-          this.$el.querySelector("div.editor-toolbar").display =  'block'
+          this.$el.querySelector(".editor-toolbar").display =  'block'
         }
         else {
           this.widget.codemirror.setOption('readOnly', true);
-          this.$el.querySelector("div.editor-toolbar").display =  'none'
+          this.$el.querySelector(".editor-toolbar").display =  'none'
         }
       },
       readonlyWidget(v){
         this.widget.codemirror.setOption('readOnly', !!v);
         if ( !v && !this.isDisabled ){
-          this.$el.querySelector("div.editor-toolbar").display =  'block'
+          this.$el.querySelector(".editor-toolbar").display =  'block'
         }
         else {
-          this.$el.querySelector("div.editor-toolbar").display =  'none'
+          this.$el.querySelector(".editor-toolbar").display =  'none'
         }
       }
     },

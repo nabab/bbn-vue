@@ -21,7 +21,7 @@
         @click.stop.prevent="select(idx)"
         @mouseup="afterClick">
       <span class="k-link" v-if="itemComponent">
-        <bbn-anonymous :is="itemComponent" :source="li"></bbn-anonymous>
+        <component :is="itemComponent" :source="li"></component>
       </span>
       <span class="k-link" v-else>
         <span class="space" v-if="(mode === 'selection') || (mode === 'options')">

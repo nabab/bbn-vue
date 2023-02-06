@@ -165,7 +165,7 @@
     </bbn-router>
   </div>
   <!-- FOOTER -->
-  <bbn-anonymous v-if="footerComponent"
+  <component v-if="footerComponent"
               ref="footer"
               class="appui-footer"
               :is="footerComponent"/>
@@ -339,7 +339,7 @@
   <i class="bbn-top-right bbn-p nf nf-fa-times"
       @click="closeBigMessage"/>
 </div>
-<bbn-anonymous ref="app"
+<component ref="app"
             :is="appComponent"/>
 <!-- POST-IT COMPONENT -->
 <appui-note-postits v-if="plugins['appui-note'] && showPostIt"

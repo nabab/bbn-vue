@@ -478,7 +478,7 @@ return {
         name: 'gallery-col',
         template: `
 <div :style="colStyle">
-  <bbn-anonymous :is="gallery.itemComponent || 'gallery-item'"
+  <component :is="gallery.itemComponent || 'gallery-item'"
              v-for="(item, idx) in source"
              :source="item"
              :key="'gallery-item-'+index+'-'+idx"/>

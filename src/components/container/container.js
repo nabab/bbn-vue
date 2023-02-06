@@ -620,7 +620,6 @@ return {
               },
               props: ['source']
             }));
-            bbn.fn.log()
             // The local anonymous component gets defined
             this.$options.components[this.componentName] = this.$el.bbnCfg;
           }

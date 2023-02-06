@@ -1,9 +1,14 @@
-div.bbn-router {
+.bbn-router {
   border: 0 !important;
   overflow: hidden;
   position: relative;
   box-sizing: border-box;
   margin: 0;
+  > .bbn-router-scroller::-webkit-scrollbar {
+    height: 0px;
+    width: 0px;
+    background: transparent;
+  }
   .bbn-router-nav {
     .bbn-router-nav:not(.bbn-router-nav-bc) {
       padding-top: ~"var(--sspace)";
@@ -11,24 +16,6 @@ div.bbn-router {
     }
     &.bbn-router-nav-bc .bbn-router-breadcrumb-master{
       height: 2.5rem;
-    }
-    > .bbn-router-scroller::-webkit-scrollbar {
-      height: 0px;
-      width: 0px;
-      background: transparent;
-    }
-    .bbn-router-loading {
-      content: " ";
-      display: block;
-      width: 8px;
-      height: 8px;
-      margin: 1px;
-      border-radius: 50%;
-      border-style: solid;
-      border-width: 3px;
-      border-right-color: transparent !important;
-      border-left-color: transparent !important;
-      animation: bbn-router-loader 1.2s linear infinite;
     }
     .bbn-pane .bbn-router-nav:not(.bbn-router-nav-bc){
       padding-top: 0;
@@ -41,7 +28,7 @@ div.bbn-router {
       padding-top: 0 !important;
     }
 
-    div.bbn-router-breadcrumb {
+    .bbn-router-breadcrumb {
       border: 0 !important;
       overflow: hidden;
       position: relative;
@@ -50,7 +37,7 @@ div.bbn-router {
       margin: 0;
       padding: 0;
       zoom: 1;
-      > div.bbn-router-breadcrumb-container{
+      > .bbn-router-breadcrumb-container{
         height: 100%;
         .bbn-router-breadcrumb-badge-container{
           position: absolute;
@@ -119,7 +106,7 @@ div.bbn-router {
           margin-left: .7rem;
           vertical-align: middle;
         }
-        > div.bbn-loader {
+        > .bbn-loader {
           align-items: center;
           justify-content: center;
           opacity: 0.5;

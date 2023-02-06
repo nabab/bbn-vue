@@ -22,14 +22,14 @@
                   'bbn-panelbar-right-padded': s.headerComponent || headerComponent
                 }"
             ></div>
-            <bbn-anonymous v-if="s.headerComponent"
+            <component v-if="s.headerComponent"
                       :is="s.headerComponent"
                       v-bind="source[idx]['headerOptions']"
-            ></bbn-anonymous>
-            <bbn-anonymous v-if="headerComponent && !s.headerComponent"
+            ></component>
+            <component v-if="headerComponent && !s.headerComponent"
                       :is="headerComponent"
                       v-bind="headerOptions"
-            ></bbn-anonymous>
+            ></component>
           </div>
         </div>
         <div :class="['bbn-border-box', {
@@ -39,7 +39,7 @@
             }]"
             :style="getStyle(idx)"
         >
-          <bbn-anonymous :is="scrollable ? 'bbn-scroll' : 'div'"
+          <component :is="scrollable ? 'bbn-scroll' : 'div'"
                      :class="{'bbn-w-100': !scrollable}"
                      :key="idx"
           >
@@ -49,22 +49,22 @@
             <div v-else-if="!s.component && component"
                 :class="['bbn-panelbar-content', {'bbn-w-100': !scrollable}]"
             >
-              <bbn-anonymous :is="component"
+              <component :is="component"
                         v-bind="componentOptions"
                         :class="{'bbn-w-100': !scrollable}"
                         @hook:mounted="$emit('componentMounted', component, componentOptions, s)"
-              ></bbn-anonymous>
+              ></component>
             </div>
             <div v-else-if="(s.component)"
                 :class="['bbn-panelbar-content', {'bbn-w-100': !scrollable}]"
             >
-              <bbn-anonymous :is="s.component"
+              <component :is="s.component"
                          v-bind="source[idx]['componentOptions']"
                          :class="{'bbn-w-100': !scrollable}"
                          @hook:mounted="$emit('componentMounted', s.component, s.componentOptions, s)"
-              ></bbn-anonymous>
+              ></component>
             </div>
-          </bbn-anonymous>
+          </component>
         </div>
       </template>
     </div>

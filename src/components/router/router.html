@@ -18,8 +18,7 @@
                   'bbn-router-nav-bc': nav && isBreadcrumb,
                   'bbn-router-nav-verticaltabs': hasVerticalTabs,
                   'bbn-w-100': !scrollContent
-                  }"
-           bbn-forget="!splittable">
+                  }">
         <!-- START OF BREADCRUMB -->
         <div v-if="nav && isBreadcrumb && !isVisual"
             ref="breadcrumb"
@@ -115,7 +114,7 @@
         </div>
         <!-- END OF BREADCRUMB -->
         <!-- START OF LEFT|TOP TABS -->
-        <bbn-tabs v-else-if="nav && !isBreadcrumb && !isVisual && ((orientation !== 'right') && (orientation !== 'bottom'))"
+        <bbn-tabs v-else-if="nav && !isBreadcrumb && !isVisual && !['right', 'bottom'].includes(orientation)"
                   ref="tabs"
                   v-model="selectedTab"
                   @close="closeTab"
@@ -178,7 +177,7 @@
         <!-- END OF CONTENT -->
         <bbn-loader v-if="!ready"/>
         <!-- START OF RIGHT|BOTTOM TABS -->
-        <bbn-tabs v-if="nav && !isBreadcrumb && !isVisual && ((orientation === 'right') || (orientation === 'bottom'))"
+        <bbn-tabs v-if="nav && !isBreadcrumb && !isVisual && ['right', 'bottom'].includes(orientation)"
                   ref="tabs"
                   v-model="selectedTab"
                   @close="closeTab"

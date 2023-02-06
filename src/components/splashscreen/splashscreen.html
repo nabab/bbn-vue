@@ -10,14 +10,14 @@
     </template>
   </div>
   <div class="bbn-splashscreen-container bbn-flex-height bbn-overlay">
-    <bbn-anonymous v-if="headerComponent"
+    <component v-if="headerComponent"
               :is="headerComponent"
               class="bbn-splashscreen-header"/>
     <div v-else-if="header"
         v-html="header"
         class="bbn-splashscreen-header">
     </div>
-    <bbn-anonymous v-if="!!dots && (dotsPosition === 'outsideTop')"
+    <component v-if="!!dots && (dotsPosition === 'outsideTop')"
               :is="$options.components.dots"
               :indexes="currentIndexes"
               v-model="currentIndex"/>
@@ -27,7 +27,7 @@
           <div v-show="ready && (item.index === currentIndex)"
                 class="bbn-splashscreen-slide bbn-overlay">
             <div class="bbn-flex-height bbn-overlay">
-              <bbn-anonymous v-if="item.data.headerComponent"
+              <component v-if="item.data.headerComponent"
                         :is="item.data.headerComponent"
                         class="bbn-splashscreen-slide-header"
                         v-bind="item.data"/>
@@ -35,7 +35,7 @@
                   v-html="item.data.header"
                   class="bbn-splashscreen-slide-header">
               </div>
-              <bbn-anonymous v-if="!!dots && (dotsPosition === 'insideTop')"
+              <component v-if="!!dots && (dotsPosition === 'insideTop')"
                         :is="$options.components.dots"
                         :indexes="currentIndexes"
                         v-model="currentIndex"/>
@@ -48,7 +48,7 @@
                       @click="prev"/>
                   </div>
                   <div class="bbn-flex-fill bbn-splashscreen-slide-body">
-                    <bbn-anonymous v-if="item.data.bodyComponent"
+                    <component v-if="item.data.bodyComponent"
                               :is="item.data.bodyComponent"
                               class="bbn-overlay"
                               v-bind="item.data"/>
@@ -65,11 +65,11 @@
                   </div>
                 </div>
               </div>
-              <bbn-anonymous v-if="!!dots && (dotsPosition === 'insideBottom')"
+              <component v-if="!!dots && (dotsPosition === 'insideBottom')"
                         :is="$options.components.dots"
                         :indexes="currentIndexes"
                         v-model="currentIndex"/>
-              <bbn-anonymous v-if="item.data.footerComponent"
+              <component v-if="item.data.footerComponent"
                         :is="item.data.footerComponent"
                         class="bbn-splashscreen-slide-footer"
                         v-bind="item.data"/>
@@ -82,11 +82,11 @@
         </transition>
       </template>
     </div>
-    <bbn-anonymous v-if="!!dots && (dotsPosition === 'outsideBottom')"
+    <component v-if="!!dots && (dotsPosition === 'outsideBottom')"
               :is="$options.components.dots"
               :indexes="currentIndexes"
               v-model="currentIndex"/>
-    <bbn-anonymous v-if="footerComponent"
+    <component v-if="footerComponent"
               :is="footerComponent"
               class="bbn-splashscreen-footer"/>
     <div v-else-if="footer"

@@ -413,7 +413,7 @@ return {
        * @param {Number} idx
        */
       mouseenter(e, idx){
-        let list = e.target.closest('div.bbn-list')
+        let list = e.target.closest('.bbn-list')
         if (list.__vue__ === this) {
             this.overIdx = idx;
             this.isOver = true;
