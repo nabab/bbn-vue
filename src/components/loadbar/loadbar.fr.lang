@@ -2,7 +2,7 @@
     "Loading": "Chargement",
     "Requests' history": "Historique des requ\u00eates",
     "Are you sure you want to abort this request?": "\u00cates-vous s\u00f9r de vouloir annuler cette requ\u00eate?",
-    "Copy URL": "",
-    "Copied": "",
-    "abort": ""
+    "Copy URL": "Copier l'URL",
+    "Copied": "Copié",
+    "abort": "Annuler"
 }

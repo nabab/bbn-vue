@@ -1,13 +1,13 @@
 {
-  "Bold": "",
-  "Italic": "",
-  "Heading": "",
-  "Quote": "",
-  "Generic List": "",
-  "Numbered List": "",
-  "Create Link": "",
-  "Insert Image": "",
-  "Toggle Preview": "",
-  "Toggle Side by Side": "",
-  "Toggle Fullscreen": ""
+  "Bold": "Gras",
+  "Italic": "Italique",
+  "Heading": "Titre",
+  "Quote": "Citation",
+  "Generic List": "Liste générique",
+  "Numbered List": "Liste numérotée",
+  "Create Link": "Créer un lien",
+  "Insert Image": "Insérer une image",
+  "Toggle Preview": "Activer l'aperçu",
+  "Toggle Side by Side": "Activer l'un à côté de l'autre",
+  "Toggle Fullscreen": "Activer le plein écran"
 }

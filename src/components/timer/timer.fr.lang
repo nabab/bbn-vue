@@ -13,6 +13,6 @@
     "second": "seconde",
     "milliseconds": "millisecondes",
     "millisecond": "milliseconde",
-    "The precision is incorrect": "",
-    "The scale is incorrect": ""
+    "The precision is incorrect": "La précision est incorrecte",
+    "The scale is incorrect": "L'échelle est incorrecte"
 }

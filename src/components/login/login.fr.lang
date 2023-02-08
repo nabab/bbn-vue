@@ -14,9 +14,9 @@
   "or click": "ou cliquez",
   "here": "ici",
   "This login form will expire in 5 minutes": "Ce formulaire d'identification expirera dans 5 minutes",
-  "Back to the login page": "",
-  "Mandatory field, 8 characters minimum": "",
-  "An email has been sent to %s": "",
-  "Your password has been changed": "",
-  "Passwords must match!": ""
+  "Back to the login page": "Retour à la page de connexion",
+  "Mandatory field, 8 characters minimum": "Champ obligatoire, 8 caractères minimum",
+  "An email has been sent to %s": "Un email a été envoyé à %s",
+  "Your password has been changed": "Votre mot de passe a été changé",
+  "Passwords must match!": "Les mots de passe doivent correspondre !"
 }
