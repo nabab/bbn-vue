@@ -162,11 +162,6 @@
     },
     methods: {
       /**
-       * Alias of Symbol
-       * @method symbol
-       */
-      symbol: Symbol,
-      /**
        * Normalizes the data
        * @method _map
        * @param {Array} data
