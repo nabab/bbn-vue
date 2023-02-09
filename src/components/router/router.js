@@ -520,7 +520,7 @@ return {
          * If true visual mode is used for nav (instead of tabs or breadcrumbs)
          * @data {Boolean} visual
          */
-        isVisual: this.visual,
+        isVisual: !!this.visual,
         /**
          * The panes for when splittable is true
          * @data {Array} currentPanes
@@ -3605,7 +3605,7 @@ return {
         }
 
         if (storage.visual !== undefined) {
-          this.isVisual = storage.visual;
+          this.isVisual = !!storage.visual;
         }
 
         if (storage.orientation) {
@@ -3907,7 +3907,7 @@ return {
        * @watch isVisual
        * @fires setConfig
        */
-       isVisual(v) {
+      isVisual(v) {
         this.$nextTick(() => {
           if (this.ready) {
             this.setConfig();

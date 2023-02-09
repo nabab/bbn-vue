@@ -33,10 +33,7 @@ return {
        * @prop {Vue} scroller  
        */
       scroller: {
-        type: Object,
-        default(){
-          return this.$parent.$options.name === 'bbn-scroll' ? this.$parent : null;
-        }
+        type: Object
       },
       /**
        * The rail.

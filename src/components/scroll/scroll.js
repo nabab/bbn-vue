@@ -84,7 +84,7 @@ return {
        * @todo not used
        */
       scrollAlso: {
-        type: [HTMLElement, Array, Function],
+        type: [ Array, Function],
         default(){
           return [];
         }
@@ -995,6 +995,7 @@ return {
             clearInterval(this.interval);
           }
           // Checks every second if the scroll content has been resized and sends onResize if so
+          /*
           this.interval = setInterval(() => {
             if (this.scrollable && this.$el.offsetParent && this.isActiveResizer()) {
               let container = this.getRef('scrollContent');
@@ -1032,6 +1033,7 @@ return {
               }
             }
           }, 1000);
+          */
           this.$emit('ready');
           this.scrollReady = true;
         }

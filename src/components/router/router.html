@@ -155,21 +155,19 @@
               </div>
             </div>
             <slot></slot>
-            <template v-for="a in isVisual ? visualList : views">
+            <template v-for="a in (isVisual ? visualList : views)"
+                      :key="isVisual ? a.view.uid : a.uid">
               <bbn-portal :disabled="!routed || !getPane(a)"
                           bbn-forget="!splittable"
-                          :key="isVisual ? a.view.uid : (component && componentSource && componentUrl ? componentSource[componentUrl] : a.uid)"
                           :selector="getPortalSelector(a)">
                 <bbn-container v-if="(isVisual ? !a.view.real : !a.real) && !component && (!a.pane || routed)"
-                              :key="isVisual ? a.view.uid : a.uid"
                               :visual="isVisual"
                               v-bind="isVisual ? a.view : a"/>
                 <bbn-container v-else
                               :source="componentSource"
                               :visual="isVisual"
                               :component="component"
-                              :key="componentSource[componentUrl]"
-                              :url="componentSource[componentUrl]"/>
+                              :url="a.view?.url || a.url || componentSource[componentUrl]"/>
               </bbn-portal>
             </template>
           </div>
