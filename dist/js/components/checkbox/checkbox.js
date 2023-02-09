@@ -14,22 +14,17 @@ script.innerHTML = `<span :class="['bbn-iblock', componentClass]">
          @change="toggle"
          :checked="state"
          ref="element"
-				 tabindex="0"
-				 @keydown="onKeyDown"
-				 @click="onClick"
-  >
+				 tabindex="0">
   <label class="bbn-checkbox-label bbn-iflex bbn-vmiddle"
          :for="id"
-         @focus="focus"
-         @blur="blur"
-         @keyup="keyup"
-         @keydown="onKeyDown"
-         @click="onClick"
-  >
-		<span class="bbn-left-spadded"
-					v-html="label"
-					v-if="label"
-		></span>
+         @click="onClick">
+    <component v-if="component"
+               :is="component"
+               v-bind="componentOptions"
+               class="bbn-left-spadded"/>
+		<span v-else-if="label"
+          class="bbn-left-spadded"
+					v-html="label"/>
 	</label>
 </span>`;
 script.setAttribute('id', 'bbn-tpl-component-checkbox');
@@ -47,20 +42,20 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
  * @author BBN Solutions
  *
  */
-(bbn => {
+ (bbn => {
   "use strict";
   Vue.component('bbn-checkbox', {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.inputComponent
      * @mixin bbn.vue.eventsComponent
-     *
+     * @mixin bbn.vue.componentInsideComponent
      */
-    mixins: 
-    [
+    mixins: [
       bbn.vue.basicComponent,
       bbn.vue.inputComponent,
-      bbn.vue.eventsComponent
+      bbn.vue.eventsComponent,
+      bbn.vue.componentInsideComponent
     ],
     props: {
       value: {

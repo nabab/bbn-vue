@@ -3,13 +3,7 @@
 let script = document.createElement('script');
 script.innerHTML = `<span :class="['bbn-iblock', 'bbn-unselectable', componentClass]"
       :title="currentName"
-      :style="{
-        'background-color': currentColor,
-        width: currentWidth,
-        height: currentHeight,
-        'border-radius': currentRadius,
-        '-moz-border-radius': currentRadius
-      }">
+      :style="currentStyle">
   <div class="bbn-100 bbn-middle">
     <div class="bbn-block"
          :style="fontStyle"
@@ -185,6 +179,18 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
       }
     },
     computed: {
+      currentStyle() {
+        const res = {
+          width: this.currentWidth,
+          height: this.currentHeight,
+          borderRadius: this.currentRadius
+        };
+        if (this.currentColor) {
+          res.backgroundColor = this.currentColor;
+        }
+
+        return res;
+      },
       /**
        * Defines the style of the text based on the properties 'textColor', 'fontWeight', 'fontSize' and 'fontFamily'.
        * @computed fontStyle
@@ -255,7 +261,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
           let colorIndex = Math.floor(sum % this.colors.length);
           col = this.colors[colorIndex]
         }
-        return col ? col : '#000'
+        return col ? col : null;
       },
       /**
        * The font-size.

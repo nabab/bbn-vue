@@ -96,6 +96,9 @@ script.innerHTML = `<form :action="action"
                 :key="i"
                 v-bind="button"/>
   </div>
+  <div class="bbn-overlay bbn-modal"
+       style="background-color: transparent;"
+       v-if="isLoading"/>
 </form>
 `;
 script.setAttribute('id', 'bbn-tpl-component-form');
@@ -514,10 +517,11 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
         if ( this.buttons ){
           bbn.fn.each(this.buttons.slice(), a => {
             let t = typeof(a);
+            let obj;
             if ( t === 'string' ){
               switch ( a ){
                 case 'cancel':
-                  r.push({
+                  obj = {
                     preset: 'cancel',
                     text: this.cancelText,
                     icon: 'nf nf-fa-times_circle',
@@ -525,10 +529,10 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
                       this.cancel();
                     },
                     disabled: !this.canCancel
-                  });
+                  };
                   break;
                 case 'reset':
-                  r.push({
+                  obj = {
                     preset: 'reset',
                     text: this.resetText,
                     icon: 'nf nf-fa-refresh',
@@ -536,10 +540,10 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
                       this.reset();
                     },
                     disabled: !this.dirty && !this.prefilled
-                  });
+                  };
                   break;
                 case 'submit':
-                  r.push({
+                  obj = {
                     preset: 'submit',
                     text: this.submitText,
                     icon: 'nf nf-fa-check_circle',
@@ -547,7 +551,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
                       this.submit();
                     },
                     disabled: !this.canSubmit
-                  });
+                  };
                   break;
               }
             }
@@ -555,7 +559,13 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
               if ( (typeof a.action === 'string') && bbn.fn.isFunction(this[a.action]) ){
                 a.action = this[a.action];
               }
-              r.push(a);
+              obj = a;
+            }
+            if (obj) {
+              if (this.isLoading) {
+                obj.disabled = true;
+              }
+              r.push(obj);
             }
           });
         }
@@ -1132,6 +1142,9 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
       },
       mode(v) {
         this.currentMode = v;
+      },
+      isLoading() {
+        this.updateButtons();
       }
     }
   });

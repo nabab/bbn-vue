@@ -186,11 +186,11 @@ document.head.insertAdjacentElement('beforeend', css);
       },
       /**
        * The series' background style ('gradient' or 'solid').
-       * @prop {String} ['gradient'] fill
+       * @prop {String} ['solid'] fill
        */
       fill: {
         type: String,
-        default: 'gradient',
+        default: 'solid',
         validator: f => ['gradient', 'solid'].includes(f)
       },
       /**

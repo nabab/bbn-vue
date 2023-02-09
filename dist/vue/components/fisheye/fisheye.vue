@@ -465,24 +465,24 @@
   backface-visibility: hidden;
   transition: all 0.2s ease-in-out;
   transform: translateZ(0);
-  padding: 0.5rem;
+  padding: 0.4rem;
   box-sizing: border-box;
 }
 .bbn-fisheye ul li i {
   backface-visibility: hidden;
-  font-size: 2rem;
+  font-size: 1.8rem;
   display: inline-block;
   transition: all 0.2s ease-in-out;
   transform: translateZ(0);
 }
 .bbn-fisheye ul li i:hover {
-  transform: scale(1.5);
+  transform: scale(1.2);
 }
 .bbn-screen-small .bbn-fisheye ul li i {
   transform: none;
 }
 .bbn-fisheye ul li:hover {
-  transform: scale(1.4);
+  transform: scale(1.2);
 }
 .bbn-screen-small .bbn-fisheye ul li {
   transform: none;

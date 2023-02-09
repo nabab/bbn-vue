@@ -30,7 +30,7 @@
             :maxlength="maxlength"
             :rows="rows"
             :cols="cols"
-  ></textarea>
+            :style="{resize: !resizable ? 'none' : ''}"/>
 </div>
 
 </template>
@@ -80,6 +80,14 @@
        */
 			maxlength: {
 				type: Number
+      },
+      /**
+       * Sets the textarea resizable
+       * @prop {Boolean} [true] resizable
+       */
+      resizable: {
+        type: Boolean,
+        default: true
       }
     },
     methods: {

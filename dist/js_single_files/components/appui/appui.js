@@ -91,20 +91,20 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-background', {
                        :fixed-left="leftShortcuts"/>
           <div v-else v-html="' '"/>
         </div>
-        <!-- SEARCHBAR (MOBILE) -->
+        <!-- SEARCHBAR -->
         <div class="bbn-appui-search bbn-vmiddle bbn-hpadded">
           <div class="bbn-block bbn-p"
                @click="searchOn = true"
                tabindex="0">
             <i ref="icon"
-               class="nf nf-oct-search bbn-xxxl"> </i>
+               class="nf nf-oct-search bbn-xxl"> </i>
           </div>
           <div class="bbn-block bbn-right-lspace"> </div>
           <bbn-context tag="div"
                        class="bbn-block"
                        :source="userMenu">
             <bbn-initial font-size="2rem" :user-name="app.user.name"/>
-            <div style="position: absolute; bottom: -0.4rem; right: -0.4rem; border: #CCC 1px solid; width: 1.1rem; height: 1.1e"
+            <div style="position: absolute; bottom: -0.4rem; right: -0.4rem; border: #CCC 1px solid; width: 1.1rem; height: 1.1rem"
                  class="bbn-bg-white bbn-black bbn-middle">
               <i class="nf nf-fa-bars bbn-xs"/>
             </div>
@@ -184,7 +184,7 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-background', {
     <!-- STATUS -->
     <div v-if="status"
         ref="foot"
-        class="bbn-header bbn-bordered-top appui-statusbar"
+        class="bbn-header bbn-bordered-top appui-statusbar bbn-xspadding"
         style="overflow: visible">
       <div class="bbn-flex-width bbn-h-100">
         <!-- LOADBAR -->
@@ -196,19 +196,19 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-background', {
         <div class="bbn-vmiddle">
           <!-- POST ITS -->
           <div v-if="plugins['appui-note']"
-               class="bbn-right-space">
+               class="bbn-right-smargin">
             <i class="bbn-p nf nf-fa-sticky_note"
                :title="_('Show my post-its')"
                @click="showPostIt = true"/>
           </div>
           <!-- TASK TRACKER -->
           <div v-if="plugins['appui-task']"
-              class="bbn-right-space">
+              class="bbn-right-smargin">
             <appui-task-tracker/>
           </div>
           <!-- CHAT -->
           <div v-if="plugins['appui-chat']"
-               class="bbn-right-space">
+               class="bbn-right-smargin">
             <bbn-chat ref="chat"
                       :url="plugins['appui-chat']"
                       :user-id="app.user.id"
@@ -221,15 +221,15 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-background', {
           </div>
           <!-- NOTIFICATIONS -->
           <div v-if="plugins['appui-notification'] && pollerObject['appui-notification']"
-               class="bbn-right-space">
-            <appui-notification-tray ref="notificationsTray"/>
+               class="bbn-right-smargin">
+            <appui-notification-tray ref="notificationTray"/>
           </div>
           <!-- CLIPBOARD BUTTON -->
           <div v-if="plugins['appui-clipboard'] && clipboard"
               @click.stop.prevent="getRef('clipboard').toggle()"
               ref="clipboardButton"
-              class="bbn-appui-clipboard-button bbn-right-space bbn-p bbn-rel">
-            <i class="nf nf-fa-clipboard bbn-m"
+              class="bbn-appui-clipboard-button bbn-right-smargin bbn-p bbn-rel">
+            <i class="nf nf-fa-clipboard"
                tabindex="-1"/>
             <input class="bbn-invisible bbn-overlay bbn-p"
                   @keydown.space.enter.prevent="getRef('clipboard').toggle()"
@@ -237,17 +237,17 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-background', {
           </div>
           <!-- DEBUGGER -->
           <div v-if="plugins['appui-ide'] && ready && app.user && app.user.isAdmin"
-               class="bbn-right-space">
+               class="bbn-right-smargin">
             <i class="bbn-p nf nf-mdi-bug"
                :title="_('Show the debugger')"
                @click="toggleDebug"/>
           </div>
           <!-- POWER/ENV ICON -->
-          <bbn-context class="bbn-iblock bbn-right-space bbn-p bbn-rel"
+          <bbn-context class="bbn-iblock bbn-right-smargin bbn-p bbn-rel"
                        :title="appMode"
                        tag="div"
                        :source="powerMenu">
-            <i class="nf nf-fa-power_off bbn-m"
+            <i class="nf nf-fa-power_off"
                tabindex="-1"
                :style="{color: powerColor}"/>
           </bbn-context>
@@ -325,7 +325,7 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-background', {
                     :limit="50"
                     :pageable="true"
                     class="bbn-no"/>
-    <div class="bbn-top-right bbn-p bbn-spadded bbn-xxxl"
+    <div class="bbn-top-right bbn-p bbn-spadded bbn-xl"
          @click.stop="searchOn = false">
       <i class="nf nf-fa-times"/>
     </div>
@@ -1354,79 +1354,92 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
               this.messageFromChannel(data);
           }
         })
-        // appui-chat
-        this.$on('appui-chat', (type, data) => {
-          let chat = this.getRef('chat');
-          switch (type) {
-            case 'message':
-              if (bbn.fn.isVue(chat) && bbn.fn.numProperties(data)) {
-                chat.receive(data);
-              }
-              break;
-            case 'messageFromChannel':
-              if (bbn.fn.isVue(chat)) {
-                chat.messageFromChannel(data);
-              }
-              break;
-          }
-        })
-        // appui-core
-        this.$on('appui-core', (type, data) => {
-          if ((type === 'message') && data.observers) {
-            bbn.fn.each(
-              data.observers,
-              obs => bbn.fn.each(
-                bbn.fn.filter(
-                  this.observers,
-                  {id: obs.id}
-                ),
-                o => this.observerEmit(obs.result, o)
-              )
-            );
-          }
-        })
-        // appui-notification
-        this.$on('appui-notification', (type, data) => {
-          if (this.plugins['appui-notification']) {
-            if (type === 'message') {
-              let tray = this.getRef('notificationTray')
-              if (bbn.fn.isVue(tray) && bbn.fn.isFunction(tray.receive)) {
-                tray.receive(data);
-              }
-              if ('browser' in data) {
-                bbn.fn.each(data.browser, n => this.browserNotify(n.title, {
-                  body: bbn.fn.html2text(n.content),
-                  tag: n.id,
-                  timestamp: n.browser,
-                  requireInteraction: true
-                }));
-              }
-            }
-          }
-        });
-        // appui-cron
-        this.$on('appui-cron', (type, data) => {
-          if (type === 'message') {
-            let cron = appui.getRegistered('appui-cron');
-            if (bbn.fn.isVue(cron) && bbn.fn.isFunction(cron.receive)) {
-              cron.receive(data);
-            }
-          }
-        });
 
-        // Set plugins pollerObject
-        if (!this.pollerObject.token) {
-          this.pollerObject.token = bbn.env.token;
-        }
-        if (this.plugins['appui-chat']){
-          this.$set(this.pollerObject, 'appui-chat', {
-            online: null,
-            usersHash: false,
-            chatsHash: false
+        if (this.plugins['appui-core']) {
+          // appui-chat
+          this.$on('appui-chat', (type, data) => {
+            let chat = this.getRef('chat');
+            switch (type) {
+              case 'message':
+                if (bbn.fn.isVue(chat) && bbn.fn.numProperties(data)) {
+                  chat.receive(data);
+                }
+                break;
+              case 'messageFromChannel':
+                if (bbn.fn.isVue(chat)) {
+                  chat.messageFromChannel(data);
+                }
+                break;
+            }
           })
-        }
-        if (this.plugins['appui-notification']) {
-          this.$set(this.pollerObject, 'appui-notification', {unreadHash: false});
+          // appui-core
+          this.$on('appui-core', (type, data) => {
+            if ((type === 'message') && data.observers) {
+              bbn.fn.each(
+                data.observers,
+                obs => bbn.fn.each(
+                  bbn.fn.filter(
+                    this.observers,
+                    {id: obs.id}
+                  ),
+                  o => this.observerEmit(obs.result, o)
+                )
+              );
+            }
+          })
+          // appui-notification
+          this.$on('appui-notification', (type, data) => {
+            if (this.plugins['appui-notification']) {
+              if (type === 'message') {
+                let tray = this.getRef('notificationTray')
+                if (bbn.fn.isVue(tray) && bbn.fn.isFunction(tray.receive)) {
+                  tray.receive(data);
+                }
+                if ('browser' in data) {
+                  bbn.fn.each(data.browser, n => this.browserNotify(n.title, {
+                    body: bbn.fn.html2text(n.content),
+                    tag: n.id,
+                    timestamp: n.browser,
+                    requireInteraction: true
+                  }));
+                }
+              }
+            }
+          });
+          // appui-cron
+          this.$on('appui-cron', (type, data) => {
+            if (type === 'message') {
+              let cron = appui.getRegistered('appui-cron');
+              if (bbn.fn.isVue(cron) && bbn.fn.isFunction(cron.receive)) {
+                cron.receive(data);
+              }
+            }
+          });
+
+          // appui-email
+          this.$on('appui-email', (type, data) => {
+            if (type === 'message') {
+              const email = appui.getRegistered('appui-email');
+              if (bbn.fn.isVue(email) && bbn.fn.isFunction(email.receive)) {
+                email.receive(data);
+              }
+            }
+          });
+
+          // Set plugins pollerObject
+          if (!this.pollerObject.token) {
+            this.pollerObject.token = bbn.env.token;
+          }
+          if (this.plugins['appui-chat']){
+            this.$set(this.pollerObject, 'appui-chat', {
+              online: null,
+              usersHash: false,
+              chatsHash: false
+            })
+          }
+          if (this.plugins['appui-notification']) {
+            this.$set(this.pollerObject, 'appui-notification', {unreadHash: false});
+          }
         }
       }
     },

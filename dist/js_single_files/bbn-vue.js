@@ -2653,7 +2653,7 @@
     number: {
       eq: bbn._('Is equal to'),
       neq: bbn._('Is not equal to'),
-      gte: bbn._('Est supérieur ou égal àIs greater than or equal to'),
+      gte: bbn._('Is greater than or equal to'),
       gt: bbn._('Is greater than'),
       lte: bbn._('Is less than or equal to'),
       lt: bbn._('Is inferior to'),
@@ -2661,7 +2661,7 @@
     date: {
       eq: bbn._('Is equal to'),
       neq: bbn._('Is not equal to'),
-      gte: bbn._('Is greater than or equal to'),
+      gte: bbn._('Is after than or equal to'),
       gt: bbn._('Is after'),
       lte: bbn._('Is prior to or equal to'),
       lt: bbn._('Is older than'),
@@ -3082,6 +3082,19 @@
           type: [String, Object, Function]
         },
         /**
+         * Defines the editor options when editor defined.
+         * @prop {Object} editorOptions
+         */
+        editorOptions: {
+          type: Object
+        },
+        /**
+         * The popup that will be used for the editor
+         */
+        popup: {
+          type: Object
+        },
+        /**
          * Set to true allows to edit inline the fields if no buttons are defined for the table.
          * @prop {Boolean|String|Function} editable
          */
@@ -3282,12 +3295,16 @@
                 data: bbn.fn.isFunction(this.data) ? this.data() : this.data
               }
             }, {
-              title: bbn._('Row edition'),
-              width: 700
+              title: this.tmpRow ? bbn._('Row insertion') : bbn._('Row edition'),
             }, winOptions ? winOptions : {});
             // A component is given as global editor (form)
             if (this.editor) {
               popup.component = bbn.fn.isFunction(this.editor) ? this.editor(row, index) : this.editor;
+              if (this.editorOptions) {
+                popup.componentOptions = bbn.fn.extend({
+                  source: row
+                }, this.editorOptions);
+              }
             }
             // A URL is given and in this case the form will be created automatically with this URL as action
             else if (this.url) {
@@ -3861,7 +3878,7 @@
         /**
          * @todo not used in the component
          */
-         searchFields: {
+        searchFields: {
           type: Array
         },
         /**
@@ -4127,7 +4144,7 @@
           set(val) {
             if ( this.ready ) {
               this.start = val > 1 ? (val - 1) * this.currentLimit : 0;
-              this.updateData();
+              this.updateData(!this.serverPaging);
             }
           }
         },
@@ -4474,7 +4491,7 @@
             return o;
           });
         },
-        async updateData() {
+        async updateData(preventLoad) {
           if (this.beforeUpdate() !== false) {
             this._dataPromise = new Promise(resolve => {
               let prom;
@@ -4491,12 +4508,26 @@
                   return;
                 }
 
-                this.isLoading = true;
-                this.$emit('startloading');
-                let data = this.getData();
-                loadingRequestID = bbn.fn.getRequestId(this.source, data);
-                this.loadingRequestID = loadingRequestID;
-                prom = this.post(this.source, data);
+                if (this._1strun && (preventLoad === true)) {
+                  prom = new Promise((resolve) => {
+                    setTimeout(() => {
+                      resolve({
+                        data: this.currentData,
+                        total: this.currentTotal
+                      })
+                    })
+                  })
+
+                }
+                else {
+                  this.isLoading = true;
+                  this.$emit('startloading');
+                  let data = this.getData();
+                  loadingRequestID = bbn.fn.getRequestId(this.source, data);
+                  this.loadingRequestID = loadingRequestID;
+                  prom = this.post(this.source, data);
+                }
+
               }
               else{
                 prom = new Promise((resolve2) => {
@@ -4505,7 +4536,7 @@
                     data = this.source;
                   }
                   else if ( bbn.fn.isFunction(this.source) ){
-                    data = this.source(this.sourceIndex);
+                    data = this.source(this.sourceIndex, this.data);
                   }
                   else if ( bbn.fn.isObject(this.source) ){
                     bbn.fn.iterate(this.source, (a, n) => {
@@ -4693,12 +4724,12 @@
          * @param {Number} index
          * @param {Strimg} confirm
          * @fires realDelete
-         * @emit beforeDelete
+         * @emit beforedelete
          */
-        delete(index, confirm) {
+        deleteItem(index, confirm) {
           if (this.filteredData[index]) {
             let ev = new Event('delete', {cancelable: true});
-            this.$emit('beforeDelete', this.filteredData[index].data, ev);
+            this.$emit('beforedelete', index, this.filteredData[index].data, this, ev);
             if (!ev.defaultPrevented) {
               if (confirm === undefined) {
                 confirm = this.confirmMessage;

@@ -32,7 +32,7 @@ script.innerHTML = `<div :class="[
             :maxlength="maxlength"
             :rows="rows"
             :cols="cols"
-  ></textarea>
+            :style="{resize: !resizable ? 'none' : ''}"/>
 </div>
 `;
 script.setAttribute('id', 'bbn-tpl-component-textarea');
@@ -83,6 +83,14 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
        */
 			maxlength: {
 				type: Number
+      },
+      /**
+       * Sets the textarea resizable
+       * @prop {Boolean} [true] resizable
+       */
+      resizable: {
+        type: Boolean,
+        default: true
       }
     },
     methods: {

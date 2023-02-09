@@ -14,7 +14,7 @@ script.innerHTML = `<div v-if="ready && (numPages || extraControls)"
 		<!-- 1ST BUTTON (FIRST) -->
 		<bbn-button icon="nf nf-fa-angle_double_left"
 								:notext="true"
-								:title="_('Go to the first') + ' ' + pageName"
+								:title="_('Go to the first %s', pageName)"
 								:disabled="element.currentPage <= 2"
 								@click="firstPage"
 								v-if="buttons"/>
@@ -22,31 +22,23 @@ script.innerHTML = `<div v-if="ready && (numPages || extraControls)"
 		<span v-else
 					class="bbn-iblock bbn-hxspadded bbn-p bbn-pager-mobile-icon"
 					@click="firstPage"
+					:style="{visibility: element.currentPage <= 2 ? 'hidden' : 'visible'}"
 		>
-			<i :class="[
-									'nf nf-fa-angle_double_left',
-									'bbn-xl',
-									'bbn-pager-mobile-icon',
-									{'bbn-invisible': element.currentPage <= 2}
-								 ]"/>
+			<i class="nf nf-fa-angle_double_left bbn-xl bbn-pager-mobile-icon"/>
 		</span>
 		<!-- 2ND BUTTON (PREVIOUS) -->
 		<bbn-button icon="nf nf-fa-angle_left"
 								:notext="true"
-								:title="_('Go to the previous') + ' ' + pageName"
+								:title="_('Go to the previous %s', pageName)"
 								:disabled="element.currentPage == 1"
 								@click="prevPage"
 								v-if="buttons"/>
 		<!-- OR 2ND ICON (PREVIOUS) -->
 		<span v-else
 					class="bbn-iblock bbn-hxspadded bbn-p bbn-pager-mobile-icon"
-					@click="prevPage">
-			<i :class="[
-									'nf nf-fa-angle_left',
-									'bbn-xl',
-									'bbn-pager-mobile-icon',
-									{'bbn-invisible': element.currentPage == 1}
-								 ]"/>
+					@click="prevPage"
+					:style="{visibility: element.currentPage == 1 ? 'hidden' : 'visible'}">
+			<i class="nf nf-fa-angle_left bbn-xl bbn-pager-mobile-icon"/>
 		</span>
 		<!-- PAGE + NUMERIC SELECTOR -->
 		<span class="bbn-iblock" v-text="pageName"/>
@@ -66,39 +58,30 @@ script.innerHTML = `<div v-if="ready && (numPages || extraControls)"
 		<!-- 3RD BUTTON (NEXT) -->
 		<bbn-button icon="nf nf-fa-angle_right"
 								:notext="true"
-								:title="_('Go to the next') + ' ' + pageName"
+								:title="_('Go to the next %s', pageName)"
 								:disabled="element.currentPage == element.numPages"
 								@click="nextPage"
 								v-if="buttons"/>
 		<!-- OR 3RD ICON (NEXT) -->
 		<span v-else
-		      class="bbn-iblock bbn-hxspadded bbn-p bbn-pager-mobile-icon">
-			<i :class="[
-									'nf nf-fa-angle_right',
-									'bbn-xl',
-									'bbn-pager-mobile-icon',
-									{'bbn-invisible': element.currentPage == element.numPages}
-								 ]"
-				 @click="nextPage"/>
+		      class="bbn-iblock bbn-hxspadded bbn-p bbn-pager-mobile-icon"
+					@click="nextPage"
+					:style="{visibility: element.currentPage == element.numPages ? 'hidden' : 'visible'}">
+			<i class="nf nf-fa-angle_right bbn-xl bbn-pager-mobile-icon"/>
 		</span>
 		<!-- 4TH BUTTON (LAST) -->
 		<bbn-button icon="nf nf-fa-angle_double_right"
 								:notext="true"
-								:title="_('Go to the last') + ' ' + pageName"
+								:title="_('Go to the last %s', pageName)"
 								@click="lastPage"
 								:disabled="element.currentPage >= element.numPages - 1"
 								v-if="buttons"/>
 		<!-- OR 4TH ICON (LAST) -->
 		<span v-else
-					class="bbn-iblock bbn-hxspadded bbn-p bbn-pager-mobile-icon">
-			<i :class="[
-									'nf nf-fa-angle_double_right',
-									'bbn-xl',
-									'bbn-pager-mobile-icon',
-									{'bbn-invisible': element.currentPage >= element.numPages - 1}
-								 ]"
-				 @click="lastPage"
-			></i>
+					class="bbn-iblock bbn-hxspadded bbn-p bbn-pager-mobile-icon"
+					@click="lastPage"
+					:style="{visibility: element.currentPage >= element.numPages - 1 ? 'hidden' : 'visible'}">
+			<i class="nf nf-fa-angle_double_right bbn-xl bbn-pager-mobile-icon"/>
 		</span>
 		<span v-if="!!element.limits &&
 								(element.limits.length > 1) &&
@@ -374,7 +357,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
      */
     mounted(){
       if (this.element){
-        if (this.element.ready && !this.ready){
+        if (this.element.ready) {
           this.ready = true;
         }
         else {
@@ -387,7 +370,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
       }
     },
     beforeDestroy() {
-      this.element.$off('dataloaded');
+      this.element.$off('dataloaded', this.updatePager);
     },
     watch: {
       currentPage(v) {

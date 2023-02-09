@@ -14,7 +14,7 @@
     "Is greater than": "Est sup\u00e9rieur \u00e0",
     "Is less than or equal to": "Est inf\u00e9rieur ou \u00e9gal \u00e0",
     "Is inferior to": "Est inf\u00e9rieur \u00e0",
-    "Is greater than or equal to": "Est post\u00e9rieur ou \u00e9gal \u00e0",
+    "Is after than or equal to": "Est post\u00e9rieur ou \u00e9gal \u00e0",
     "Is after": "Est post\u00e9rieur \u00e0",
     "Is prior to or equal to": "Est ant\u00e9rieur ou \u00e9gal \u00e0",
     "Is older than": "Est ant\u00e9rieur \u00e0",

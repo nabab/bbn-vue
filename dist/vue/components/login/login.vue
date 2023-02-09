@@ -376,7 +376,7 @@
         }
         else if (d.success){
           if (this.currentMode === 'lost') {
-            this.alert(bbn._('An email has been sent to') + ' ' + this.currentFormData.email, false);
+            this.alert(bbn._('An email has been sent to %s', this.currentFormData.email), false);
             this.currentMode = 'login';
           }
           else if (this.currentMode === 'change') {

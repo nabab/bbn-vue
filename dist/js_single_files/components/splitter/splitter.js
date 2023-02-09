@@ -16,8 +16,7 @@ script.innerHTML = `<div :class="[
        gridTemplateRows: rowsCfg,
      }"
      @scroll.prevent.stop="preventScroll"
-     v-show="panes.length"
->
+     v-show="panes.length">
   <slot></slot>
   <div v-for="(rs, i) in resizers"
        :class="[
@@ -40,11 +39,10 @@ script.innerHTML = `<div :class="[
           maxHeight: isHorizontal ? null : resizerSize + 'px'
         }"
        @mousedown.prevent.stop="resizeStart($event, rs)"
-       @touchstart.prevent.stop="resizeStart($event, rs)"
-  >
+       @touchstart.prevent.stop="resizeStart($event, rs)">
     <div v-if="areCollapsible(rs.panec1, rs.panec2)"
          class="bbn-splitter-collapser"
-         :style="{fontSize: (resizerSize * 1.2) + 'px'}">
+         :style="{fontSize: (resizerSize * 0.8) + 'px'}">
       <div v-if="isCollapsiblePrev(rs.panec1, rs.panec2)"
            :class="{
              'bbn-w-100': isHorizontal,

@@ -35,7 +35,7 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-vmiddle']">
   <div class="bbn-block bbn-p"
        @click="mainWindowVisible = !mainWindowVisible"
   >
-    <i :class="['bbn-lg', 'nf nf-fa-comments', {
+    <i :class="['nf nf-fa-comments', {
           'bbn-right-sspace': currentOnline && usersOnlineWithoutMe.length,
           'bbn-red': !currentOnline
         }]"
@@ -1995,7 +1995,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
                   this.$set(this.info, 'title', this.currentTitle)
                 }
                 else {
-                  this.alert(bbn._("Impossible to save the chat'stitle"));
+                  this.alert(bbn._("Impossible to save the chat's title"));
                 }
               })
             }

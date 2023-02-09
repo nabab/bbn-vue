@@ -13,20 +13,20 @@
         <i v-if="isClosable"
             :title="_('Close')"
             @click="close"
-            class="bbn-lg nf nf-fa-times"/>
+            class="nf nf-fa-times"/>
         <bbn-context v-if="hasMenu"
                       :source="finalMenu">
           <i :title="_('Menu')"
-              class="bbn-lg nf nf-fa-caret_down"/>
+              class="nf nf-fa-caret_down"/>
         </bbn-context>
         <i v-for="(b, idx) in realButtonsLeft"
             :title="b.text"
             @click="actionButton(b.action, uid)"
-            :class="['bbn-lg', b.icon]"/>
+            :class="b.icon"/>
       </div>
       <!-- TITLE -->
       <div :class="['bbn-widget-title', 'bbn-flex-fill', 'bbn-hpadded', {'bbn-middle': !!icon}]">
-        <i v-if="icon" :class="[icon, 'bbn-right-sspace', 'bbn-m']"/>
+        <i v-if="icon" :class="[icon, 'bbn-right-sspace']"/>
         <h3 :style="dashboard && dashboard.sortable ? 'cursor: move' : ''"
             :class="['bbn-no-margin', {'bbn-iblock': !!icon}]"
             v-html="title"
@@ -44,7 +44,7 @@
         <i v-for="(b, idx) in realButtonsRight"
             :title="b.text"
             @click="actionButton(b.action, uid)"
-            :class="['bbn-lg', b.icon]"/>
+            :class="[b.icon]"/>
       </div>
     </div>
   </div>
@@ -78,7 +78,8 @@
           <component v-if="itemComponent"
                       :is="itemComponent"
                       v-bind="options"
-                      :source="it"/>
+                      :source="it"
+                      :key="!!options && !!options.uid ? it[options.uid] : idx"/>
           <a v-else-if="it && it.text && it.url" :href="it.url" v-html="it.text"/>
           <span v-else-if="it && it.text" v-html="it.text"/>
           <span v-else
@@ -104,28 +105,22 @@
     </div>
     <!-- NAVIGATION IN LIST -->
     <div v-if="currentPage"
-          class="nav bbn-unselectable">
-      <div class="content-buttons nav-first">
-        <i class="nf nf-fa-angle_double_left"
-            @click="nav('first')"
-            :style="{visibility: currentStart > 0 ? 'visible' : 'hidden'}"/>
-      </div>
-      <div class="content-buttons nav-prev">
-        <i class="nf nf-fa-angle_left"
-            @click="nav('prev')"
-            :style="{visibility: currentStart > 0 ? 'visible' : 'hidden'}"/>
-      </div>
+          class="bbn-widget-nav bbn-unselectable">
+      <i class="nf nf-md-chevron_double_left bbn-p bbn-reactive-text"
+          @click="nav('first')"
+          :style="{visibility: currentStart > 0 ? 'visible' : 'hidden'}"/>
+      <i class="nf nf-md-chevron_left bbn-p bbn-reactive-text"
+          @click="nav('prev')"
+          :style="{visibility: currentStart > 0 ? 'visible' : 'hidden'}"/>
+
       <span v-text="currentPage + '/' + totalPages"></span>
-      <div class="content-buttons nav-next">
-        <i class="nf nf-fa-angle_right"
-            @click="nav('next')"
-            :style="{visibility: currentStart < (currentTotal-limit) ? 'visible' : 'hidden'}"/>
-      </div>
-      <div class="content-buttons nav-last">
-        <i class="nf nf-fa-angle_double_right"
-            @click="nav('last')"
-            :style="{visibility: currentStart < (currentTotal-limit) ? 'visible' : 'hidden'}"/>
-      </div>
+
+      <i class="nf nf-md-chevron_right bbn-p bbn-reactive-text"
+          @click="nav('next')"
+          :style="{visibility: currentStart < (currentTotal-limit) ? 'visible' : 'hidden'}"/>
+      <i class="nf nf-md-chevron_double_right bbn-p bbn-reactive-text"
+          @click="nav('last')"
+          :style="{visibility: currentStart < (currentTotal-limit) ? 'visible' : 'hidden'}"/>
     </div>
     <!-- LOADING -->
     <div v-if="isLoading" class="bbn-overlay" style="opacity: 0.5">
@@ -808,35 +803,26 @@
   hyphens: auto;
   word-wrap: break-word;
   display: inline-block;
-  float: left;
   padding-bottom: 1.5rem;
   width: 100%;
   position: relative;
   overflow: hidden;
-}
-.bbn-widget div.content-buttons {
-  cursor: pointer;
 }
 .bbn-widget div.zoom {
   right: 2px;
   position: absolute;
   bottom: 0px;
 }
-.bbn-widget div.nav {
-  right: 50%;
-  margin-right: -25%;
-  width: 50%;
+.bbn-widget div.bbn-widget-nav {
   position: absolute;
+  left: 0px;
+  right: 0px;
   bottom: 0px;
   text-align: center;
+  padding-bottom: var(--xsspace);
 }
-.bbn-widget div.nav > div {
+.bbn-widget div.bbn-widget-nav > div {
   display: inline-block;
-  margin: 0 2px;
-}
-.bbn-widget div.content-buttons:hover,
-.bbn-widget div.content-buttons:focus {
-  opacity: 1;
 }
 .bbn-widget ul.bbn-widget-list {
   margin: 0;

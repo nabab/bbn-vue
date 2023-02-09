@@ -82,7 +82,8 @@ div.bbn-tabs > div.bbn-tabs-container ul.bbn-tabs-tabs:first-child > li .bbn-tab
 div.bbn-tabs > div.bbn-tabs-container ul.bbn-tabs-tabs:first-child > li div.bbn-tabs-tab {
   cursor: pointer;
   color: inherit;
-  padding: 0.3rem 1.15rem 0.5rem 1.15rem;
+  padding: 0.3rem 1.15rem 0.4rem 1.15rem;
+  line-height: 1.7rem;
   vertical-align: middle;
 }
 div.bbn-tabs > div.bbn-tabs-container ul.bbn-tabs-tabs:first-child > li div.bbn-tabs-tab > .bbn-router-tab-text {

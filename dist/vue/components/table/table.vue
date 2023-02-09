@@ -261,6 +261,7 @@
                                       :novalue="false"
                                       :strict="true"
                                       @click.stop
+                                      @beforechange="beforeSelect(i, ...arguments)"
                                       @change="checkSelection(i)"
                                       class="bbn-middle bbn-flex"/>
                       </div>
@@ -342,6 +343,7 @@
                                     :novalue="false"
                                     :strict="true"
                                     @click.stop
+                                    @beforechange="beforeSelect(i, ...arguments)"
                                     @change="checkSelection(i)"
                                     class="bbn-middle bbn-flex"/>
                     </div>
@@ -1117,7 +1119,14 @@
               else {
                 res.push(a)
               }
-            })
+            });
+            if (this.cols[this.colButtons].notext) {
+              bbn.fn.each(res, a => {
+                a.notext = true;
+                return a;
+              });
+            }
+
             return res;
           }
         }
@@ -1230,12 +1239,44 @@
             ar = [];
           }
           bbn.fn.each(ar, a => {
-            let o = bbn.fn.clone( a);
-            if (o.action) {
+            let o;
+            if (bbn.fn.isString(a)) {
+              switch (a) {
+                case 'insert':
+                  o = {
+                    text: bbn._('Add'),
+                    action: this.insert,
+                    icon: 'nf nf-fa-plus'
+                  };
+                  break;
+                case 'export':
+                  o = {
+                    
+                  };
+                  break;
+                case 'print':
+                  o = {
+                    
+                  };
+                  break;
+                // separator or other toolbar param
+                default:
+                  o = a;
+              }
+            }
+            else if (bbn.fn.isObject(a)) {
+              o = bbn.fn.clone( a);
+            }
+            if (o && bbn.fn.isObject(o) && bbn.fn.isString(o.action)) {
               o.action = () => {
                 this._execCommand(a);
               }
             }
+
+            if (!o) {
+              throw new Error(bbn._("Wrong parameter for toolbar"))
+            }
+
             r.push(o);
           });
         }
@@ -2349,31 +2390,26 @@
           <h3>
             <bbn-checkbox :checked="allVisible(tg.value)"
                           @change="checkAll(tg.value)"
-                          :label="tg.text"
-            ></bbn-checkbox>
+                          :label="tg.text"/>
           </h3>
           <ul>
             <li v-for="(col, i) in source.cols"
-                v-if="!col.fixed && (col.group === tg.value) && (col.showable !== false) && (col.title || col.ftitle)"
-            >
+                v-if="!col.fixed && (col.group === tg.value) && (col.showable !== false) && (col.title || col.ftitle)">
               <bbn-checkbox :checked="shownCols[i]"
                             @change="check(col, i)"
                             :label="col.ftitle || col.title"
-                            :contrary="true"
-              ></bbn-checkbox>
+                            :contrary="true"/>
             </li>
           </ul>
         </li>
       </ul>
       <ul v-else>
         <li v-for="(col, i) in source.cols"
-            v-if="!col.fixed && (col.showable !== false) && (col.title || col.ftitle)"
-        >
+            v-if="!col.fixed && (col.showable !== false) && (col.title || col.ftitle)">
           <bbn-checkbox :checked="shownCols[i]"
                         @change="check(col, i)"
                         :label="col.ftitle || col.title"
-                        :contrary="true"
-          ></bbn-checkbox>
+                        :contrary="true"/>
         </li>
       </ul>
     </div>
@@ -2569,6 +2605,9 @@
       save() {
         this.savedConfig = this.jsonConfig;
       },
+      beforeSelect(index, ev) {
+        this.$emit('beforeselect', ev, index, this.items[index]);
+      },
       /**
        * Emits 'select',  'unselect' or 'toggle' at change of checkbox of the row in a selectable table.
        * @method checkSelection
@@ -2579,6 +2618,11 @@
        * @emit toggle
        */
       checkSelection(index, state) {
+        if (this.cancelSelection) {
+          this.cancelSelection = false;
+          return;
+        }
+
         let row = this.items[index];
         if (row) {
           if (this.groupable && row.group) {

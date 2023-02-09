@@ -41,7 +41,8 @@ script.innerHTML = `<div :class="[
                :button-right="currentIcon"
                :button-right-disabled="!filteredData.length"
                :action-right="() => {isOpened = !isOpened}"
-               :nullable="true"/>
+               :nullable="true"
+               :placeholder="placeholder"/>
   </div>
   <bbn-portal v-if="portalSelector"
               :selector="portalSelector">
@@ -163,7 +164,6 @@ document.head.insertAdjacentElement('beforeend', css);
       /**
        * Defines if the component has to be disabled.
        * @prop {Boolean|Function} [false] disabled
-       * @memberof inputComponent
        */
       disabled: {
         type: [Boolean, Function],
@@ -177,6 +177,13 @@ document.head.insertAdjacentElement('beforeend', css);
         type: Boolean,
         default: false
       },
+      /**
+       * The placeholder.
+       * @prop {String} placeholder
+       */
+       placeholder: {
+        type: String
+      }
     },
     data(){
       return {

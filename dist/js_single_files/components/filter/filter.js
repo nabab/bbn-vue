@@ -94,7 +94,7 @@ script.innerHTML = `<div :class="componentClass" :style="'border-left-color:' + 
               <!-- Condition creation line -->
               <div v-if="columns.length > 1"
                    class="bbn-block bbn-filter-padding bbn-db-column">
-                <bbn-autocomplete :source="columns"
+                <bbn-dropdown :source="columns"
                                   v-model="currentField"
                                   name="field[]"
                                   :placeholder="_('Pick a field')"

@@ -32,15 +32,13 @@ script.innerHTML = `<div :class="[
         :value="value"
         :name="name"
         :disabled="isDisabled"
-        :required="required"
-  >
+        :required="required">
   <div class="bbn-bg-black bbn-p bbn-middle theme-button"
       v-if="themeButton"
-      ref="theme_button"
-  >
+      ref="theme_button">
     <i class="nf nf-fa-bars" @click="nextTheme"/>
   </div>
-  <bbn-scrollbar v-if="fill && ready"
+  <bbn-scrollbar v-if="fill && ready && $el"
                 orientation="vertical"
                 ref="scrollbar"
                 :container="$el.querySelector('.CodeMirror-scroll')"/>
@@ -948,12 +946,20 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
           let visibleSuggestions = tokens.find(element => element.end <= cursor.ch && element.string === "<");
           /** show hint only inside the tag in the html mode */
           /** or if cursor is between tags, don't show the hint */
-          if (!visibleSuggestions || (beforeCursorToken.string === '>' && afterCursorToken.string === "</")) {
+          if (!visibleSuggestions || (beforeCursorToken
+            && (beforeCursorToken.string === '>')
+            && afterCursorToken
+            && (afterCursorToken.string === "</"))
+          ) {
             return;
           }
         }
         /** replace --> to -> when the suggestion is selected by Enter key */
-        if (this.mode === 'php' && this.eventKey == 'Enter' && beforeCursorToken.string.includes('-->')) {
+        if ((this.mode === 'php')
+            && (this.eventKey == 'Enter')
+            && beforeCursorToken
+            && (beforeCursorToken.string.includes('-->'))
+        ) {
           this.widget.replaceRange("->", {line: cursor.line, ch: beforeCursorToken.start}, {line: cursor.line, ch: beforeCursorToken.end});
           tokens = this.widget.getLineTokens(cursor.line);
         }
@@ -1160,7 +1166,9 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
 
         setTimeout(() => {
           this.widget.refresh();
-          this.ready = true;
+          this.$nextTick(() => {
+            this.ready = true;
+          })
         }, 250);
       }
     },

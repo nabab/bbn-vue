@@ -1,0 +1,8 @@
+.bbn-masonry .bbn-masonry-columns-container {
+  margin: 0;
+  display: grid;
+}
+.bbn-masonry .bbn-masonry-columns-container .bbn-masonry-item {
+  position: relative;
+  display: block;
+}

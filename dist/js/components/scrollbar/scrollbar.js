@@ -78,7 +78,7 @@ document.head.insertAdjacentElement('beforeend', css);
       },
       /**
        * The rail.
-       * @prop {HTMLElement} container
+       * @prop {HTMLElement|Object} container
        */
       container: {
         type: HTMLElement

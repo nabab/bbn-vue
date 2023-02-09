@@ -222,6 +222,8 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
             d.uid = 'bbn-popup-' + bbn.fn.timestamp().toString() + '-' + bbn.fn.randomString(4, 6);
           }
           d.index = this.items.length;
+          this.setResizeMeasures();
+          this.setContainerMeasures();
           this.items.push(d);
           //this.makeWindows();
           return d.uid;
@@ -305,6 +307,8 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
                 d.uid = 'bbn-popup-' + bbn.fn.timestamp().toString();
               }
               d.index = this.items.length;
+              this.setResizeMeasures();
+              this.setContainerMeasures();
               this.items.push(d);
               this.makeWindows();
             }

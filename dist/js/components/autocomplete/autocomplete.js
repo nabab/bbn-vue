@@ -256,9 +256,14 @@ document.head.insertAdjacentElement('beforeend', css);
        * @emit change
        */
       select(item){
-        if ( item && (item[this.sourceValue] !== undefined) ){
-          this.emitInput(item[this.sourceValue]);
-          this.$emit('change', item[this.sourceValue]);
+        if (item) {
+          let v = item;
+          if (this.sourceValue && (item[this.sourceValue] !== undefined)) {
+            v = item[this.sourceValue];
+          }
+
+          this.emitInput(v);
+          this.$emit('change', v);
           this.currentText = item[this.sourceText];
           this.filterString = item[this.sourceText];
           this.$nextTick(() => {
@@ -303,6 +308,7 @@ document.head.insertAdjacentElement('beforeend', css);
         else if (bbn.var.keys.upDown.includes(e.keyCode)) {
           this.keynav(e);
         }
+        this.$emit('keydown', e);
       },
     },
     /**
@@ -337,9 +343,7 @@ document.head.insertAdjacentElement('beforeend', css);
         }
 
         clearTimeout(this.filterTimeout);
-        bbn.fn.log("CLEARED")
         if (!v && this.nullable && this.inputIsVisible) {
-          bbn.fn.log("NO VALUE")
           this.unfilter();
           this.emitInput(null);
           this.currentText = '';
@@ -348,20 +352,17 @@ document.head.insertAdjacentElement('beforeend', css);
           }
         }
         else if (v) {
-          bbn.fn.log("VALUE")
           if (v.length < this.minLength) {
             if (this.currentData.length) {
               this.currentData.splice(0, this.currentData.length);
             }
           }
           else if ((v !== this.currentText)) {
-            bbn.fn.log("MIN PASSED")
             this.isOpened = false;
             this.filterTimeout = setTimeout(() => {
               // this.filterTimeout = false;
               // We don't relaunch the source if the component has been left
               if (this.isActive) {
-                bbn.fn.log("UPDATING AUTOC");
                 this.currentFilters.conditions.splice(0, this.currentFilters.conditions.length ? 1 : 0, {
                   field: this.sourceText,
                   operator: this.filterMode,

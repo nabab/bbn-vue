@@ -33,7 +33,7 @@
   <div class="bbn-block bbn-p"
        @click="mainWindowVisible = !mainWindowVisible"
   >
-    <i :class="['bbn-lg', 'nf nf-fa-comments', {
+    <i :class="['nf nf-fa-comments', {
           'bbn-right-sspace': currentOnline && usersOnlineWithoutMe.length,
           'bbn-red': !currentOnline
         }]"
@@ -1992,7 +1992,7 @@
                   this.$set(this.info, 'title', this.currentTitle)
                 }
                 else {
-                  this.alert(bbn._("Impossible to save the chat'stitle"));
+                  this.alert(bbn._("Impossible to save the chat's title"));
                 }
               })
             }
@@ -2366,20 +2366,20 @@
 .bbn-chat .bbn-chat-common {
   position: absolute;
   right: 0;
-  z-index: 5;
+  z-index: 10;
   height: 350px;
 }
 .bbn-chat .bbn-chat-users {
   position: absolute;
   right: 0;
-  z-index: 5;
+  z-index: 10;
   height: 350px;
   width: 300px;
 }
 .bbn-chat .bbn-chat-conversation {
   position: absolute;
   right: 0;
-  z-index: 5;
+  z-index: 10;
   height: 350px;
   width: 250px;
 }

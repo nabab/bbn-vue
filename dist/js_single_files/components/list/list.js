@@ -94,7 +94,9 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-floater-list']"
                     :mode="li.data.mode || 'free'"
                     :source="li.data[children]"
                     :element="getRef('li' + idx)"
-                    orientation="horizontal">
+                    :element-width="false"
+                    orientation="horizontal"
+                    :item-component="component">
         </bbn-floater>
         <bbn-list v-else-if="(origin !== 'floater')
                     && children
@@ -105,7 +107,8 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-floater-list']"
                   :uid="uid"
                   :children="children"
                   :source="li.data[children]"
-                  :key="'sublist-' + li.key">
+                  :key="'sublist-' + li.key"
+                  :component="component">
         </bbn-list>
       </li>
     </template>
@@ -766,7 +769,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
        */
       overIdx(newVal) {
         this.keepCool(() => {
-          if (this.hasScroll && newVal && !this.isOver) {
+          if (this.hasScroll && (newVal !== -1) && !this.isOver) {
             this.closest('bbn-scroll').scrollTo(null, this.getRef('li' + newVal));
           }
         }, 'overIdx', 50)

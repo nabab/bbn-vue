@@ -266,24 +266,43 @@
         return st;
       },
     },
-    /**
-     * Checks the type of the value 
-     * @event beforeMount
-     * @fires emitInput
-     */
-    beforeMount(){
-      if ( this.type === 'percent' ){
-        this.unit = '%';
-        this.percent = this.value;
-      }
-      if(this.type === 'value') {
-        this.percent = (this.value - this.min) / (this.max - this.min) * 100;
-      }
-      if ( this.value ){
-        if( bbn.fn.isString(this.value) ){
-          this.value = parseInt(this.value);
+    methods: {
+      /**
+       * Init the component by the type
+       * @method init
+       * @fires emitInput
+       */
+      init(){
+        if ( this.type === 'percent' ){
+          this.unit = '%';
+          this.percent = this.value;
+        }
+        if(this.type === 'value') {
+          this.percent = (this.value - this.min) / (this.max - this.min) * 100;
+        }
+        if ( this.value ){
+          if( bbn.fn.isString(this.value) ){
+            this.value = parseInt(this.value);
+          }
+        }
+        if ( this.type === 'chunk' ){
+          this.chunknumber = ( this.max - this.min ) / this.step,
+          this.selectedChunks = (this.value / 100) * this.chunknumber;
+        }
+        if ( this.max && ( this.value > this.max ) ){
+          this.emitInput(this.max);
+        }
+        if ( this.min && ( this.value < this.min ) ){
+          this.emitInput(this.min);
         }
       }
+    },
+    /**
+     * @event beforeMount
+     * @fires init
+     */
+    beforeMount(){
+      this.init();
       let st = 'margin: auto;';
       if ( this.orientation === 'vertical' ){
         st += 'width: 1.9rem; min-height: ' + (bbn.fn.isNumber(this.height) ? ( this.height  + 'px') : this.height);
@@ -301,16 +320,6 @@
         st += 'height: 1.9rem; min-width: ' + (bbn.fn.isNumber(this.width) ? ( this.width  + 'px') : this.width);
       }
       this.orientationStyle = st += ';';
-      if ( this.type === 'chunk' ){
-        this.chunknumber = ( this.max - this.min ) / this.step,
-        this.selectedChunks = (this.value / 100) * this.chunknumber;
-      }
-      if ( this.max && ( this.value > this.max ) ){
-        this.emitInput(this.max);
-      }
-      if ( this.min && ( this.value < this.min ) ){
-        this.emitInput(this.min);
-      }
       if ( this.rotate && bbn.fn.isNumber(this.rotate) ){
         this.orientationStyle += 'transform: rotate('+ this.rotate + 'deg)'
       }
@@ -326,6 +335,13 @@
         else{
           this.chunkStyle += 'grid-template-rows:repeat(' + this.chunknumber + ',1fr);grid-template-columns: 1fr; min-height: '+ this.height + 'px';
         }
+      },
+      /**
+       * @watch value
+       * @fires init
+       */
+      value(){
+        this.init();
       }
     }
 

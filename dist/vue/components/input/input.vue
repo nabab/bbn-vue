@@ -21,7 +21,6 @@
           :class="[
             'bbn-button-left',
             'bbn-no-vborder',
-            'bbn-m',
             {
               'bbn-invisible': autoHideLeft,
               'bbn-disabled': buttonLeftDisabled
@@ -52,7 +51,13 @@
           @mouseenter="over"
           @mouseleave="out"
           :tabindex="tabindex"
-          :class="{'bbn-flex-fill' : (buttonLeft || buttonRight || isNullable), 'bbn-ellipsis': ellipsis}"
+          :class="{
+            'bbn-flex-fill' : (buttonLeft || buttonRight || isNullable),
+            'bbn-ellipsis': ellipsis,
+            'bbn-radius': !buttonLeft && !buttonRight,
+            'bbn-radius-left': !buttonLeft,
+            'bbn-radius-right': !buttonRight
+          }"
           :size="currentInputSize"
           :inputmode="inputmode"
           :min="min"
@@ -80,7 +85,6 @@
                 :class="[
                   'bbn-button-right',
                   'bbn-no-vborder',
-                  'bbn-m',
                   {
                     'bbn-invisible' : autoHideRight,
                     'bbn-disabled': buttonRightDisabled
@@ -345,7 +349,9 @@
           v = bbn.fn.substr(v, this.prefix.length);
         }
 
-        this.currentValue = v;
+        if (this.currentValue !== v) {
+          this.currentValue = v;
+        }
       },
       currentValue(v) {
         if (this.value !== (this.prefix || '') + this.currentValue) {
@@ -386,6 +392,7 @@
   font-size: inherit;
   font-weight: inherit;
   border-radius: inherit;
+  text-align: inherit;
 }
 .bbn-input.bbn-input-nullable .bbn-input-nullable-container {
   opacity: 0;

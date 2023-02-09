@@ -33,10 +33,10 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-middle', {'bbn-w-100': !f
       <div class="bbn-flex-fill bbn-iflex-height">
         <div class="bbn-flex-fill">
           <div v-if="arrowsPosition.startsWith('top')"
-               class="bbn-flex"
+               class="bbn-flex bbn-bottom-sspace"
                :style="arrowsStyle">
             <i v-show="showArrowLeft"
-               :class="[leftArrowClass, 'bbn-p', 'bbn-xxxl']"
+               :class="[leftArrowClass, 'bbn-p', 'bbn-lg']"
                @click="prev"
                :style="{visibility: (currentIndex === 0 && !loop)? 'hidden' : 'visible'}"/>
             <i v-show="showArrowRight"
@@ -44,7 +44,7 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-middle', {'bbn-w-100': !f
                :class="[
                  rightArrowClass,
                  'bbn-p',
-                 'bbn-xxxl'
+                 'bbn-lg'
                ]"
                :style="{visibility: (currentIndex >= items.length - 1) && !loop ? 'hidden' : 'visible'}"/>
           </div>
@@ -55,7 +55,7 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-middle', {'bbn-w-100': !f
                  @mouseover="arrowsPreview('prev', true)"
                  @mouseleave="arrowsPreview('prev', false)">
               <i v-show="showArrowLeft"
-                 :class="[leftArrowClass, 'bbn-p', 'bbn-xxxl']"
+                 :class="[leftArrowClass, 'bbn-p', 'bbn-lg']"
                  @click="prev"
                  :style="{visibility: (currentIndex === 0 && !loop)? 'hidden' : 'visible'}"/>
             </div>
@@ -155,16 +155,16 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-middle', {'bbn-w-100': !f
                  :class="[
                    rightArrowClass,
                    'bbn-p',
-                   'bbn-xxxl'
+                   'bbn-lg'
                  ]"
                  :style="{visibility: (currentIndex >= items.length - 1) && !loop ? 'hidden' : 'visible'}"/>
             </div>
           </div>
           <div v-if="arrowsPosition.startsWith('bottom')"
-               class="bbn-flex"
+               class="bbn-flex bbn-top-sspace"
                :style="arrowsStyle">
             <i v-show="showArrowLeft"
-               :class="[leftArrowClass, 'bbn-p', 'bbn-xxxl']"
+               :class="[leftArrowClass, 'bbn-p', 'bbn-lg']"
                @click="prev"
                :style="{visibility: (currentIndex === 0 && !loop)? 'hidden' : 'visible'}"/>
             <i v-show="showArrowRight"
@@ -172,7 +172,7 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-middle', {'bbn-w-100': !f
                :class="[
                  rightArrowClass,
                  'bbn-p',
-                 'bbn-xxxl'
+                 'bbn-lg'
                ]"
                :style="{visibility: (currentIndex >= items.length - 1) && !loop ? 'hidden' : 'visible'}"/>
           </div>

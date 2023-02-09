@@ -18,8 +18,7 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-iflex-height', {'bbn-box'
        :style="{
          background: titleBackground,
          color: titleColor
-       }"
-  ></div>
+       }"/>
   <div class="bbn-audio-container bbn-flex-fill bbn-vmiddle"
        :style="{
          background: background
@@ -35,13 +34,11 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-iflex-height', {'bbn-box'
            }"
            :class="cls"
            @play="onPlay"
-           @pause="onPause"
-    >
+           @pause="onPause">
       <source v-if="source"
               :src="source"
-              :type="type"
-      ></source>
-      <p v-text="browserMessage"></p>
+              :type="type"/>
+      <p v-text="browserMessage"/>
     </audio>
   </div>
   <div v-if="title && (titlePosition === 'bottom')"
@@ -56,8 +53,7 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-iflex-height', {'bbn-box'
        :style="{
          background: titleBackground,
          color: titleColor
-       }"
-  ></div>
+       }"/>
 </div>`;
 script.setAttribute('id', 'bbn-tpl-component-audio');
 script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);

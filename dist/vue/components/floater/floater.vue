@@ -143,7 +143,7 @@
         'bbn-white': !!modal,
         'bbn-lg': !modal
       }">
-        <i class="nf nf-fa-times bbn-p"
+        <i :class="closeIcon + ' bbn-p'"
            @click="close()"/>
       </div>
     </div>
@@ -510,6 +510,10 @@
        */
       groupStyle: {
         type: String
+      },
+      closeIcon: {
+        type: String,
+        default: 'nf nf-fa-times'
       }
     },
     data() {
@@ -972,7 +976,13 @@
           return new Promise(resolve => {
             // Should be triggered by the inner scroll once mounted
             if (go) {
-              if (this.definedWidth && this.definedHeight) {
+              if (this.definedWidth
+                && this.definedHeight
+                && (this.definedWidth >= this.currentMinWidth)
+                && (this.definedWidth <= this.currentMaxWidth)
+                && (this.definedHeight >= this.currentMinHeight)
+                && (this.definedHeight <= this.currentMaxHeight)
+              ) {
                 if ((this.realWidth !== this.definedWidth)
                   ||(this.realHeight !== this.definedHeight)
                 ) {

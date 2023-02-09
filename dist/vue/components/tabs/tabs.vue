@@ -16,7 +16,8 @@
           <component :is="scrollable ? 'bbn-scroll' : 'div'"
                      ref="horizontal-scroll"
                      v-bind="scrollCfg"
-                     style="height: 100%">
+                     style="height: 100%"
+                     @ready="onScrollReady">
             <ul ref="tabgroup"
                 class="bbn-alt bbn-tabs-tabs bbn-bordered-bottom bbn-flex-fill">
               <li v-for="(tab, tabIndex) in source"
@@ -87,7 +88,7 @@
                       @keydown.left.down.prevent.stop="getRef('menu-' + tabIndex) ? getRef('menu-' + tabIndex).$el.focus() : null"
                       @keydown.space.enter.prevent.stop="$emit('close', tabIndex)"
                       @click.stop.prevent="$emit('close', tabIndex)">
-                  <i class="nf nf-fa-times"/>
+                  <i class="nf nf-fa-times bbn-xs"/>
                 </span>
                 <bbn-context v-if="(tab.menu !== false) && (tabIndex === value)"
                              class="bbn-iblock bbn-router-tab-menu bbn-p bbn-bottom-right bbn-hxspadded"
@@ -98,7 +99,7 @@
                              :autobind="false"
                              :source-index="tab.idx"
                              :ref="'menu-' + tab.idx">
-                  <i class="nf nf-fa-caret_down"/>
+                  <i class="nf nf-fa-caret_down bbn-xs"/>
                 </bbn-context>
               </li>
             </ul>
@@ -274,12 +275,31 @@
         if (this.router) {
           return this.router.getMenuFn(idx);
         }
+      },
+      onScrollReady() {
+        bbn.fn.log("on scroll, ready");
+        setTimeout(() => {
+          this.updateScroll();
+        }, 1500);
+      },
+      updateScroll() {
+        if (this.scrollable) {
+          const scroll = this.getRef('horizontal-scroll');
+          const tab = this.getRef('tab-' + this.value);
+          if (scroll && tab) {
+            const x = tab.offsetLeft;
+            if ((x < scroll.currentX) || (x > (scroll.currentX + scroll.containerWidth))) {
+              scroll.scrollTo(tab.offsetLeft, 0, true);
+            }
+          }
+        }
       }
     },
     watch: {
       value(v) {
         this.$nextTick(() => {
           this.selectedBarColor = this.source[v] ? this.getFontColor(v) : null;
+          this.updateScroll();
         })
       }
     },
@@ -394,7 +414,8 @@ div.bbn-tabs > div.bbn-tabs-container ul.bbn-tabs-tabs:first-child > li .bbn-tab
 div.bbn-tabs > div.bbn-tabs-container ul.bbn-tabs-tabs:first-child > li div.bbn-tabs-tab {
   cursor: pointer;
   color: inherit;
-  padding: 0.3rem 1.15rem 0.5rem 1.15rem;
+  padding: 0.3rem 1.15rem 0.4rem 1.15rem;
+  line-height: 1.7rem;
   vertical-align: middle;
 }
 div.bbn-tabs > div.bbn-tabs-container ul.bbn-tabs-tabs:first-child > li div.bbn-tabs-tab > .bbn-router-tab-text {

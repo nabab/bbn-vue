@@ -2,26 +2,27 @@
 <component :is="tag"
            :class="componentClass"
            @mouseenter="isVisible = true">
-  <slot></slot>
-  <span class="bbn-p bbn-tooltip-icon bbn-left-xsspace"
-        ref="helper"
-        v-if="icon">
-    <i :class="[icon, 'bbn-m']"/>
-  </span>
-  <bbn-floater v-if="isVisible"
+  <bbn-floater v-if="currentVisible"
                :tag="tag"
                ref="floater"
                tabindex="-1"
                :position="position"
                :content="getContent()"
-               @close="onClose"
+               @close="currentVisible = false"
                :component="component"
                :element="element || $el"
                :element-width="false"
                :arrow="true"
                :distance="distance"
                :auto-hide="500"
-               :scrollable="false"/>
+               :scrollable="false">
+    <slot></slot>
+    <span class="bbn-p bbn-tooltip-icon bbn-left-xsspace"
+          ref="helper"
+          v-if="icon">
+      <i :class="[icon, 'bbn-m']"/>
+    </span>
+  </bbn-floater>
 </component>
 </template>
 <script>
@@ -42,7 +43,7 @@
     /**
      * @mixin bbn.vue.basicComponent
      */
-    mixins: [bbn.vue.basicComponent],
+    mixins: [bbn.vue.basicComponent, bbn.vue.toggleComponent],
     props: {
       /**
        * @prop {(String|Object|Vue)} component
@@ -95,14 +96,18 @@
        */
       element: {
         type: HTMLElement
+      },
+      raw: {
+        type: Boolean,
+        default: false
       }
     },
     data(){
       return {
         /**
-         * @data {Boolean} [false] isVisible
+         * @data {Boolean} [false] currentVisible
          */
-        isVisible: false,
+        currentVisible: false,
       };
     },
     methods: {
@@ -112,16 +117,12 @@
        * @return {String}
        */
       getContent() {
-        return bbn.fn.isFunction(this.source) ? this.source() : this.source;
-      },
-      /**
-       * The method called after the floater close
-       * @methods onClose
-       * @emit close
-       */
-      onClose(){
-        this.isVisible = false;
-        this.$emit('close', this);
+        let st = bbn.fn.isFunction(this.source) ? this.source() : this.source;
+        if (!this.raw) {
+          st = '<div class="bbn-xsvpadding bbn-shpadding">' + st + '</div>';
+        }
+
+        return st;
       }
     }
   });

@@ -34,9 +34,6 @@
   right: unset;
   top: unset;
 }
-.bbn-appui .appui-statusbar {
-  font-size: initial;
-}
 .bbn-appui .bbn-appui-clipboard-button {
   transition: all 0.25s;
   background-color: transparent;

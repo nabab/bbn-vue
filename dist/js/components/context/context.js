@@ -251,8 +251,12 @@ document.head.insertAdjacentElement('beforeend', css);
        * @param e
        */
       clickOut(e){
-        if (!e.target.closest('.bbn-floater-context-' + this.bbnUid)) {
+        if (!e.target.closest('.bbn-floater-context-' + this.bbnUid) && this.showFloater) {
           this.showFloater = false;
+          if (e.preventDefault) {
+            e.preventDefault();
+            e.stopPropagation();
+          }
         }
       },
       /**

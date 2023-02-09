@@ -1,0 +1,8 @@
+.bbn-collapsable-columns {
+  padding-top: 0;
+}
+.bbn-collapsable-columns .bbn-collapsable-columns-container {
+  grid-auto-flow: column;
+  grid-column-gap: 1rem;
+  grid-auto-columns: max-content;
+}

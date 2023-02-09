@@ -264,7 +264,7 @@
             return a.data[this.sourceValue] === this.value;
           });
           if ( row ){
-            this.currentText = row.data[this.sourceText];
+            this.currentText = this.clearHtml ? bbn.fn.html2text(row.data[this.sourceText]) : row.data[this.sourceText];
           }
         }
       })
@@ -424,7 +424,6 @@
 }
 .bbn-dropdown .bbn-dropdown-container .bbn-input div.bbn-flex-width .bbn-button,
 .bbn-dropdown .bbn-dropdown-container select div.bbn-flex-width .bbn-button {
-  font-size: 125%;
   line-height: 100%;
   margin: 0;
 }

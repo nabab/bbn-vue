@@ -22,7 +22,7 @@
     </div>
   </div>
   <bbn-scrollbar v-if="scrollReady && hasScrollX"
-                 :hidden="isResizing || !scrollReady || hiddenX"
+                 :hidden="isResizing || hiddenX"
                  orientation="horizontal"
                  ref="xScroller"
                  :color="barColor ? barColor : ''"
@@ -31,7 +31,7 @@
                  @scroll="scrollHorizontal"
                  :offset="offsetX"/>
   <bbn-scrollbar v-if="scrollReady && hasScrollY"
-                 :hidden="isResizing || !scrollReady || hiddenY"
+                 :hidden="isResizing || hiddenY"
                  orientation="vertical"
                  ref="yScroller"
                  :color="barColor ? barColor : ''"
@@ -867,7 +867,7 @@
        * @fires onResize
        */
       initSize() {
-        return this.onResize().then(() => {
+        return this.onResize(true).then(() => {
           this.ready = true;
         });
       },
@@ -1092,6 +1092,11 @@
       scrollable(newVal){
         if (newVal) {
           this.initSize();
+        }
+        else {
+          this.hasScroll = false;
+          this.hasScrollX = false;
+          this.hasScrollY = false;
         }
       },
       /**

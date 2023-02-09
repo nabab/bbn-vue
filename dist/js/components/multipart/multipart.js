@@ -13,6 +13,7 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-overlay', 'bbn-flex-width
   <div class="bbn-h-100 bbn-flex-fill">
     <bbn-form :full-size="true"
               v-bind="$options.propsData"
+              :confirm-leave="confirmLeave"
               mode="big"
               ref="form">
       <div class="bbn-abs bbn-no"
@@ -89,6 +90,15 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
       prefilled: {
         type: Boolean,
         default: false
+      },
+      /**
+       * A confirmation popup with a costumized message shown before leaving the form.
+       *
+       * @prop {String|Function} confirmLeave
+       */
+      confirmLeave: {
+        type: [Boolean, String, Function],
+        default: bbn._("Are you sure you want to leave?")
       },
       /**
        * Set to true to disable the form.

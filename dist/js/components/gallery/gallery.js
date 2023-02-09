@@ -702,7 +702,7 @@ document.head.insertAdjacentElement('beforeend', css);
 <a v-if="!col.gallery.isLoading"
     :class="['bbn-gallery-item', 'bbn-box', {'bbn-primary': isSelected, 'bbn-p': !!col.gallery.zoomable}]"
     @click="action"
-    @contextmenu.prevent.stop="getRef('menuButton').click()"
+    @contextmenu="onContext"
     :style="aStyle"
     v-draggable="!!col.gallery.isSorting && !!col.gallery.uid"
     v-droppable="!!col.gallery.isSorting && !!col.gallery.uid"
@@ -897,6 +897,14 @@ document.head.insertAdjacentElement('beforeend', css);
               }
             },
             methods: {
+              onContext(ev) {
+                let menuButton = this.getRef('menuButton');
+                if (menuButton) {
+                  ev.preventDefault();
+                  ev.stopImmediatePropagation();
+                  menuButton.click();
+                }
+              },
               /**
                * Alias of bbn.fn.isFunction method
                * @methods isFunction

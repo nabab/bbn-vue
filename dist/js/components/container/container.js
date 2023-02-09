@@ -3,8 +3,9 @@
 
 let script = document.createElement('script');
 script.innerHTML = `<div :class="[componentClass, {
+  'bbn-container-ratio': router.visualShowAll,
   'bbn-overlay': !visual && router.scrollContent,
-  'bbn-w-100': !router.scrollContent
+  'bbn-w-100': !router.scrollContent && !router.visualShowAll
 }]"
      @subready.stop
      :style="visual ? visualStyle : {}"

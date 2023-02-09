@@ -3,35 +3,26 @@
   hyphens: auto;
   word-wrap: break-word;
   display: inline-block;
-  float: left;
   padding-bottom: 1.5rem;
   width: 100%;
   position: relative;
   overflow: hidden;
-}
-.bbn-widget div.content-buttons {
-  cursor: pointer;
 }
 .bbn-widget div.zoom {
   right: 2px;
   position: absolute;
   bottom: 0px;
 }
-.bbn-widget div.nav {
-  right: 50%;
-  margin-right: -25%;
-  width: 50%;
+.bbn-widget div.bbn-widget-nav {
   position: absolute;
+  left: 0px;
+  right: 0px;
   bottom: 0px;
   text-align: center;
+  padding-bottom: var(--xsspace);
 }
-.bbn-widget div.nav > div {
+.bbn-widget div.bbn-widget-nav > div {
   display: inline-block;
-  margin: 0 2px;
-}
-.bbn-widget div.content-buttons:hover,
-.bbn-widget div.content-buttons:focus {
-  opacity: 1;
 }
 .bbn-widget ul.bbn-widget-list {
   margin: 0;

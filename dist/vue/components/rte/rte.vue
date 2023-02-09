@@ -20,25 +20,27 @@
 										:title="false">
 					<bbn-toolbar :source="currentButtons"
 											class="bbn-rte-toolbar bbn-header bbn-radius-top bbn-no-border"
-											:button-space="false"/>
+											:button-space="false"
+											:disabled="disabled || readonly"/>
 				</bbn-floater>
 			</div>
 		</bbn-portal>
-
 	</div>
 	<div v-else
 	     class="bbn-iflex-height"
 			 style="min-height: 100%; width: 100%;">
 		<bbn-toolbar :source="currentButtons"
-								 class="bbn-rte-toolbar bbn-header bbn-radius-top bbn-no-border"
-								 :button-space="false"/>
+								 class="bbn-rte-toolbar bbn-header bbn-radius-top bbn-no-border bbn-spadded"
+								 :button-space="false"
+								 :disabled="disabled || readonly"/>
 		<div class="bbn-flex-fill"
 				 :style="textboxStyle"
 				 @mouseup.stop="getRef('element').focus()">
-			<component :is="currentHeight ? 'bbn-scroll' : 'div'">
+			<component :is="currentHeight ? 'bbn-scroll' : 'div'"
+								 :class="{'bbn-hidden': showSource}">
 				<div class="bbn-spadded bbn-rte-element"
 						 style="min-height: max(4rem, 100%)"
-						 contenteditable="true"
+						 :contenteditable="!readonly && !disabled"
 						 ref="element"
 						 @input="rteOnInput"
 						 @keydown="rteOnKeydown"
@@ -48,11 +50,6 @@
 				     ref="content">
 					<slot></slot>
 				</div>
-				<bbn-code v-model="currentValue"
-				          v-if="showSource"
-									class="bbn-overlay"
-									style="min-height: max(4rem, 100%)"
-									mode="html"/>
 				<textarea :required="required"
 									:readonly="readonly"
 									ref="input"
@@ -60,6 +57,12 @@
 									class="bbn-hidden"
 									:disabled="isDisabled"/>
 			</component>
+			<div v-if="showSource"
+					 style="min-height: max(4rem, 100%)">
+				<bbn-code v-model="currentValue"
+									mode="html"
+									:fill="!!currentHeight"/>
+			</div>
 		</div>
 	</div>
 </div>
@@ -153,7 +156,7 @@
           }
         },
         methods: {
-          setStyle(style, a,b){
+          setStyle(style){
             exec(formatBlock, style);
           }
         },
@@ -164,29 +167,107 @@
         }
       }
     },
-    fontincrease: {
-      icon: 'nf nf-fa-plus',
-      text: bbn._('Increase font size'),
-      notext: true,
+    fontsize: {
+      text: bbn._('Font size'),
       active: false,
-      action: () => {
-        let current = parseInt(queryCommandValue('fontSize'));
-        if (current < 7) {
-          exec('fontSize', current + 1);
+      component: {
+        name: 'bbn-rte-fontsize',
+        template: `
+          <bbn-dropdown class="bbn-rte-fontsize"
+                        :source="sizes"
+                        v-model="currentSize"
+                        :writable="false"
+                        @change="setSize"
+                        :clear-html="true"
+                        title="` + bbn._('Font size') + `"/>
+        `,
+        data(){
+          return {
+            sizes: [{
+              text: '<font class="bbn-rte-fontsize-font" size="1">1</font>',
+              value: 1
+            }, {
+              text: '<font class="bbn-rte-fontsize-font" size="2">2</font>',
+              value: 2
+            }, {
+              text: '<font class="bbn-rte-fontsize-font" size="3">3</font>',
+              value: 3
+            }, {
+              text: '<font class="bbn-rte-fontsize-font" size="4">4</font>',
+              value: 4
+            }, {
+              text: '<font class="bbn-rte-fontsize-font" size="5">5</font>',
+              value: 5
+            }, {
+              text: '<font class="bbn-rte-fontsize-font" size="6">6</font>',
+              value: 6
+            }, {
+              text: '<font class="bbn-rte-fontsize-font" size="7">7</font>',
+              value: 7
+            }],
+            currentSize: ''
+          }
+        },
+        methods: {
+          setSize(style){
+            exec('fontSize', style);
+          }
+        },
+        mounted(){
+          let rte = this.closest('bbn-rte');
+          rte.fontsizeComponent = this;
+          rte.setFontsize();
         }
       }
     },
-    fontdecrease: {
-      icon: 'nf nf-fa-minus',
-      text: bbn._('Decrease font size'),
-      notext: true,
-      active: false,
-      action: () => {
-        let current = parseInt(queryCommandValue('fontSize'));
-        if (current > 1) {
-          exec('fontSize', current - 1);
+    fontincrease: {
+      text: bbn._('Increase font size'),
+      component: {
+        template: `
+          <bbn-button text="` + bbn._('Increase font size') + `"
+                      icon="nf nf-fa-plus"
+                      :notext="true"
+                      @click="onClick"/>
+        `,
+        methods: {
+          onClick(){
+            let current = parseInt(queryCommandValue('fontSize'));
+            if (current < 7) {
+              exec('fontSize', current + 1);
+              let rte = this.closest('bbn-rte');
+              if (rte) {
+                rte.setFontsize();
+              }
+            }
+          }
         }
-      }
+      },
+      active: false
+    },
+    fontdecrease: {
+      text: bbn._('Decrease font size'),
+      component: {
+        template: `
+          <bbn-button text="` + bbn._('Decrease font size') + `"
+                      icon="nf nf-fa-minus"
+                      :notext="true"
+                      @click="onClick"/>
+        `,
+        methods: {
+          onClick(){
+            let current = parseInt(queryCommandValue('fontSize'));
+            if (current > 1) {
+              exec('fontSize', current - 1);
+              let rte = this.closest('bbn-rte');
+              if (rte) {
+                rte.setFontsize();
+              }
+            }
+          }
+        }
+      },
+      notext: true,
+      active: false
     },
     bold: {
       icon: 'nf nf-fa-bold',
@@ -223,15 +304,22 @@
       component: {
         name: 'bbn-rte-fontcolor',
         template: `
-          <span class="bbn-rte-fontcolor bbn-vmiddle bbn-bordered bbn-radius">
+          <span :class="['bbn-rte-fontcolor', 'bbn-vmiddle', 'bbn-iflex', 'bbn-bordered', 'bbn-radius', {
+                  'disabled': !!isDisabled || !!isReadOnly,
+                  'bbn-background': !isDisabled && !isReadOnly
+                }]">
             <i class="nf nf-mdi-format_color_text bbn-hxsspace"/>
             <bbn-colorpicker @change="setColor"
-                             v-model="currentColor"/>
+                             v-model="currentColor"
+                             :disabled="isDisabled"
+                             :readonly="isReadOnly"/>
           </span>
         `,
         data(){
           return {
-            currentColor: bbn.fn.rgb2hex(window.getComputedStyle(document.body).color)
+            currentColor: bbn.fn.rgb2hex(window.getComputedStyle(document.body).color),
+            isDisabled: false,
+            isReadOnly: false
           }
         },
         methods: {
@@ -240,7 +328,16 @@
           }
         },
         mounted(){
-          this.closest('bbn-rte').fontColorComponent = this;
+          const rte = this.closest('bbn-rte');
+          rte.fontColorComponent = this;
+          this.isDisabled = !!rte.disabled;
+          this.isReadOnly = !!rte.readonly;
+          this.disWatch = rte.$watch('disabled', val => this.isDisabled = !!val);
+          this.readWatch = rte.$watch('readonly', val => this.isDisabled = !!val);
+        },
+        beforeDestroy(){
+          this.disWatch();
+          this.readWatch();
         }
       }
     },
@@ -251,15 +348,22 @@
       component: {
         name: 'bbn-rte-fontbgcolor',
         template: `
-        <span class="bbn-rte-fontbgcolor bbn-vmiddle bbn-bordered bbn-radius">
+        <span :class="['bbn-rte-fontbgcolor', 'bbn-vmiddle', 'bbn-iflex', 'bbn-bordered', 'bbn-radius', {
+                'disabled': !!isDisabled || !!isReadOnly,
+                'bbn-background': !isDisabled && !isReadOnly
+              }]">
             <i class="nf nf-mdi-format_color_fill bbn-hxsspace bbn-lg"/>
             <bbn-colorpicker @change="setColor"
-                             v-model="currentColor"/>
+                             v-model="currentColor"
+                             :disabled="isDisabled"
+                             :readonly="isReadOnly"/>
           </span>
         `,
         data(){
           return {
-            currentColor: ''
+            currentColor: '',
+            isDisabled: false,
+            isReadOnly: false
           }
         },
         methods: {
@@ -268,7 +372,16 @@
           }
         },
         mounted(){
-          this.closest('bbn-rte').fontBgColorComponent = this;
+          const rte = this.closest('bbn-rte');
+          rte.fontBgColorComponent = this;
+          this.isDisabled = !!rte.disabled;
+          this.isReadOnly = !!rte.readonly;
+          this.disWatch = rte.$watch('disabled', val => this.isDisabled = !!val);
+          this.readWatch = rte.$watch('readonly', val => this.isDisabled = !!val);
+        },
+        beforeDestroy(){
+          this.disWatch();
+          this.readWatch();
         }
       }
     },
@@ -518,6 +631,10 @@
          */
         fontBgColorComponent : null,
         /**
+         * @data {Vue} fontsizeComponent
+         */
+         fontsizeComponent : null,
+        /**
          * @data {Bool} [false] isEditing
          */
         isEditing: false,
@@ -610,6 +727,7 @@
         this.updateButtonsState();
         this.setColors();
         this.setStyle();
+        this.setFontsize();
       },
       /**
        * @method rteOnInput
@@ -649,6 +767,14 @@
           }
         }
       },
+      /**
+       * @method setFontsize
+       */
+       setFontsize(){
+        if (this.fontsizeComponent) {
+          this.fontsizeComponent.currentSize = parseInt(queryCommandValue('fontSize')) || 2;
+        }
+      },
       onClickDocument(e) {
         let floater = this.getRef('floater');
         let element = this.getRef('element');
@@ -669,7 +795,7 @@
       },
       stopEdit() {
         if (bbn.fn.isNumber(this.stopEditTimeout)) {
-          clearTimeout(this.stopEditTimeout);            
+          clearTimeout(this.stopEditTimeout);
         }
 
         this.stopEditTimeout = setTimeout(() => {
@@ -816,22 +942,42 @@
   box-sizing: content-box;
   clear: both;
 }
-.bbn-rte-toolbar > .bbn-flex-fill {
+.bbn-rte .bbn-code .CodeMirror.CodeMirror-wrap {
+  position: relative !important;
+}
+.bbn-rte-toolbar .bbn-toolbar-fieldset > .bbn-flex-fill {
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
 }
-.bbn-rte-toolbar > .bbn-flex-fill > * {
+.bbn-rte-toolbar .bbn-toolbar-fieldset > .bbn-flex-fill > * {
   margin: 0 .15rem;
 }
-.bbn-rte-toolbar > .bbn-flex-fill .bbn-rte-fontcolor,
-.bbn-rte-toolbar > .bbn-flex-fill .bbn-rte-fontbgcolor {
-  background-color: var(--default-background);
-}
-.bbn-rte-toolbar > .bbn-flex-fill .bbn-rte-fontcolor .bbn-colorpicker-input,
-.bbn-rte-toolbar > .bbn-flex-fill .bbn-rte-fontbgcolor .bbn-colorpicker-input {
+.bbn-rte-toolbar .bbn-toolbar-fieldset > .bbn-flex-fill .bbn-rte-fontcolor .bbn-colorpicker-input,
+.bbn-rte-toolbar .bbn-toolbar-fieldset > .bbn-flex-fill .bbn-rte-fontbgcolor .bbn-colorpicker-input {
   border: 0;
+}
+.bbn-rte-toolbar .bbn-toolbar-fieldset > .bbn-flex-fill .bbn-rte-fontcolor .bbn-colorpicker-input,
+.bbn-rte-toolbar .bbn-toolbar-fieldset > .bbn-flex-fill .bbn-rte-fontbgcolor .bbn-colorpicker-input {
+  display: flex;
+  align-items: center;
+  padding: 0;
+}
+.bbn-rte-toolbar .bbn-toolbar-fieldset > .bbn-flex-fill .bbn-rte-fontcolor.disabled .bbn-textbox,
+.bbn-rte-toolbar .bbn-toolbar-fieldset > .bbn-flex-fill .bbn-rte-fontbgcolor.disabled .bbn-textbox {
+  background-color: transparent !important;
+}
+.bbn-rte-toolbar .bbn-toolbar-fieldset > .bbn-flex-fill .bbn-rte-fontcolor.disabled .bbn-colorpicker-icon,
+.bbn-rte-toolbar .bbn-toolbar-fieldset > .bbn-flex-fill .bbn-rte-fontbgcolor.disabled .bbn-colorpicker-icon {
+  visibility: hidden;
+}
+.bbn-rte-toolbar .bbn-rte-fontsize {
+  width: 3.5rem;
+}
+.bbn-rte-fontsize-font {
+  display: block;
+  line-height: normal !important;
 }
 
 </style>

@@ -13,6 +13,7 @@
   font-size: inherit;
   font-weight: inherit;
   border-radius: inherit;
+  text-align: inherit;
 }
 .bbn-input.bbn-input-nullable .bbn-input-nullable-container {
   opacity: 0;

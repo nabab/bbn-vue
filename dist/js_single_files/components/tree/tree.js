@@ -791,9 +791,6 @@ Vue.component('bbn-tree', {
         if (expand && !this.isRoot && !this.node.isExpanded) {
           this.node.isExpanded = true;
         }
-        else if (!this.node.isExpanded) {
-          return false;
-        }
 
         let cp = this.isRoot && this.scrollable ? this.getRef('scroll') : this;
         if (cp.$children) {
@@ -1337,7 +1334,6 @@ Vue.component('bbn-tree', {
       }
     },
     _setCurrentState(state) {
-      //bbn.fn.log("State", this, state);
       this.currentState = state;
     },
     initStorage(){
@@ -1441,7 +1437,7 @@ Vue.component('bbn-tree', {
               }
             }
             else {
-              delete this.currentState[uid];
+             delete this.currentState[uid];
             }
           })
         }, 50);
@@ -1583,6 +1579,13 @@ Vue.component('bbn-tree', {
       if ( !newVal ){
         this.overNode = false;
         this.overOrder = false;
+      }
+    },
+    quickFilter(newVal){
+      if (!this.isAjax && this.nodes.length) {
+        bbn.fn.each(this.nodes, n => {
+          n.isExpanded = !!newVal.length;
+        });
       }
     }
   },
@@ -1751,15 +1754,12 @@ Vue.component('bbn-tree', {
         },
         isVisible(){
           let tree = this.getRef('tree');
-          return !this.quickFilter ||
-            ((this.source.text.toLowerCase().indexOf(this.quickFilter.toLowerCase()) > -1) && !this.numChildren) ||
-            ((this.source.text.toLowerCase().indexOf(this.quickFilter.toLowerCase()) > -1) && !this.tree.excludedSectionFilter) ||
-            (
-              (this.source.text.toLowerCase().indexOf(this.quickFilter.toLowerCase()) > -1) &&
-              !!this.tree.excludedSectionFilter &&
-              !!(tree && tree.nodes && tree.nodes.filter(n => !!n.isVisible).length)
-            ) ||
-            !!(tree && tree.nodes && tree.nodes.filter(n => !!n.isVisible).length)
+          return !this.quickFilter
+            || (this.source.text.toLowerCase().includes(this.quickFilter.toLowerCase())
+              && (!this.numChildren
+                || !this.tree.excludedSectionFilter
+                || (tree && tree.nodes && bbn.fn.filter(tree.nodes, n => !!n.isVisible).length)))
+            || (tree && tree.nodes && bbn.fn.filter(tree.nodes, n => !!n.isVisible).length)
         },
         isExpanded: {
           get(){

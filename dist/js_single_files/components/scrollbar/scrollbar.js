@@ -71,7 +71,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
       },
       /**
        * The rail.
-       * @prop {HTMLElement} container
+       * @prop {HTMLElement|Object} container
        */
       container: {
         type: HTMLElement
