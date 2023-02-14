@@ -235,7 +235,6 @@ return {
       this.init();
     },
     mounted(){
-      bbn.fn.log("input mounted")
       if (this.required) {
         this.getRef('element').setAttribute('required', '');
       }
@@ -254,6 +253,7 @@ return {
       },
       currentValue(v) {
         if (this.value !== (this.prefix || '') + this.currentValue) {
+          this.getRef('element').value = v;
           this.emitValue(v);
         }
       },
