@@ -803,6 +803,7 @@ return {
      * @event created 
      */
     created(){
+      bbn.fn.warning("container created")
       this.componentClass.push('bbn-resize-emitter');
       if ( this.isComponent ){
         bbnContainerCreator.componentsList.push(this.componentName);

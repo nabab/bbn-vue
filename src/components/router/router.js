@@ -333,7 +333,7 @@ return {
        */
       collapsible: {
         type: Boolean,
-        default: true
+        default: false
       },
       /**
        * If true when splittable the extra panes can be resized

@@ -4,7 +4,6 @@
              'bbn-w-100': !scrollContent
              }]">
   <bbn-splitter :resizable="resizable"
-                :collapsible="collapsible"
                 :full-size="scrollContent"
                 bbn-forget="!splittable"
                 ref="topSplitter">
@@ -155,7 +154,7 @@
               </div>
             </div>
             <slot></slot>
-            <template v-for="a in (isVisual ? visualList : views)"
+            <div v-for="a in (isVisual ? visualList : views)"
                       :key="isVisual ? a.view.uid : a.uid">
               <bbn-portal :disabled="!routed || !getPane(a)"
                           bbn-forget="!splittable"
@@ -169,7 +168,7 @@
                               :component="component"
                               :url="a.view?.url || a.url || componentSource[componentUrl]"/>
               </bbn-portal>
-            </template>
+            </div>
           </div>
         </bbn-scroll>
         <!-- END OF CONTENT -->
