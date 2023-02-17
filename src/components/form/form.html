@@ -89,7 +89,7 @@
   <div v-else-if="!window && realButtons.length && (currentMode === 'big')"
        class="bbn-form-footer bbn-popup-footer bbn-button-group bbn-flex-width bbn-lg">
     <bbn-button v-for="(button, i) in realButtons"
-                :class="{'bbn-primary': button.preset === 'submit'}"
+                :class="[{'bbn-primary': button.preset === 'submit'}, button.cls || '']"
                 :key="i"
                 v-bind="button"/>
   </div>
