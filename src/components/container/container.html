@@ -72,7 +72,7 @@
                     bbn-show="!hidden && isLoaded && (isVisible || cached) && popups.length"/>
           <!-- This is shown when it's ready -->
           <bbn-scroll bbn-if="isLoaded && (isVisible || ((real || cached) && ready) || router?.isVisual)"
-                      bbn-show="ready && isVisible || (router?.isVisual && !thumbnail)"
+                      bbn-show="ready && (isVisible || (router?.isVisual && !thumbnail))"
                       ref="scroll"
                       @ready="init"
                       :scrollable="scrollable && router?.scrollContent"
