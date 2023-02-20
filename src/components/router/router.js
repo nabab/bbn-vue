@@ -3760,10 +3760,6 @@ return {
 
       this.ready = true;
 
-      bbn.fn.log(this.views, url);
-      alert("jhkjkk");
-      //bbn.fn.error();
-
       if (!this.views.length) {
         this.init(url);
       }
