@@ -3571,7 +3571,7 @@ return {
       // Case where the rooter is at root level
       else {
         // Opening the database for the visual mode multiview
-        if (!this.single && bbnRouterCreator.db) {
+        if (this.nav && !this.single && bbnRouterCreator.db) {
           bbn.db.open('bbn').then(r => {
             this.db = r;
           }, err => {
@@ -3684,6 +3684,7 @@ return {
         tmp = bbn.fn.multiorder(tmp, {real: 'desc'});
       }
 
+
       // Adding to the views
       bbn.fn.each(tmp, a => {
         if (!bbn.fn.isString(a.url)) {
@@ -3758,6 +3759,10 @@ return {
       }
 
       this.ready = true;
+
+      bbn.fn.log(this.views, url);
+      alert("jhkjkk");
+      //bbn.fn.error();
 
       if (!this.views.length) {
         this.init(url);

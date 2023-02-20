@@ -154,7 +154,7 @@
               </div>
             </div>
             <slot></slot>
-            <div v-for="a in (isVisual ? visualList : views)"
+            <template v-for="a in (isVisual ? visualList : views)"
                       :key="isVisual ? a.view.uid : a.uid">
               <bbn-portal :disabled="!routed || !getPane(a)"
                           bbn-forget="!splittable"
@@ -162,17 +162,16 @@
                 <bbn-container v-if="(isVisual ? !a.view.real : !a.real) && !component && (!a.pane || routed)"
                               :visual="isVisual"
                               v-bind="isVisual ? a.view : a"/>
-                <bbn-container v-else
+                <bbn-container v-else-if="component"
                               :source="componentSource"
                               :visual="isVisual"
                               :component="component"
                               :url="a.view?.url || a.url || componentSource[componentUrl]"/>
               </bbn-portal>
-            </div>
+            </template>
           </div>
         </bbn-scroll>
         <!-- END OF CONTENT -->
-        <bbn-loader v-if="!ready"/>
         <!-- START OF RIGHT|BOTTOM TABS -->
         <bbn-tabs v-if="nav && !isBreadcrumb && !isVisual && ['right', 'bottom'].includes(orientation)"
                   ref="tabs"
@@ -237,4 +236,5 @@
       </div>
     </div>
   </bbn-floater>
+  <bbn-loader v-if="!ready"/>
 </div>
