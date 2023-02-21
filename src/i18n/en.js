@@ -43,8 +43,11 @@
     "Deleted successfully": "",
     "No data": "",
     "Are you sure you want to delete this group of conditions?": "",
+    "Row insertion": "",
     "Row edition": "",
     "Impossible to open a window if either an editor or a URL is not set": "",
-    "Close": ""
+    "Close": "",
+    "Page": "",
+    "Untitled": ""
 	});
 })();

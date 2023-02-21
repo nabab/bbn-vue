@@ -2,14 +2,14 @@
   bbn.fn.autoExtend("lng", {
     "Contains": "Contiene",
     "Is": "È",
-    "Is not": "Non È",
+    "Is not": "Non è",
     "Starts with": "Inizia con",
     "Does not contain": "Non contiene",
     "To end by": "Termina per",
     "Is empty": "È vuoto",
-    "Is not empty": "Non È vuoto",
+    "Is not empty": "Non è vuoto",
     "Is equal to": "È uguale a",
-    "Is not equal to": "Non È uguale a",
+    "Is not equal to": "Non è uguale a",
     "Is greater than or equal to": "È maggiore di o uguale a",
     "Is greater than": "È maggiore di",
     "Is less than or equal to": "È minore di o uguale a",
@@ -43,8 +43,11 @@
     "Deleted successfully": "Eliminato con successo",
     "No data": "Nessun dato",
     "Are you sure you want to delete this group of conditions?": "Sei sicuro di voler eliminare questo gruppo di condizioni?",
+    "Row insertion": "Inserimento riga",
     "Row edition": "Modifica della riga",
     "Impossible to open a window if either an editor or a URL is not set": "Impossibile aprire una finestra se non è impostato un editor o un URL",
-    "Close": "Chiudi"
+    "Close": "Chiudi",
+    "Page": "Pagina",
+    "Untitled": "Senza titolo"
 	});
 })();
