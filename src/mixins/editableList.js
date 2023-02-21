@@ -204,7 +204,7 @@
          */
         edit(row, winOptions, index) {
           if (!this.editable) {
-            throw new Error("The component is not editable, you cannot use the edit function");
+            throw new Error(_("The component is not editable, you cannot use the edit function"));
           }
           if ( !winOptions ){
             winOptions = {};
