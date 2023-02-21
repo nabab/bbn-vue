@@ -48,6 +48,7 @@
     "Impossible to open a window if either an editor or a URL is not set": "",
     "Close": "",
     "Page": "",
-    "Untitled": ""
+    "Untitled": "",
+    "The component is not editable, you cannot use the edit function": ""
 	});
 })();
