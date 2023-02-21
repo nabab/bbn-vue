@@ -58,7 +58,9 @@
          * @prop component
          * @memberof viewComponent
          */
-        component: {},
+        component: {
+          type: [String, Object, Function]
+        },
         /**
          * Defines the icon.
          * @prop {String|Boolean} icon

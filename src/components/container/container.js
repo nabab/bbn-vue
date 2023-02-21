@@ -93,7 +93,8 @@ return {
         default: 43200000
       },
       pane: {},
-      error: {}
+      error: {},
+      component: {}
     },
     data(){
       return {
