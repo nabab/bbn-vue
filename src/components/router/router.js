@@ -1256,6 +1256,7 @@ return {
 
         this.numRegistered++;
         this.urls[cp.url] = cp;
+        bbn.fn.log("REGISRTE", cp.url, this.urls[cp.url])
         if (this.isVisual) {
           cp.$on('view', () => {
             this.visualShowAll = false;
@@ -1283,7 +1284,7 @@ return {
        * @param {Vue} cp
        */
       unregister(cp) {
-        //bbn.fn.log("UNREGISTERING " + cp.url);
+        bbn.fn.log("UNREGISTERING " + cp.url);
         if (!bbn.fn.isString(cp.url)) {
           throw Error(bbn._('The component bbn-container must have a URL defined'));
         }
@@ -2277,7 +2278,8 @@ return {
                 delete d.data;
               }
               if ( (d.url !== d.current) && this.urls[d.current] ){
-                bbn.fn.warning("DELETING VIEW CASE.... " + d.current + ' ' + this.urls[d.current].currentIndex, d.url, bbn.fn.search(this.views, {idx: this.urls[d.current].idx}));
+                bbn.fn.warning("DELETING VIEW CASE.... " + d.current + ' ' + this.urls[d.current].currentIndex);
+                bbn.fn.log(d.url, bbn.fn.search(this.views, {idx: this.urls[d.current].idx}));
                 this.remove(this.urls[d.current].currentIndex, true);
                 callRealInit = false;
                 /*
@@ -2365,6 +2367,7 @@ return {
         }
       },
       realInit(url) {
+        bbn.fn.log("REAL INIT", url, this.urls, this.views)
         if (this.urls[url]) {
           this.urls[url].setLoaded(true);
           // Otherwise the changes we just did on the props wont be taken into account at container level
