@@ -83,12 +83,11 @@
                       }">
             <!-- This is an ad hoc component with unique name -->
             <component bbn-if="isComponent && bbnCfg"
-                      is="div"
-                      bbn-cfg="bbnCfg"
+                      :is="bbnCfg"
                       :source="source"
                       ref="component"/>
             <!-- This is a classic component -->
-            <bbn-anonymous bbn-elseif="component"
+            <component bbn-elseif="component"
                       :is="component"
                       :source="source"
                       ref="component"

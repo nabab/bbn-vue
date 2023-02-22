@@ -1082,7 +1082,6 @@ return {
         let index;
         //obj must be an object with property url
         if (bbn.fn.isObject(obj) && bbn.fn.isString(obj.url)) {
-          bbn.fn.warning("ADDING CONTAINER 0 " + obj.url);
           // This is a component
           if (obj.$options) {
             if (!obj.current && !obj.currentURL) {
@@ -1175,7 +1174,6 @@ return {
             }
 
             index = this.search(obj.url);
-            bbn.fn.warning("ADDING CONTAINER " + obj.current + " (" + index + ")");
             if ( index !== false ){
               let o = this.views[index],
                   cn = this.urls[this.views[index].url];
@@ -2218,7 +2216,6 @@ return {
           }
 
           if (toAdd){
-            bbn.fn.warning("BEFORE")
             this.add({
               url: url,
               title: view && view.title ? view.title : bbn._('Loading'),
@@ -2233,7 +2230,6 @@ return {
               hidden: false,
               last: bbn.fn.timestamp()
             }, idx);
-            bbn.fn.warning("AFTER")
           }
           else if (!this.views[idx].loading) {
             this.views[idx].loading = true;

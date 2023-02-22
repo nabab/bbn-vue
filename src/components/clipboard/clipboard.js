@@ -162,7 +162,6 @@ return {
        * @fires unsetStorage
        */
       add(data) {
-        bbn.fn.log("ADDING IN CB", data);
         let dt = bbn.fn.timestamp();
         let uid = dt;
         let ar = [{

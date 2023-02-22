@@ -578,6 +578,7 @@ return {
 
           if (this.currentView.script){
             res = typeof this.currentView.script === 'string' ? eval(this.currentView.script) : this.currentView.script;
+            bbn.fn.log("************************************", res);
             // if evaluating the script property returns a function that will be onMount
             if (bbn.fn.isFunction(res) ){
               this.onMount = res;
@@ -587,7 +588,7 @@ return {
             else if (res && (typeof(res) === 'object')) {
               this.isComponent = true;
               this.bbnCfg = res;
-              this.bbnTpl = this.content;
+              bbnCfg.template = this.content;
             }
           }
           else if ( this.content ){
