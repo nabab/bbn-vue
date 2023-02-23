@@ -573,6 +573,7 @@ return {
        * @method init
        */
       init() {
+        bbn.fn.log("INIT")
         if (this.isVisible && (this.real || (this.isLoaded && !this.ready))) {
           let res;
 
@@ -586,9 +587,16 @@ return {
             }
             // Otherwise if it's an object we assume it is a component
             else if (res && (typeof(res) === 'object')) {
+              res.props = {
+                source: {
+                  type: Object
+                }
+              };
+              this.bbnCfg = bbn.components.normalizeComponent(res);
+              bbn.fn.log("YUUUU", res, this.bbnCfg, this.content)
+              this.bbnCfg.template = this.content;
+              this.bbnTpl = this.bbnCfg.template;
               this.isComponent = true;
-              this.bbnCfg = res;
-              bbnCfg.template = this.content;
             }
           }
           else if ( this.content ){
@@ -620,7 +628,11 @@ return {
                   return this.getContainer().deleteMenu.apply(this.router, arguments)
                 }
               },
-              props: ['source']
+              props: {
+                source: {
+                  type: Object
+                }
+              }
             }));
             // The local anonymous component gets defined
             this.$options.components[this.componentName] = this.$el.bbnCfg;

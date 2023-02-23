@@ -1188,8 +1188,12 @@ return {
               }
               bbn.fn.iterate(obj, (a, n) => {
                 if ( o[n] !== a ){
+                  bbn.fn.log("CHANGING PROP", n, a);
                   // Each new property must be set with $set
-                  this.$set(o, n, a)
+                  this.$set(o, n, a);
+                  if (cn) {
+                    cn.$setProp(n, a);
+                  }
                 }
               });
             }
@@ -2269,6 +2273,7 @@ return {
                 let searchIdx = this.search(url);
                 if (searchIdx !== false) {
                   idx = searchIdx;
+                  bbn.fn.log("REMOVED");
                   this.remove(searchIdx, true);
                 }
               }
@@ -2318,12 +2323,16 @@ return {
               this.$nextTick(() => {
                 let o = bbn.fn.extend(view || {}, d, {loading: false, load: true, real: false, loaded: true});
                 let searchIndex = this.search(o.url);
-                //bbn.fn.log("Looking for " + o.url);
+                bbn.fn.log("Looking for " + o.url);
                 if (searchIndex !== false) {
                   bbn.fn.warning("FOUND AND REMOVED " + idx);
-                  this.remove(idx, true);
+                  //this.remove(idx, true);
+                  this.urls[this.views[searchIndex].url].isLoaded = true;
+                  this.urls[this.views[searchIndex].url].ready = false;
                 }
-                bbn.fn.warning("ADDEDD " + idx);
+                else {
+                  bbn.fn.warning("ADDEDD " + idx);
+                }
                 this.add(o, idx);
                 if (o.title && !o.pane) {
                   this.currentTitle = o.title;
