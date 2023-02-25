@@ -115,7 +115,7 @@
     }
     let next = [];
     bbn.fn.each(nodes, a => {
-      a.expand();
+      a.expand(false);
       if (a.childs) {
         next = next.concat(a.childs || []);
       }
