@@ -294,7 +294,10 @@
             let nodes = this.widget.node.childs;
             for (let i = 0; i < this.expanded; i++) {
               nodes.map(a => a.expand());
-              nodes = nodes.reduce((a, b) => a.concat(b.childs), []);
+              nodes = nodes.reduce((a, b) => a.concat(b.childs || []), []);
+              if (!nodes.length) {
+                break;
+              }
             }
           }
           else {
