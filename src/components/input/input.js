@@ -159,6 +159,7 @@ return {
       if (this.prefix && (this.value.indexOf(this.prefix) === 0)) {
         currentValue = bbn.fn.substr(currentValue, this.prefix.length);
       }
+      bbn.fn.log("INSIDE INPUT DATA " + this.value, this.$el.bbnSchema.props.value);
 
       return {
         /**
