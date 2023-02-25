@@ -136,6 +136,9 @@
         type: String,
         default: 'tree'
       },
+      expanded: {
+        type: [Number, Boolean]
+      },
       /**
        * The object of configuration.
        * @prop {Object} [{}] cfg
@@ -285,6 +288,18 @@
         this.widget = new JSONEditor(this.$refs.element, cfg);
         if (this.currentValue) {
           this.widget.setText(this.currentValue);
+        }
+        if (this.expanded) {
+          if (bbn.fn.isNumber(this.expanded)) {
+            let nodes = this.widget.node.childs;
+            for (let i = 0; i < this.expanded; i++) {
+              nodes.map(a => a.expand());
+              nodes = nodes.reduce((a, b) => a.concat(b.childs), []);
+            }
+          }
+          else {
+            this.widget.expandAll();
+          }
         }
         this.ready = true;
       },
