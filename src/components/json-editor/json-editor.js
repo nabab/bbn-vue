@@ -108,6 +108,24 @@
     examples: bbn._('Examples'),
     default: bbn._('Default')
   };
+
+  const expand = (nodes, depth, current) => {
+    if (!current) {
+      current = 0;
+    }
+    let next = [];
+    bbn.fn.each(nodes, a => {
+      a.expand();
+      if (a.childs) {
+        next = next.concat(a.childs || []);
+      }
+    });
+    current++;
+    if (next.length && (current < depth)) {
+      expand(next, depth, current);
+    }
+  };
+
   Vue.component('bbn-json-editor', {
     /**
      * @mixin bbn.vue.basicComponent
@@ -291,14 +309,7 @@
         }
         if (this.expanded) {
           if (bbn.fn.isNumber(this.expanded)) {
-            let nodes = this.widget.node.childs;
-            for (let i = 0; i < this.expanded; i++) {
-              nodes.map(a => a.expand());
-              nodes = nodes.reduce((a, b) => a.concat(b.childs || []), []);
-              if (!nodes.length) {
-                break;
-              }
-            }
+            expand(this.widget.node.childs, this.expanded);
           }
           else {
             this.widget.expandAll();
