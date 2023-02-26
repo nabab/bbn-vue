@@ -12,7 +12,7 @@
             }]"
             :disabled="disabled">
     <slot v-if="slotBefore"></slot>
-    <div class="bbn-flex-fill">
+    <div class="bbn-flex-fill bbn-toolbar-flex">
       <template v-for="(s, i) in source">
         <component v-if="!s.end && s.component"
                   :is="s.component"
