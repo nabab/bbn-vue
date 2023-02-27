@@ -1188,7 +1188,6 @@ return {
               }
               bbn.fn.iterate(obj, (a, n) => {
                 if ( o[n] !== a ){
-                  bbn.fn.log("CHANGING PROP", n, a);
                   // Each new property must be set with $set
                   this.$set(o, n, a);
                   if (cn) {
