@@ -3072,7 +3072,7 @@
             obj.content = `<div class="bbn-spadded">${col.render(data, col, itemIndex)}</div>`;
           }
           else {
-            obj.content = `<div class="bbn-spadded">${data.text}</div>`;
+            obj.content = `<div class="bbn-spadded">${data[col.field]}</div>`;
           }
           this.getPopup().open(obj);
         }
