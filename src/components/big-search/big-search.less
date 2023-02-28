@@ -15,4 +15,16 @@
   div{
     box-sizing: border-box;
   }
+  .bbn-list {
+    ul {
+      li {
+        margin: var(--sspace) var(--space);
+        border-radius: var(--default-border-radius);
+      }
+      li:not(.bbn-state-hover):not(.bbn-state-selected) {
+        background-color: var(--default-background);
+        color: var(--default-text);
+      }
+    }
+  }
 }
