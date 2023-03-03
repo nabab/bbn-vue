@@ -9,7 +9,7 @@
                 ref="input"
                 @ready="ready = true"
                 class="bbn-w-100"
-                :placeholder="max && (value.length > max) ? _('Max number of') + ' ' + max : _('Value')"/>
+                :placeholder="max && (value.length > max) ? _('Max number of') + ' ' + max : (this.placeholder || _('Value'))"/>
     </div>
     <div>
       <bbn-button v-if="!max || (value.length <= max)"

@@ -4,7 +4,7 @@
          width: totalWidth
        }"
        v-if="cols.length">
-    <div v-if="hasToolbar"
+    <div v-if="hasToolbar || search"
          class="bbn-table-toolbar bbn-w-100"
          ref="toolbar">
       <bbn-toolbar v-if="toolbarButtons.length || search"

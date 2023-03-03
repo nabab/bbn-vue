@@ -19,8 +19,7 @@
              v-show="editMode"
              :size="currentInputSize"
              :style="{'paddingRight': spinners ? '0.5rem !important' : ''}"
-             :inputmode="inputmode"
-      >
+             :inputmode="inputmode">
       <input autocomplete="off"
              :value="inputValue"
              :name="name"
@@ -35,11 +34,9 @@
              ref="formatted"
              :size="currentInputSize"
              :style="{'paddingRight': spinners ? '0.5rem !important' : ''}"
-             :placeholder="placeholder"
-      >
+             :placeholder="placeholder">
       <input type="hidden"
-             :value="value"
-      >
+             :value="value">
     </div>
     <div v-if="spinners"
          :class="['bbn-numeric-buttons', 'bbn-radius-top-right', 'bbn-radius-bottom-right', {'bbn-disabled' : !!readonly || isDisabled}]">
@@ -58,9 +55,8 @@
           @click="increment"
           unselectable="on"
           tabindex="-1"
-          :disabled="disableIncrease"
-      >
-        <i class="nf nf-fa-caret_up bbn-middle"></i>
+          :disabled="disableIncrease">
+        <i class="nf nf-fa-caret_up bbn-middle"/>
       </div>
       <div :class="[
             'bbn-reactive-block',
@@ -78,9 +74,8 @@
           @click="decrement"
           unselectable="on"
           tabindex="-1"
-          :disabled="disableDecrease"
-      >
-        <i class="nf nf-fa-caret_down bbn-middle"></i>
+          :disabled="disableDecrease">
+        <i class="nf nf-fa-caret_down bbn-middle"/>
       </div>
     </div>
   </div>
