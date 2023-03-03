@@ -243,6 +243,7 @@
     </div>
   </div>
 </div>
+
 <!-- TREEMENU -->
 <bbn-slider v-if="plugins['appui-menu']"
             orientation="left"
@@ -266,12 +267,14 @@
                 @ready="menuMounted = true"
                 class="bbn-top-spadded bbn-no-border"/>
 </bbn-slider>
+
 <!-- POPUPS -->
 <bbn-popup v-if="!popup"
             :source="popups"
             ref="popup"
             :z-index="13"/>
-<!-- BBOKMARKS -->
+
+            <!-- BBOKMARKS -->
 <div v-show="plugins['appui-bookmark'] && showBookmarks">
   <div class="bbn-overlay bbn-modal"
         v-if="showBookmarks"/>
@@ -291,6 +294,7 @@
                 :url="plugins['appui-bookmark'] + '/actions'"
                 :search="true"/>
 </div>
+
 <!-- SEARCH -->
 <div v-if="searchOn && plugins['appui-search']"
       class="bbn-overlay bbn-secondary"
@@ -318,6 +322,7 @@
     <i class="nf nf-fa-times"/>
   </div>
 </div>
+
 <!-- CLIPBOARD SLIDER -->
 <bbn-clipboard v-if="plugins['appui-clipboard'] && clipboard"
                 :storage="true"
@@ -328,7 +333,8 @@
 <!-- NOTIFICATIONS -->
 <bbn-notification ref="notification"
                   :z-index="15"/>
-<!-- APP COMPONENT -->
+
+<!-- BIG MESSAGE -->
 <div class="bbn-appui-big-message"
       v-if="bigMessage"
       :style="{opacity: hasBigMessage ? 0.5 : 0}">
@@ -339,12 +345,16 @@
   <i class="bbn-top-right bbn-p nf nf-fa-times"
       @click="closeBigMessage"/>
 </div>
+
+<!-- APP COMPONENT -->
 <component ref="app"
             :is="appComponent"/>
+
 <!-- POST-IT COMPONENT -->
 <appui-note-postits v-if="plugins['appui-note'] && showPostIt"
                     :source="postits"
                     @close="showPostIt = false"/>
+
 <!-- DEBUG COMPONENT -->
 <bbn-slider v-if="plugins['appui-ide'] && ready && app.user && app.user.isAdmin"
             orientation="right"
@@ -372,8 +382,12 @@
           v-text="getRef('router').selected"/>
 
     <template v-for="view in getRef('router').views">
-      <div v-text="view.idx + '/ ' + view.current"/>
-      <div v-html="fdate(view.last) + '<br>' + view.url"/>
+      <div class="bbn-grid-full bbn-bottom-smargin">
+        <strong v-text="view.idx + '/ ' + view.current"/><br>
+        <span v-html="fdate(view.last)"/><br>
+        <a :href="view.url"
+           v-text="view.url"/>
+      </div>
     </template>
   </div>
 </bbn-slider>
