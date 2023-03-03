@@ -13,7 +13,9 @@
   <div :class="{
     'bbn-flex-height': scrollable,
     'bbn-w-100': !scrollable
-  }" v-else-if="ready">
+  }"
+       v-else-if="ready">
+
     <!-- HEADER -->
     <div v-if="header"
          class="bbn-w-100"
@@ -129,6 +131,7 @@
         </div>
       </div>
     </div>
+
     <!-- MAIN -->
     <div :class="{
       'bbn-flex-fill': scrollable,
@@ -173,13 +176,15 @@
         <slot/>
       </bbn-router>
     </div>
+
     <!-- FOOTER -->
     <component v-if="footerComponent"
                ref="footer"
                class="appui-footer"
                :is="footerComponent"/>
+
     <!-- STATUS -->
-    <div v-if="status"
+    <div v-if="plugins['appui-core'] && status"
         ref="foot"
         class="bbn-header bbn-bordered-top appui-statusbar bbn-xspadding"
         style="overflow: visible">
@@ -252,6 +257,7 @@
       </div>
     </div>
   </div>
+
   <!-- TREEMENU -->
   <bbn-slider v-if="plugins['appui-menu']"
               orientation="left"
@@ -275,13 +281,16 @@
                   @ready="menuMounted = true"
                   class="bbn-top-spadded bbn-no-border"/>
   </bbn-slider>
+
   <!-- POPUPS -->
   <bbn-popup v-if="!popup"
              :source="popups"
              ref="popup"
              :z-index="13"/>
-  <!-- BBOKMARKS -->
-  <div v-show="plugins['appui-bookmark'] && showBookmarks">
+
+  <!-- BOOKMARKS -->
+  <div v-if="plugins['appui-bookmark']"
+       v-show="showBookmarks">
     <div class="bbn-overlay bbn-modal"
          v-if="showBookmarks"/>
     <bbn-floater component="appui-bookmark-list"
@@ -300,8 +309,9 @@
                  :url="plugins['appui-bookmark'] + '/actions'"
                  :search="true"/>
   </div>
+
   <!-- SEARCH -->
-  <div v-if="searchOn && plugins['appui-search']"
+  <div v-if="plugins['appui-search'] && searchOn"
        class="bbn-overlay bbn-secondary"
        style="z-index: 13; background-color: transparent !important;">
     <div v-if="searchOn && plugins['appui-search']"
@@ -327,6 +337,7 @@
       <i class="nf nf-fa-times"/>
     </div>
   </div>
+
   <!-- CLIPBOARD SLIDER -->
   <bbn-clipboard v-if="plugins['appui-clipboard'] && clipboard"
                  :storage="true"
@@ -335,9 +346,11 @@
                  style="z-index: 13"/>
 
   <!-- NOTIFICATIONS -->
-  <bbn-notification ref="notification"
+  <bbn-notification v-if="plugins['appui-notifications']"
+                    ref="notification"
                     :z-index="15"/>
-  <!-- APP COMPONENT -->
+
+  <!-- BIG MESSAGE -->
   <div class="bbn-appui-big-message"
        v-if="bigMessage"
        :style="{opacity: hasBigMessage ? 0.5 : 0}">
@@ -348,12 +361,16 @@
     <i class="bbn-top-right bbn-p nf nf-fa-times"
        @click="closeBigMessage"/>
   </div>
+
+  <!-- APP COMPONENT -->
   <component ref="app"
              :is="appComponent"/>
+
   <!-- POST-IT COMPONENT -->
   <appui-note-postits v-if="plugins['appui-note'] && showPostIt"
                       :source="postits"
                       @close="showPostIt = false"/>
+
   <!-- DEBUG COMPONENT -->
   <bbn-slider v-if="plugins['appui-ide'] && ready && app.user && app.user.isAdmin"
               orientation="right"
