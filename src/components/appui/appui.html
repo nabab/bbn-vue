@@ -1,393 +1,389 @@
-<div v-if="!cool"
-      class="bbn-middle bbn-xl"
-      v-text="_('Appui is already defined') + '... :('">
-</div>
-<div :class="{
-  'bbn-flex-height': scrollable,
-  'bbn-w-100': !scrollable
-}" v-else-if="ready">
-  <!-- HEADER -->
-  <div v-if="header"
-        class="bbn-w-100"
-        style="overflow: visible">
-    <div :class="['bbn-w-100', 'bbn-flex-width', 'bbn-unselectable', 'bbn-no-border', {
-            'bbn-h-100': !isMobile,
-            'bbn-spadded': isMobile
-          }]">
-      <!-- MENU BUTTON -->
-      <div :class="{
-              'bbn-block': !isMobile,
-              'bbn-h-100': !isMobile,
-              'bbn-appui-menu-button': !isMobile,
-              'bbn-vmiddle': isMobile,
-              'bbn-middle': !isMobile,
-              'bbn-right-sspace': isMobile && searchIsActive
-            }">
-        <div tabindex="0"
-              @keydown.enter="toggleMenu"
-              @keydown.space="toggleMenu"
-              @click.prevent.stop="toggleMenu"
-              class="bbn-c bbn-p bbn-hpadded">
-          <i ref="icon"
-              class="nf nf-mdi-menu bbn-xxxl"/>
-        </div>
-      </div>
-      <!-- LOGO -->
-      <div v-if="!isMobile"
-            class="bbn-block bbn-logo-container">
-        <div class="bbn-100 bbn-vmiddle" style="justify-content: center;">
-          <img v-if="!!logo"
-                :src="logo"
-                alt="logo"
-                style="background-color: white;"
-                class="bbn-right-padded bbn-appui-logo">
-        </div>
-      </div>
-      <!-- LOGO (MOBILE) -->
-      <div class="bbn-flex-fill bbn-hspadded bbn-middle"
-            v-else-if="!searchIsActive && !!logo && isMobile">
-        <img :src="logo"
-              style="background-color: white;"
-              alt="logo"
-              class="bbn-appui-logo">
-      </div>
-      <!-- FISHEYE (MOBILE) -->
-      <bbn-fisheye v-if="plugins['appui-menu'] && isMobile && !searchIsActive"
-                  class="bbn-appui-fisheye bbn-block bbn-large"
-                  :removable="true"
-                  @remove="removeShortcut"
-                  ref="fisheye"
-                  :source="shortcuts"
-                  :fixed-left="leftShortcuts || []"
-                  :mobile="true"
-                  :z-index="6"/>
-      <!-- SEARCHBAR -->
-      <!-- CENTRAL PART -->
-      <div v-if="!isMobile"
-            class="bbn-splitter-top-center bbn-flex-fill">
-        <!-- FISHEYE -->
-        <bbn-fisheye v-if="plugins['appui-menu']"
-                      style="z-index: 6"
-                      v-show="!searchBar || ('?' !== searchBar.value)"
-                      :class="{
-                        'bbn-invisible': $refs.search && $refs.search.isFocused,
-                        'bbn-100': true
-                      }"
-                      :removable="true"
-                      @remove="removeShortcut"
-                      ref="fisheye"
-                      :source="shortcuts"
-                      :fixed-left="leftShortcuts"/>
-        <div v-else v-html="' '"/>
-      </div>
-      <!-- SEARCHBAR (MOBILE) -->
-      <div class="bbn-appui-search bbn-vmiddle bbn-hpadded">
-        <div class="bbn-block bbn-p"
-              @click="searchOn = true"
-              tabindex="0">
-          <i ref="icon"
-              class="nf nf-oct-search bbn-xxxl"> </i>
-        </div>
-        <div class="bbn-block bbn-right-lspace"> </div>
-        <bbn-context tag="div"
-                      class="bbn-block"
-                      :source="userMenu">
-          <bbn-initial font-size="2rem" :user-name="app.user.name"/>
-          <div style="position: absolute; bottom: -0.4rem; right: -0.4rem; border: #CCC 1px solid; width: 1.1rem; height: 1.1e"
-                class="bbn-bg-white bbn-black bbn-middle">
-            <i class="nf nf-fa-bars bbn-xs"/>
+<div :class="[componentClass, 'bbn-background', {
+      'bbn-overlay': scrollable,
+      'bbn-w-100': !scrollable,
+      'bbn-desktop': !isMobile
+     }]"
+     :style="{opacity: opacity}"
+     @focusin="isFocused = true"
+     @focusout="isFocused = false">
+  <div v-if="!cool"
+       class="bbn-middle bbn-xl"
+       v-text="_('Appui is already defined') + '... :('">
+  </div>
+  <div :class="{
+    'bbn-flex-height': scrollable,
+    'bbn-w-100': !scrollable
+  }" v-else-if="ready">
+    <!-- HEADER -->
+    <div v-if="header"
+         class="bbn-w-100"
+         style="overflow: visible">
+      <div :class="['bbn-w-100', 'bbn-flex-width', 'bbn-unselectable', 'bbn-no-border', {
+             'bbn-h-100': !isMobile,
+             'bbn-spadded': isMobile
+           }]">
+        <!-- MENU BUTTON -->
+        <div :class="{
+               'bbn-block': !isMobile,
+               'bbn-h-100': !isMobile,
+               'bbn-appui-menu-button': !isMobile,
+               'bbn-vmiddle': isMobile,
+               'bbn-middle': !isMobile,
+               'bbn-right-sspace': isMobile && searchIsActive
+              }">
+          <div tabindex="0"
+               @keydown.enter="toggleMenu"
+               @keydown.space="toggleMenu"
+               @click.prevent.stop="toggleMenu"
+               class="bbn-c bbn-p bbn-hpadded">
+            <i ref="icon"
+               class="nf nf-mdi-menu bbn-xxxl"/>
           </div>
-        </bbn-context>
+        </div>
+        <!-- LOGO -->
+        <div v-if="!isMobile"
+             class="bbn-block bbn-logo-container">
+          <div class="bbn-100 bbn-vmiddle" style="justify-content: center;">
+            <img v-if="!!logo"
+                 :src="logo"
+                 alt="logo"
+                 style="background-color: white;"
+                 class="bbn-right-padded bbn-appui-logo">
+          </div>
+        </div>
+        <!-- LOGO (MOBILE) -->
+        <div class="bbn-flex-fill bbn-hspadded bbn-middle"
+              v-else-if="!searchIsActive && !!logo && isMobile">
+          <img :src="logo"
+                style="background-color: white;"
+                alt="logo"
+                class="bbn-appui-logo">
+        </div>
+        <!-- FISHEYE (MOBILE) -->
+        <bbn-fisheye v-if="plugins['appui-menu'] && isMobile && !searchIsActive"
+                    class="bbn-appui-fisheye bbn-block bbn-large"
+                    :removable="true"
+                    @remove="removeShortcut"
+                    ref="fisheye"
+                    :source="shortcuts"
+                    :fixed-left="leftShortcuts || []"
+                    :mobile="true"
+                    :z-index="6"/>
+        <!-- SEARCHBAR -->
+        <!-- CENTRAL PART -->
+        <div v-if="!isMobile"
+             class="bbn-splitter-top-center bbn-flex-fill">
+          <!-- FISHEYE -->
+          <bbn-fisheye v-if="plugins['appui-menu']"
+                       style="z-index: 6"
+                       v-show="!searchBar || ('?' !== searchBar.value)"
+                       :class="{
+                         'bbn-invisible': $refs.search && $refs.search.isFocused,
+                         'bbn-100': true
+                        }"
+                       :removable="true"
+                       @remove="removeShortcut"
+                       ref="fisheye"
+                       :source="shortcuts"
+                       :fixed-left="leftShortcuts"/>
+          <div v-else v-html="' '"/>
+        </div>
+        <!-- SEARCHBAR -->
+        <div class="bbn-appui-search bbn-vmiddle bbn-hpadded">
+          <div class="bbn-block bbn-p"
+               @click="searchOn = true"
+               tabindex="0">
+            <i ref="icon"
+               class="nf nf-oct-search bbn-xxl"> </i>
+          </div>
+          <div class="bbn-block bbn-right-lspace"> </div>
+          <bbn-context tag="div"
+                       class="bbn-block"
+                       :source="userMenu">
+            <bbn-initial font-size="2rem" :user-name="app.user.name"/>
+            <div style="position: absolute; bottom: -0.4rem; right: -0.4rem; border: #CCC 1px solid; width: 1.1rem; height: 1.1rem"
+                 class="bbn-bg-white bbn-black bbn-middle">
+              <i class="nf nf-fa-bars bbn-xs"/>
+            </div>
+          </bbn-context>
 
+        </div>
+        <!-- DEBUGGER? -->
+        <div v-if="debug"
+             class="bbn-widget"
+             :style="{
+               position: 'absolute',
+               top: '0px',
+               right: '0px',
+               width: isOverDebug ? 'auto' : '200px',
+               height: isOverDebug ? 'auto' : '200px',
+               minWidth: '200px',
+               minHeight: '200px',
+               maxWidth: '200px',
+               maxHeight: 'px',
+               overflow: isOverDebug ? 'auto' : 'hidden'
+             }"
+             @mouseenter="isOverDebug = true"
+             @mouseleave="isOverDebug = false">
+          <h2>Debug...</h2>
+        </div>
       </div>
-      <!-- DEBUGGER? -->
-      <div v-if="debug"
-            class="bbn-widget"
-            :style="{
-              position: 'absolute',
-              top: '0px',
-              right: '0px',
-              width: isOverDebug ? 'auto' : '200px',
-              height: isOverDebug ? 'auto' : '200px',
-              minWidth: '200px',
-              minHeight: '200px',
-              maxWidth: '200px',
-              maxHeight: 'px',
-              overflow: isOverDebug ? 'auto' : 'hidden'
-            }"
-            @mouseenter="isOverDebug = true"
-            @mouseleave="isOverDebug = false">
-        <h2>Debug...</h2>
+    </div>
+    <!-- MAIN -->
+    <div :class="{
+      'bbn-flex-fill': scrollable,
+      'bbn-w-100': !scrollable
+    }">
+        <!--bbn-split-tabs v-if="tabnav"
+                      orientation="horizontal"
+                      ref="tabnav"
+                      :root="root"
+                      :resizable="true"
+                      :observer="true"
+                      :source="source">
+      </bbn-split-tabs-->
+      <bbn-router :root="root"
+                  :source="source"
+                  :storage="!!nav"
+                  :observer="true"
+                  :menu="tabMenu"
+                  :disabled="disabled"
+                  :single="single"
+                  :autoload="autoload"
+                  :def="def"
+                  :post-base-url="!single"
+                  ref="router"
+                  :nav="nav"
+                  :splittable="splittable"
+                  :resizable="true"
+                  :collapsible="true"
+                  :master="true"
+                  :url="!!nav ? undefined : url"
+                  @beforeroute="onBeforeRoute"
+                  @route="onRoute"
+                  @load="onLoad"
+                  @change="$emit('change', $event)"
+                  @shortcut="addShortcut"
+                  :breadcrumb="isMobile"
+                  :scroll-content="scrollable"
+                  :component="component"
+                  :component-source="componentSource"
+                  :component-url="componentUrl"
+                  :url-navigation="urlNavigation">
+        <slot/>
+      </bbn-router>
+    </div>
+    <!-- FOOTER -->
+    <component v-if="footerComponent"
+               ref="footer"
+               class="appui-footer"
+               :is="footerComponent"/>
+    <!-- STATUS -->
+    <div v-if="status"
+        ref="foot"
+        class="bbn-header bbn-bordered-top appui-statusbar bbn-xspadding"
+        style="overflow: visible">
+      <div class="bbn-flex-width bbn-h-100">
+        <!-- LOADBAR -->
+        <div class="bbn-flex-fill">
+          <bbn-loadbar class="bbn-h-100 bbn-right-space bbn-overlay"
+                      ref="loading"
+                      :source="loaders"/>
+        </div>
+        <div class="bbn-vmiddle">
+          <!-- POST ITS -->
+          <div v-if="plugins['appui-note']"
+               class="bbn-right-smargin">
+            <i class="bbn-p nf nf-fa-sticky_note"
+               :title="_('Show my post-its')"
+               @click="showPostIt = true"/>
+          </div>
+          <!-- TASK TRACKER -->
+          <div v-if="plugins['appui-task']"
+              class="bbn-right-smargin">
+            <appui-task-tracker/>
+          </div>
+          <!-- CHAT -->
+          <div v-if="plugins['appui-chat']"
+               class="bbn-right-smargin">
+            <bbn-chat ref="chat"
+                      :url="plugins['appui-chat']"
+                      :user-id="app.user.id"
+                      :users="app.getActiveUsers()"
+                      :online-users="usersOnline"
+                      :online="app.user.chat"
+                      @messageToChannel="d => messageChannel('appui-chat', d)"
+                      @hook:mounted="onChatMounted"
+                      :groups="app.groups"/>
+          </div>
+          <!-- NOTIFICATIONS -->
+          <div v-if="plugins['appui-notification'] && pollerObject['appui-notification']"
+               class="bbn-right-smargin">
+            <appui-notification-tray ref="notificationTray"/>
+          </div>
+          <!-- CLIPBOARD BUTTON -->
+          <div v-if="plugins['appui-clipboard'] && clipboard"
+              @click.stop.prevent="getRef('clipboard').toggle()"
+              ref="clipboardButton"
+              class="bbn-appui-clipboard-button bbn-right-smargin bbn-p bbn-rel">
+            <i class="nf nf-fa-clipboard"
+               tabindex="-1"/>
+            <input class="bbn-invisible bbn-overlay bbn-p"
+                  @keydown.space.enter.prevent="getRef('clipboard').toggle()"
+                  @drop.prevent.stop="getRef('clipboard').copy($event); getRef('clipboard').show()">
+          </div>
+          <!-- DEBUGGER -->
+          <div v-if="plugins['appui-ide'] && ready && app.user && app.user.isAdmin"
+               class="bbn-right-smargin">
+            <i class="bbn-p nf nf-mdi-bug"
+               :title="_('Show the debugger')"
+               @click="toggleDebug"/>
+          </div>
+          <!-- POWER/ENV ICON -->
+          <bbn-context class="bbn-iblock bbn-right-smargin bbn-p bbn-rel"
+                       :title="appMode"
+                       tag="div"
+                       :source="powerMenu">
+            <i class="nf nf-fa-power_off"
+               tabindex="-1"
+               :style="{color: powerColor}"/>
+          </bbn-context>
+        </div>
       </div>
     </div>
   </div>
-  <!-- MAIN -->
-  <div class="bbn-flex-fill"
-       bbn-forget="scrollable">
-      <!--bbn-split-tabs v-if="tabnav"
-                    orientation="horizontal"
-                    ref="tabnav"
-                    :root="root"
-                    :resizable="true"
-                    :observer="true"
-                    :source="source">
-    </bbn-split-tabs-->
-    <bbn-router :root="root"
-                :source="source"
-                :storage="!!nav"
-                :observer="true"
-                :menu="tabMenu"
-                :disabled="disabled"
-                :single="single"
-                :autoload="autoload"
-                :def="def"
-                :post-base-url="!single"
-                ref="router"
-                :nav="nav"
-                :splittable="splittable"
-                :scroll-content="scrollContent"
-                :resizable="true"
-                :collapsible="true"
-                :master="true"
-                :url="!!nav ? undefined : url"
-                @beforeroute="onBeforeRoute"
-                @route="onRoute"
-                @load="onLoad"
-                @change="$emit('change', $event)"
-                @shortcut="addShortcut"
-                :breadcrumb="isMobile"
-                :scroll-content="scrollable"
-                :component="component"
-                :component-source="componentSource"
-                :component-url="componentUrl"
-                :url-navigation="urlNavigation">
-      <slot/>
-    </bbn-router>
+  <!-- TREEMENU -->
+  <bbn-slider v-if="plugins['appui-menu']"
+              orientation="left"
+              ref="slider"
+              :style="{
+                width: isMobile && !isTablet ? '100%' : '35rem',
+                zIndex: 100,
+                maxWidth: '100%'
+              }"
+              @show="focusSearchMenu"
+              close-button="top-right">
+    <bbn-treemenu :source="plugins['appui-menu'] + '/data'"
+                  v-if="$refs.slider && $refs.slider.hasBeenOpened"
+                  ref="menu"
+                  @select="$refs.slider.hide()"
+                  :menus="menus"
+                  :current="currentMenu"
+                  :top="50"
+                  :shortcuts="true"
+                  @shortcut="addShortcut"
+                  @ready="menuMounted = true"
+                  class="bbn-top-spadded bbn-no-border"/>
+  </bbn-slider>
+  <!-- POPUPS -->
+  <bbn-popup v-if="!popup"
+             :source="popups"
+             ref="popup"
+             :z-index="13"/>
+  <!-- BBOKMARKS -->
+  <div v-show="plugins['appui-bookmark'] && showBookmarks">
+    <div class="bbn-overlay bbn-modal"
+         v-if="showBookmarks"/>
+    <bbn-floater component="appui-bookmark-list"
+                 :source="plugins['appui-bookmark'] + '/bookmarks'"
+                 v-show="showBookmarks"
+                 v-if="showBookmarks || bookmarksLoaded"
+                 class="bbn-radius"
+                 width="90%"
+                 height="90%"
+                 @ready="bookmarksLoaded = true"
+                 @close="$event.preventDefault(); showBookmarks = false"
+                 :closable="true"
+                 :title="false"
+                 :filterable="true"
+                 :pageable="true"
+                 :url="plugins['appui-bookmark'] + '/actions'"
+                 :search="true"/>
   </div>
-  <!-- FOOTER -->
-  <component v-if="footerComponent"
-              ref="footer"
-              class="appui-footer"
-              :is="footerComponent"/>
-  <!-- STATUS -->
-  <div v-if="status"
-      ref="foot"
-      class="bbn-header bbn-bordered-top appui-statusbar"
-      style="overflow: visible">
-    <div class="bbn-flex-width bbn-h-100">
-      <!-- LOADBAR -->
-      <div class="bbn-flex-fill">
-        <bbn-loadbar class="bbn-h-100 bbn-right-space bbn-overlay"
-                    ref="loading"
-                    :source="loaders"/>
-      </div>
-      <div class="bbn-vmiddle">
-        <!-- POST ITS -->
-        <div v-if="plugins['appui-note']"
-              class="bbn-right-space">
-          <i class="bbn-p nf nf-fa-sticky_note"
-              :title="_('Show my post-its')"
-              @click="showPostIt = true"/>
-        </div>
-        <!-- TASK TRACKER -->
-        <div v-if="plugins['appui-task']"
-            class="bbn-right-space">
-          <appui-task-tracker/>
-        </div>
-        <!-- CHAT -->
-        <div v-if="plugins['appui-chat']"
-              class="bbn-right-space">
-          <bbn-chat ref="chat"
-                    :url="plugins['appui-chat']"
-                    :user-id="app.user.id"
-                    :users="app.getActiveUsers()"
-                    :online-users="usersOnline"
-                    :online="app.user.chat"
-                    @messageToChannel="d => messageChannel('appui-chat', d)"
-                    @hook:mounted="onChatMounted"
-                    :groups="app.groups"/>
-        </div>
-        <!-- NOTIFICATIONS -->
-        <div v-if="plugins['appui-notification'] && pollerObject['appui-notification']"
-              class="bbn-right-space">
-          <appui-notification-tray ref="notificationsTray"/>
-        </div>
-        <!-- CLIPBOARD BUTTON -->
-        <div v-if="plugins['appui-clipboard'] && clipboard"
-            @click.stop.prevent="getRef('clipboard').toggle()"
-            ref="clipboardButton"
-            class="bbn-appui-clipboard-button bbn-right-space bbn-p bbn-rel">
-          <i class="nf nf-fa-clipboard bbn-m"
-              tabindex="-1"/>
-          <input class="bbn-invisible bbn-overlay bbn-p"
-                @keydown.space.enter.prevent="getRef('clipboard').toggle()"
-                @drop.prevent.stop="getRef('clipboard').copy($event); getRef('clipboard').show()">
-        </div>
-        <!-- DEBUGGER -->
-        <div v-if="plugins['appui-ide'] && ready && app.user && app.user.isAdmin"
-              class="bbn-right-space">
-          <i class="bbn-p nf nf-mdi-bug"
-              :title="_('Show the debugger')"
-              @click="toggleDebug"/>
-        </div>
-        <!-- POWER/ENV ICON -->
-        <bbn-context class="bbn-iblock bbn-right-space bbn-p bbn-rel"
-                      :title="appMode"
-                      tag="div"
-                      :source="powerMenu">
-          <i class="nf nf-fa-power_off bbn-m"
-              tabindex="-1"
-              :style="{color: powerColor}"/>
-        </bbn-context>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- TREEMENU -->
-<bbn-slider v-if="plugins['appui-menu']"
-            orientation="left"
-            ref="slider"
-            :style="{
-              width: isMobile && !isTablet ? '100%' : '35rem',
-              zIndex: 100,
-              maxWidth: '100%'
-            }"
-            @show="focusSearchMenu"
-            close-button="top-right">
-  <bbn-treemenu :source="plugins['appui-menu'] + '/data'"
-                v-if="$refs.slider && $refs.slider.hasBeenOpened"
-                ref="menu"
-                @select="$refs.slider.hide()"
-                :menus="menus"
-                :current="currentMenu"
-                :top="50"
-                :shortcuts="true"
-                @shortcut="addShortcut"
-                @ready="menuMounted = true"
-                class="bbn-top-spadded bbn-no-border"/>
-</bbn-slider>
-
-<!-- POPUPS -->
-<bbn-popup v-if="!popup"
-            :source="popups"
-            ref="popup"
-            :z-index="13"/>
-
-            <!-- BBOKMARKS -->
-<div v-show="plugins['appui-bookmark'] && showBookmarks">
-  <div class="bbn-overlay bbn-modal"
-        v-if="showBookmarks"/>
-  <bbn-floater component="appui-bookmark-list"
-                :source="plugins['appui-bookmark'] + '/bookmarks'"
-                v-show="showBookmarks"
-                v-if="showBookmarks || bookmarksLoaded"
-                class="bbn-radius"
-                width="90%"
-                height="90%"
-                @ready="bookmarksLoaded = true"
-                @close="$event.preventDefault(); showBookmarks = false"
-                :closable="true"
-                :title="false"
-                :filterable="true"
-                :pageable="true"
-                :url="plugins['appui-bookmark'] + '/actions'"
-                :search="true"/>
-</div>
-
-<!-- SEARCH -->
-<div v-if="searchOn && plugins['appui-search']"
-      class="bbn-overlay bbn-secondary"
-      style="z-index: 13; background-color: transparent !important;">
+  <!-- SEARCH -->
   <div v-if="searchOn && plugins['appui-search']"
-      class="bbn-overlay bbn-secondary"
-      style="opacity: 0.9"> </div>
-  <bbn-big-search :source="plugins['appui-search'] + '/results'"
-                  :placeholder="searchBar.placeholder"
-                  :select-url="plugins['appui-search'] ? plugins['appui-search'] + '/select' : ''"
-                  ref="search"
-                  v-model="searchBar.value"
-                  :suggest="true"
-                  @ready="registerSearch"
-                  :source-value="searchBar.sourceValue"
-                  :source-text="searchBar.sourceText"
-                  :min-length="searchBar.minLength"
-                  @select="searchSelect"
-                  @close="searchOn = false"
-                  :limit="50"
-                  :pageable="true"
-                  class="bbn-no"/>
-  <div class="bbn-top-right bbn-p bbn-spadded bbn-xxxl"
-        @click.stop="searchOn = false">
-    <i class="nf nf-fa-times"/>
+       class="bbn-overlay bbn-secondary"
+       style="z-index: 13; background-color: transparent !important;">
+    <div v-if="searchOn && plugins['appui-search']"
+        class="bbn-overlay bbn-secondary"
+        style="opacity: 0.9"> </div>
+    <bbn-big-search :source="plugins['appui-search'] + '/results'"
+                    :placeholder="searchBar.placeholder"
+                    :select-url="plugins['appui-search'] ? plugins['appui-search'] + '/select' : ''"
+                    ref="search"
+                    v-model="searchBar.value"
+                    :suggest="true"
+                    @ready="registerSearch"
+                    :source-value="searchBar.sourceValue"
+                    :source-text="searchBar.sourceText"
+                    :min-length="searchBar.minLength"
+                    @select="searchSelect"
+                    @close="searchOn = false"
+                    :limit="50"
+                    :pageable="true"
+                    class="bbn-no"/>
+    <div class="bbn-top-right bbn-p bbn-spadded bbn-xl"
+         @click.stop="searchOn = false">
+      <i class="nf nf-fa-times"/>
+    </div>
   </div>
+  <!-- CLIPBOARD SLIDER -->
+  <bbn-clipboard v-if="plugins['appui-clipboard'] && clipboard"
+                 :storage="true"
+                 ref="clipboard"
+                 @copy="onCopy"
+                 style="z-index: 13"/>
+
+  <!-- NOTIFICATIONS -->
+  <bbn-notification ref="notification"
+                    :z-index="15"/>
+  <!-- APP COMPONENT -->
+  <div class="bbn-appui-big-message"
+       v-if="bigMessage"
+       :style="{opacity: hasBigMessage ? 0.5 : 0}">
+    <div class="bbn-overlay bbn-middle">
+      <div class="bbn-block"
+           v-html="bigMessage"/>
+    </div>
+    <i class="bbn-top-right bbn-p nf nf-fa-times"
+       @click="closeBigMessage"/>
+  </div>
+  <component ref="app"
+             :is="appComponent"/>
+  <!-- POST-IT COMPONENT -->
+  <appui-note-postits v-if="plugins['appui-note'] && showPostIt"
+                      :source="postits"
+                      @close="showPostIt = false"/>
+  <!-- DEBUG COMPONENT -->
+  <bbn-slider v-if="plugins['appui-ide'] && ready && app.user && app.user.isAdmin"
+              orientation="right"
+              ref="debug"
+              :style="{
+                width: isMobile && !isTablet ? '100%' : '35rem',
+                zIndex: 100,
+                maxWidth: '100%'
+              }"
+              close-button="top-right">
+    <div class="bbn-w-100 bbn-padded bbn-wrap bbn-l appui-ide-debugger-container">
+      <div class="bbn-b"
+           v-text="_('Current URL')"/>
+      <div class="bbn-b"
+           v-text="getRef('router').currentURL"/>
+
+      <div class="bbn-b"
+           v-text="_('Current title')"/>
+      <div class="bbn-b"
+           v-text="getRef('router').currentTitle"/>
+
+      <div class="bbn-b"
+           v-text="_('Selected index')"/>
+      <div class="bbn-b"
+           v-text="getRef('router').selected"/>
+
+      <template v-for="view in getRef('router').views">
+        <div v-text="view.idx + '/ ' + view.current"/>
+        <div v-html="fdate(view.last) + '<br>' + view.url"/>
+      </template>
+    </div>
+  </bbn-slider>
 </div>
-
-<!-- CLIPBOARD SLIDER -->
-<bbn-clipboard v-if="plugins['appui-clipboard'] && clipboard"
-                :storage="true"
-                ref="clipboard"
-                @copy="onCopy"
-                style="z-index: 13"/>
-
-<!-- NOTIFICATIONS -->
-<bbn-notification ref="notification"
-                  :z-index="15"/>
-
-<!-- BIG MESSAGE -->
-<div class="bbn-appui-big-message"
-      v-if="bigMessage"
-      :style="{opacity: hasBigMessage ? 0.5 : 0}">
-  <div class="bbn-overlay bbn-middle">
-    <div class="bbn-block"
-          v-html="bigMessage"/>
-  </div>
-  <i class="bbn-top-right bbn-p nf nf-fa-times"
-      @click="closeBigMessage"/>
-</div>
-
-<!-- APP COMPONENT -->
-<component ref="app"
-            :is="appComponent"/>
-
-<!-- POST-IT COMPONENT -->
-<appui-note-postits v-if="plugins['appui-note'] && showPostIt"
-                    :source="postits"
-                    @close="showPostIt = false"/>
-
-<!-- DEBUG COMPONENT -->
-<bbn-slider v-if="plugins['appui-ide'] && ready && app.user && app.user.isAdmin"
-            orientation="right"
-            ref="debug"
-            :style="{
-              width: isMobile && !isTablet ? '100%' : '35rem',
-              zIndex: 100,
-              maxWidth: '100%'
-            }"
-            close-button="top-right">
-  <div class="bbn-w-100 bbn-padded bbn-wrap bbn-l appui-ide-debugger-container">
-    <div class="bbn-b"
-          v-text="_('Current URL')"/>
-    <div class="bbn-b"
-          v-text="getRef('router').currentURL"/>
-
-    <div class="bbn-b"
-          v-text="_('Current title')"/>
-    <div class="bbn-b"
-          v-text="getRef('router').currentTitle"/>
-
-    <div class="bbn-b"
-          v-text="_('Selected index')"/>
-    <div class="bbn-b"
-          v-text="getRef('router').selected"/>
-
-    <template v-for="view in getRef('router').views">
-      <div class="bbn-grid-full bbn-bottom-smargin">
-        <strong v-text="view.idx + '/ ' + view.current"/><br>
-        <span v-html="fdate(view.last)"/><br>
-        <a :href="view.url"
-           v-text="view.url"/>
-      </div>
-    </template>
-  </div>
-</bbn-slider>
