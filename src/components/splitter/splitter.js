@@ -914,7 +914,6 @@ return {
        * @param {String} oldVal 
        */
       orientation(newVal, oldVal){
-        bbn.fn.warning(newVal);
         if ( (newVal !== oldVal) && (newVal !== this.currentOrientation) ){
           this.currentOrientation = newVal === 'auto' ? this.getOrientation() : newVal;
         }

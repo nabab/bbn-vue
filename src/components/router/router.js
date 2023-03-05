@@ -1082,70 +1082,71 @@ return {
         let index;
         //obj must be an object with property url
         if (bbn.fn.isObject(obj) && bbn.fn.isString(obj.url)) {
-          // This is a component
-          if (obj.$options) {
-            if (!obj.current && !obj.currentURL) {
-              if ( bbn.env.path.indexOf(this.getFullBaseURL() + (obj.url ? obj.url + '/' : '')) === 0 ){
-                obj.currentURL = bbn.fn.substr(bbn.env.path, this.getFullBaseURL().length);
+          // This is an existing container
+          bbn.fn.log("ADDING")
+          if (obj.real) {
+            bbn.fn.log("ADDING CP")
+            const cp = this.urls[obj.url];
+            if (cp) {
+              if (obj.current && !cp.currentURL) {
+                if ( bbn.env.path.indexOf(this.getFullBaseURL() + (obj.url ? obj.url + '/' : '')) === 0 ){
+                  cp.currentURL = bbn.fn.substr(bbn.env.path, this.getFullBaseURL().length);
+                }
+                else{
+                  cp.currentURL = obj.url;
+                }
               }
-              else{
-                obj.currentURL = obj.url;
-              }
+
+              const props = cp.$options?.propsValues;
+              bbn.fn.iterate(props, (v, i) => {
+                if (!(i in obj) && ('default' in v)) {
+                  obj[i] = v.default;
+                }
+              });
             }
-            else {
-              if (obj.currentURL) {
-                obj.currentURL = bbn.fn.replaceAll(obj.currentURL);
-              }
-            }
-            let obj2 = bbn.fn.extend(true, {}, obj.$props),
-                props = obj.$options.props;
-            bbn.fn.iterate(props, (v, i) => {
-              if (!(i in obj2) && ('default' in v)) {
-                obj2[i] = v.default;
-              }
-            });
+
             bbn.fn.iterate(this.getDefaultView(), (a, n) => {
-              if ( obj2[n] === undefined ){
-                obj2[n] = a;
+              if (obj[n] === undefined) {
+                obj[n] = a;
               }
             });
 
             // ---- ADDED 16/12/20 (Mirko) ----
-            if ( !obj2.current ){
-              if ( bbn.env.path.indexOf(this.getFullBaseURL() + (obj2.url ? obj2.url + '/' : '')) === 0 ){
-                obj2.current = bbn.fn.substr(bbn.env.path, this.getFullBaseURL().length);
+            if ( !obj.current ){
+              if ( bbn.env.path.indexOf(this.getFullBaseURL() + (obj.url ? obj.url + '/' : '')) === 0 ){
+                obj.current = bbn.fn.substr(bbn.env.path, this.getFullBaseURL().length);
               }
               else{
-                obj2.current = obj2.url;
+                obj.current = obj.url;
               }
             }
-            else if ( (obj2.current !== obj2.url) && (obj2.current.indexOf(obj2.url + '/') !== 0) ){
-              obj2.current = obj2.url;
+            else if ( (obj.current !== obj.url) && (obj.current.indexOf(obj.url + '/') !== 0) ){
+              obj.current = obj.url;
             }
-            if ( !obj2.current ){
-              obj2.current = obj2.url;
+            if ( !obj.current ){
+              obj.current = obj.url;
             }
-            if ( obj2.content ){
-              obj2.loaded = true;
+            if ( obj.content ){
+              obj.loaded = true;
             }
             // ---- END ----
 
-            if (obj2.real && !this.hasRealContainers) {
+            if (obj.real && !this.hasRealContainers) {
               this.hasRealContainers = true;
             }
-            if (obj2.url === '') {
+            if (obj.url === '') {
               this.hasEmptyURL = true;
             }
-            if (this.search(obj2.url) === false) {
+            if (this.search(obj.url) === false) {
               if (this.isValidIndex(idx)) {
-                this.views.splice(idx, 0, obj2);
+                this.views.splice(idx, 0, obj);
               }
-              else if (this.hasRealContainers && (this.first !== 'real') && !obj2.real) {
+              else if (this.hasRealContainers && (this.first !== 'real') && !obj.real) {
                 idx = bbn.fn.search(this.views, {real: true});
-                this.views.splice(idx, 0, obj2);
+                this.views.splice(idx, 0, obj);
               }
               else {
-                this.views.push(obj2);
+                this.views.push(obj);
               }
             }
           }
@@ -1245,6 +1246,7 @@ return {
        */
       register(cp, fake) {
         if ( fake ){
+          bbn.fn.log("ADDING FAKE", cp);
           this.add(cp);
           return;
         }
@@ -1267,6 +1269,7 @@ return {
         }
         let idx = this.search(cp.url);
         if (idx === false) {
+          bbn.fn.log("ADDING BECAUSE CAN'T FIND", cp);
           this.add(cp);
         }
         else {
@@ -1374,33 +1377,32 @@ return {
        */
       getDefaultView(){
         return {
-          source: null,
+          source: undefined,
           title: bbn._("Untitled"),
-          options: null,
+          options: undefined,
           cached: !this.single && this.nav,
           scrollable: true,
-          component: null,
+          component: undefined,
           icon: '',
           notext: false,
-          content: null,
+          content: undefined,
           menu: [],
-          loaded: null,
-          fcolor: null,
-          bcolor: null,
+          loaded: undefined,
+          fcolor: undefined,
+          bcolor: undefined,
           load: false,
           pane: false,
-          selected: null,
+          selected: undefined,
           css: '',
-          advert: null,
+          advert: undefined,
           dirty: false,
-          help: null,
+          help: undefined,
           imessages: [],
-          script: null,
+          script: undefined,
           static: false,
           pinned: false,
-          url: null,
-          current: null,
-          real: false,
+          url: undefined,
+          current: undefined,
           cfg: {},
           events: {},
           real: false,
@@ -1421,7 +1423,7 @@ return {
       route(url, force) {
         //bbn.fn.log("ROUTING ON " + url);
         if (!bbn.fn.isString(url)) {
-          throw Error(bbn._('The component bbn-container must have a valid URL defined'));
+          throw Error(bbn._('The component bbn-container must have a valid URL defined (URL is not a string)'));
         }
         url = bbn.fn.replaceAll('//', '/', url);
         /** @var {Boolean} ok Will prevent the route to happen if false */ 
@@ -1534,7 +1536,7 @@ return {
        */
       realRoute(url, st, force, anchor){
         if (!bbn.fn.isString(url) && !bbn.fn.isNumber(url)){
-          throw Error(bbn._('The component bbn-container must have a valid URL defined'));
+          throw Error(bbn._('The component bbn-container must have a valid URL defined (URL given to route is not a string)'));
         }
         if (this.urls[st]) {
           //bbn.fn.log("REAL ROUTING GOING ON FOR " + url);
@@ -1620,7 +1622,7 @@ return {
        */
       activate(url, container){
         if (!bbn.fn.isString(url) ){
-          throw Error(bbn._('The component bbn-container must have a valid URL defined'));
+          throw Error(bbn._('The component bbn-container must have a valid URL defined (activate)'));
         }
         if (!container) {
           let row = bbn.fn.getRow(this.views, {current: url});
@@ -1644,7 +1646,8 @@ return {
             this.activeContainer = container;
           }
           container.show();
-          if (this.scrollable && this.nav && !this.breadcrumb) {
+          // Scrolling tabs
+          if (this.scrollable && this.nav && !this.breadcrumb && !this.isVisual) {
             let scroll = this.getRef('horizontal-scroll');
             let tab = this.getRef('tab-' + container.currentIndex);
             if (scroll?.ready) {
@@ -1689,7 +1692,7 @@ return {
        */
       changeURL(url, title, replace) {
         if (!bbn.fn.isString(url) ){
-          throw Error(bbn._('The component bbn-container must have a valid URL defined'));
+          throw Error(bbn._('The component bbn-container must have a valid URL defined (change URL)'));
         }
         if ( !bbn.env.isInit ){
           return;
@@ -2032,7 +2035,7 @@ return {
        */
       search(url){
         if (!bbn.fn.isString(url) ){
-          throw Error(bbn._('The component bbn-container must have a valid URL defined'));
+          throw Error(bbn._('The component bbn-container must have a valid URL defined (Search)'));
         }
         let r = bbn.fn.search(this.views, "url", url);
         if ( r === -1 ){
@@ -2109,7 +2112,7 @@ return {
        */
       callRouter(url, st){
         if (!bbn.fn.isString(url) ){
-          throw Error(bbn._('The component bbn-container must have a valid URL defined'));
+          throw Error(bbn._('The component bbn-container must have a valid URL defined (from callRouter)'));
         }
         if ( this.parent ){
           let containers = this.ancestors('bbn-container');
@@ -2160,7 +2163,7 @@ return {
        * @emit update
       */
       load(url, force, index){
-        if (url) {
+        if (this.isInit && url) {
           this.isLoading = true;
           let finalURL = this.fullBaseURL + url;
           let idx = this.search(url);
@@ -2220,12 +2223,13 @@ return {
           }
 
           if (toAdd){
+            bbn.fn.log("ADDING ON LOAD");
             this.add({
               url: url,
               title: view && view.title ? view.title : bbn._('Loading'),
               load: true,
               loading: true,
-              real: false,
+              real: view?.real || false,
               pane: false,
               scrollable: !this.single,
               current: url,
@@ -2244,7 +2248,7 @@ return {
             this.currentURL = this.parseURL(url);
           }
 
-          this.$forceUpdate();
+          //this.$forceUpdate();
           this.$emit('update', this.views);
           this.$emit("load", finalURL);
           let dataObj = this.postBaseUrl ? {_bbn_baseURL: this.fullBaseURL} : {};
@@ -2320,22 +2324,24 @@ return {
               }
 
               this.$nextTick(() => {
-                let o = bbn.fn.extend(view || {}, d, {loading: false, load: true, real: false, loaded: true});
+                let o = bbn.fn.extend(view || {}, d, {loading: false, load: true, real: view?.real || false, loaded: true});
                 let searchIndex = this.search(o.url);
                 bbn.fn.log("Looking for " + o.url);
                 if (searchIndex !== false) {
-                  bbn.fn.warning("FOUND AND REMOVED " + idx);
+                  bbn.fn.warning("FOUND AND REMOVED " + searchIndex);
                   //this.remove(idx, true);
                   this.urls[this.views[searchIndex].url].isLoaded = true;
                   this.urls[this.views[searchIndex].url].ready = false;
                 }
                 else {
                   bbn.fn.warning("ADDEDD " + idx);
+                  bbn.fn.log("ADDING AFTER LOAD");
+                  this.add(o, idx);
                 }
-                this.add(o, idx);
                 if (o.title && !o.pane) {
                   this.currentTitle = o.title;
                 }
+                //this.$forceUpdate();
                 this.$nextTick(() => {
                   if (callRealInit) {
                     this.realInit(d.url);
@@ -2380,7 +2386,8 @@ return {
           this.urls[url].setLoaded(true);
           // Otherwise the changes we just did on the props wont be taken into account at container level
           this.urls[url].init();
-          this.callRouter(this.urls[url].current, url);
+          bbn.fn.log("callRouter", this.urls[url], this.urls[url].currentView);
+          this.callRouter(this.urls[url].currentView.current, url);
           this.$emit('update', this.views);
         }
         else {
@@ -3481,7 +3488,7 @@ return {
 
         this.$set(this.views[containerIdx], "pane", paneId);
         pane.tabs.push(view);
-        this.$forceUpdate();
+        //this.$forceUpdate();
         if (containerIdx === this.selected) {
           this.selectClosest(containerIdx);
         }
@@ -3625,26 +3632,17 @@ return {
       // Adding bbns-container from the slot
       if ( this.$slots.default ){
         for ( let node of this.$slots.default ){
-          if (
-            node.componentOptions
-            && (node.componentOptions.tag === 'bbn-container')
-          ){
-            if (node.componentOptions.propsData.url === undefined) {
+          if (node?.tag === 'bbn-container') {
+            if (node.props.url === undefined) {
               throw new Error(bbn._("You cannot use containers in router without defining a URL property"));
             }
             if ( !this.hasRealContainers ){
               this.hasRealContainers = true;
             }
-            if (node.componentOptions.propsData.url === '') {
+            if (node.props.url === '') {
               this.hasEmptyURL = true;
             }
-            let obj = bbn.fn.extend(true, {}, node.componentOptions.propsData),
-                props = node.componentOptions.Ctor.options.props;
-            bbn.fn.iterate(props, (v, i) => {
-              if (!(i in obj) && ('default' in v)) {
-                obj[i] = v.default;
-              }
-            });
+            const obj = bbn.fn.extend(true, {}, node.props);
             bbn.fn.iterate(this.getDefaultView(), (a, n) => {
               if ( obj[n] === undefined ){
                 obj[n] = a;
@@ -3702,7 +3700,7 @@ return {
         if (url && url.indexOf(a.url) === 0) {
           a.current = url;
         }
-
+        bbn.fn.log("ADDING ON MOUNT");
         this.add(a);
       });
 

@@ -15,7 +15,7 @@
     'bbn-w-100': !scrollable
   }"
        v-else-if="ready">
-
+    <slot name="before"/>
     <!-- HEADER -->
     <div v-if="header"
          class="bbn-w-100"
@@ -137,7 +137,7 @@
       'bbn-flex-fill': scrollable,
       'bbn-w-100': !scrollable
     }">
-        <!--bbn-split-tabs v-if="tabnav"
+      <!--bbn-split-tabs v-if="tabnav"
                       orientation="horizontal"
                       ref="tabnav"
                       :root="root"
@@ -403,4 +403,5 @@
       </template>
     </div>
   </bbn-slider>
+  <slot name="after"/>
 </div>

@@ -379,8 +379,8 @@ return {
             }
           });
         }
-        this.maxImgWidth = this.getRef('slideContainer').offsetWidth;
-        this.maxImgHeight = this.getRef('slideContainer').offsetHeight;
+        this.maxImgWidth = this.getRef('slideContainer')?.offsetWidth || null;
+        this.maxImgHeight = this.getRef('slideContainer')?.offsetHeight || null;
       },
       /**
        * Sets the property loaded to true.
@@ -916,7 +916,7 @@ return {
               : `${content}${content.indexOf('?') > -1 ? '&' : '?'}w=${this.dimension.match(/\d+/)}&thumb=1`;
           },
           init(){
-            const elem = this.$el.querySelector('.bbn-slideshow-zoom .bbn-slideshow-content');
+            const elem = this.$el.querySelector('div.bbn-slideshow-zoom div.bbn-slideshow-content');
             if ( elem ){
               elem.style.transform = 'scale(0.2)';
               if ( elem.querySelector('img') ){

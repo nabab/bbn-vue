@@ -23,6 +23,10 @@ return {
       bbn.vue.browserNotificationComponent
     ],
     props: {
+      root: {
+        type: String,
+        default: ''
+      },
       /**
        * @prop {String} ['bbn.env.path'] url
        */
@@ -142,6 +146,13 @@ return {
         default: false
       },
       /**
+       * @prop {Boolean} [false] single
+       */
+      urlNavigation: {
+        type: Boolean,
+        default: true
+      },
+      /**
        * @prop {String} ['bbn.env.siteTitle || bbn._("App-UI")'] title
        */
       title: {
@@ -193,6 +204,16 @@ return {
         type: Boolean,
         default: true
       },
+      prefix: {
+        type: String
+      },
+      componentsPath: {
+        type: String,
+        default: 'components/'
+      },
+      componentsMixin: {
+        type: Object
+      }
     },
     data(){
       let isMobile = bbn.fn.isMobile();
@@ -228,14 +249,13 @@ return {
         width: 0,
         height: 0,
         popups: [],
+        // Polling
         polling: false,
         pollingTimeout: 0,
         prePollingTimeout: 0,
         pollingErrors: 0,
-        widgets: {},
         loaders: [],
         notifications: [],
-        root: bbn.vue.defaults.appui.root || '',
         menuOpened: false,
         poller: false,
         debug: false,
@@ -873,6 +893,45 @@ return {
         window.appui = this;
         this.componentClass.push('bbn-resize-emitter', 'bbn-observer');
         this.cool = true;
+
+        bbn.fn.each(this.plugins, (path, name) => {
+          bbn.components.addPrefix(
+            name,
+            (tag, resolve, reject) => bbn.components.queueComponent(
+              tag,
+              path + '/' + this.componentsPath + bbn.fn.replaceAll('-', '/', tag).substr(name.length + 1), null, resolve, reject
+            )
+          );
+        });
+    
+        if (this.prefix) {
+          bbn.components.addPrefix(
+            this.prefix,
+            (tag, resolve, reject, mixins) => bbn.components.queueComponent(
+              tag,
+              this.componentsPath + bbn.fn.replaceAll('-', '/', tag).substr((this.prefix + '-').length),
+              mixins,
+              resolve,
+              reject
+            ),
+            bbn.fn.extend(
+              true,
+              {},
+              {
+                methods: {
+                  getTab(){
+                    return this.closest('bbn-container');
+                  },
+                  popup(){
+                    return this.getTab().popup.apply(this, arguments);
+                  }
+                }
+              },
+              this.componentsMixin
+            )
+          );
+        }
+
         let preloaded = [
           'container',
           'router',

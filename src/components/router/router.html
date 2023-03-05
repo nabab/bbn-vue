@@ -155,11 +155,12 @@
             </div>
             <slot></slot>
             <template v-for="a in (isVisual ? visualList : views)"
-                      :key="isVisual ? a.view.uid : a.uid">
+                      :key="isVisual ? a.view.uid : a.uid"
+                      v-if="isVisual ? !a.view.real : !a.real">
               <bbn-portal :disabled="!routed || !getPane(a)"
                           bbn-forget="!splittable"
                           :selector="getPortalSelector(a)">
-                <bbn-container v-if="(isVisual ? !a.view.real : !a.real) && !component && (!a.pane || routed)"
+                <bbn-container v-if="!component && (!a.pane || routed)"
                               :visual="isVisual"
                               v-bind="isVisual ? a.view : a"/>
                 <bbn-container v-else-if="component"

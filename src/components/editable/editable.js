@@ -1107,7 +1107,7 @@ return {
       this.initialSource = bbn.fn.extend({}, this.source);
       this.ready = true;
       if ( bbn.fn.isEmpty(this.source.style) ){
-        bbn.fn.warning(this.source.type)
+        bbn.fn.warning(this.source.type + "  HAS STYLE WHICH IS EMPTY?")
         this.source.style = {};
       }
       if ( bbn.fn.isEmpty(this.source.style) || !this.source.style.color ){

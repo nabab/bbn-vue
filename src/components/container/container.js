@@ -36,7 +36,6 @@ return {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.resizerComponent
-     * @mixin bbn.vue.viewComponent
      * @mixin bbn.vue.observerComponent
      */
     static() {
@@ -48,7 +47,6 @@ return {
     [
       bbn.vue.basicComponent, 
       bbn.vue.resizerComponent, 
-      bbn.vue.viewComponent, 
       bbn.vue.observerComponent
     ],
     props: {
@@ -94,7 +92,233 @@ return {
       },
       pane: {},
       error: {},
-      component: {}
+      component: {},
+      /**
+       * The source of the component.
+       * @prop {Object|Function} source
+       */
+      source: {
+        type: [Array, Object, String, Function],
+      },
+      /**
+       * The title of the component.
+       * @prop {String|Number} ['Untitled'] title
+       */
+      title: {
+        type: [String, Number],
+        default: bbn._("Untitled")
+      },
+      /**
+       * The options object of the component.
+       * @prop {Object} options
+       */
+      options: {
+        type: Object,
+        default(){
+          return {}
+        }
+      },
+      /**
+       * Defines if the component has to be cached.
+       * @prop {Boolean} [false] cached
+       */
+      cached: {
+        type: Boolean,
+        default: false
+      },
+      /**
+       * Defines if the component has to be scrollable.
+       * @prop {Boolean} [true] scrollable
+       */
+      scrollable: {
+        type: Boolean,
+        default: false
+      },
+      /**
+       * Defines the component to use.
+       * @prop component
+       */
+      component: {
+        type: [String, Object, Function]
+      },
+      /**
+       * Defines the icon.
+       * @prop {String|Boolean} icon
+       */
+      icon: {
+        type: [String, Boolean],
+      },
+      /**
+       * Defines if the component can have a text.
+       * @prop {Boolean} [false] notext
+       */
+      notext: {
+        type: Boolean,
+        default: false
+      },
+      /**
+       * Defines the component's content.
+       * @prop {String} [''] content
+       */
+      content: {
+        type: String,
+        default: ""
+      },
+      /**
+       * Defines the menu.
+       * @prop {Array|Function} menu
+       */
+      menu: {
+        type: [Array, Function, Boolean]
+      },
+      /**
+       * Defines if the component is loaded.
+       * @prop {Boolean} loaded
+       */
+      loaded: {
+        type: Boolean,
+        default: false
+      },
+      /**
+       * Tells if the component is currently loading.
+       * @prop {Boolean} loading
+       */
+      loading: {
+        type: Boolean,
+        default: false
+      },
+      /**
+       * Defines the component's fcolor.
+       * @prop {String} fcolor
+       */
+      fcolor: {
+        type: String
+      },
+      /**
+       * Defines the component's bcolor.
+       * @prop {String} bcolor
+       */
+      bcolor: {
+        type: String
+      },
+      /**
+       * @prop {Boolean} [false] load
+       */
+      load: {
+        type: Boolean,
+        default: false
+      },
+      /**
+       * Defines if the component has to be selected.
+       * @prop {Boolean|Number} [false] selected
+       */
+      selected: {
+        type: [Boolean, Number],
+        default: false
+      },
+      /**
+       * Defines the css string for the component.
+       * @prop {String} [''] css
+       */
+      css: {
+        type: String,
+        default: ""
+      },
+      /**
+       * @prop {String|Vue} advert
+       */
+      advert: {
+        type: [String, Vue]
+      },
+      /**
+       * @prop {String} help
+       */
+      help: {
+        type: String
+      },
+      /**
+       * @prop {Array} imessages
+       */
+      imessages: {
+        type: [Array, Function],
+        default() {
+          return []
+        }
+      },
+      /**
+       * @prop script
+       */
+      script: {},
+      /**
+       * Defines if the component has to be static.
+       * @prop {Boolean|Number} [false] static
+       */
+      static: {
+        type: [Boolean, Number],
+        default: false
+      },
+      /**
+       * Defines
+       if the component has to be pinned.
+        * @prop {Boolean|Number} [false] pinned
+         */
+      pinned: {
+        type: [Boolean, Number],
+        default: false
+      },
+      /**
+       * Defines the url.
+       * @prop {String|Number} url
+       */
+      url: {
+        type: [String, Number]
+      },
+      /**
+       * @prop current
+       * @prop {String|Number} current
+       */
+      current: {
+        type: [String, Number]
+      },
+      /**
+       * @prop {Boolean} [true] real
+       */
+      real: {
+        type: Boolean,
+        default: true
+      },
+      /**
+       * The object of configuration for the component
+       * @prop {Object} cfg
+       */
+      cfg: {
+        type: Object
+      },
+      /**
+       * @prop {Object} events
+       */
+      events: {
+        type: Object,
+        default(){
+          return {}
+        }
+      },
+      /**
+       * Defines if the component is disabled.
+       * @prop {Boolean} [false] disabled
+       */
+      disabled: {
+        type: [Boolean, Function],
+        default: false
+      },
+      /**
+       * Defines if the component is hidden.
+       * @prop {Boolean} [false] hidden
+       */
+      hidden: {
+        type: [Boolean, Function],
+        default: false
+      }
     },
     data(){
       return {
@@ -187,26 +411,316 @@ return {
          * @data {null|Object} errorStatus
          */
         errorStatus: null,
-        /**
-         * The title actually shown.
-         * @data {String} currentTitle
-         */
-        currentTitle: this.title,
-        /**
-         * The icon actually shown.
-         * @data {String} currentIcon
-         */
-        currentIcon: this.icon,
-        /**
-         * The index in the router's views
-         * @data {Number} currentIndex
-         */
-        currentIndex: this.idx,
-        bbnCfg: false,
-        bbnTpl: false
+        componentDefinition: false,
+        componentTemplate: false,
+        componentCSS: false,
+        currentIndex: this.idx || null
       };
     },
     computed: {
+      /**
+       * Defines the css string for the component.
+       * @prop {String} [''] css
+       */
+      currentCss: {
+        get(){
+          return this.currentView?.css || '';
+        },
+        set(v){
+          if ( this.currentView ){
+            this.currentView.css = v;
+          }
+        }
+      },
+      /**
+       * The source of the component.
+       * @prop {Object|Function} source
+       */
+      currentSource: {
+        get(){
+          return this.currentView?.source || null;
+        },
+        set(v){
+          if ( this.currentView ){
+            this.currentView.source = v;
+          }
+        }
+      },
+      /**
+       * The title of the component.
+       * @prop {String|Number} ['Untitled'] title
+       */
+      currentTitle: {
+        get() {
+          return this.currentView?.title || bbn._('Untitled');
+        },
+        set(v) {
+          if ( this.currentView ){
+            this.currentView.title = v;
+          }
+        }
+      },
+      /**
+       * The options object of the component.
+       * @prop {Object} options
+       */
+      currentOptions: {
+        get() {
+          return this.currentView?.options || {};
+        },
+        set(v) {
+          if ( this.currentView ){
+            this.currentView.options = v;
+          }
+        }
+      },
+      /**
+       * Defines if the component has to be cached.
+       * @prop {Boolean} [false] cached
+       */
+      currentCached: {
+        get() {
+          return this.currentView?.cached || false;
+        },
+        set(v) {
+          if ( this.currentView ){
+            this.currentView.cached = v;
+          }
+        }
+      },
+      /**
+       * Defines if the component has to be scrollable.
+       * @prop {Boolean} [true] scrollable
+       */
+      currentScrollable: {
+        get() {
+          return this.currentView?.scrollable || true;
+        },
+        set(v) {
+          if ( this.currentView ){
+            this.currentView.scrollable = v;
+          }
+        }
+      },
+      /**
+       * Defines the component to use.
+       * @prop component
+       */
+      currentComponent: {
+        get() {
+          return this.currentView?.component || null;
+        },
+        set(v) {
+          if ( this.currentView ){
+            this.currentView.component = v;
+          }
+        }
+      },
+      /**
+       * Defines the icon.
+       * @prop {String|Boolean} icon
+       */
+      currentIcon: {
+        get() {
+          return this.currentView?.icon || null;
+        },
+        set(v) {
+          if ( this.currentView ){
+            this.currentView.icon = v;
+          }
+        }
+      },
+      /**
+       * Defines if the component can have a text.
+       * @prop {Boolean} [false] notext
+       */
+      currentNotext: {
+        get() {
+          return this.currentView?.notext || false;
+        },
+        set(v) {
+          if ( this.currentView ){
+            this.currentView.notext = v;
+          }
+        }
+      },
+      /**
+       * Defines the component's content.
+       * @prop {String} [''] content
+       */
+      currentContent: {
+        get() {
+          return this.currentView?.content || '';
+        },
+        set(v) {
+          if ( this.currentView ){
+            this.currentView.content = v;
+          }
+        }
+      },
+      /**
+       * Defines the menu.
+       * @prop {Array|Function} menu
+       */
+      currentMenu: {
+        get() {
+          return this.currentView?.menu || null;
+        },
+        set(v) {
+          if ( this.currentView ){
+            this.currentView.menu = v;
+          }
+        }
+      },
+      /**
+       * Defines the component's fcolor.
+       * @prop {String} fcolor
+       */
+      currentFcolor: {
+        get() {
+          return this.currentView?.fcolor || null;
+        },
+        set(v) {
+          if ( this.currentView ){
+            this.currentView.fcolor = v;
+          }
+        }
+      },
+      /**
+       * Defines the component's bcolor.
+       * @prop {String} bcolor
+       */
+      currentBcolor: {
+        get() {
+          return this.currentView?.bcolor || null;
+        },
+        set(v) {
+          if ( this.currentView ){
+            this.currentView.bcolor = v;
+          }
+        }
+      },
+      /**
+       * @prop {String|Vue} advert
+       */
+      currentAdvert: {
+        get() {
+          return this.currentView?.advert || null;
+        },
+        set(v) {
+          if ( this.currentView ){
+            this.currentView.advert = v;
+          }
+        }
+      },
+      /**
+       * @prop {String} help
+       */
+      currentHelp: {
+        get() {
+          return this.currentView?.help || null;
+        },
+        set(v) {
+          if ( this.currentView ){
+            this.currentView.help = v;
+          }
+        }
+      },
+      /**
+       * @prop {Array} imessages
+       */
+      currentImessages: {
+        get() {
+          return this.currentView?.imessages || [];
+        },
+        set(v) {
+          if ( this.currentView ){
+            this.currentView.imessages = v;
+          }
+        }
+      },
+      /**
+       * @prop script
+       */
+      currentScript: {
+        get() {
+          return this.currentView?.script || null;
+        },
+        set(v) {
+          if ( this.currentView ){
+            this.currentView.script = v;
+          }
+        }
+      },
+      /**
+       * @prop current
+       * @prop {String|Number} current
+       */
+      currentCurrent: {
+        get() {
+          return this.currentView?.current || null;
+        },
+        set(v) {
+          if ( this.currentView ){
+            this.currentView.current = v;
+          }
+        }
+      },
+      /**
+       * The object of configuration for the component
+       * @prop {Object} cfg
+       */
+      currentCfg: {
+        get() {
+          return this.currentView?.cfg || {};
+        },
+        set(v) {
+          if ( this.currentView ){
+            this.currentView.cfg = v;
+          }
+        }
+      },
+      /**
+       * @prop {Object} events
+       */
+      currentEvents: {
+        get() {
+          return this.currentView?.events || {};
+        },
+        set(v) {
+          if ( this.currentView ){
+            this.currentView.events = v;
+          }
+        }
+      },
+      /**
+       * Defines if the component is disabled.
+       * @prop {Boolean} [false] disabled
+       */
+      currentDisabled: {
+        get() {
+          return this.currentView?.disabled || false;
+        },
+        set(v) {
+          if ( this.currentView ){
+            this.currentView.disabled = v;
+          }
+        }
+      },
+      /**
+       * Defines if the component is hidden.
+       * @prop {Boolean} [false] hidden
+       */
+      currentHidden: {
+        get() {
+          return this.currentView?.hidden || false;
+        },
+        set(v) {
+          if ( this.currentView ){
+            this.currentView.hidden = v;
+          }
+        }
+      },
       /**
        * True if the router configuration object has pane (ie is in a splitter pane).
        * @data {Boolean} [false] isVisible
@@ -545,7 +1059,7 @@ return {
               if ( idx > -1 ){
                 items.splice(idx, 1);
                 this.router.views[this.currentIndex].menu = items;
-                this.router.$forceUpdate();
+                //this.router.$forceUpdate();
                 return true;
               }
             };
@@ -555,7 +1069,7 @@ return {
             if ( idx > -1 ){
               menu.splice(idx, 1);
               this.router.views[this.currentIndex].menu = menu;
-              this.router.$forceUpdate();
+              //this.router.$forceUpdate();
               return true;
             }
           }
@@ -577,8 +1091,8 @@ return {
         if (this.isVisible && (this.real || (this.isLoaded && !this.ready))) {
           let res;
 
-          if (this.currentView.script){
-            res = typeof this.currentView.script === 'string' ? eval(this.currentView.script) : this.currentView.script;
+          if (this.currentScript){
+            res = typeof this.currentScript === 'string' ? eval(this.currentView.script) : this.currentView.script;
             bbn.fn.log("************************************", res);
             // if evaluating the script property returns a function that will be onMount
             if (bbn.fn.isFunction(res) ){
@@ -592,14 +1106,13 @@ return {
                   type: Object
                 }
               };
-              this.bbnCfg = bbn.components.normalizeComponent(res);
-              bbn.fn.log("YUUUU", res, this.bbnCfg, this.content)
-              this.bbnCfg.template = this.content;
-              this.bbnTpl = this.bbnCfg.template;
+              this.componentDefinition = bbn.components.normalizeComponent(res);
+              bbn.fn.log("YUUUU", res, this.componentDefinition, this.currentContent)
+              this.componentDefinition.template = this.currentContent;
               this.isComponent = true;
             }
           }
-          else if ( this.content ){
+          else if ( this.currentContent ){
             this.isComponent = false;
           }
 
@@ -816,8 +1329,7 @@ return {
     /**
      * @event created 
      */
-    created(){
-      bbn.fn.warning("container created")
+    created() {
       this.componentClass.push('bbn-resize-emitter');
       if ( this.isComponent ){
         bbnContainerCreator.componentsList.push(this.componentName);
@@ -876,11 +1388,153 @@ return {
     },
 
     watch: {
-      title(v) {
-        this.currentTitle = v;
+      currentView(v) {
+        bbn.fn.iterate(v, (a, n) => {
+          let name = 'c' + bbn.fn.correctCase(n);
+          if (Object.hasOwn(this, name) && !bbn.fn.isSame(this[name], a)) {
+            this[name] = a;
+            bbn.fn.log("***************** CHANGING " + name + " IN CURRENT VIEW FOR " + this.url + " *****************")
+          }
+        });
+
       },
+      /**
+       * The source of the component.
+       * @prop {Object|Function} source
+       */
+      source(v) {
+        this.currentView.source = v;
+      },
+      /**
+       * The options object of the component.
+       * @prop {Object} options
+       */
+      options(v) {
+        this.currentView.options = v;
+      },
+      /**
+       * Defines if the component has to be cached.
+       * @prop {Boolean} [false] cached
+       */
+      cached(v) {
+        this.currentView.cached = v;
+      },
+      /**
+       * Defines if the component has to be scrollable.
+       * @prop {Boolean} [true] scrollable
+       */
+      scrollable(v) {
+        this.currentView.scrollable = v;
+      },
+      /**
+       * Defines the component to use.
+       * @prop component
+       */
+      component(v) {
+        this.currentView.component = v;
+      },
+      /**
+       * Defines the icon.
+       * @prop {String|Boolean} icon
+       */
       icon(v) {
-        this.currentIcon = v;
+        this.currentView.icon = v;
+      },
+      /**
+       * Defines if the component can have a text.
+       * @prop {Boolean} [false] notext
+       */
+      notext(v) {
+        this.currentView.notext = v;
+      },
+      /**
+       * Defines the component's content.
+       * @prop {String} [''] content
+       */
+      content(v) {
+        this.currentView.content = v;
+      },
+      /**
+       * Defines the menu.
+       * @prop {Array|Function} menu
+       */
+      menu(v) {
+        this.currentView.menu = v;
+      },
+      /**
+       * Defines the component's fcolor.
+       * @prop {String} fcolor
+       */
+      fcolor(v) {
+        this.currentView.fcolor = v;
+      },
+      /**
+       * Defines the component's bcolor.
+       * @prop {String} bcolor
+       */
+      bcolor(v) {
+        this.currentView.bcolor = v;
+      },
+      /**
+       * Defines the css string for the component.
+       * @prop {String} [''] css
+       */
+      css(v) {
+        this.currentView.css = v;
+      },
+      /**
+       * @prop {String|Vue} advert
+       */
+      advert(v) {
+        this.currentView.advert = v;
+     },
+      /**
+       * @prop {String} help
+       */
+      help(v) {
+        this.currentView.help = v;
+      },
+      /**
+       * @prop {Array} imessages
+       */
+      imessages(v) {
+        this.currentView.imessages = v;
+      },
+      /**
+       * @prop script
+       */
+      script(v) {
+        this.currentView.script = v;
+      },
+      /**
+       * The object of configuration for the component
+       * @prop {Object} cfg
+       */
+      cfg(v) {
+        this.currentView.cfg = v;
+      },
+      /**
+       * @prop {Object} events
+       */
+      events(v) {
+        this.currentView.events = v;
+      },
+      /**
+       * Defines if the component is disabled.
+       * @prop {Boolean} [false] disabled
+       */
+      disabled(v) {
+        this.currentView.disabled = v;
+      },
+      /**
+       * Defines if the component is hidden.
+       * @prop {Boolean} [false] hidden
+       */
+      hidden(v) {
+        this.currentView.hidden = v;
+      },
+      title(v) {
+        this.currentView.title = v;
       },
       loaded(v) {
         this.isLoaded = v;
@@ -888,17 +1542,11 @@ return {
       loading(v) {
         this.isLoading = v;
       },
-      idx(v) {
-        if (this.visual) {
-          this.isOver = false;
-        }
-
-        this.currentIndex = v;
-      },
       current(newVal){
         if (newVal.indexOf(this.url) === 0){
           this.currentURL = newVal;
         }
+        this.currentView.current = v;
       },
       /**
        * @watch currentUrl
@@ -930,7 +1578,7 @@ return {
        */
       isVisible(nv) {
         let emit = true;
-        if (!this.isPane && this.router.isVisual) {
+        if (!this.isPane && this.router?.isVisual) {
           if (nv) {
             this.setScreenshot()
           }
@@ -943,7 +1591,7 @@ return {
           this.$emit(nv ? 'view' : 'unview', this);
         }
 
-        if (nv) {
+        if (nv && this.router) {
           if (!this.isLoaded && !this.isLoading) {
             this.router.load(this.currentURL, true)
           }

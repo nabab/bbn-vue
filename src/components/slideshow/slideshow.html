@@ -30,10 +30,10 @@
       <div class="bbn-flex-fill bbn-iflex-height">
         <div class="bbn-flex-fill">
           <div v-if="arrowsPosition.startsWith('top')"
-               class="bbn-flex"
+               class="bbn-flex bbn-bottom-sspace"
                :style="arrowsStyle">
             <i v-show="showArrowLeft"
-               :class="[leftArrowClass, 'bbn-p', 'bbn-xxxl']"
+               :class="[leftArrowClass, 'bbn-p', 'bbn-lg']"
                @click="prev"
                :style="{visibility: (currentIndex === 0 && !loop)? 'hidden' : 'visible'}"/>
             <i v-show="showArrowRight"
@@ -41,7 +41,7 @@
                :class="[
                  rightArrowClass,
                  'bbn-p',
-                 'bbn-xxxl'
+                 'bbn-lg'
                ]"
                :style="{visibility: (currentIndex >= items.length - 1) && !loop ? 'hidden' : 'visible'}"/>
           </div>
@@ -52,7 +52,7 @@
                  @mouseover="arrowsPreview('prev', true)"
                  @mouseleave="arrowsPreview('prev', false)">
               <i v-show="showArrowLeft"
-                 :class="[leftArrowClass, 'bbn-p', 'bbn-xxxl']"
+                 :class="[leftArrowClass, 'bbn-p', 'bbn-lg']"
                  @click="prev"
                  :style="{visibility: (currentIndex === 0 && !loop)? 'hidden' : 'visible'}"/>
             </div>
@@ -82,13 +82,13 @@
                          'bbn-lg',
                          {'bbn-h-100': fullSlide, 'bbn-abs': fullSlide}
                        ]">
-                    <bbn-anonymous v-if="it.component"
+                    <component v-if="it.component"
                                :is="it.component"
                                :data="it.data || {}"
                                v-bind="it.attributes"
                                :key="i"
                                @clickitem="itemClickable ? $emit('clickitem', it) : false"/>
-                    <bbn-anonymous v-else-if="component"
+                    <component v-else-if="component"
                                :is="component"
                                :content="it.content || ''"
                                :data="it.data || {}"
@@ -152,16 +152,16 @@
                  :class="[
                    rightArrowClass,
                    'bbn-p',
-                   'bbn-xxxl'
+                   'bbn-lg'
                  ]"
                  :style="{visibility: (currentIndex >= items.length - 1) && !loop ? 'hidden' : 'visible'}"/>
             </div>
           </div>
           <div v-if="arrowsPosition.startsWith('bottom')"
-               class="bbn-flex"
+               class="bbn-flex bbn-top-sspace"
                :style="arrowsStyle">
             <i v-show="showArrowLeft"
-               :class="[leftArrowClass, 'bbn-p', 'bbn-xxxl']"
+               :class="[leftArrowClass, 'bbn-p', 'bbn-lg']"
                @click="prev"
                :style="{visibility: (currentIndex === 0 && !loop)? 'hidden' : 'visible'}"/>
             <i v-show="showArrowRight"
@@ -169,7 +169,7 @@
                :class="[
                  rightArrowClass,
                  'bbn-p',
-                 'bbn-xxxl'
+                 'bbn-lg'
                ]"
                :style="{visibility: (currentIndex >= items.length - 1) && !loop ? 'hidden' : 'visible'}"/>
           </div>
@@ -188,7 +188,7 @@
              :style="{'min-height': typeof(dimensionPreview)=== 'Number' ? dimensionPreview + 'px': dimensionPreview}"
              @mouseover="miniaturePreview(true)"
              @mouseleave="miniaturePreview(false)">
-          <bbn-anonymous v-show="showMiniature"
+          <component v-show="showMiniature"
                      :is="$options.components.miniature"
                      :items="items"
                      :type="preview"

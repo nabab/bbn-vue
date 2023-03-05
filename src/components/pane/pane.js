@@ -125,8 +125,6 @@
     },
     mounted(){
       this.splitter = this.closest('bbn-splitter');
-      bbn.fn.warning("MOUNTED PANE");
-      bbn.fn.log(this.splitter)
       if (this.splitter){
         if (this.resizable === undefined) {
           this.isResizable = this.splitter.resizable;

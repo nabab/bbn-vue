@@ -71,8 +71,8 @@
                     bbn-if="ready"
                     bbn-show="!hidden && isLoaded && (isVisible || cached) && popups.length"/>
           <!-- This is shown when it's ready -->
-          <bbn-scroll bbn-if="isLoaded && (isVisible || ((real || cached) && ready) || router?.isVisual)"
-                      bbn-show="ready && (isVisible || (router?.isVisual && !thumbnail))"
+          <bbn-scroll bbn-if="ready && isLoaded && (isVisible || ((real || cached) && ready) || router?.isVisual)"
+                      bbn-show="isVisible || (router?.isVisual && !thumbnail)"
                       ref="scroll"
                       @ready="init"
                       :scrollable="scrollable && router?.scrollContent"
@@ -82,27 +82,27 @@
                         'bbn-w-100': !router?.scrollContent
                       }">
             <!-- This is an ad hoc component with unique name -->
-            <component bbn-if="isComponent && bbnCfg"
-                      :is="bbnCfg"
-                      :source="source"
+            <component bbn-if="isComponent && componentDefinition"
+                      :is="componentDefinition"
+                      :source="currentSource"
                       ref="component"/>
             <!-- This is a classic component -->
-            <component bbn-elseif="component"
-                      :is="component"
-                      :source="source"
+            <component bbn-elseif="currentComponent"
+                      :is="currentComponent"
+                      :source="currentSource"
                       ref="component"
-                      bbn-bind="options"/>
+                      bbn-bind="currentOptions"/>
             <!-- This is just HTML content -->
-            <div bbn-elseif="!isComponent && content"
-                 bbn-html="content">
+            <div bbn-elseif="!isComponent && currentContent"
+                 bbn-html="currentContent">
             </div>
             <!-- This is the slot -->
             <slot bbn-else></slot>
             <!-- Adding style as a component -->
             <component is="style"
-                      bbn-if="css"
+                      bbn-if="currentCss"
                       scoped="scoped"
-                      bbn-html="css"/>
+                      bbn-html="currentCss"/>
           </bbn-scroll>
           <!-- If loading showing loader -->
           <div bbn-elseif="isVisible && errorStatus"
@@ -121,13 +121,13 @@
             </div>
           </div>
           <!-- If loading showing loader -->
-          <bbn-loader bbn-elseif="isVisible && !isLoaded"/>
+          <bbn-loader bbn-elseif="isVisible && (!ready || !isLoaded)"/>
           <!-- Thumbnail image -->
           <div bbn-if="!isVisible && visual && thumbnail"
               style="overflow: hidden"
               class="bbn-overlay">
             <img :src="thumbnail"
-                style="width: 100%; max-height: 100%; height: auto">
+                 style="width: 100%; max-height: 100%; height: auto">
           </div>
         </div>
       </div>
