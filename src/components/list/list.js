@@ -266,10 +266,6 @@ return {
          */
         hasScroll: false,
         /**
-         * @data [null] currentComponent
-         */
-        currentComponent: null,
-        /**
          * @data {Boolean} [false] tmpDisabled
          */
         tmpDisabled: false,

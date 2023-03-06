@@ -535,6 +535,10 @@
            * @data {String} [''] searchValue
            */
           searchValue: '',
+          /**
+           * @data {Object|null} [null] currentComponent
+           */
+          currentComponent: null
         };
       },
       computed: {
@@ -575,13 +579,13 @@
         realComponent(){
           let cp = bbn.fn.isString(this.component) || (bbn.fn.isObject(this.component) && Object.keys(this.component).length) ? this.component : null;
           if (!cp && this.currentTemplate) {
-            cp = {
+            cp = bbn.components.normalizeComponent({
               props: ['source'],
               data(){
                 return this.source;
               },
               template: this.currentTemplate
-            };
+            });
           }
 
           return cp;
@@ -1248,7 +1252,7 @@
       },
       mounted() {
         if (!this.component && !this.template && this.$slots.default) {
-          let tpl = this.getRef('slot');;
+          let tpl = this.getRef('slot');
           if (tpl) {
             this.currentTemplate = tpl.innerHTML;
           }
