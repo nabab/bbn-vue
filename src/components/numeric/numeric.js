@@ -88,6 +88,13 @@
       inputmode: {
         type: String,
         default: 'decimal'
+      },
+      /**
+       * A suffix to display inside of the input
+       * @prop {String} suffix
+       */
+      suffix: {
+        type: String
       }
     },
     data(){
@@ -429,7 +436,7 @@
         return bbn.fn.money(
           val,
           ((bbn.env.money !== undefined) && (bbn.env.money.kilo !== undefined)) ? bbn.env.money.kilo : undefined,
-          this.unit,
+          this.unit + (!!this.suffix ? (!!this.unit ? ' ': '') + this.suffix : ''),
           '',
           ((bbn.env.money !== undefined) && (bbn.env.money.decimal !== undefined)) ? bbn.env.money.decimal : undefined,
           ((bbn.env.money !== undefined) && (bbn.env.money.thousands !== undefined)) ? bbn.env.money.thousands : undefined,
