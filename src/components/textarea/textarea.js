@@ -28,14 +28,14 @@
        * @prop {Number} rows
        */
 			rows: {
-				type: Number
+				validator: bbn.fn.isNumber
       },
       /**
        * The number of columns of the textarea.
        * @prop {Number} cols
        */
 			cols: {
-				type: Number
+				validator: bbn.fn.isNumber
       },
       /**
        * The max length of the text inside the textarea.
