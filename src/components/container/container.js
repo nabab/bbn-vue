@@ -438,7 +438,7 @@ return {
        */
       currentSource: {
         get(){
-          return this.currentView?.source || null;
+          return this.currentView?.source || undefined;
         },
         set(v){
           if ( this.currentView ){

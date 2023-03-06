@@ -78,7 +78,6 @@
 
             }
             this.isResizing = true;
-            this.$forceUpdate();
             if (this.$el.offsetHeight) {
               // Setting initial dimensions
               let ms1 = this.setResizeMeasures();

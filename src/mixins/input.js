@@ -375,12 +375,10 @@
         }
       },
       mounted() {
-        setTimeout(() => {
-          if (this.autofocus) {
-            const ele = this.$refs.element || this.$refs.input || this.$el;
-            ele.focus();
-          }
-        }, 100)
+        if (this.autofocus) {
+          const ele = this.$refs.element || this.$refs.input || this.$el;
+          ele.focus();
+        }
         this.$on('removevalidation', () => {
           if (!!this.validationID
             && this.$el.classList.contains('bbn-state-invalid')

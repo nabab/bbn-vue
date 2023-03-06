@@ -387,7 +387,7 @@ return {
         let cpb = this.getRef('clipboardButton');
         //bbn.fn.log("AWATCH", cpb);
         if (cpb) {
-          cpb.style.color = 'red';
+          cpb.style.color = 'green';
           setTimeout(() => {
             cpb.style.color = null;
           }, 250);
