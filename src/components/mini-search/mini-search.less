@@ -1,0 +1,33 @@
+.bbn-mini-search{
+  transition: width 0.5s;
+  display: inline-block;
+  box-sizing: border-box;
+  min-width: 4.2rem;
+  .bbn-mini-search-container {
+    width: 100%;
+  }
+  .bbn-input{
+    width: 100%;
+  }
+  button{
+    height: 100%;
+  }
+  div{
+    box-sizing: border-box;
+  }
+}
+.bbn-mini-search-floater {
+  .bbn-list {
+    background-color: var(--alt-background);
+    ul {
+      li {
+        margin: var(--sspace);
+        border-radius: var(--default-border-radius);
+      }
+      li:not(.bbn-state-hover):not(.bbn-state-selected) {
+        background-color: var(--default-background);
+        color: var(--default-text);
+      }
+    }
+  }
+}

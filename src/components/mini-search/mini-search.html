@@ -1,0 +1,60 @@
+<div :class="[componentClass, 'bbn-iblock', 'bbn-textbox', {'bbn-disabled': !!isDisabled}]">
+  <div :class="['bbn-rel', 'bbn-mini-search-container', currentItemCls, {
+        'bbn-mini-search-container-native': native
+      }]">
+    <bbn-input :tabindex="0"
+                class="bbn-no-border bbn-i"
+                v-model="filterString"
+                ref="input"
+                @focus="selectText"
+                @keydown.stop="keydown"
+                :autosize="autosize"
+                autocomplete="off"
+                autocorrect="off"
+                autocapitalize="off"
+                spellcheck="false"
+                :button-right="rightIcon || ''"
+                :button-left="leftIcon || ''"
+                :action-right="() => {filterString = ''}"
+                :nullable="isNullable"
+                :placeholder="placeholder"
+                type="search"
+                :loading="isAjax && isLoading"/>
+  </div>
+  <bbn-portal v-if="portalSelector"
+              :selector="portalSelector">
+    <bbn-floater v-if="!popup
+                    && filteredTotal
+                    && !isDisabled
+                    && !readonly
+                    && !native
+                    && ready
+                    && isOpened"
+                :element="asMobile ? undefined : $el"
+                :max-height="asMobile ? undefined : maxHeight"
+                :min-width="$el.clientWidth"
+                :width="asMobile ? '100%' : undefined"
+                :height="asMobile ? '100%' : undefined"
+                ref="list"
+                :children="null"
+                uid="hash"
+                source-value="hash"
+                :source-text="sourceText"
+                :source-url="sourceUrl"
+                :buttons="asMobile ? realButtons : []"
+                :item-component="searchComponent"
+                @mouseenter="isOverDropdown = true"
+                @mouseleave="isOverDropdown = false"
+                @ready="attachList"
+                @select="select"
+                @close="isOpened = false"
+                :source="filteredData"
+                :pager-element="_self"
+                :pageable="!!pageable && (filteredTotal > limit)"
+                class="bbn-mini-search-floater"/>
+  </bbn-portal>
+  <input type="hidden"
+         v-model="value"
+         ref="element"
+         :name="name">
+</div>

@@ -64,7 +64,8 @@
           :style="{
             paddingLeft: prefix ? 0 : null
           }">
-    <bbn-loadicon v-if="loading"/>
+    <bbn-loadicon v-if="loading"
+                  class="bbn-top-right bbn-vmiddle bbn-h-100 bbn-right-xspadded"/>
     <div v-else-if="isNullable && (!readonly || forceNullable) && !isDisabled"
          class="bbn-input-nullable-container bbn-vmiddle"
          :style="{
