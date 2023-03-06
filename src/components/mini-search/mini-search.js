@@ -271,9 +271,11 @@
          * @param {Number} dataIndex
          * @emit change
          */
-        select(item, idx, dataIndex){
+        select(item, idx, dataIndex, ev){
           if (!this.isDisabled) {
-            let ev = new Event('select', {cancelable: true});
+            if (!ev) {
+              let ev = new Event('select', {cancelable: true});
+            }
             this.$emit('select', ev, item, idx, dataIndex);
             if (!ev.defaultPrevented) {
               if (this.sourceAction && item[this.sourceAction]) {

@@ -1372,9 +1372,11 @@
        * @fires closeAll
        * @emits select
        */
-      select(item, idx, dataIndex){
+      select(item, idx, dataIndex, ev){
         if (item && !item.disabled && !item[this.children]) {
-          let ev = new Event('select', {cancelable: true});
+          if (!ev) {
+            let ev = new Event('select', {cancelable: true});
+          }
           if (this.onSelect) {
             this.onSelect(item, idx, dataIndex, ev);
           }
