@@ -391,6 +391,7 @@
                   this.appendData(d.data);
                 }
                 this.afterUpdate();
+                this.isOpened = true;
                 resolve(this.currentData);
                 if (!this.isLoaded) {
                   this.isLoaded = true;
@@ -497,6 +498,9 @@
           }
 
           clearTimeout(this.filterTimeout);
+          if (!v.length) {
+            this.isOpened = false;
+          }
           if (v !== this.currentText) {
             this.emitInput(v);
             this.$emit('change', v);
