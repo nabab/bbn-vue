@@ -1,6 +1,6 @@
 <div :class="componentClass">
   <div class="bbn-hidden" ref="slot">
-    <slot bbn-pre></slot>
+    <slot></slot>
   </div>
   <div :class="getComponentName() + '-content'"
     :style="'grid-template-columns: repeat(' + rowCount + ',' + 100/rowCount + '%);'"

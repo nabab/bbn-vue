@@ -1255,6 +1255,8 @@
           let tpl = this.getRef('slot');
           if (tpl) {
             this.currentTemplate = tpl.innerHTML;
+            bbn.fn.warning("BLOCK TEMPLATE FOUND");
+            bbn.fn.log(this.currentTemplate);
           }
         }
 
