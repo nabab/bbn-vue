@@ -255,6 +255,9 @@
                   specificCase = true;
                 }
                 else {
+                  if (this.$el.classList.contains('bbn-state-invalid')) {
+                    this.$el.classList.remove('bbn-state-invalid');
+                  }
                   return true;
                 }
               }
