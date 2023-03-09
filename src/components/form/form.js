@@ -743,7 +743,7 @@
                     bbn.fn.move(this.source[name], idx, i);
                   }
                   else{
-                    this.source[name].splice(i, 0, bbn.fn.clone(a));
+                    this.source[name].splice(i, 0, a);
                   }
                 }
               });
@@ -770,6 +770,7 @@
             }
           }
         });
+        this.reinit();
         this.$forceUpdate();
         this.$nextTick(() => {
           let elems = this.findAll('.bbn-input-component');
