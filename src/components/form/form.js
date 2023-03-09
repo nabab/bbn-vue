@@ -493,15 +493,16 @@
                   p.alert(this.successMessage);
                   bbn.fn.info(this.successMessage, p);
                 }
-  
+
                 /*
                 if ( this.sendModel && this.source ){
                   this.originalData = bbn.fn.extend(true, {}, this.source || {});
                 }
                 */
-  
+
                 this.dirty = false;
                 this.isLoading = false;
+                this.update();
 
                 if (this.window) {
                   this.$nextTick(() => {
