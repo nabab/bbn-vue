@@ -481,11 +481,11 @@
                :auto-hide="true"
                :scrollable="true"
                :left="floatingFilterX"
-               :top="floatingFilterY">
+               :top="floatingFilterY"
+               :element-width="false">
     <bbn-filter v-bind="getFilterOptions()"
                 @set="onSetFilter"
-                @unset="unsetCurrentFilter"
-                class="bbn-w-100"/>
+                @unset="unsetCurrentFilter"/>
     <div v-if="multifilter"
          class="bbn-table-filter-link bbn-p bbn-b bbn-i bbn-w-100 bbn-bottom-padded bbn-left-padded bbn-right-padded bbn-r"
          @click="openMultiFilter">
