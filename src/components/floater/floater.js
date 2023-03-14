@@ -637,11 +637,11 @@
         if (this.container) {
           coord = (bbn.fn.isDom(this.container) ? this.container : this.$el.offsetParent).getBoundingClientRect();
           if (coord.width) {
-            maxWidth.push(coord.width);
+            maxWidth.push(Math.round(coord.width));
           }
 
           if (coord.height) {
-            maxHeight.push(coord.height);
+            maxHeight.push(Math.round(coord.height));
           }
 
         }
