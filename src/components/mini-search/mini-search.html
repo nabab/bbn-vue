@@ -21,8 +21,8 @@
                 type="search"
                 :loading="isAjax && isLoading"/>
   </div>
-  <bbn-portal v-if="portalSelector"
-              :selector="portalSelector">
+  <component :is="!!portalSelector && !isInsideFloater ? 'bbn-portal' : 'div'"
+             :selector="portalSelector">
     <bbn-floater v-if="!popup
                     && filteredTotal
                     && !isDisabled
@@ -52,7 +52,7 @@
                 :pager-element="_self"
                 :pageable="!!pageable && (filteredTotal > limit)"
                 class="bbn-mini-search-floater"/>
-  </bbn-portal>
+  </component>
   <input type="hidden"
          v-model="value"
          ref="element"

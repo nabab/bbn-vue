@@ -242,7 +242,8 @@
            * @memberof dropdownComponent
            */
           list: null,
-          portalSelector: null
+          portalSelector: null,
+          isInsideFloater: false
         };
       },
       computed: {
@@ -497,6 +498,7 @@
       beforeMount() {
         let ct = this.closest('bbn-container');
         this.portalSelector = ct ? ct.$el : document.body;
+        this.isInsideFloater = !!this.closest('bbn-floater');
         this.updateButtons();
       },
       watch: {
