@@ -224,7 +224,7 @@
       currentText(newVal){
         if (this.ready) {
           if (!newVal && this.value && this.isNullable){
-            this.emitInput('');
+            this.emitInput(this.nullValue);
             this.filterString = '';
           }
           else {

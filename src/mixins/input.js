@@ -105,6 +105,14 @@
           default: false
         },
         /**
+         * @prop {Boolean|String|Object} [''] nullValue
+         * @memberof inputComponent
+         */
+        nullValue: {
+          type: [Boolean, String, Object],
+          default: ''
+        },
+        /**
          * Set it to true if you want to auto-resize the input's width based on its value (in characters).
          * @prop {Boolean} [false] autosize
          */
