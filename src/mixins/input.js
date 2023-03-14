@@ -110,7 +110,7 @@
          */
         nullValue: {
           type: [Boolean, String, Object],
-          default: ''
+          default: null
         },
         /**
          * Set it to true if you want to auto-resize the input's width based on its value (in characters).

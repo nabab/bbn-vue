@@ -223,8 +223,8 @@
        */
       currentText(newVal){
         if (this.ready) {
-          if (!newVal && this.value && this.isNullable){
-            this.emitInput(this.nullValue);
+          if (!newVal && this.value) {
+            this.emitInput(this.isNullable && (this.nullable !== null) ? this.nullValue : '');
             this.filterString = '';
           }
           else {
