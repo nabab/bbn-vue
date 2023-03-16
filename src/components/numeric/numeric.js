@@ -246,6 +246,7 @@
        * @fires focus
        */
       _focus(e){
+        bbn.fn.log('aaaaaa');
         if ( !this.isDisabled && !this.readonly && !this.onlySpinners ){
           //this.currentValue = this.value;
           this.currentValue = this.value === null ? '' : (bbn.fn.isNumber(this.value) ? parseFloat(this.value).toFixed(this.decimals) : this.value);
@@ -462,6 +463,13 @@
         if ( (newVal !== oldVal) ){
           this.changeValue(newVal, oldVal);
         }
+      },
+      /**
+       * @watch suffix
+       * @fires setInputValue
+       */
+      suffix(){
+        this.setInputValue();
       }
     }
   });
