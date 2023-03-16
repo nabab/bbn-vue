@@ -997,7 +997,7 @@
               clearTimeout(this.sourceTimeout);
             }
             this.sourceTimeout = setTimeout(() => {
-              this.update();
+              this.canSubmit = this._canSubmit();
             }, 200)
           })
         }
