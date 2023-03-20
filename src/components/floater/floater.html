@@ -86,16 +86,16 @@
                     :min-width="currentMinWidth || null"
                     :min-height="currentMinHeight > outHeight ? currentMinHeight - outHeight : null"
                     @resizecontent="scrollResize">
+          <slot/>
           <bbn-anonymous v-if="component"
                     ref="component"
                     :is="component"
                     v-bind="realComponentOptions"/>
-          <slot v-else-if="$slots.default"/>
-          <div v-else-if="!!content"
-              v-html="content"
-              :class="scrollable ? 'bbn-block' : 'bbn-overlay'"
-              :style="HTMLStyle"/>
-          <bbn-list v-else-if="filteredData.length"
+          <div v-else-if="!$slots.default && !!content"
+               v-html="content"
+               :class="scrollable ? 'bbn-block' : 'bbn-overlay'"
+               :style="HTMLStyle"/>
+          <bbn-list v-else-if="!$slots.default && filteredData.length"
                     :mode="mode"
                     ref="list"
                     :suggest="suggest"
