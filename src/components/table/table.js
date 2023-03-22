@@ -3174,6 +3174,11 @@
           }
           this.$forceUpdate();
         }
+      },
+      onButtonsMenuSelect(item, data, col, i, ev, floater){
+        ev.preventDefault();
+        this._execCommand(item, data, col, i, ev);
+        floater.closeAll();
       }
     },
     /**

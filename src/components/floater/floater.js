@@ -1378,10 +1378,10 @@
             let ev = new Event('select', {cancelable: true});
           }
           if (this.onSelect) {
-            this.onSelect(item, idx, dataIndex, ev);
+            this.onSelect(item, idx, dataIndex, ev, this);
           }
           else {
-            this.$emit("select", item, idx, dataIndex, ev);
+            this.$emit("select", item, idx, dataIndex, ev, this);
           }
 
           if (ev.defaultPrevented) {

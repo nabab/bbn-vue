@@ -10,7 +10,8 @@
            @touchend="touchend">
   <slot></slot>
   <bbn-portal v-if="portal"
-              :selector="portal">
+              :selector="portal"
+              ref="portal">
     <bbn-floater v-if="showFloater && !disabled"
                 :element="attach || null"
                 :source="filteredData"
@@ -35,7 +36,8 @@
                 @close="$emit('close'); showFloater = false;"
                 @open="$emit('open')"
                 :item-component="itemComponent"
-                :position="position"/>
+                :position="position"
+                @select="(item, idx, dataIndex, ev, floater) => $emit('select', item, idx, dataIndex, ev, floater)"/>
   </bbn-portal>
   <bbn-floater v-else-if="showFloater && !disabled"
                :element="attach || null"
