@@ -132,6 +132,13 @@
         type: [String, Function],
         default: 'url'
       },
+      /**
+       * The HTML element to be used as portal
+       * @prop {HTMLElement} portal
+       */
+      portal: {
+        type: HTMLElement
+      }
     },
     data(){
       return {

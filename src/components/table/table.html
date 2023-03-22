@@ -418,7 +418,8 @@
                                       @select="_execCommand(button, d.data, col, i, $event)"/>
                       </template>
                       <template v-else-if="col.buttons && (buttonMode === 'menu')">
-                        <bbn-context :source="buttonSource(d.data, col, i)">
+                        <bbn-context :source="buttonSource(d.data, col, i)"
+                                     :portal="portalElement">
                           <span class="bbn-iblock bbn-lg">
                             <i :class="buttonIcon"/>
                           </span>

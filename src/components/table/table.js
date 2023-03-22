@@ -557,7 +557,12 @@
          * True if the table is resizing its width
          * @data {Boolean} [false] isResizingWidth
          */
-        isResizingWidth: false
+        isResizingWidth: false,
+        /**
+         * The portal element for the buttons' floater (menu mode)
+         * @data {HTMLElement} [document.body] portalElement
+         */
+        portalElement: document.body
       };
     },
     computed: {
