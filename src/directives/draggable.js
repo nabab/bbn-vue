@@ -55,13 +55,21 @@
         }
         ele._bbn.directives.draggable.pointerEvents = window.getComputedStyle(options.helper).pointerEvents;
         options.helper.style.pointerEvents = 'none';
+        let fnClick = e => {
+          e.stopImmediatePropagation();
+          e.preventDefault();
+        };
         let fnDrag = e => {
           drag(e, ele, options);
         };
         let fnEnd = e => {
           endDrag(e, ele, options);
           document.removeEventListener('mousemove', fnDrag);
+          setTimeout(() => {
+            document.removeEventListener('click', fnClick);
+          }, 100);
         };
+        document.addEventListener('click', fnClick, {once: true, capture: true});
         document.addEventListener('mouseup', fnEnd, {once: true});
         document.addEventListener('mousemove', fnDrag);
       }
