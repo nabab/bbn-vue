@@ -16,9 +16,8 @@
                 :button-right="rightIcon || ''"
                 :button-left="leftIcon || ''"
                 :action-right="() => {filterString = ''}"
-                :nullable="isNullable"
+                :nullable="nullable"
                 :placeholder="placeholder"
-                type="search"
                 :loading="isAjax && isLoading"/>
   </div>
   <component :is="!!portalSelector && !isInsideFloater ? 'bbn-portal' : 'div'"

@@ -61,10 +61,10 @@
         },
         /**
          * Defines if the search can have a null value.
-         * @prop {Boolean} [false] nullable
+         * @prop {Boolean} [true] nullable
          */
         nullable: {
-          default: false
+          default: true
         },
         /**
          * Defines the min length of the filter string.
