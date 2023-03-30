@@ -774,7 +774,7 @@
           const fileReader = new FileReader();
           fileReader.onload = () => {
             const img = fileReader.result;
-            exec('insertHTML', `<img src="${img}">`);
+            exec('insertHTML', `<img src="${img}" style="max-width: 100%; height: auto; object-fit: scale-down">`);
             this.getRef('fileInput').value = '';
           }
           fileReader.readAsDataURL(file);
