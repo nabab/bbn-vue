@@ -315,17 +315,17 @@
         }
       }
     },
-    indent: {
-      icon: 'nf nf-fa-indent',
-      text: bbn._('Increase indent'),
-      notext: true,
-      action: () => exec('indent')
-    },
     outdent: {
-      icon: 'nf nf-fa-outdent',
+      icon: 'nf nf-md-arrow_expand_left',
       text: bbn._('Decrease indent'),
       notext: true,
       action: () => exec('outdent')
+    },
+    indent: {
+      icon: 'nf nf-md-arrow_expand_right',
+      text: bbn._('Increase indent'),
+      notext: true,
+      action: () => exec('indent')
     },
     /*
     heading: {
