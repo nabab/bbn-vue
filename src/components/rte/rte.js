@@ -315,6 +315,18 @@
         }
       }
     },
+    indent: {
+      icon: 'nf nf-fa-indent',
+      text: bbn._('Increase indent'),
+      notext: true,
+      action: () => exec('indent')
+    },
+    outdent: {
+      icon: 'nf nf-fa-outdent',
+      text: bbn._('Decrease indent'),
+      notext: true,
+      action: () => exec('outdent')
+    },
     /*
     heading: {
       icon: 'nf nf-fa-header',
@@ -405,9 +417,32 @@
         if (url) exec('createLink', url)
       }
     },
-    image: {
-      icon: 'nf nf-mdi-image',
+    image64: {
       text: bbn._('Image'),
+      component: {
+        template: `
+          <bbn-button text="` + bbn._('Image') + `"
+                      icon="nf nf-md-image_plus"
+                      :notext="true"
+                      @click="onClick"/>
+        `,
+        methods: {
+          onClick(){
+            let rte = this.closest('bbn-rte');
+            if (rte) {
+              let fileInput = rte.getRef('fileInput');
+              if (fileInput) {
+                fileInput.click();
+              }
+            }
+          }
+        }
+      },
+      notext: true
+    },
+    image: {
+      icon: 'nf nf-md-image_move',
+      text: bbn._('Image from URL'),
       notext: true,
       action: () => {
         const url = window.prompt(bbn._('Enter the image URL'))
@@ -731,6 +766,19 @@
         this.stopEditTimeout = setTimeout(() => {
           this.isEditing = false;
         }, 2000)
+      },
+      onFileInputChange(ev){
+        const files = ev.target.files;
+        if (files.length) {
+          const [file] = files;
+          const fileReader = new FileReader();
+          fileReader.onload = () => {
+            const img = fileReader.result;
+            exec('insertHTML', `<img src="${img}">`);
+            this.getRef('fileInput').value = '';
+          }
+          fileReader.readAsDataURL(file);
+        }
       }
     },
     /**
