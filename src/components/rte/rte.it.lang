@@ -26,6 +26,9 @@
   "Link": "Collegamento",
   "Enter the link URL": "Inserisci URL collegamento",
   "Image": "Immagine",
+  "Image from URL": "Immagine da URL",
   "Enter the image URL": "Inserisci URL immagine",
-  "Close": "Chiudi"
+  "Close": "Chiudi",
+  "Increase indent": "Aumentare l'indentazione",
+  "Decrease indent": "Ridurre l'indentazione"
 }
