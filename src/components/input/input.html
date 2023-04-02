@@ -1,13 +1,12 @@
 <div :class="[
-	componentClass, 'bbn-textbox', {
-		'bbn-disabled': !!isDisabled,
-		'bbn-input-button-left' : !!buttonLeft,
-		'bbn-input-button-right' : !!buttonRight,
-		'bbn-invisible' : (type === 'hidden'),
-    'bbn-input-nullable': isNullable
-	}]"
-	:style="(currentSize !== '') ? 'width:' + currentSize : '' "
->
+        componentClass, 'bbn-textbox', {
+          'bbn-disabled': !!isDisabled,
+          'bbn-input-button-left' : !!buttonLeft,
+          'bbn-input-button-right' : !!buttonRight,
+          'bbn-invisible' : (type === 'hidden'),
+          'bbn-input-nullable': isNullable
+        }]"
+     :style="(currentSize !== '') ? 'width:' + currentSize : '' ">
   <div :class="{
     'bbn-w-100': (!buttonLeft && !buttonRight && !nullable),
     'bbn-flex-width' : (buttonLeft || buttonRight || nullable),
