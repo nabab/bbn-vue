@@ -650,6 +650,8 @@
         this.containerWidth = coord.width || bbn.env.width;
         this.containerHeight = coord.height || bbn.env.height;
 
+        bbn.fn.log('ch', this.containerHeight)
+
         // Depends on an element (dropdown, context) and will position by it
         if (this.element) {
           let coord = this.element.getBoundingClientRect();
@@ -706,6 +708,11 @@
           tmp = this.getDimensions(this.width, this.height);
           if (tmp) {
             if (tmp.width
+              && (tmp.width > this.currentMaxWidth)
+            ) {
+              tmp.width = this.currentMaxWidth;
+            }
+            if (tmp.width
               && (this.currentMaxWidth >= tmp.width)
               && (this.currentMinHeight <= tmp.width)
             ) {
@@ -713,6 +720,11 @@
             }
             else if (this.definedWidth) {
               this.definedWidth = null;
+            }
+            if (tmp.height
+              && (tmp.height > this.currentMaxHeight)
+            ) {
+              tmp.height = this.currentMaxHeight;
             }
             if (tmp.height
                 && (this.currentMaxHeight >= tmp.height)
