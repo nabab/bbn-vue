@@ -650,7 +650,6 @@
         this.containerWidth = coord.width || bbn.env.width;
         this.containerHeight = coord.height || bbn.env.height;
 
-        bbn.fn.log('ch', this.containerHeight)
 
         // Depends on an element (dropdown, context) and will position by it
         if (this.element) {
