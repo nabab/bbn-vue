@@ -523,6 +523,10 @@
       height: {
         type: [String, Number]
       },
+      cleanPaste: {
+        type: Boolean,
+        default: false
+      },
       /**
        * The buttons to show on the toolbar
        * @prop {Array} [[['viewHTML'],['undo', 'redo'],['formatting'],['strong', 'em', 'underline', 'del'],['removeformat', 'foreColor', 'backColor'],['superscript', 'subscript'],['link'],['insertImage', 'base64'],['justifyLeft', 'justifyCenter', 'justifyRight', 'justifyFull'],['unorderedList', 'orderedList'],['horizontalRule'],['fullscreen']]] buttons
@@ -633,6 +637,18 @@
       }
     },
     methods: {
+      /**
+       * @method onPaste
+       */
+      onPaste(ev) {
+        if (this.cleanPaste) {
+          ev.preventDefault();
+          bbn.fn.replaceSelection(bbn.fn.nl2br(ev.clipboardData.getData('text/plain').trim(), true));
+          this.emitInput(this.getRef('element').innerHTML);
+        }
+      },
+
+
       /**
        * @method setButtons
        */

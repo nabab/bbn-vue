@@ -41,6 +41,7 @@
 						 style="min-height: max(4rem, 100%)"
 						 :contenteditable="!readonly && !disabled"
 						 ref="element"
+						 @paste="onPaste"
 						 @input="rteOnInput"
 						 @keydown="rteOnKeydown"
 						 @keyup="rteOnClick"
