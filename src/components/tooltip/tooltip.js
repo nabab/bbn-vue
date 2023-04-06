@@ -91,7 +91,7 @@
       getContent() {
         let st = bbn.fn.isFunction(this.source) ? this.source() : this.source;
         if (!this.raw) {
-          st = '<div class="bbn-xsvpadding bbn-shpadding">' + st + '</div>';
+          st = '<div class="bbn-vxspadded bbn-hspadded">' + st + '</div>';
         }
 
         return st;

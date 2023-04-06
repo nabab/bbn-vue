@@ -1,6 +1,6 @@
 <component :is="tag"
            :class="componentClass"
-           @mouseenter="isVisible = true">
+           @mouseenter="currentVisible = true">
   <bbn-floater v-if="currentVisible"
                :tag="tag"
                ref="floater"

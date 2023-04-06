@@ -252,7 +252,6 @@
           let check = elem => {
             if ( elem && elem.validity ){
               let validity = elem.validity,
-                  $elem = $this.$el,
                   // Default message
                   mess = bbn._('The value you entered for this field is invalid.'),
                   specificCase = false;
@@ -317,43 +316,7 @@
                   mess = bbn._('Please match the requested format.');
                 }
                 if (setError) {
-                  this.$emit('error', customMessage || mess);
-                  this.validationID = bbn.fn.randomString();
-                  if (!this.$el.classList.contains('bbn-state-invalid')) {
-                    this.$el.classList.add('bbn-state-invalid');
-                  let cont = document.createElement('div');
-                  cont.id = this.validationID;
-                  cont.innerHTML = `
-                    <bbn-tooltip source="${customMessage || mess}"
-                                  ref="tooltip"
-                                  @hook:mounted="showContent"
-                                  :icon="false"
-                                  position="bottomLeft"
-                                  @close="removeEle"
-                                  :element="element"/>
-                  `;
-                    this.$el.appendChild(cont);
-                    new Vue({
-                      el: `#${this.validationID}`,
-                      data(){
-                        return {
-                          element: $elem
-                        }
-                      },
-                      methods: {
-                        showContent(){
-                          this.getRef('tooltip').isVisible = true;
-                        },
-                        removeEle(){
-                          this.$el.remove();
-                        }
-                      }
-                    })
-                  }
-                  this.$once('blur', () => {
-                    this.$emit('removevalidation');
-                    $elem.focus();
-                  });
+                  this.setInvalid(customMessage || mess, $this);
                 }
                 return false;
               }
@@ -373,6 +336,71 @@
           }
           return true;
         },
+        setInvalid(message, elem){
+          this.$emit('error', message);
+          this.validationID = bbn.fn.randomString();
+          if (!!message
+            && message.length
+            && (!elem || !bbn.fn.isDom(elem.$el))
+          ) {
+            elem = this;
+          }
+          if (!this.$el.classList.contains('bbn-state-invalid')) {
+            this.$el.classList.add('bbn-state-invalid');
+            if (!!message
+              && message.length
+              && !!elem
+              && bbn.fn.isDom(elem.$el)
+            ) {
+              let style = document.createElement('style');
+              style.id = this.validationID + '_style';
+              style.innerHTML = `
+                #${this.validationID} .bbn-floater {
+                  background-color: var(--red) !important;
+                  color: var(--white) !important;
+                }
+                #${this.validationID} .bbn-floater-arrow:after {
+                  background-color: var(--red) !important;
+                }`;
+              document.head.appendChild(style)
+              let cont = document.createElement('div');
+              cont.id = this.validationID;
+              cont.innerHTML = `
+                <bbn-tooltip source="${message}"
+                             ref="tooltip"
+                             @hook:mounted="showContent"
+                             :icon="false"
+                             position="bottomLeft"
+                             @close="removeEle"
+                             :element="element"/>
+              `;
+              this.$el.appendChild(cont);
+              new Vue({
+                el: `#${this.validationID}`,
+                data(){
+                  return {
+                    element: elem.$el
+                  }
+                },
+                methods: {
+                  showContent(){
+                    this.getRef('tooltip').show();
+                  },
+                  removeEle(){
+                    style.remove();
+                    this.$el.remove();
+                  }
+                }
+              })
+            }
+          }
+          this.$once('blur', () => {
+            this.$emit('removevalidation');
+            if (elem && elem.$el) {
+              elem.$el.focus();
+            }
+          });
+        }
       },
       /**
        * Adds the class 'bbn-input-component' to the component.
