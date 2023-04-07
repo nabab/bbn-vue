@@ -44,7 +44,7 @@
       </fieldset>
       <!-- SMALL BUTTONS OUTSIDE WINDOW -->
       <div v-if="!hasFooter && !window && realButtons.length && ['small', 'normal'].includes(currentMode)"
-          class="bbn-middle bbn-vpadding">
+          class="bbn-form-buttons bbn-middle bbn-vpadding">
         <bbn-button v-for="(button, i) in realButtons"
                     :key="i"
                     class="bbn-hsmargin"
@@ -52,7 +52,7 @@
       </div>
       <!-- DEFAULT BUTTONS OUTSIDE WINDOW -->
       <div v-else-if="!hasFooter && !window && realButtons.length && (currentMode !== 'big')"
-           class="bbn-vlpadding bbn-c bbn-button-group bbn-grid"
+           class="bbn-form-buttons bbn-vlpadding bbn-c bbn-button-group bbn-grid"
            :style="'grid-template-columns: repeat(' + realButtons.length + ', 1fr);'">
         <bbn-button v-for="(button, i) in realButtons"
                     :key="i"
@@ -61,7 +61,7 @@
       </div>
       <!-- SMALL BUTTONS IN WINDOW -->
       <div v-else-if="!hasFooter && realButtons.length && ['small', 'normal'].includes(currentMode)"
-          class="bbn-w-100 bbn-vpadding bbn-c">
+          class="bbn-form-buttons bbn-w-100 bbn-vpadding bbn-c">
         <bbn-button v-for="(button, i) in realButtons"
                     :class="{'bbn-primary': button.preset === 'submit'}"
                     :key="i"
@@ -70,7 +70,7 @@
       </div>
       <!-- DEFAULT BUTTONS IN WINDOW -->
       <div v-else-if="!hasFooter && realButtons.length && (currentMode !== 'big')"
-           class="bbn-vpadding bbn-c bbn-button-group bbn-grid"
+           class="bbn-form-buttons bbn-vpadding bbn-c bbn-button-group bbn-grid"
            :style="'grid-template-columns: repeat(' + realButtons.length + ', 1fr)'">
         <bbn-button v-for="(button, i) in realButtons"
                     :class="{'bbn-primary': button.preset === 'submit'}"

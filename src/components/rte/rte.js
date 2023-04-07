@@ -227,6 +227,63 @@
       active: false,
       action: () => exec('strikeThrough')
     },
+    align: {
+      text: bbn._('Align'),
+      notext: true,
+      active: false,
+      component: {
+        name: 'bbn-rte-align',
+        template: `
+          <bbn-radiobuttons :disabled="!!isDisabled || !!isReadOnly"
+                            v-model="currentAlign"
+                            :source="buttons"
+                            :notext="true"
+                            style="width: auto"
+                            @input="setAlign"/>
+        `,
+        data(){
+          return {
+            buttons: [{
+              text: bbn._('Align Left'),
+              icon: 'nf nf-fa-align_left',
+              value: 'justifyLeft'
+            }, {
+              text: bbn._('Align Center'),
+              icon: 'nf nf-fa-align_center',
+              value: 'justifyCenter'
+            }, {
+              text: bbn._('Align Right'),
+              icon: 'nf nf-fa-align_right',
+              value: 'justifyRight'
+            }, {
+              text: bbn._('Align Justify'),
+              icon: 'nf nf-fa-align_justify',
+              value: 'justifyFull'
+            }],
+            currentAlign: '',
+            isDisabled: false,
+            isReadOnly: false
+          }
+        },
+        methods: {
+          setAlign(align){
+            exec(align);
+          }
+        },
+        mounted(){
+          const rte = this.closest('bbn-rte');
+          rte.alignComponent = this;
+          this.isDisabled = !!rte.disabled;
+          this.isReadOnly = !!rte.readonly;
+          this.disWatch = rte.$watch('disabled', val => this.isDisabled = !!val);
+          this.readWatch = rte.$watch('readonly', val => this.isDisabled = !!val);
+        },
+        beforeDestroy(){
+          this.disWatch();
+          this.readWatch();
+        }
+      }
+    },
     fontcolor: {
       text: bbn._('Font Color'),
       notext: true,
@@ -602,7 +659,11 @@
         /**
          * @data {Vue} fontsizeComponent
          */
-         fontsizeComponent : null,
+        fontsizeComponent : null,
+        /**
+         * @data {Vue} alignComponent
+         */
+        alignComponent : null,
         /**
          * @data {Bool} [false] isEditing
          */
@@ -687,6 +748,8 @@
       /**
        * @method rteOnKeydown
        * @fires setColors
+       * @fires setStyle
+       * @fires setAlign
        */
       rteOnKeydown(event) {
         if (event.key === 'Enter') {
@@ -698,17 +761,23 @@
         }
         this.setColors();
         this.setStyle();
+        this.setAlign();
       },
       /**
        * @method rteOnClick
        * @fires updateButtonsState
        * @fires setColors
+       * @fires setStyle
+       * @fires setFontsize
+       * @fires setAlign
        */
       rteOnClick(event){
         this.updateButtonsState();
         this.setColors();
         this.setStyle();
         this.setFontsize();
+        this.setAlign();
+
       },
       /**
        * @method rteOnInput
@@ -751,9 +820,32 @@
       /**
        * @method setFontsize
        */
-       setFontsize(){
+      setFontsize(){
         if (this.fontsizeComponent) {
           this.fontsizeComponent.currentSize = parseInt(queryCommandValue('fontSize')) || 2;
+        }
+      },
+      /**
+       * @method setAlign
+       */
+      setAlign(){
+        if (this.alignComponent) {
+          let current;
+          if (queryCommandState('justifyLeft')) {
+            current = 'justifyLeft';
+          }
+          else if (queryCommandState('justifyCenter')) {
+            current = 'justifyCenter';
+          }
+          else if (queryCommandState('justifyRight')) {
+            current = 'justifyRight';
+          }
+          else if (queryCommandState('justifyFull')) {
+            current = 'justifyFull';
+          }
+          if (!!current && (this.alignComponent.currentAlign != current)) {
+            this.alignComponent.currentAlign = current;
+          }
         }
       },
       onClickDocument(e) {
