@@ -3,7 +3,6 @@
             horizontal: !isVertical
       }]"
       :style="barStyle"
-      v-if="isVisible"
       @click="jump($event)"
       @dblclick="jump($event, true)"
       @mouseenter="isOverSlider = true"

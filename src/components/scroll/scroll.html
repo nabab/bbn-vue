@@ -22,7 +22,6 @@
                  :color="barColor ? barColor : ''"
                  :scroll-also="scrollAlso"
                  :initial="currentX"
-                 :scroller="getRef('scrollContainer')"
                  @scroll="scrollHorizontal"
                  :offset="offsetX"/>
   <bbn-scrollbar v-if="scrollReady && hasScrollY"
@@ -32,7 +31,6 @@
                  :color="barColor ? barColor : ''"
                  :scroll-also="scrollAlso"
                  :initial="currentY"
-                 :scroller="getRef('scrollContainer')"
                  @scroll="scrollVertical"
                  :offset="offsetY"/>
 </div>
