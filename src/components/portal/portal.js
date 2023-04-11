@@ -102,17 +102,19 @@ return {
     },
     methods: {
       mount() {
+        bbn.fn.log("mount portal")
         bbn.fn.log("on Mount", this.element)
         if (this.element) {
-          this.$el.childNodes.forEach(node => {
-            this.element.appendChild(node);
+          this.$el.bbnSlots.default.items.forEach(node => {
+            this.element.appendChild(node.ele);
           });
         }
       },
       unmount() {
+        bbn.fn.log("unmount portal")
         if (this.element) {
-          this.element.childNodes.forEach(node => {
-            this.$el.appendChild(node);
+          this.$el.bbnSlots.default.items.forEach(node => {
+            this.$el.appendChild(node.ele);
           });
         }
       },
@@ -122,7 +124,15 @@ return {
         }
       }
     },
-    beforeMount() {
+    mounted() {
+
+      if (!this.disabled) {
+        this.mount();
+      }
+      else {
+        this.mount();
+      }
+      bbn.fn.log("MOUNTED", this.$el, this.$el.bbnSlots.default.items.length, this.disabled, this.$el.bbnSlots.default, this.$el.bbnSlots.default.items[0], this.$parent);
       /*
       bbn.fn.log("on beforeMount");
       const observer = new MutationObserver(mutations_list => {
@@ -147,12 +157,14 @@ return {
       */
     },
     beforeDestroy() {
+      bbn.fn.log("PORTAL: beforeDestroy");
       this.unmount()
     },
     watch: {
       disabled: {
         immediate: true,
         handler(disabled) {
+          bbn.fn.log("PORTAL: disabled");
           disabled ? this.unmount() : this.$nextTick(this.mount)
         },
       },
@@ -160,6 +172,7 @@ return {
         immediate: true,
         handler() {
           if (!this.disabled) {
+            bbn.fn.log("PORTAL: element");
             this.$nextTick(this.mount)
           }
         },

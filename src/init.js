@@ -18,6 +18,7 @@
       Vue.config.isReservedTag = tag => {
         return bbn.vue.loadComponentsByPrefix(tag)
       };
+
       Vue.config.devtools = !(!bbn.env.mode || (bbn.env.mode === 'prod'));
 
       Vue.config.errorHandler = function (err, vm, info) {

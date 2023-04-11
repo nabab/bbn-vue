@@ -28,7 +28,7 @@
     <div v-if="prefix"
          class="bbn-block bbn-h-100 bbn-vmiddle bbn-nowrap"
          v-text="prefix"/>
-    <input :value="currentValue"
+    <input v-model="currentValue"
           :type="currentType"
           v-focused.selected="focused"
           :name="name"
