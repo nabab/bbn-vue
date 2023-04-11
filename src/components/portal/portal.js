@@ -129,9 +129,6 @@ return {
       if (!this.disabled) {
         this.mount();
       }
-      else {
-        this.mount();
-      }
       bbn.fn.log("MOUNTED", this.$el, this.$el.bbnSlots.default.items.length, this.disabled, this.$el.bbnSlots.default, this.$el.bbnSlots.default.items[0], this.$parent);
       /*
       bbn.fn.log("on beforeMount");
