@@ -131,16 +131,24 @@
         return bbn.fn.isArray(this.obj);
       },
       add(){
-        if (this.currentInput.length && (this.obj.indexOf(this.currentInput) === -1)) {
+        if (!this.isDisabled
+          && !this.readonly
+          && this.currentInput.length
+          && (this.obj.indexOf(this.currentInput) === -1)
+        ) {
           this.obj.push(this.currentInput);
           this.emitInput(this.isJSON ? JSON.stringify(this.obj) : this.obj);
           this.currentInput = '';
           this.$refs.input.focus();
         }
       },
-      remove(idx) {
-        this.obj.splice(idx, 1);
-        this.emitInput(this.isJSON ? JSON.stringify(this.obj) : this.obj);
+      remove(idx){
+        if (!this.isDisabled
+          && !this.readonly
+        ) {
+          this.obj.splice(idx, 1);
+          this.emitInput(this.isJSON ? JSON.stringify(this.obj) : this.obj);
+        }
       }
     }
   });
