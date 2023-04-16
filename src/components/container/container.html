@@ -5,15 +5,15 @@
 }]"
      @subready.stop
      :style="visual ? visualStyle : {}"
-     bbn-show="(!router?.isVisual && isVisible) || isVisualVisible || isPane">
+     v-show="(!router?.isVisual && isVisible) || isVisualVisible || isPane">
   <div :class="{
     'bbn-overlay': true,
     'bbn-container-full-screen': fullScreen,
   }"
        bbn-forget="!router?.scrollContent">
     <transition name="fade"
-                bbn-on:enter="enter"
-                bbn-on:after-enter="onResize">
+                @enter="enter"
+                @after-enter="onResize">
       <div :class="{
         'bbn-overlay': (isPane || !router?.isVisual) && router?.scrollContent,
         'bbn-flex-height': (!isPane && (router?.isVisual || fullScreen)) && router?.scrollContent,

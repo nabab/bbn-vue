@@ -1354,17 +1354,18 @@ return {
      * @fires router.register
      */
     mounted(){
+      bbn.fn.log("MOUNTED CONTAINER " + this.url);
       if ( !this.router ){
         throw new Error(bbn._("bbn-container cannot be rendered without a bbn-router"));
       }
 
       if ( !this.router.ready ){
         this.router.$on('ready', () => {
-          //this.init();
+          this.init();
         });
       }
       else{
-        //this.init();
+        this.init();
         this.router.register(this);
       }
       //

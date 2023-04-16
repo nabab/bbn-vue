@@ -544,6 +544,7 @@ return {
           return bbn.fn.search(this.tabsList, {idx: this.selected})
         },
         set(v) {
+          bbn.fn.log("SETING SELECTED TAB");
           this.selected = this.tabsList[v].idx;
         }
       },
@@ -1082,71 +1083,71 @@ return {
         let index;
         //obj must be an object with property url
         if (bbn.fn.isObject(obj) && bbn.fn.isString(obj.url)) {
-          // This is an existing container
-          bbn.fn.log("ADDING")
-          if (obj.real) {
-            bbn.fn.log("ADDING CP")
-            const cp = this.urls[obj.url];
-            if (cp) {
-              if (obj.current && !cp.currentURL) {
-                if ( bbn.env.path.indexOf(this.getFullBaseURL() + (obj.url ? obj.url + '/' : '')) === 0 ){
-                  cp.currentURL = bbn.fn.substr(bbn.env.path, this.getFullBaseURL().length);
-                }
-                else{
-                  cp.currentURL = obj.url;
-                }
+          obj.url = bbn.fn.replaceAll('//', '/', obj.url);
+          // This is a component
+          if (obj.$options) {
+            if (!obj.current && !obj.currentURL) {
+              if ( bbn.env.path.indexOf(this.getFullBaseURL() + (obj.url ? obj.url + '/' : '')) === 0 ){
+                obj.currentURL = bbn.fn.substr(bbn.env.path, this.getFullBaseURL().length);
               }
-
-              const props = cp.$options?.propsValues;
-              bbn.fn.iterate(props, (v, i) => {
-                if (!(i in obj) && ('default' in v)) {
-                  obj[i] = v.default;
-                }
-              });
+              else{
+                obj.currentURL = obj.url;
+              }
             }
-
+            else {
+              if (obj.currentURL) {
+                obj.currentURL = bbn.fn.replaceAll(obj.currentURL);
+              }
+            }
+            let obj2 = bbn.fn.extend(true, {}, obj.$options.propsData),
+                props = obj.$props;
+            bbn.fn.iterate(props, (v, i) => {
+              if (!(i in obj2)) {
+                obj2[i] = v;
+              }
+            });
             bbn.fn.iterate(this.getDefaultView(), (a, n) => {
-              if (obj[n] === undefined) {
-                obj[n] = a;
+              if ( obj2[n] === undefined ){
+                obj2[n] = a;
               }
             });
 
             // ---- ADDED 16/12/20 (Mirko) ----
-            if ( !obj.current ){
-              if ( bbn.env.path.indexOf(this.getFullBaseURL() + (obj.url ? obj.url + '/' : '')) === 0 ){
-                obj.current = bbn.fn.substr(bbn.env.path, this.getFullBaseURL().length);
+            if ( !obj2.current ){
+              if ( bbn.env.path.indexOf(this.getFullBaseURL() + (obj2.url ? obj2.url + '/' : '')) === 0 ){
+                obj2.current = bbn.fn.substr(bbn.env.path, this.getFullBaseURL().length);
               }
               else{
-                obj.current = obj.url;
+                obj2.current = obj2.url;
               }
             }
-            else if ( (obj.current !== obj.url) && (obj.current.indexOf(obj.url + '/') !== 0) ){
-              obj.current = obj.url;
+            else if ( (obj2.current !== obj2.url) && (obj2.current.indexOf(obj2.url + '/') !== 0) ){
+              obj2.current = obj2.url;
             }
-            if ( !obj.current ){
-              obj.current = obj.url;
+            if ( !obj2.current ){
+              obj2.current = obj2.url;
             }
-            if ( obj.content ){
-              obj.loaded = true;
+            if ( obj2.content ){
+              obj2.loaded = true;
             }
             // ---- END ----
 
-            if (obj.real && !this.hasRealContainers) {
+            if (obj2.real && !this.hasRealContainers) {
               this.hasRealContainers = true;
             }
-            if (obj.url === '') {
+            if (obj2.url === '') {
               this.hasEmptyURL = true;
             }
-            if (this.search(obj.url) === false) {
+            if (this.search(obj2.url) === false) {
               if (this.isValidIndex(idx)) {
-                this.views.splice(idx, 0, obj);
+                this.views.splice(idx, 0, obj2);
               }
-              else if (this.hasRealContainers && (this.first !== 'real') && !obj.real) {
+              else if (this.hasRealContainers && (this.first !== 'real') && !obj2.real) {
                 idx = bbn.fn.search(this.views, {real: true});
-                this.views.splice(idx, 0, obj);
+                this.views.splice(idx, 0, obj2);
               }
               else {
-                this.views.push(obj);
+                this.views.push(obj2);
               }
             }
           }
@@ -1255,13 +1256,18 @@ return {
           bbn.fn.log(cp);
           throw Error(bbn._('The component bbn-container must have a URL defined'));
         }
+        bbn.fn.log("REGISRTE", cp.$el.bbnId, cp.url, this.urls[cp.url] ? this.urls[cp.url].$el.bbnId : "NO")
         if (this.urls[cp.url]) {
-          throw Error(bbn._('Two containers cannot have the same URL defined (' + cp.url + ')'));
+          bbn.fn.log("It exists", this.urls[cp.url].$numBuild, this.numRegistered, this.views[0].real);
+          if (cp !== this.urls[cp.url]) {
+            throw Error(bbn._('Two containers cannot have the same URL defined (' + cp.url + ')'));
+          }
+          return;
+
         }
 
         this.numRegistered++;
         this.urls[cp.url] = cp;
-        bbn.fn.log("REGISRTE", cp.url, this.urls[cp.url])
         if (this.isVisual) {
           cp.$on('view', () => {
             this.visualShowAll = false;
@@ -1269,7 +1275,7 @@ return {
         }
         let idx = this.search(cp.url);
         if (idx === false) {
-          bbn.fn.log("ADDING BECAUSE CAN'T FIND", cp);
+          bbn.fn.log("ADDING BECAUSE CAN'T FIND", cp.url, this.views.map(a => a.url));
           this.add(cp);
         }
         else {
@@ -3631,7 +3637,8 @@ return {
       // ---- ADDED 16/12/20 (Mirko) ----
       // Adding bbns-container from the slot
       if ( this.$slots.default ){
-        for ( let node of this.$slots.default ){
+        for ( let node of this.$slots.default.items ){
+          bbn.fn.log("ROUTER SLOT");
           if (node?.tag === 'bbn-container') {
             if (node.props.url === undefined) {
               throw new Error(bbn._("You cannot use containers in router without defining a URL property"));
@@ -3870,8 +3877,9 @@ return {
        * @watch itsMaster
        * @fires breadcrumbWatcher
        */
+      /*
       itsMaster(newVal, oldVal){
-        if ( this.nav && (newVal !== oldVal) ){
+        if (this.nav && (newVal !== oldVal) ){
           this.isBreadcrumb = newVal ? newVal.isBreadcrumb : this.breadcrumb;
           if ( this.breadcrumbWatcher ){
             this.breadcrumbWatcher();
@@ -3880,12 +3888,14 @@ return {
             /**
              * @watch itsMaster.isBreadcrumb
              */
+            /*
             this.breadcrumbWatcher = this.$watch('itsMaster.isBreadcrumb', isB => {
               this.isBreadcrumb = isB;
             });
           }
         }
       },
+      */
       currentPanes: {
         deep: true,
         handler() {

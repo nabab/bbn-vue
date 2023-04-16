@@ -290,6 +290,7 @@ return {
         return bbn.env.isDev;
       },
       appComponent(){
+        return 'span';
         return bbn.fn.extend({
           render(createElement){
             return createElement();
