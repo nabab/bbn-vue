@@ -902,6 +902,9 @@ return {
         this.currentOrientation = this.getOrientation();
         this.$forceUpdate();
       }
+      else {
+        this.init();
+      }
     },
     updated(){
       //this.onResize();
