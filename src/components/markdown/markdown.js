@@ -142,7 +142,6 @@ return {
           singleLineBreaks: true,
           codeSyntaxHighlighting: true,
         },
-        toolbar: this.toolBar || bbnMarkdownCreator.toolbar,
         status: false,
         tabSize: this.cfg.tabSize || 2,
         toolbarTips: true,
@@ -150,6 +149,14 @@ return {
           drawTable: "Cmd-Alt-T"
         }
       };
+    },
+    computed: {
+      toolbar() {
+        if (this.readonly) {
+          return false;
+        }
+        return this.toolBar || bbnMarkdownCreator.toolbar;
+      }
     },
     methods: {
       disableWidget(v){
