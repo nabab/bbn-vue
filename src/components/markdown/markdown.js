@@ -201,7 +201,7 @@
       this.widget = new EasyMDE(bbn.fn.extend({
         element: this.$refs.element
       }, {
-        
+        toolbar
       }));
       this.widget.codemirror.on("change", () => {
         this.emitInput(this.widget.value());
