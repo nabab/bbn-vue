@@ -1,13 +1,12 @@
-<component :is="tag"
-           :class="componentClass"
-           tabindex="-1"
-           @click="clickItem"
-           @contextmenu="clickItem"
-           @keydown.space.enter="clickItem"
-           @mousedown="onMouseDown"
-           @touchstart="touchstart"
-           @touchmove="touchmove"
-           @touchend="touchend">
+<div :class="componentClass"
+      tabindex="-1"
+      @click="clickItem"
+      @contextmenu="clickItem"
+      @keydown.space.enter="clickItem"
+      @mousedown="onMouseDown"
+      @touchstart="touchstart"
+      @touchmove="touchmove"
+      @touchend="touchend">
   <slot></slot>
   <bbn-floater v-if="showFloater && !disabled"
                :element="attach || null"
@@ -34,4 +33,4 @@
                @open="$emit('open')"
                :item-component="itemComponent"
                :position="position"/>
-</component>
+</div>

@@ -87,7 +87,7 @@
                       @keydown.left.down.prevent.stop="getRef('menu-' + tabIndex) ? getRef('menu-' + tabIndex).$el.focus() : null"
                       @keydown.space.enter.prevent.stop="$emit('close', tabIndex)"
                       @click.stop.prevent="$emit('close', tabIndex)">
-                  <i class="nf nf-fa-times"/>
+                  <i class="nf nf-fa-times bbn-xs"/>
                 </span>
                 <bbn-context v-if="(tab.menu !== false) && (tabIndex === value)"
                              class="bbn-iblock bbn-router-tab-menu bbn-p bbn-bottom-right bbn-hxspadded"
@@ -98,7 +98,7 @@
                              :autobind="false"
                              :source-index="tab.idx"
                              :ref="'menu-' + tab.idx">
-                  <i class="nf nf-fa-caret_down"/>
+                  <i class="nf nf-fa-caret_down bbn-xs"/>
                 </bbn-context>
               </li>
             </ul>

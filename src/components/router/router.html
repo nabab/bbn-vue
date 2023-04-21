@@ -4,6 +4,7 @@
              'bbn-w-100': !scrollContent
              }]">
   <bbn-splitter :resizable="resizable"
+                :collapsible="collapsible"
                 :full-size="scrollContent"
                 bbn-forget="!splittable"
                 ref="topSplitter">
@@ -33,14 +34,16 @@
                 <template v-if="breadcrumbs.length"
                           v-for="(bc, i) in breadcrumbs">
                   <div v-if="i > 0">
-                    <i class="nf nf-fa-angle_right bbn-hsmargin bbn-large bbn-router-breadcrumb-arrow"/>
+                    <i class="nf nf-fa-angle_right bbn-hsmargin bbn-router-breadcrumb-arrow"/>
                   </div>
                   <bbn-context :source="bc.getList(i)"
                               tag="div"
                               min-width="10rem"
                               tabindex="0"
                               :item-component="$options.components.listItem"
-                              class="bbn-h-100 bbn-vmiddle"
+                              :class="['bbn-h-100', 'bbn-vmiddle', {
+                                'bbn-flex-fill': i === breadcrumbs.length - 1
+                              }]"
                               :attach="itsMaster ? (itsMaster.getRef('breadcrumb') || undefined) : undefined"
                               :autobind="false"
                               :style="{
@@ -84,29 +87,26 @@
                                 :title="bc.views[bc.selected].title && (bc.views[bc.selected].title.length > bc.maxTitleLength) ? bc.views[bc.selected].title : ''"
                                 v-html="bc.views[bc.selected].title ? bc.cutTitle(bc.views[bc.selected].title) : _('Untitled')"/>
                         </div>
-                        <i v-if="isNumber(bc.selected)
+                        <span v-if="isNumber(bc.selected)
                                 && bc.views[bc.selected]
                                 && !bc.views[bc.selected].static
                                 && !bc.views[bc.selected].pinned"
-                          class="nf nf-fa-times bbn-p bbn-router-breadcrumb-close bbn-router-breadcrumb-icon"
+                          class="bbn-p bbn-iblock bbn-top-right bbn-hxspadded bbn-xs"
                           @mousedown.prevent.stop="bc.close(bc.selected)"
-                          @mouseup.prevent.stop/>
+                          @mouseup.prevent.stop>
+                          <i class="nf nf-fa-times"/>
+                        </span>
                         <bbn-context v-if="isNumber(bc.selected) && bc.views[bc.selected] && bc.views[bc.selected].menu"
                                     :source="() => bc.getMenuFn(bc.selected)"
-                                    tag="i"
-                                    class="nf nf-fa-caret_down bbn-router-breadcrumb-icon bbn-router-breadcrumb-menu"/>
+                                    tag="span"
+                                    class="bbn-p bbn-iblock bbn-bottom-right bbn-hxspadded bbn-xs">
+                          <i class="nf nf-fa-caret_down"/>
+                        </bbn-context>
+
                       </div>
                     </bbn-context>
                   </bbn-context>
                 </template>
-                <div v-if="breadcrumbs.length"
-                    class="bbn-flex-fill bbn-h-100"
-                    :style="{
-                            backgroundColor: breadcrumbs[breadcrumbs.length-1].getBackgroundColor(breadcrumbs[breadcrumbs.length-1].selected),
-                            color: breadcrumbs[breadcrumbs.length-1].getFontColor(breadcrumbs[breadcrumbs.length-1].selected)
-                            }">
-                  &nbsp;
-                </div>
               </div>
             </div>
           </div>
@@ -123,7 +123,8 @@
                   :position="orientation === 'auto' ? undefined : orientation"/>
         <!-- END OF LEFT|TOP TABS -->
         <!-- START OF CONTENT -->
-        <bbn-scroll :class="{
+        <bbn-scroll v-if="ready"
+            :class="{
                     'bbn-router-scroller': isVisual,
                     'bbn-flex-fill': scrollContent,
                     }"

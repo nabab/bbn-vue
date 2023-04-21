@@ -333,7 +333,7 @@ return {
        */
       collapsible: {
         type: Boolean,
-        default: false
+        default: true
       },
       /**
        * If true when splittable the extra panes can be resized
@@ -520,7 +520,7 @@ return {
          * If true visual mode is used for nav (instead of tabs or breadcrumbs)
          * @data {Boolean} visual
          */
-        isVisual: !!this.visual,
+        isVisual: this.visual,
         /**
          * The panes for when splittable is true
          * @data {Array} currentPanes
@@ -901,7 +901,10 @@ return {
        * @return {Array} 
        */
       tabsList() {
-        return this.splittable ? bbn.fn.filter(this.views, a => !a.pane) : this.views;
+        return bbn.fn.multiorder(
+          this.splittable ? bbn.fn.filter(this.views, a => !a.pane) : this.views,
+          {static: 'desc', pinned: 'desc', idx: 'asc'}
+        );
       },
       hasVerticalTabs(){
         return !this.isVisual
@@ -1102,8 +1105,8 @@ return {
             let obj2 = bbn.fn.extend(true, {}, obj.$options.propsData),
                 props = obj.$props;
             bbn.fn.iterate(props, (v, i) => {
-              if (!(i in obj2)) {
-                obj2[i] = v;
+              if (!(i in obj2) && ('default' in v)) {
+                obj2[i] = v.default;
               }
             });
             bbn.fn.iterate(this.getDefaultView(), (a, n) => {
@@ -1111,6 +1114,7 @@ return {
                 obj2[n] = a;
               }
             });
+            obj2.real = true;
 
             // ---- ADDED 16/12/20 (Mirko) ----
             if ( !obj2.current ){
@@ -1296,7 +1300,7 @@ return {
        * @param {Vue} cp
        */
       unregister(cp) {
-        bbn.fn.log("UNREGISTERING " + cp.url);
+        //bbn.fn.log("UNREGISTERING " + cp.url);
         if (!bbn.fn.isString(cp.url)) {
           throw Error(bbn._('The component bbn-container must have a URL defined'));
         }
@@ -1383,32 +1387,33 @@ return {
        */
       getDefaultView(){
         return {
-          source: undefined,
+          source: null,
           title: bbn._("Untitled"),
-          options: undefined,
+          options: null,
           cached: !this.single && this.nav,
           scrollable: true,
-          component: undefined,
+          component: null,
           icon: '',
           notext: false,
-          content: undefined,
+          content: null,
           menu: [],
-          loaded: undefined,
-          fcolor: undefined,
-          bcolor: undefined,
+          loaded: null,
+          fcolor: null,
+          bcolor: null,
           load: false,
           pane: false,
-          selected: undefined,
+          selected: null,
           css: '',
-          advert: undefined,
+          advert: null,
           dirty: false,
-          help: undefined,
+          help: null,
           imessages: [],
-          script: undefined,
+          script: null,
           static: false,
           pinned: false,
-          url: undefined,
-          current: undefined,
+          url: null,
+          current: null,
+          real: false,
           cfg: {},
           events: {},
           real: false,
@@ -2169,7 +2174,7 @@ return {
        * @emit update
       */
       load(url, force, index){
-        if (this.isInit && url) {
+        if (url) {
           this.isLoading = true;
           let finalURL = this.fullBaseURL + url;
           let idx = this.search(url);
@@ -2232,7 +2237,7 @@ return {
             bbn.fn.log("ADDING ON LOAD");
             this.add({
               url: url,
-              title: view && view.title ? view.title : bbn._('Loading'),
+              title: view?.title ? view.title : bbn._('Loading'),
               load: true,
               loading: true,
               real: view?.real || false,
@@ -2254,7 +2259,7 @@ return {
             this.currentURL = this.parseURL(url);
           }
 
-          //this.$forceUpdate();
+          this.$forceUpdate();
           this.$emit('update', this.views);
           this.$emit("load", finalURL);
           let dataObj = this.postBaseUrl ? {_bbn_baseURL: this.fullBaseURL} : {};
@@ -2335,7 +2340,7 @@ return {
                 bbn.fn.log("Looking for " + o.url);
                 if (searchIndex !== false) {
                   bbn.fn.warning("FOUND AND REMOVED " + searchIndex);
-                  //this.remove(idx, true);
+                  this.remove(idx, true);
                   this.urls[this.views[searchIndex].url].isLoaded = true;
                   this.urls[this.views[searchIndex].url].ready = false;
                 }
@@ -3591,7 +3596,7 @@ return {
       // Case where the rooter is at root level
       else {
         // Opening the database for the visual mode multiview
-        if (this.nav && !this.single && bbnRouterCreator.db) {
+        if (!this.single && bbnRouterCreator.db) {
           bbn.db.open('bbn').then(r => {
             this.db = r;
           }, err => {
@@ -3625,7 +3630,7 @@ return {
         }
 
         if (storage.visual !== undefined) {
-          this.isVisual = !!storage.visual;
+          this.isVisual = storage.visual;
         }
 
         if (storage.orientation) {
@@ -3877,7 +3882,6 @@ return {
        * @watch itsMaster
        * @fires breadcrumbWatcher
        */
-      /*
       itsMaster(newVal, oldVal){
         if (this.nav && (newVal !== oldVal) ){
           this.isBreadcrumb = newVal ? newVal.isBreadcrumb : this.breadcrumb;
@@ -3888,14 +3892,12 @@ return {
             /**
              * @watch itsMaster.isBreadcrumb
              */
-            /*
             this.breadcrumbWatcher = this.$watch('itsMaster.isBreadcrumb', isB => {
               this.isBreadcrumb = isB;
             });
           }
         }
       },
-      */
       currentPanes: {
         deep: true,
         handler() {
@@ -3972,7 +3974,7 @@ return {
           </div>
         </div>
         <div>
-          <i class="nf nf-fa-angle_right bbn-hsmargin bbn-large bbn-router-breadcrumb-arrow"/>
+          <i class="nf nf-fa-angle_right bbn-hsmargin bbn-router-breadcrumb-arrow"/>
         </div>
       </div>
 
@@ -4043,7 +4045,7 @@ return {
           @mousedown.prevent.stop="close"
           @mouseup.prevent.stop
           :style="!isHover ? lastColors : {}">
-      <i class="nf nf-fa-times_rectangle bbn-lg"/>
+      <i class="nf nf-fa-times_rectangle"/>
     </div>
   </div>
 </div>
