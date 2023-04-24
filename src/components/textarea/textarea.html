@@ -13,7 +13,7 @@
             :value="value"
             :name="name"
             ref="element"
-            @input="emitInput($event.target.value)"
+            @input="onInput"
             @click="click($event)"
             @focus="focus($event)"
             @blur="blur($event)"
@@ -27,7 +27,7 @@
             :required="required"
             :placeholder="placeholder"
             :maxlength="maxlength"
-            :rows="rows"
+            :rows="currentRows"
             :cols="cols"
             :style="{resize: !resizable ? 'none' : ''}"/>
 </div>

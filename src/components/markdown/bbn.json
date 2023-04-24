@@ -6,6 +6,7 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "easy-markdown-editor": "2.15.*"
+    "easy-markdown-editor": "2.15.*",
+    "marked": "4.3.*"
   }
 }

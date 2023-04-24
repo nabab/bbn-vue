@@ -1,10 +1,11 @@
 <div :class="[componentClass, 'bbn-textbox']"
-     @keydown.enter.stop=""
->
-  <textarea :value="value"
+     @keydown.enter.stop="">
+  <div v-if="readonly"
+       v-html="compiled"/>
+  <textarea v-else
+            :value="value"
             :name="name"
             ref="element"
             :disabled="isDisabled"
-            :required="required"
-  ></textarea>
+            :required="required"/>
 </div>

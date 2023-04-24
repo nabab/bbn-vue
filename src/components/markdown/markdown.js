@@ -153,6 +153,9 @@
       };
     },
     computed: {
+      compiled() {
+        return marked.parse(this.value);
+      },
       toolbar() {
         if (this.readonly) {
           return false;
