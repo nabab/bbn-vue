@@ -12,7 +12,37 @@ script.innerHTML = `<component :is="tag"
            @touchmove="touchmove"
            @touchend="touchend">
   <slot></slot>
-  <bbn-floater v-if="showFloater && !disabled"
+  <bbn-portal v-if="portal"
+              :selector="portal"
+              ref="portal">
+    <bbn-floater v-if="showFloater && !disabled"
+                :element="attach || null"
+                :source="filteredData"
+                :class="'bbn-floater-context-' + bbnUid"
+                ref="floater"
+                :width="width"
+                :height="height"
+                :minWidth="minWidth"
+                :minHeight="minHeight"
+                :maxWidth="maxWidth"
+                :maxHeight="maxHeight"
+                :top="currentTop"
+                :left="currentLeft"
+                :right="currentRight"
+                :bottom="currentBottom"
+                children="items"
+                :title="floaterTitle"
+                :closable="!!floaterTitle"
+                :content="content"
+                :auto-hide="true"
+                :mode="mode"
+                @close="$emit('close'); showFloater = false;"
+                @open="$emit('open')"
+                :item-component="itemComponent"
+                :position="position"
+                @select="(item, idx, dataIndex, ev, floater) => $emit('select', item, idx, dataIndex, ev, floater)"/>
+  </bbn-portal>
+  <bbn-floater v-else-if="showFloater && !disabled"
                :element="attach || null"
                :source="filteredData"
                :class="'bbn-floater-context-' + bbnUid"
@@ -175,6 +205,13 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
         type: [String, Function],
         default: 'url'
       },
+      /**
+       * The HTML element to be used as portal
+       * @prop {HTMLElement} portal
+       */
+      portal: {
+        type: HTMLElement
+      }
     },
     data(){
       return {

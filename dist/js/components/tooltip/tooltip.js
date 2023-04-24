@@ -4,7 +4,7 @@
 let script = document.createElement('script');
 script.innerHTML = `<component :is="tag"
            :class="componentClass"
-           @mouseenter="isVisible = true">
+           @mouseenter="currentVisible = true">
   <bbn-floater v-if="currentVisible"
                :tag="tag"
                ref="floater"
@@ -129,7 +129,7 @@ document.head.insertAdjacentElement('beforeend', css);
       getContent() {
         let st = bbn.fn.isFunction(this.source) ? this.source() : this.source;
         if (!this.raw) {
-          st = '<div class="bbn-xsvpadding bbn-shpadding">' + st + '</div>';
+          st = '<div class="bbn-vxspadded bbn-hspadded">' + st + '</div>';
         }
 
         return st;

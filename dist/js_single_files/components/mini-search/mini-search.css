@@ -1,0 +1,29 @@
+.bbn-mini-search {
+  transition: width 0.5s;
+  display: inline-block;
+  box-sizing: border-box;
+  min-width: 4.2rem;
+}
+.bbn-mini-search .bbn-mini-search-container {
+  width: 100%;
+}
+.bbn-mini-search .bbn-input {
+  width: 100%;
+}
+.bbn-mini-search button {
+  height: 100%;
+}
+.bbn-mini-search div {
+  box-sizing: border-box;
+}
+.bbn-mini-search-floater .bbn-list {
+  background-color: var(--alt-background);
+}
+.bbn-mini-search-floater .bbn-list ul li {
+  margin: var(--sspace);
+  border-radius: var(--default-border-radius);
+}
+.bbn-mini-search-floater .bbn-list ul li:not(.bbn-state-hover):not(.bbn-state-selected) {
+  background-color: var(--default-background);
+  color: var(--default-text);
+}

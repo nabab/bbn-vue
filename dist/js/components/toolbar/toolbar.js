@@ -3,7 +3,7 @@
 
 let script = document.createElement('script');
 script.innerHTML = `<div :class="['bbn-header', 'bbn-unselectable', componentClass, {
-        'bbn-w-100': (orientation === 'horizontal'),
+        'bbn-w-100 bbn-vmiddle': (orientation === 'horizontal'),
         'bbn-h-100': (orientation === 'vertical')
       }]"
      :style="style">
@@ -16,7 +16,7 @@ script.innerHTML = `<div :class="['bbn-header', 'bbn-unselectable', componentCla
             }]"
             :disabled="disabled">
     <slot v-if="slotBefore"></slot>
-    <div class="bbn-flex-fill">
+    <div class="bbn-flex-fill bbn-toolbar-flex">
       <template v-for="(s, i) in source">
         <component v-if="!s.end && s.component"
                   :is="s.component"

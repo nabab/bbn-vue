@@ -44,7 +44,7 @@ script.innerHTML = `<div :class="[
             }"
             ref="title"/>
       </div>
-      <div class="bbn-top-right bbn-p bbn-lg bbn-h-100">
+      <div class="bbn-top-right bbn-p bbn-h-100">
         <div v-if="maximizable !== false"
             class="bbn-h-100 bbn-middle bbn-reactive"
             @click.stop.prevent="isMaximized = !isMaximized"
@@ -118,7 +118,9 @@ script.innerHTML = `<div :class="[
                     :groupable="groupable"
                     :source-group="sourceGroup"
                     :group-component="groupComponent"
-                    :group-style="groupStyle"/>
+                    :group-style="groupStyle"
+                    :pageable="pageable"
+                    :pager-element="pagerElement"/>
           <h3 v-else v-text="noData"/>
         </bbn-scroll>
       </div>
@@ -164,7 +166,7 @@ script.innerHTML = `<div :class="[
                   :class="['bbn-no-radius', {
                     'bbn-primary': b.preset === 'submit',
                     'bbn-no-border-right': !currentButtons[i + 1]
-                  }]"/>
+                  }, b.cls || '']"/>
     </footer>
   </div>
 </div>`;
@@ -810,11 +812,11 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
         if (this.container) {
           coord = (bbn.fn.isDom(this.container) ? this.container : this.$el.offsetParent).getBoundingClientRect();
           if (coord.width) {
-            maxWidth.push(coord.width);
+            maxWidth.push(Math.round(coord.width));
           }
 
           if (coord.height) {
-            maxHeight.push(coord.height);
+            maxHeight.push(Math.round(coord.height));
           }
 
         }
@@ -822,6 +824,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
         // Setting container dimensions vars
         this.containerWidth = coord.width || bbn.env.width;
         this.containerHeight = coord.height || bbn.env.height;
+
 
         // Depends on an element (dropdown, context) and will position by it
         if (this.element) {
@@ -879,6 +882,11 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
           tmp = this.getDimensions(this.width, this.height);
           if (tmp) {
             if (tmp.width
+              && (tmp.width > this.currentMaxWidth)
+            ) {
+              tmp.width = this.currentMaxWidth;
+            }
+            if (tmp.width
               && (this.currentMaxWidth >= tmp.width)
               && (this.currentMinHeight <= tmp.width)
             ) {
@@ -886,6 +894,11 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
             }
             else if (this.definedWidth) {
               this.definedWidth = null;
+            }
+            if (tmp.height
+              && (tmp.height > this.currentMaxHeight)
+            ) {
+              tmp.height = this.currentMaxHeight;
             }
             if (tmp.height
                 && (this.currentMaxHeight >= tmp.height)
@@ -1545,14 +1558,16 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
        * @fires closeAll
        * @emits select
        */
-      select(item, idx, dataIndex){
+      select(item, idx, dataIndex, ev){
         if (item && !item.disabled && !item[this.children]) {
-          let ev = new Event('select', {cancelable: true});
+          if (!ev) {
+            let ev = new Event('select', {cancelable: true});
+          }
           if (this.onSelect) {
-            this.onSelect(item, idx, dataIndex, ev);
+            this.onSelect(item, idx, dataIndex, ev, this);
           }
           else {
-            this.$emit("select", item, idx, dataIndex, ev);
+            this.$emit("select", item, idx, dataIndex, ev, this);
           }
 
           if (ev.defaultPrevented) {

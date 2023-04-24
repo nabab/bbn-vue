@@ -68,8 +68,8 @@
          v-model="value"
          ref="element"
          :name="name">
-  <bbn-portal v-if="portalSelector"
-              :selector="portalSelector">
+  <component :is="!!portalSelector && !isInsideFloater ? 'bbn-portal' : 'div'"
+             :selector="portalSelector">
     <bbn-floater v-if="!popup
                     && filteredData.length
                     && !isDisabled
@@ -98,7 +98,7 @@
                 :selected="value ? [value] : []"
                 @close="isOpened = false"
                 :source="filteredData"/>
-  </bbn-portal>
+  </component>
 </div>
 
 </template>
@@ -390,7 +390,6 @@
 }
 .bbn-autocomplete .bbn-autocomplete-container {
   line-height: normal;
-  height: 100%;
 }
 .bbn-autocomplete .bbn-autocomplete-container.bbn-autocomplete-container-native {
   min-width: 6rem;

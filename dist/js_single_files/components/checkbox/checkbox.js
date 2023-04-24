@@ -21,10 +21,10 @@ script.innerHTML = `<span :class="['bbn-iblock', componentClass]">
                :is="component"
                v-bind="componentOptions"
                class="bbn-left-spadded"/>
-		<span v-else-if="label"
+    <span v-else-if="label"
           class="bbn-left-spadded"
-					v-html="label"/>
-	</label>
+          v-html="label"/>
+  </label>
 </span>`;
 script.setAttribute('id', 'bbn-tpl-component-checkbox');
 script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);

@@ -863,6 +863,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
       updateData(){
         let src = [];
         if (bbn.fn.isString(this.source) && this.separator) {
+          // Slide between each separator (check help in app-ui)
           src = this.source.split(this.separator).map(a =>{
             return {
               content: a,

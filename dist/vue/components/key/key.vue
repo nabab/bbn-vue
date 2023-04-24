@@ -22,9 +22,9 @@
 </template>
 <script>
   module.exports = /**
- * @file bbn-context component
+ * @file bbn-key component
  *
- * @description bbn-context is a menu that can be activated with a right click.
+ * @description bbn-key is a keyboard key.
  * The source of the menu can have a tree structure.
  * ì
  * @copyright BBN Solutions
@@ -148,6 +148,7 @@
   margin: 0.2rem;
 }
 .bbn-key span {
+  font-size: 1.2rem;
   position: absolute;
   top: 50%;
   margin-top: -0.5rem;

@@ -46,15 +46,17 @@ script.innerHTML = `<div :class="[
                :button-right="currentIcon"
                :autosize="autosize"
                :readonly="true"
-               :ellipsis="true"/>
+               :ellipsis="true"
+               @focus="focus"
+               @blur="blur"/>
     <template v-else>
       <select v-model="currentSelectValue"
               class="bbn-textbox bbn-no-border bbn-flex-fill bbn-p"
               :required="required"
               ref="input"
-              @blur="isOpened = false"
+              @blur="ev => {isOpened = false; blur(ev)}"
               @change="selectOnNative"
-              @focus="isOpened = true"
+              @focus="ev => {isOpened = true; focus(ev)}"
               @click="isOpened = true"
               :disabled="!!isDisabled || !!readonly">
         <option value=""
@@ -76,8 +78,8 @@ script.innerHTML = `<div :class="[
          v-model="value"
          ref="element"
          :name="name">
-  <bbn-portal v-if="portalSelector"
-              :selector="portalSelector">
+  <component :is="!!portalSelector && !isInsideFloater ? 'bbn-portal' : 'div'"
+             :selector="portalSelector">
     <bbn-floater v-if="!popup
                   && filteredData.length
                   && !isDisabled
@@ -113,7 +115,7 @@ script.innerHTML = `<div :class="[
                 :source-group="sourceGroup"
                 :group-component="groupComponent"
                 :group-style="groupStyle"/>
-  </bbn-portal>
+  </component>
 </div>
 `;
 script.setAttribute('id', 'bbn-tpl-component-dropdown');
@@ -350,8 +352,8 @@ document.head.insertAdjacentElement('beforeend', css);
        */
       currentText(newVal){
         if (this.ready) {
-          if (!newVal && this.value && this.isNullable){
-            this.emitInput('');
+          if (!newVal && this.value) {
+            this.emitInput(this.isNullable && (this.nullable !== null) ? this.nullValue : '');
             this.filterString = '';
           }
           else {

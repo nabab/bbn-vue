@@ -1,13 +1,14 @@
 <template>
 <div :class="[componentClass, 'bbn-textbox']"
-     @keydown.enter.stop=""
->
-  <textarea :value="value"
+     @keydown.enter.stop="">
+  <div v-if="readonly"
+       v-html="compiled"/>
+  <textarea v-else
+            :value="value"
             :name="name"
             ref="element"
             :disabled="isDisabled"
-            :required="required"
-  ></textarea>
+            :required="required"/>
 </div>
 </template>
 <script>
@@ -157,7 +158,6 @@
           singleLineBreaks: true,
           codeSyntaxHighlighting: true,
         },
-        toolbar: this.toolBar || toolbar,
         status: false,
         tabSize: this.cfg.tabSize || 2,
         toolbarTips: true,
@@ -165,6 +165,17 @@
           drawTable: "Cmd-Alt-T"
         }
       };
+    },
+    computed: {
+      compiled() {
+        return marked.parse(this.value);
+      },
+      toolbar() {
+        if (this.readonly) {
+          return false;
+        }
+        return this.toolBar || bbnMarkdownCreator.toolbar;
+      }
     },
     methods: {
       disableWidget(v){
@@ -207,7 +218,7 @@
       this.widget = new EasyMDE(bbn.fn.extend({
         element: this.$refs.element
       }, {
-        
+        toolbar
       }));
       this.widget.codemirror.on("change", () => {
         this.emitInput(this.widget.value());

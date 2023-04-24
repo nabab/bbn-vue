@@ -12,7 +12,6 @@
 }
 .bbn-autocomplete .bbn-autocomplete-container {
   line-height: normal;
-  height: 100%;
 }
 .bbn-autocomplete .bbn-autocomplete-container.bbn-autocomplete-container-native {
   min-width: 6rem;

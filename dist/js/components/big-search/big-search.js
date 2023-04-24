@@ -3,9 +3,9 @@
 
 let script = document.createElement('script');
 script.innerHTML = `<div :class="[componentClass, 'bbn-overlay', 'bbn-flex-height']">
-   <div class="bbn-w-100 bbn-c bbn-lg bbn-vlpadded">
+   <div class="bbn-w-100 bbn-xl bbn-c bbn-vlpadded">
       <bbn-input :placeholder="placeholder"
-                 :style="{width: '75%'}"
+                 :style="{width: '75%', textAlign: 'left'}"
                  :focused="true"
                  type="search"
                  ref="input"

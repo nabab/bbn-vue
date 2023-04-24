@@ -24,3 +24,7 @@
 .bbn-toolbar .bbn-toolbar-horizontal-separator:before {
   content: '\2014';
 }
+.bbn-toolbar .bbn-toolbar-flex {
+  flex-flow: wrap;
+  display: flex;
+}

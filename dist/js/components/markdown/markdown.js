@@ -2,7 +2,7 @@
 ((bbn) => {
 
 let script_dep = document.createElement('script');
-script_dep.setAttribute('src', 'https://cdn.jsdelivr.net/combine/gh/google/diff-match-patch@master/javascript/diff_match_patch.min.js,gh/jshint/jshint@2.13.4/dist/jshint.js,npm/jsonlint@1.6.3/web/jsonlint.js,npm/codemirror-minified@5.59.2/lib/codemirror.js,npm/codemirror-minified@5.59.2/addon/dialog/dialog.js,npm/codemirror-minified@5.59.2/addon/edit/matchbrackets.js,npm/codemirror-minified@5.59.2/addon/edit/matchtags.js,npm/codemirror-minified@5.59.2/addon/edit/closebrackets.js,npm/codemirror-minified@5.59.2/addon/edit/closetag.js,npm/codemirror-minified@5.59.2/addon/edit/trailingspace.js,npm/codemirror-minified@5.59.2/addon/edit/continuelist.js,npm/codemirror-minified@5.59.2/addon/runmode/colorize.js,npm/codemirror-minified@5.59.2/addon/search/search.js,npm/codemirror-minified@5.59.2/addon/search/searchcursor.js,npm/codemirror-minified@5.59.2/addon/fold/foldcode.js,npm/codemirror-minified@5.59.2/addon/fold/foldgutter.js,npm/codemirror-minified@5.59.2/addon/fold/brace-fold.js,npm/codemirror-minified@5.59.2/addon/fold/comment-fold.js,npm/codemirror-minified@5.59.2/addon/fold/xml-fold.js,npm/codemirror-minified@5.59.2/addon/fold/markdown-fold.js,npm/codemirror-minified@5.59.2/addon/fold/indent-fold.js,npm/codemirror-minified@5.59.2/addon/mode/overlay.js,npm/codemirror-minified@5.59.2/mode/meta.js,npm/codemirror-minified@5.59.2/addon/mode/multiplex.js,npm/codemirror-minified@5.59.2/addon/search/match-highlighter.js,npm/codemirror-minified@5.59.2/addon/search/jump-to-line.js,npm/codemirror-minified@5.59.2/addon/selection/active-line.js,npm/codemirror-minified@5.59.2/addon/runmode/runmode.js,npm/codemirror-minified@5.59.2/addon/selection/mark-selection.js,npm/codemirror-minified@5.59.2/addon/merge/merge.js,npm/codemirror-minified@5.59.2/addon/hint/show-hint.js,npm/codemirror-minified@5.59.2/addon/tern/tern.js,npm/codemirror-minified@5.59.2/mode/clike/clike.js,npm/codemirror-minified@5.59.2/mode/css/css.js,npm/codemirror-minified@5.59.2/mode/diff/diff.js,npm/codemirror-minified@5.59.2/mode/htmlmixed/htmlmixed.js,npm/codemirror-minified@5.59.2/mode/javascript/javascript.js,npm/codemirror-minified@5.59.2/mode/markdown/markdown.js,npm/codemirror-minified@5.59.2/mode/php/php.js,npm/codemirror-minified@5.59.2/mode/sql/sql.js,npm/codemirror-minified@5.59.2/mode/vue/vue.js,npm/codemirror-minified@5.59.2/mode/xml/xml.js,npm/codemirror-minified@5.59.2/mode/stex/stex.js,npm/codemirror-minified@5.59.2/mode/yaml/yaml.js,npm/codemirror-minified@5.59.2/addon/hint/html-hint.js,npm/codemirror-minified@5.59.2/addon/hint/css-hint.js,npm/codemirror-minified@5.59.2/addon/hint/sql-hint.js,npm/codemirror-minified@5.59.2/addon/hint/xml-hint.js,npm/codemirror-minified@5.59.2/addon/lint/lint.js,npm/codemirror-minified@5.59.2/addon/lint/javascript-lint.js,npm/codemirror-minified@5.59.2/addon/lint/json-lint.js,gh/Ionaru/easy-markdown-editor@2.15.0/dist/easymde.min.js');
+script_dep.setAttribute('src', 'https://cdn.jsdelivr.net/combine/gh/google/diff-match-patch@master/javascript/diff_match_patch.min.js,gh/jshint/jshint@2.13.4/dist/jshint.js,npm/jsonlint@1.6.3/web/jsonlint.js,npm/codemirror-minified@5.59.2/lib/codemirror.js,npm/codemirror-minified@5.59.2/addon/dialog/dialog.js,npm/codemirror-minified@5.59.2/addon/edit/matchbrackets.js,npm/codemirror-minified@5.59.2/addon/edit/matchtags.js,npm/codemirror-minified@5.59.2/addon/edit/closebrackets.js,npm/codemirror-minified@5.59.2/addon/edit/closetag.js,npm/codemirror-minified@5.59.2/addon/edit/trailingspace.js,npm/codemirror-minified@5.59.2/addon/edit/continuelist.js,npm/codemirror-minified@5.59.2/addon/runmode/colorize.js,npm/codemirror-minified@5.59.2/addon/search/search.js,npm/codemirror-minified@5.59.2/addon/search/searchcursor.js,npm/codemirror-minified@5.59.2/addon/fold/foldcode.js,npm/codemirror-minified@5.59.2/addon/fold/foldgutter.js,npm/codemirror-minified@5.59.2/addon/fold/brace-fold.js,npm/codemirror-minified@5.59.2/addon/fold/comment-fold.js,npm/codemirror-minified@5.59.2/addon/fold/xml-fold.js,npm/codemirror-minified@5.59.2/addon/fold/markdown-fold.js,npm/codemirror-minified@5.59.2/addon/fold/indent-fold.js,npm/codemirror-minified@5.59.2/addon/mode/overlay.js,npm/codemirror-minified@5.59.2/mode/meta.js,npm/codemirror-minified@5.59.2/addon/mode/multiplex.js,npm/codemirror-minified@5.59.2/addon/search/match-highlighter.js,npm/codemirror-minified@5.59.2/addon/search/jump-to-line.js,npm/codemirror-minified@5.59.2/addon/selection/active-line.js,npm/codemirror-minified@5.59.2/addon/runmode/runmode.js,npm/codemirror-minified@5.59.2/addon/selection/mark-selection.js,npm/codemirror-minified@5.59.2/addon/merge/merge.js,npm/codemirror-minified@5.59.2/addon/hint/show-hint.js,npm/codemirror-minified@5.59.2/addon/tern/tern.js,npm/codemirror-minified@5.59.2/mode/clike/clike.js,npm/codemirror-minified@5.59.2/mode/css/css.js,npm/codemirror-minified@5.59.2/mode/diff/diff.js,npm/codemirror-minified@5.59.2/mode/htmlmixed/htmlmixed.js,npm/codemirror-minified@5.59.2/mode/javascript/javascript.js,npm/codemirror-minified@5.59.2/mode/markdown/markdown.js,npm/codemirror-minified@5.59.2/mode/php/php.js,npm/codemirror-minified@5.59.2/mode/sql/sql.js,npm/codemirror-minified@5.59.2/mode/vue/vue.js,npm/codemirror-minified@5.59.2/mode/xml/xml.js,npm/codemirror-minified@5.59.2/mode/stex/stex.js,npm/codemirror-minified@5.59.2/mode/yaml/yaml.js,npm/codemirror-minified@5.59.2/addon/hint/html-hint.js,npm/codemirror-minified@5.59.2/addon/hint/css-hint.js,npm/codemirror-minified@5.59.2/addon/hint/sql-hint.js,npm/codemirror-minified@5.59.2/addon/hint/xml-hint.js,npm/codemirror-minified@5.59.2/addon/lint/lint.js,npm/codemirror-minified@5.59.2/addon/lint/javascript-lint.js,npm/codemirror-minified@5.59.2/addon/lint/json-lint.js,gh/Ionaru/easy-markdown-editor@2.15.0/dist/easymde.min.js,gh/markedjs/marked@v4.3.0/marked.min.js');
 script_dep.onload = () => {
 
 
@@ -22,14 +22,15 @@ document.head.insertAdjacentElement('beforeend', css_dependency);
 
 let script = document.createElement('script');
 script.innerHTML = `<div :class="[componentClass, 'bbn-textbox']"
-     @keydown.enter.stop=""
->
-  <textarea :value="value"
+     @keydown.enter.stop="">
+  <div v-if="readonly"
+       v-html="compiled"/>
+  <textarea v-else
+            :value="value"
             :name="name"
             ref="element"
             :disabled="isDisabled"
-            :required="required"
-  ></textarea>
+            :required="required"/>
 </div>`;
 script.setAttribute('id', 'bbn-tpl-component-markdown');
 script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
@@ -186,7 +187,6 @@ document.head.insertAdjacentElement('beforeend', css);
           singleLineBreaks: true,
           codeSyntaxHighlighting: true,
         },
-        toolbar: this.toolBar || toolbar,
         status: false,
         tabSize: this.cfg.tabSize || 2,
         toolbarTips: true,
@@ -194,6 +194,17 @@ document.head.insertAdjacentElement('beforeend', css);
           drawTable: "Cmd-Alt-T"
         }
       };
+    },
+    computed: {
+      compiled() {
+        return marked.parse(this.value);
+      },
+      toolbar() {
+        if (this.readonly) {
+          return false;
+        }
+        return this.toolBar || bbnMarkdownCreator.toolbar;
+      }
     },
     methods: {
       disableWidget(v){
@@ -236,7 +247,7 @@ document.head.insertAdjacentElement('beforeend', css);
       this.widget = new EasyMDE(bbn.fn.extend({
         element: this.$refs.element
       }, {
-        
+        toolbar
       }));
       this.widget.codemirror.on("change", () => {
         this.emitInput(this.widget.value());

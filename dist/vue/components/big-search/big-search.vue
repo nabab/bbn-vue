@@ -1,8 +1,8 @@
 <template>
 <div :class="[componentClass, 'bbn-overlay', 'bbn-flex-height']">
-   <div class="bbn-w-100 bbn-c bbn-lg bbn-vlpadded">
+   <div class="bbn-w-100 bbn-xl bbn-c bbn-vlpadded">
       <bbn-input :placeholder="placeholder"
-                 :style="{width: '75%'}"
+                 :style="{width: '75%', textAlign: 'left'}"
                  :focused="true"
                  type="search"
                  ref="input"
@@ -594,6 +594,14 @@
 }
 .bbn-big-search div {
   box-sizing: border-box;
+}
+.bbn-big-search .bbn-list ul li {
+  margin: var(--sspace) var(--space);
+  border-radius: var(--default-border-radius);
+}
+.bbn-big-search .bbn-list ul li:not(.bbn-state-hover):not(.bbn-state-selected) {
+  background-color: var(--default-background);
+  color: var(--default-text);
 }
 
 </style>

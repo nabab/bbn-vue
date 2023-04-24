@@ -33,13 +33,13 @@
 .bbn-form .bbn-form-fieldset .bbn-input-component.bbn-state-invalid {
   border: 1px solid var(--error-border) !important;
 }
-.bbn-form .bbn-form-container .bbn-button-group {
+.bbn-form .bbn-form-container .bbn-form-buttons.bbn-button-group {
   margin: 0 auto;
   width: fit-content;
   grid-column-gap: 0;
   max-width: 90%;
 }
-.bbn-form .bbn-form-container .bbn-button-group .bbn-button {
+.bbn-form .bbn-form-container .bbn-form-buttons.bbn-button-group .bbn-button {
   padding: 0.5rem !important;
   min-width: max-content;
   width: 30em;

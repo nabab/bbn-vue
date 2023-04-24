@@ -72,8 +72,8 @@
          v-model="value"
          ref="element"
          :name="name">
-  <bbn-portal v-if="portalSelector"
-              :selector="portalSelector">
+  <component :is="!!portalSelector && !isInsideFloater ? 'bbn-portal' : 'div'"
+             :selector="portalSelector">
     <bbn-floater v-if="!popup
                   && filteredData.length
                   && !isDisabled
@@ -110,7 +110,7 @@
                 :source-icon="sourceIcon"
                 :title="floaterTitle"
                 :buttons="asMobile ? realButtons : []"/>
-  </bbn-portal>
+  </component>
 </div>
 
 </template>
@@ -352,7 +352,6 @@
 }
 .bbn-combo .bbn-combo-container {
   line-height: normal;
-  height: 100%;
 }
 .bbn-combo .bbn-combo-container.bbn-combo-container-native {
   min-width: 6rem;

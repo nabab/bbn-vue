@@ -12,7 +12,7 @@ script.innerHTML = `<div :class="[componentClass, {'bbn-overlay': !!scrollable}]
                         :data="data"
                         :children="children"
                         :index="col.index"
-                        :key="symbol()"
+                        :key="!!uid && col.data[uid] ? col.data[uid] : col.key"
                         :pageable="pageable"
                         :filterable="childrenFilterable"
                         :filters="typeof childrenFilters === 'function' ? childrenFilters(col.data, data, idx) : childrenFilters"
@@ -205,11 +205,6 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
       }
     },
     methods: {
-      /**
-       * Alias of Symbol
-       * @method symbol
-       */
-      symbol: Symbol,
       /**
        * Normalizes the data
        * @method _map

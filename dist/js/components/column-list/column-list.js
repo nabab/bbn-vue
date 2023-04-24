@@ -31,7 +31,8 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-radius', {'collapsed': co
              'bbn-top-space': collapsed,
              'bbn-right-lspace': !collapsed,
              'bbn-bottom-lspace': collapsed,
-             'verticaltext': collapsed
+             'verticaltext': collapsed,
+             'bbn-flex-fill': !toolbar
            }]"
            v-text="title"
            :title="title"
@@ -73,7 +74,10 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-radius', {'collapsed': co
                    :is="scrollable ? 'bbn-scroll' : 'div'"
                    axis="y"
                    ref="scroll">
-          <div :class="['bbn-column-list-items', 'bbn-hpadded', {'bbn-overlay': !!scrollable}]">
+          <div :class="['bbn-column-list-items', 'bbn-hpadded', {
+                 'bbn-overlay': !!scrollable,
+                 'bbn-middle': !!scrollable && !items.length
+                }]">
             <template v-if="items.length">
               <div v-for="(item, itemIdx) in items"
                   :class="[

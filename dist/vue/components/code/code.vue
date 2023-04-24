@@ -2,7 +2,7 @@
 <div :class="[
      {
         'bbn-reset': true,
-        'bbn-overlay': isFullScreen
+        'bbn-overlay': isFullScreen || !!fill
      },
      componentClass
      ]"

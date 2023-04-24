@@ -132,6 +132,24 @@
     examples: bbn._('Examples'),
     default: bbn._('Default')
   };
+
+  const expand = (nodes, depth, current) => {
+    if (!current) {
+      current = 0;
+    }
+    let next = [];
+    bbn.fn.each(nodes, a => {
+      a.expand(false);
+      if (a.childs) {
+        next = next.concat(a.childs || []);
+      }
+    });
+    current++;
+    if (next.length && (current < depth)) {
+      expand(next, depth, current);
+    }
+  };
+
   Vue.component('bbn-json-editor', {
     /**
      * @mixin bbn.vue.basicComponent
@@ -159,6 +177,9 @@
       mode: {
         type: String,
         default: 'tree'
+      },
+      expanded: {
+        type: [Number, Boolean]
       },
       /**
        * The object of configuration.
@@ -309,6 +330,14 @@
         this.widget = new JSONEditor(this.$refs.element, cfg);
         if (this.currentValue) {
           this.widget.setText(this.currentValue);
+        }
+        if (this.expanded) {
+          if (bbn.fn.isNumber(this.expanded)) {
+            expand(this.widget.node.childs, this.expanded);
+          }
+          else {
+            this.widget.expandAll();
+          }
         }
         this.ready = true;
       },

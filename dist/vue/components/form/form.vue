@@ -45,7 +45,7 @@
       </fieldset>
       <!-- SMALL BUTTONS OUTSIDE WINDOW -->
       <div v-if="!hasFooter && !window && realButtons.length && ['small', 'normal'].includes(currentMode)"
-          class="bbn-middle bbn-vpadding">
+          class="bbn-form-buttons bbn-middle bbn-vpadding">
         <bbn-button v-for="(button, i) in realButtons"
                     :key="i"
                     class="bbn-hsmargin"
@@ -53,7 +53,7 @@
       </div>
       <!-- DEFAULT BUTTONS OUTSIDE WINDOW -->
       <div v-else-if="!hasFooter && !window && realButtons.length && (currentMode !== 'big')"
-           class="bbn-vlpadding bbn-c bbn-button-group bbn-grid"
+           class="bbn-form-buttons bbn-vlpadding bbn-c bbn-button-group bbn-grid"
            :style="'grid-template-columns: repeat(' + realButtons.length + ', 1fr);'">
         <bbn-button v-for="(button, i) in realButtons"
                     :key="i"
@@ -62,7 +62,7 @@
       </div>
       <!-- SMALL BUTTONS IN WINDOW -->
       <div v-else-if="!hasFooter && realButtons.length && ['small', 'normal'].includes(currentMode)"
-          class="bbn-w-100 bbn-vpadding bbn-c">
+          class="bbn-form-buttons bbn-w-100 bbn-vpadding bbn-c">
         <bbn-button v-for="(button, i) in realButtons"
                     :class="{'bbn-primary': button.preset === 'submit'}"
                     :key="i"
@@ -71,7 +71,7 @@
       </div>
       <!-- DEFAULT BUTTONS IN WINDOW -->
       <div v-else-if="!hasFooter && realButtons.length && (currentMode !== 'big')"
-           class="bbn-vpadding bbn-c bbn-button-group bbn-grid"
+           class="bbn-form-buttons bbn-vpadding bbn-c bbn-button-group bbn-grid"
            :style="'grid-template-columns: repeat(' + realButtons.length + ', 1fr)'">
         <bbn-button v-for="(button, i) in realButtons"
                     :class="{'bbn-primary': button.preset === 'submit'}"
@@ -90,7 +90,7 @@
   <div v-else-if="!window && realButtons.length && (currentMode === 'big')"
        class="bbn-form-footer bbn-popup-footer bbn-button-group bbn-flex-width bbn-lg">
     <bbn-button v-for="(button, i) in realButtons"
-                :class="{'bbn-primary': button.preset === 'submit'}"
+                :class="[{'bbn-primary': button.preset === 'submit'}, button.cls || '']"
                 :key="i"
                 v-bind="button"/>
   </div>
@@ -596,15 +596,16 @@
                   p.alert(this.successMessage);
                   bbn.fn.info(this.successMessage, p);
                 }
-  
+
                 /*
                 if ( this.sendModel && this.source ){
                   this.originalData = bbn.fn.extend(true, {}, this.source || {});
                 }
                 */
-  
+
                 this.dirty = false;
                 this.isLoading = false;
+                this.update();
 
                 if (this.window) {
                   this.$nextTick(() => {
@@ -873,6 +874,7 @@
             }
           }
         });
+        this.reinit();
         this.$forceUpdate();
         this.$nextTick(() => {
           let elems = this.findAll('.bbn-input-component');
@@ -1185,13 +1187,13 @@
 .bbn-form .bbn-form-fieldset .bbn-input-component.bbn-state-invalid {
   border: 1px solid var(--error-border) !important;
 }
-.bbn-form .bbn-form-container .bbn-button-group {
+.bbn-form .bbn-form-container .bbn-form-buttons.bbn-button-group {
   margin: 0 auto;
   width: fit-content;
   grid-column-gap: 0;
   max-width: 90%;
 }
-.bbn-form .bbn-form-container .bbn-button-group .bbn-button {
+.bbn-form .bbn-form-container .bbn-form-buttons.bbn-button-group .bbn-button {
   padding: 0.5rem !important;
   min-width: max-content;
   width: 30em;

@@ -18,7 +18,7 @@ let script = document.createElement('script');
 script.innerHTML = `<div :class="[
      {
         'bbn-reset': true,
-        'bbn-overlay': isFullScreen
+        'bbn-overlay': isFullScreen || !!fill
      },
      componentClass
      ]"

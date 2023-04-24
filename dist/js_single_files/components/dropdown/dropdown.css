@@ -12,7 +12,6 @@
 }
 .bbn-dropdown .bbn-dropdown-container {
   line-height: normal;
-  height: 100%;
 }
 .bbn-dropdown .bbn-dropdown-container.bbn-dropdown-container-native {
   min-width: 6rem;

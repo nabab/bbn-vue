@@ -20,8 +20,7 @@
              v-show="editMode"
              :size="currentInputSize"
              :style="{'paddingRight': spinners ? '0.5rem !important' : ''}"
-             :inputmode="inputmode"
-      >
+             :inputmode="inputmode">
       <input autocomplete="off"
              :value="inputValue"
              :name="name"
@@ -36,11 +35,9 @@
              ref="formatted"
              :size="currentInputSize"
              :style="{'paddingRight': spinners ? '0.5rem !important' : ''}"
-             :placeholder="placeholder"
-      >
+             :placeholder="placeholder">
       <input type="hidden"
-             :value="value"
-      >
+             :value="value">
     </div>
     <div v-if="spinners"
          :class="['bbn-numeric-buttons', 'bbn-radius-top-right', 'bbn-radius-bottom-right', {'bbn-disabled' : !!readonly || isDisabled}]">
@@ -50,6 +47,7 @@
             'bbn-no-border-top',
             'bbn-no-border-right',
             'bbn-radius-top-right',
+            'bbn-xs',
             {
               'bbn-disabled': disableIncrease,
               'bbn-p': disableIncrease,
@@ -59,9 +57,8 @@
           @click="increment"
           unselectable="on"
           tabindex="-1"
-          :disabled="disableIncrease"
-      >
-        <i class="nf nf-fa-caret_up bbn-middle"></i>
+          :disabled="disableIncrease">
+        <i class="nf nf-fa-caret_up bbn-middle"/>
       </div>
       <div :class="[
             'bbn-reactive-block',
@@ -70,6 +67,7 @@
             'bbn-no-border-bottom',
             'bbn-no-border-right',
             'bbn-radius-bottom-right',
+            'bbn-xs',
             {
               'bbn-disabled': disableDecrease,
               'bbn-p': disableDecrease,
@@ -79,9 +77,8 @@
           @click="decrement"
           unselectable="on"
           tabindex="-1"
-          :disabled="disableDecrease"
-      >
-        <i class="nf nf-fa-caret_down bbn-middle"></i>
+          :disabled="disableDecrease">
+        <i class="nf nf-fa-caret_down bbn-middle"/>
       </div>
     </div>
   </div>
@@ -178,6 +175,13 @@
       inputmode: {
         type: String,
         default: 'decimal'
+      },
+      /**
+       * A suffix to display inside of the input
+       * @prop {String} suffix
+       */
+      suffix: {
+        type: String
       }
     },
     data(){
@@ -329,6 +333,7 @@
        * @fires focus
        */
       _focus(e){
+        bbn.fn.log('aaaaaa');
         if ( !this.isDisabled && !this.readonly && !this.onlySpinners ){
           //this.currentValue = this.value;
           this.currentValue = this.value === null ? '' : (bbn.fn.isNumber(this.value) ? parseFloat(this.value).toFixed(this.decimals) : this.value);
@@ -519,7 +524,7 @@
         return bbn.fn.money(
           val,
           ((bbn.env.money !== undefined) && (bbn.env.money.kilo !== undefined)) ? bbn.env.money.kilo : undefined,
-          this.unit,
+          this.unit + (!!this.suffix ? (!!this.unit ? ' ': '') + this.suffix : ''),
           '',
           ((bbn.env.money !== undefined) && (bbn.env.money.decimal !== undefined)) ? bbn.env.money.decimal : undefined,
           ((bbn.env.money !== undefined) && (bbn.env.money.thousands !== undefined)) ? bbn.env.money.thousands : undefined,
@@ -545,6 +550,13 @@
         if ( (newVal !== oldVal) ){
           this.changeValue(newVal, oldVal);
         }
+      },
+      /**
+       * @watch suffix
+       * @fires setInputValue
+       */
+      suffix(){
+        this.setInputValue();
       }
     }
   });

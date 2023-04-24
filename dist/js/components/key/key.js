@@ -32,9 +32,9 @@ css.setAttribute('href', bbn.vue.libURL + 'dist/js/components/key/key.css');
 document.head.insertAdjacentElement('beforeend', css);
 
 /**
- * @file bbn-context component
+ * @file bbn-key component
  *
- * @description bbn-context is a menu that can be activated with a right click.
+ * @description bbn-key is a keyboard key.
  * The source of the menu can have a tree structure.
  * ì
  * @copyright BBN Solutions

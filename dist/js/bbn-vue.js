@@ -1741,7 +1741,8 @@
            * @memberof dropdownComponent
            */
           list: null,
-          portalSelector: null
+          portalSelector: null,
+          isInsideFloater: false
         };
       },
       computed: {
@@ -1996,6 +1997,7 @@
       beforeMount() {
         let ct = this.closest('bbn-container');
         this.portalSelector = ct ? ct.$el : document.body;
+        this.isInsideFloater = !!this.closest('bbn-floater');
         this.updateButtons();
       },
       watch: {
@@ -2639,47 +2641,7 @@
 
 (bbn => {
   "use strict";
-  const editorOperators = {
-    string: {
-      contains: bbn._('Contains'),
-      eq: bbn._('Is'),
-      neq: bbn._('Is not'),
-      startswith: bbn._('Starts with'),
-      doesnotcontain: bbn._('Does not contain'),
-      endswith: bbn._('To end by'),
-      isempty: bbn._('Is empty'),
-      isnotempty: bbn._('Is not empty')
-    },
-    number: {
-      eq: bbn._('Is equal to'),
-      neq: bbn._('Is not equal to'),
-      gte: bbn._('Is greater than or equal to'),
-      gt: bbn._('Is greater than'),
-      lte: bbn._('Is less than or equal to'),
-      lt: bbn._('Is inferior to'),
-    },
-    date: {
-      eq: bbn._('Is equal to'),
-      neq: bbn._('Is not equal to'),
-      gte: bbn._('Is after than or equal to'),
-      gt: bbn._('Is after'),
-      lte: bbn._('Is prior to or equal to'),
-      lt: bbn._('Is older than'),
-    },
-    enums: {
-      eq: bbn._('Is equal to'),
-      neq: bbn._('Is not equal to'),
-    },
-    boolean: {
-      istrue: bbn._('Is true'),
-      isfalse: bbn._('Is false')
-    }
-  };
 
-  const editorNullOps = {
-    isnull: bbn._('Is null'),
-    isnotnull: bbn._('Is not null')
-  };
   const editorNoValueOperators = ['', 'isnull', 'isnotnull', 'isempty', 'isnotempty', 'istrue', 'isfalse'];
 
   bbn.fn.autoExtend("vue", {
@@ -2782,7 +2744,42 @@
          * @returns {Object}
          */
         editorOperators(){
-          return editorOperators;
+          return {
+            string: {
+              contains: bbn._('Contains'),
+              eq: bbn._('Is'),
+              neq: bbn._('Is not'),
+              startswith: bbn._('Starts with'),
+              doesnotcontain: bbn._('Does not contain'),
+              endswith: bbn._('To end by'),
+              isempty: bbn._('Is empty'),
+              isnotempty: bbn._('Is not empty')
+            },
+            number: {
+              eq: bbn._('Is equal to'),
+              neq: bbn._('Is not equal to'),
+              gte: bbn._('Is greater than or equal to'),
+              gt: bbn._('Is greater than'),
+              lte: bbn._('Is less than or equal to'),
+              lt: bbn._('Is inferior to'),
+            },
+            date: {
+              eq: bbn._('Is equal to'),
+              neq: bbn._('Is not equal to'),
+              gte: bbn._('Is after than or equal to'),
+              gt: bbn._('Is after'),
+              lte: bbn._('Is prior to or equal to'),
+              lt: bbn._('Is older than'),
+            },
+            enums: {
+              eq: bbn._('Is equal to'),
+              neq: bbn._('Is not equal to'),
+            },
+            boolean: {
+              istrue: bbn._('Is true'),
+              isfalse: bbn._('Is false')
+            }
+          };
         },
         /**
          * The object containing the text for the case null or not null values.
@@ -2791,7 +2788,10 @@
          * 
          */
         editorNullOps(){
-          return editorNullOps;
+          return {
+            isnull: bbn._('Is null'),
+            isnotnull: bbn._('Is not null')
+          }
         },
         /**
          * The array containing the values of operators when the value of the editor is not defined.
@@ -3264,7 +3264,7 @@
          */
         edit(row, winOptions, index) {
           if (!this.editable) {
-            throw new Error("The component is not editable, you cannot use the edit function");
+            throw new Error(_("The component is not editable, you cannot use the edit function"));
           }
           if ( !winOptions ){
             winOptions = {};
@@ -5045,6 +5045,14 @@
           default: false
         },
         /**
+         * @prop {Boolean|String|Object} [''] nullValue
+         * @memberof inputComponent
+         */
+        nullValue: {
+          type: [Boolean, String, Object],
+          default: null
+        },
+        /**
          * Set it to true if you want to auto-resize the input's width based on its value (in characters).
          * @prop {Boolean} [false] autosize
          */
@@ -5184,7 +5192,6 @@
           let check = elem => {
             if ( elem && elem.validity ){
               let validity = elem.validity,
-                  $elem = $this.$el,
                   // Default message
                   mess = bbn._('The value you entered for this field is invalid.'),
                   specificCase = false;
@@ -5195,6 +5202,9 @@
                   specificCase = true;
                 }
                 else {
+                  if (this.$el.classList.contains('bbn-state-invalid')) {
+                    this.$el.classList.remove('bbn-state-invalid');
+                  }
                   return true;
                 }
               }
@@ -5246,43 +5256,7 @@
                   mess = bbn._('Please match the requested format.');
                 }
                 if (setError) {
-                  this.$emit('error', customMessage || mess);
-                  this.validationID = bbn.fn.randomString();
-                  if (!this.$el.classList.contains('bbn-state-invalid')) {
-                    this.$el.classList.add('bbn-state-invalid');
-                  let cont = document.createElement('div');
-                  cont.id = this.validationID;
-                  cont.innerHTML = `
-                    <bbn-tooltip source="${customMessage || mess}"
-                                  ref="tooltip"
-                                  @hook:mounted="showContent"
-                                  :icon="false"
-                                  position="bottomLeft"
-                                  @close="removeEle"
-                                  :element="element"/>
-                  `;
-                    this.$el.appendChild(cont);
-                    new Vue({
-                      el: `#${this.validationID}`,
-                      data(){
-                        return {
-                          element: $elem
-                        }
-                      },
-                      methods: {
-                        showContent(){
-                          this.getRef('tooltip').isVisible = true;
-                        },
-                        removeEle(){
-                          this.$el.remove();
-                        }
-                      }
-                    })
-                  }
-                  this.$once('blur', () => {
-                    this.$emit('removevalidation');
-                    $elem.focus();
-                  });
+                  this.setInvalid(customMessage || mess, $this);
                 }
                 return false;
               }
@@ -5302,6 +5276,71 @@
           }
           return true;
         },
+        setInvalid(message, elem){
+          this.$emit('error', message);
+          this.validationID = bbn.fn.randomString();
+          if (!!message
+            && message.length
+            && (!elem || !bbn.fn.isDom(elem.$el))
+          ) {
+            elem = this;
+          }
+          if (!this.$el.classList.contains('bbn-state-invalid')) {
+            this.$el.classList.add('bbn-state-invalid');
+            if (!!message
+              && message.length
+              && !!elem
+              && bbn.fn.isDom(elem.$el)
+            ) {
+              let style = document.createElement('style');
+              style.id = this.validationID + '_style';
+              style.innerHTML = `
+                #${this.validationID} .bbn-floater {
+                  background-color: var(--red) !important;
+                  color: var(--white) !important;
+                }
+                #${this.validationID} .bbn-floater-arrow:after {
+                  background-color: var(--red) !important;
+                }`;
+              document.head.appendChild(style)
+              let cont = document.createElement('div');
+              cont.id = this.validationID;
+              cont.innerHTML = `
+                <bbn-tooltip source="${message}"
+                             ref="tooltip"
+                             @hook:mounted="showContent"
+                             :icon="false"
+                             position="bottomLeft"
+                             @close="removeEle"
+                             :element="element"/>
+              `;
+              this.$el.appendChild(cont);
+              new Vue({
+                el: `#${this.validationID}`,
+                data(){
+                  return {
+                    element: elem.$el
+                  }
+                },
+                methods: {
+                  showContent(){
+                    this.getRef('tooltip').show();
+                  },
+                  removeEle(){
+                    style.remove();
+                    this.$el.remove();
+                  }
+                }
+              })
+            }
+          }
+          this.$once('blur', () => {
+            this.$emit('removevalidation');
+            if (elem && elem.$el) {
+              elem.$el.focus();
+            }
+          });
+        }
       },
       /**
        * Adds the class 'bbn-input-component' to the component.

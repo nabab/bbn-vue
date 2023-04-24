@@ -720,10 +720,10 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
           this.$nextTick(() => {
             bbn.fn.each(this.filesProgress, fr => {
               if ( (id === undefined) || (fr.id === id) ){
-                if ( this.saveUrl ){
-                  let ev = new Event('beforeUpload', {cancelable: true});
-                  this.$emit('beforeUpload', ev, fr);
-                  if ( !ev.defaultPrevented ){
+                let ev = new Event('beforeUpload', {cancelable: true});
+                this.$emit('beforeUpload', ev, fr);
+                if ( !ev.defaultPrevented ){
+                  if ( this.saveUrl ){
                     bbn.fn.upload(
                       this.saveUrl,
                       bbn.fn.extend(true, {}, this.data ? this.data : {}, {file: fr.data}),
@@ -758,12 +758,12 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
                       }
                     )
                   }
-                }
-                else {
-                  if ( this.setStatusSuccess(fr.id) ){
-                    this.$nextTick(() => {
-                      this.$emit('success', fr.id, fr.data.name, fr.data)
-                    })
+                  else {
+                    if ( this.setStatusSuccess(fr.id) ){
+                      this.$nextTick(() => {
+                        this.$emit('success', fr.id, fr.data.name, fr.data)
+                      })
+                    }
                   }
                 }
               }

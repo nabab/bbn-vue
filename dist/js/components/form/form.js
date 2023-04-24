@@ -48,7 +48,7 @@ script.innerHTML = `<form :action="action"
       </fieldset>
       <!-- SMALL BUTTONS OUTSIDE WINDOW -->
       <div v-if="!hasFooter && !window && realButtons.length && ['small', 'normal'].includes(currentMode)"
-          class="bbn-middle bbn-vpadding">
+          class="bbn-form-buttons bbn-middle bbn-vpadding">
         <bbn-button v-for="(button, i) in realButtons"
                     :key="i"
                     class="bbn-hsmargin"
@@ -56,7 +56,7 @@ script.innerHTML = `<form :action="action"
       </div>
       <!-- DEFAULT BUTTONS OUTSIDE WINDOW -->
       <div v-else-if="!hasFooter && !window && realButtons.length && (currentMode !== 'big')"
-           class="bbn-vlpadding bbn-c bbn-button-group bbn-grid"
+           class="bbn-form-buttons bbn-vlpadding bbn-c bbn-button-group bbn-grid"
            :style="'grid-template-columns: repeat(' + realButtons.length + ', 1fr);'">
         <bbn-button v-for="(button, i) in realButtons"
                     :key="i"
@@ -65,7 +65,7 @@ script.innerHTML = `<form :action="action"
       </div>
       <!-- SMALL BUTTONS IN WINDOW -->
       <div v-else-if="!hasFooter && realButtons.length && ['small', 'normal'].includes(currentMode)"
-          class="bbn-w-100 bbn-vpadding bbn-c">
+          class="bbn-form-buttons bbn-w-100 bbn-vpadding bbn-c">
         <bbn-button v-for="(button, i) in realButtons"
                     :class="{'bbn-primary': button.preset === 'submit'}"
                     :key="i"
@@ -74,7 +74,7 @@ script.innerHTML = `<form :action="action"
       </div>
       <!-- DEFAULT BUTTONS IN WINDOW -->
       <div v-else-if="!hasFooter && realButtons.length && (currentMode !== 'big')"
-           class="bbn-vpadding bbn-c bbn-button-group bbn-grid"
+           class="bbn-form-buttons bbn-vpadding bbn-c bbn-button-group bbn-grid"
            :style="'grid-template-columns: repeat(' + realButtons.length + ', 1fr)'">
         <bbn-button v-for="(button, i) in realButtons"
                     :class="{'bbn-primary': button.preset === 'submit'}"
@@ -93,7 +93,7 @@ script.innerHTML = `<form :action="action"
   <div v-else-if="!window && realButtons.length && (currentMode === 'big')"
        class="bbn-form-footer bbn-popup-footer bbn-button-group bbn-flex-width bbn-lg">
     <bbn-button v-for="(button, i) in realButtons"
-                :class="{'bbn-primary': button.preset === 'submit'}"
+                :class="[{'bbn-primary': button.preset === 'submit'}, button.cls || '']"
                 :key="i"
                 v-bind="button"/>
   </div>
@@ -606,15 +606,16 @@ document.head.insertAdjacentElement('beforeend', css);
                   p.alert(this.successMessage);
                   bbn.fn.info(this.successMessage, p);
                 }
-  
+
                 /*
                 if ( this.sendModel && this.source ){
                   this.originalData = bbn.fn.extend(true, {}, this.source || {});
                 }
                 */
-  
+
                 this.dirty = false;
                 this.isLoading = false;
+                this.update();
 
                 if (this.window) {
                   this.$nextTick(() => {
@@ -883,6 +884,7 @@ document.head.insertAdjacentElement('beforeend', css);
             }
           }
         });
+        this.reinit();
         this.$forceUpdate();
         this.$nextTick(() => {
           let elems = this.findAll('.bbn-input-component');

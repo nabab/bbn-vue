@@ -12,7 +12,7 @@ script.innerHTML = `<div :class="componentClass" :style="'border-left-color:' + 
          style="align-items: baseline">
       <div class="bbn-filter-logic">
         <span v-if="idx"
-              v-text="currentLogic"/>
+              v-text="currentLogic === 'OR' ? _('OR') : _('AND')"/>
         <bbn-dropdown v-else
                       class="bbn-s"
                       :source="[{

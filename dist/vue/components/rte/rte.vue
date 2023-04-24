@@ -30,7 +30,7 @@
 	     class="bbn-iflex-height"
 			 style="min-height: 100%; width: 100%;">
 		<bbn-toolbar :source="currentButtons"
-								 class="bbn-rte-toolbar bbn-header bbn-radius-top bbn-no-border bbn-spadded"
+								 class="bbn-rte-toolbar bbn-header bbn-radius-top bbn-no-border bbn-hspadded bbn-bottom-spadded"
 								 :button-space="false"
 								 :disabled="disabled || readonly"/>
 		<div class="bbn-flex-fill"
@@ -42,6 +42,7 @@
 						 style="min-height: max(4rem, 100%)"
 						 :contenteditable="!readonly && !disabled"
 						 ref="element"
+						 @paste="onPaste"
 						 @input="rteOnInput"
 						 @keydown="rteOnKeydown"
 						 @keyup="rteOnClick"
@@ -58,13 +59,18 @@
 									:disabled="isDisabled"/>
 			</component>
 			<div v-if="showSource"
-					 style="min-height: max(4rem, 100%)">
+					 :class="{'bbn-overlay': !!currentHeight}">
 				<bbn-code v-model="currentValue"
 									mode="html"
 									:fill="!!currentHeight"/>
 			</div>
 		</div>
 	</div>
+  <input type="file"
+         ref="fileInput"
+         class="bbn-rte-fileinput"
+         @change="onFileInputChange"
+         accept="image/*"/>
 </div>
 </template>
 <script>
@@ -297,6 +303,63 @@
       active: false,
       action: () => exec('strikeThrough')
     },
+    align: {
+      text: bbn._('Align'),
+      notext: true,
+      active: false,
+      component: {
+        name: 'bbn-rte-align',
+        template: `
+          <bbn-radiobuttons :disabled="!!isDisabled || !!isReadOnly"
+                            v-model="currentAlign"
+                            :source="buttons"
+                            :notext="true"
+                            style="width: auto"
+                            @input="setAlign"/>
+        `,
+        data(){
+          return {
+            buttons: [{
+              text: bbn._('Align Left'),
+              icon: 'nf nf-fa-align_left',
+              value: 'justifyLeft'
+            }, {
+              text: bbn._('Align Center'),
+              icon: 'nf nf-fa-align_center',
+              value: 'justifyCenter'
+            }, {
+              text: bbn._('Align Right'),
+              icon: 'nf nf-fa-align_right',
+              value: 'justifyRight'
+            }, {
+              text: bbn._('Align Justify'),
+              icon: 'nf nf-fa-align_justify',
+              value: 'justifyFull'
+            }],
+            currentAlign: '',
+            isDisabled: false,
+            isReadOnly: false
+          }
+        },
+        methods: {
+          setAlign(align){
+            exec(align);
+          }
+        },
+        mounted(){
+          const rte = this.closest('bbn-rte');
+          rte.alignComponent = this;
+          this.isDisabled = !!rte.disabled;
+          this.isReadOnly = !!rte.readonly;
+          this.disWatch = rte.$watch('disabled', val => this.isDisabled = !!val);
+          this.readWatch = rte.$watch('readonly', val => this.isDisabled = !!val);
+        },
+        beforeDestroy(){
+          this.disWatch();
+          this.readWatch();
+        }
+      }
+    },
     fontcolor: {
       text: bbn._('Font Color'),
       notext: true,
@@ -384,6 +447,18 @@
           this.readWatch();
         }
       }
+    },
+    outdent: {
+      icon: 'nf nf-md-arrow_expand_left',
+      text: bbn._('Decrease indent'),
+      notext: true,
+      action: () => exec('outdent')
+    },
+    indent: {
+      icon: 'nf nf-md-arrow_expand_right',
+      text: bbn._('Increase indent'),
+      notext: true,
+      action: () => exec('indent')
     },
     /*
     heading: {
@@ -475,9 +550,32 @@
         if (url) exec('createLink', url)
       }
     },
-    image: {
-      icon: 'nf nf-mdi-image',
+    image64: {
       text: bbn._('Image'),
+      component: {
+        template: `
+          <bbn-button text="` + bbn._('Image') + `"
+                      icon="nf nf-md-image_plus"
+                      :notext="true"
+                      @click="onClick"/>
+        `,
+        methods: {
+          onClick(){
+            let rte = this.closest('bbn-rte');
+            if (rte) {
+              let fileInput = rte.getRef('fileInput');
+              if (fileInput) {
+                fileInput.click();
+              }
+            }
+          }
+        }
+      },
+      notext: true
+    },
+    image: {
+      icon: 'nf nf-md-image_move',
+      text: bbn._('Image from URL'),
       notext: true,
       action: () => {
         const url = window.prompt(bbn._('Enter the image URL'))
@@ -558,6 +656,10 @@
       height: {
         type: [String, Number]
       },
+      cleanPaste: {
+        type: Boolean,
+        default: false
+      },
       /**
        * The buttons to show on the toolbar
        * @prop {Array} [[['viewHTML'],['undo', 'redo'],['formatting'],['strong', 'em', 'underline', 'del'],['removeformat', 'foreColor', 'backColor'],['superscript', 'subscript'],['link'],['insertImage', 'base64'],['justifyLeft', 'justifyCenter', 'justifyRight', 'justifyFull'],['unorderedList', 'orderedList'],['horizontalRule'],['fullscreen']]] buttons
@@ -633,7 +735,11 @@
         /**
          * @data {Vue} fontsizeComponent
          */
-         fontsizeComponent : null,
+        fontsizeComponent : null,
+        /**
+         * @data {Vue} alignComponent
+         */
+        alignComponent : null,
         /**
          * @data {Bool} [false] isEditing
          */
@@ -668,6 +774,18 @@
       }
     },
     methods: {
+      /**
+       * @method onPaste
+       */
+      onPaste(ev) {
+        if (this.cleanPaste) {
+          ev.preventDefault();
+          bbn.fn.replaceSelection(bbn.fn.nl2br(ev.clipboardData.getData('text/plain').trim(), true));
+          this.emitInput(this.getRef('element').innerHTML);
+        }
+      },
+
+
       /**
        * @method setButtons
        */
@@ -706,6 +824,8 @@
       /**
        * @method rteOnKeydown
        * @fires setColors
+       * @fires setStyle
+       * @fires setAlign
        */
       rteOnKeydown(event) {
         if (event.key === 'Enter') {
@@ -717,17 +837,23 @@
         }
         this.setColors();
         this.setStyle();
+        this.setAlign();
       },
       /**
        * @method rteOnClick
        * @fires updateButtonsState
        * @fires setColors
+       * @fires setStyle
+       * @fires setFontsize
+       * @fires setAlign
        */
       rteOnClick(event){
         this.updateButtonsState();
         this.setColors();
         this.setStyle();
         this.setFontsize();
+        this.setAlign();
+
       },
       /**
        * @method rteOnInput
@@ -770,9 +896,32 @@
       /**
        * @method setFontsize
        */
-       setFontsize(){
+      setFontsize(){
         if (this.fontsizeComponent) {
           this.fontsizeComponent.currentSize = parseInt(queryCommandValue('fontSize')) || 2;
+        }
+      },
+      /**
+       * @method setAlign
+       */
+      setAlign(){
+        if (this.alignComponent) {
+          let current;
+          if (queryCommandState('justifyLeft')) {
+            current = 'justifyLeft';
+          }
+          else if (queryCommandState('justifyCenter')) {
+            current = 'justifyCenter';
+          }
+          else if (queryCommandState('justifyRight')) {
+            current = 'justifyRight';
+          }
+          else if (queryCommandState('justifyFull')) {
+            current = 'justifyFull';
+          }
+          if (!!current && (this.alignComponent.currentAlign != current)) {
+            this.alignComponent.currentAlign = current;
+          }
         }
       },
       onClickDocument(e) {
@@ -801,6 +950,19 @@
         this.stopEditTimeout = setTimeout(() => {
           this.isEditing = false;
         }, 2000)
+      },
+      onFileInputChange(ev){
+        const files = ev.target.files;
+        if (files.length) {
+          const [file] = files;
+          const fileReader = new FileReader();
+          fileReader.onload = () => {
+            const img = fileReader.result;
+            exec('insertHTML', `<img src="${img}" style="max-width: 100%; height: auto; object-fit: scale-down">`);
+            this.getRef('fileInput').value = '';
+          }
+          fileReader.readAsDataURL(file);
+        }
       }
     },
     /**
@@ -943,16 +1105,24 @@
   clear: both;
 }
 .bbn-rte .bbn-code .CodeMirror.CodeMirror-wrap {
-  position: relative !important;
+  border-bottom-left-radius: var(--default-border-radius);
+  border-bottom-right-radius: var(--default-border-radius);
+}
+.bbn-rte .bbn-rte-fileinput {
+  visibility: hidden;
+  height: 0;
+  width: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
 }
 .bbn-rte-toolbar .bbn-toolbar-fieldset > .bbn-flex-fill {
   display: flex;
   align-items: center;
-  justify-content: center;
   text-align: center;
 }
 .bbn-rte-toolbar .bbn-toolbar-fieldset > .bbn-flex-fill > * {
-  margin: 0 .15rem;
+  margin: var(--sspace) .15rem 0 .15rem;
 }
 .bbn-rte-toolbar .bbn-toolbar-fieldset > .bbn-flex-fill .bbn-rte-fontcolor .bbn-colorpicker-input,
 .bbn-rte-toolbar .bbn-toolbar-fieldset > .bbn-flex-fill .bbn-rte-fontbgcolor .bbn-colorpicker-input {

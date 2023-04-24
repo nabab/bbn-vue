@@ -3,10 +3,10 @@
         @click="info = !info"
         ref="bar">
     <span class="bbn-loadbar-state bbn-hxspadded bbn-c bbn-block bbn-h-100 bbn-middle">
-      <bbn-loadicon v-if="currentItem.loading" class="bbn-blue"></bbn-loadicon>
-      <i v-else-if="currentItem.error" class="nf nf-fa-times_circle bbn-red"></i>
-      <i v-else-if="currentItem.success" class="nf nf-fa-check bbn-green"></i>
-      <i v-else-if="currentItem.abort" class="nf nf-mdi-stop bbn-orange"></i>
+      <bbn-loadicon v-if="currentItem.loading" class="bbn-blue"/>
+      <i v-else-if="currentItem.error" class="nf nf-fa-times_circle bbn-red"/>
+      <i v-else-if="currentItem.success" class="nf nf-fa-check bbn-green"/>
+      <i v-else-if="currentItem.abort" class="nf nf-mdi-stop bbn-orange"/>
     </span>
     <span class="bbn-flex-fill">
       <span class="bbn-overlay">
@@ -15,8 +15,7 @@
              :title="text + ' ' + _('Loading')"
              style="color: inherit; cursor: default"
              v-if="currentItem"
-             v-text="currentItem.url"
-          ></a>
+             v-text="currentItem.url"/>
         </span>
       </span>
     </span>
@@ -31,16 +30,14 @@
                :scrollable="true"
                @close="info = false"
                width="100%"
-               max-height="60vw"
-  >
+               max-height="60vw">
     <div class="bbn-padded bbn-w-100">
       <bbn-input class="bbn-w-100"
                  button-right="nf nf-mdi-send"
                  v-model="link"
                  @keydown.enter="go"
                  :focused="true"
-                 @clickRightButton="go"
-      ></bbn-input>
+                 @clickRightButton="go"/>
       <ul class="bbn-reset bbn-w-100 bbn-ul">
         <li v-for="it of items">
           <bbn-context tag="div"
@@ -48,20 +45,19 @@
                        :max-width="300"
                        :source="contextMenu(it)">
             <span class="bbn-loadbar-state bbn-hxspadded bbn-c">
-              <bbn-loadicon v-if="it.loading" class="bbn-blue"></bbn-loadicon>
-              <i v-else-if="it.error" class="nf nf-fa-times_circle bbn-red"></i>
-              <i v-else-if="it.success" class="nf nf-fa-check bbn-green"></i>
-              <i v-else-if="it.abort" class="nf nf-mdi-stop bbn-orange"></i>
+              <bbn-loadicon v-if="it.loading" class="bbn-blue"/>
+              <i v-else-if="it.error" class="nf nf-fa-times_circle bbn-red"/>
+              <i v-else-if="it.success" class="nf nf-fa-check bbn-green"/>
+              <i v-else-if="it.abort" class="nf nf-mdi-stop bbn-orange"/>
             </span>
             <div class="bbn-loadbar-time bbn-c bbn-s">
-              <span v-text="renderDuration(it.duration)"></span>
+              <span v-text="renderDuration(it.duration)"/>
             </div>
-            <span class="bbn-hxspadded bbn-s" v-text="it.url"></span>
+            <span class="bbn-hxspadded bbn-s" v-text="it.url"/>
           </bbn-context>
           <div v-if="it.error && it.errorMessage"
                 class="bbn-loadbar-error bbn-red"
-                v-text="it.errorMessage"
-          ></div>
+                v-text="it.errorMessage"/>
         </li>
       </ul>
     </div>

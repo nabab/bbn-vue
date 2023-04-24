@@ -67,7 +67,8 @@ script.innerHTML = `<div :class="[
           :style="{
             paddingLeft: prefix ? 0 : null
           }">
-    <bbn-loadicon v-if="loading"/>
+    <bbn-loadicon v-if="loading"
+                  class="bbn-top-right bbn-vmiddle bbn-h-100 bbn-right-xspadded"/>
     <div v-else-if="isNullable && (!readonly || forceNullable) && !isDisabled"
          class="bbn-input-nullable-container bbn-vmiddle"
          :style="{
@@ -196,7 +197,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
       },
       /**
        * Sets the left button disabled.
-       * @prop {Boolean} [false] autoHideRight
+       * @prop {Boolean} [false] buttonLeftDisabled
        */
       buttonLeftDisabled: {
         type: Boolean,
@@ -204,14 +205,28 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
       },
       /**
        * Sets the left button disabled.
-       * @prop {Boolean} [false] autoHideRight
+       * @prop {Boolean} [false] buttonRightDisabled
        */
       buttonRightDisabled: {
         type: Boolean,
         default: false
       },
       /**
-       * The input's attribute 'pattern'. 
+       * The title of the left button.
+       * @prop {String} buttonLeftTitle
+       */
+      buttonLeftTitle: {
+        type: String
+      },
+      /**
+       * The title of the right button.
+       * @prop {String} buttonRightTitle
+       */
+      buttonRightTitle: {
+        type: String
+      },
+      /**
+       * The input's attribute 'pattern'.
        * @prop {String} pattern
        */
       pattern: {

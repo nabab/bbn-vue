@@ -44,8 +44,8 @@ script.innerHTML = `<div :class="[
                :nullable="true"
                :placeholder="placeholder"/>
   </div>
-  <bbn-portal v-if="portalSelector"
-              :selector="portalSelector">
+  <component :is="!!portalSelector && !isInsideFloater ? 'bbn-portal' : 'div'"
+             :selector="portalSelector">
     <bbn-floater v-if="!popup
                     && filteredData.length
                     && !isDisabled
@@ -72,7 +72,7 @@ script.innerHTML = `<div :class="[
                 @select="select"
                 @close="isOpened = false"
                 :source="filteredData"/>
-  </bbn-portal>
+  </component>
 </div>
 `;
 script.setAttribute('id', 'bbn-tpl-component-search');

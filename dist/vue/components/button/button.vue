@@ -41,9 +41,8 @@
     <div class="bbn-abs"
          :style="{
            transform: 'scale(0.7)',
-           bottom: '0.15rem',
-           right: '0.15rem',
-           height: '50%'
+           bottom: '10%',
+           right: '10%'
          }">
       <i :class="secondary + ' bbn-button-secondary'"
         :style="{

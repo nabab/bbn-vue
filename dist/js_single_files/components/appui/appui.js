@@ -1409,7 +1409,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
           // appui-cron
           this.$on('appui-cron', (type, data) => {
             if (type === 'message') {
-              let cron = appui.getRegistered('appui-cron');
+              let cron = appui.getRegistered('appui-cron', true);
               if (bbn.fn.isVue(cron) && bbn.fn.isFunction(cron.receive)) {
                 cron.receive(data);
               }
@@ -1419,7 +1419,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
           // appui-email
           this.$on('appui-email', (type, data) => {
             if (type === 'message') {
-              const email = appui.getRegistered('appui-email');
+              const email = appui.getRegistered('appui-email', true);
               if (bbn.fn.isVue(email) && bbn.fn.isFunction(email.receive)) {
                 email.receive(data);
               }

@@ -3,16 +3,24 @@
   clear: both;
 }
 .bbn-rte .bbn-code .CodeMirror.CodeMirror-wrap {
-  position: relative !important;
+  border-bottom-left-radius: var(--default-border-radius);
+  border-bottom-right-radius: var(--default-border-radius);
+}
+.bbn-rte .bbn-rte-fileinput {
+  visibility: hidden;
+  height: 0;
+  width: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
 }
 .bbn-rte-toolbar .bbn-toolbar-fieldset > .bbn-flex-fill {
   display: flex;
   align-items: center;
-  justify-content: center;
   text-align: center;
 }
 .bbn-rte-toolbar .bbn-toolbar-fieldset > .bbn-flex-fill > * {
-  margin: 0 .15rem;
+  margin: var(--sspace) .15rem 0 .15rem;
 }
 .bbn-rte-toolbar .bbn-toolbar-fieldset > .bbn-flex-fill .bbn-rte-fontcolor .bbn-colorpicker-input,
 .bbn-rte-toolbar .bbn-toolbar-fieldset > .bbn-flex-fill .bbn-rte-fontbgcolor .bbn-colorpicker-input {

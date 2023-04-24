@@ -8,7 +8,7 @@ script.innerHTML = `<div :class="[{'bbn-overlay': scrollable, 'bbn-block': !scro
          width: totalWidth
        }"
        v-if="cols.length">
-    <div v-if="hasToolbar"
+    <div v-if="hasToolbar || search"
          class="bbn-table-toolbar bbn-w-100"
          ref="toolbar">
       <bbn-toolbar v-if="toolbarButtons.length || search"
@@ -422,7 +422,9 @@ script.innerHTML = `<div :class="[{'bbn-overlay': scrollable, 'bbn-block': !scro
                                       @select="_execCommand(button, d.data, col, i, $event)"/>
                       </template>
                       <template v-else-if="col.buttons && (buttonMode === 'menu')">
-                        <bbn-context :source="buttonSource(d.data, col, i)">
+                        <bbn-context :source="buttonSource(d.data, col, i)"
+                                     :portal="portalElement"
+                                     @select="(item, idx, dataIndex, ev, floater) => onButtonsMenuSelect(item, d.data, col, i, ev, floater)">
                           <span class="bbn-iblock bbn-lg">
                             <i :class="buttonIcon"/>
                           </span>
@@ -485,11 +487,11 @@ script.innerHTML = `<div :class="[{'bbn-overlay': scrollable, 'bbn-block': !scro
                :auto-hide="true"
                :scrollable="true"
                :left="floatingFilterX"
-               :top="floatingFilterY">
+               :top="floatingFilterY"
+               :element-width="false">
     <bbn-filter v-bind="getFilterOptions()"
                 @set="onSetFilter"
-                @unset="unsetCurrentFilter"
-                class="bbn-w-100"/>
+                @unset="unsetCurrentFilter"/>
     <div v-if="multifilter"
          class="bbn-table-filter-link bbn-p bbn-b bbn-i bbn-w-100 bbn-bottom-padded bbn-left-padded bbn-right-padded bbn-r"
          @click="openMultiFilter">
@@ -1089,7 +1091,12 @@ document.head.insertAdjacentElement('beforeend', css);
          * True if the table is resizing its width
          * @data {Boolean} [false] isResizingWidth
          */
-        isResizingWidth: false
+        isResizingWidth: false,
+        /**
+         * The portal element for the buttons' floater (menu mode)
+         * @data {HTMLElement} [document.body] portalElement
+         */
+        portalElement: document.body
       };
     },
     computed: {
@@ -3604,7 +3611,7 @@ document.head.insertAdjacentElement('beforeend', css);
             obj.content = `<div class="bbn-spadded">${col.render(data, col, itemIndex)}</div>`;
           }
           else {
-            obj.content = `<div class="bbn-spadded">${data.text}</div>`;
+            obj.content = `<div class="bbn-spadded">${data[col.field]}</div>`;
           }
           this.getPopup().open(obj);
         }
@@ -3701,6 +3708,11 @@ document.head.insertAdjacentElement('beforeend', css);
           }
           this.$forceUpdate();
         }
+      },
+      onButtonsMenuSelect(item, data, col, i, ev, floater){
+        ev.preventDefault();
+        this._execCommand(item, data, col, i, ev);
+        floater.closeAll();
       }
     },
     /**

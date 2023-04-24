@@ -19,10 +19,10 @@
                :is="component"
                v-bind="componentOptions"
                class="bbn-left-spadded"/>
-		<span v-else-if="label"
+    <span v-else-if="label"
           class="bbn-left-spadded"
-					v-html="label"/>
-	</label>
+          v-html="label"/>
+  </label>
 </span>
 </template>
 <script>

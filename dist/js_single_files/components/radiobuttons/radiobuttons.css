@@ -1,3 +1,9 @@
 .bbn-radiobuttons .bbn-button:focus-within {
   border-color: inherit;
 }
+.bbn-radiobuttons .bbn-button:first-of-type {
+  border-radius: var(--default-border-radius) 0 0 var(--default-border-radius);
+}
+.bbn-radiobuttons .bbn-button:last-of-type {
+  border-radius: 0 var(--default-border-radius) var(--default-border-radius) 0;
+}
