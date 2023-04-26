@@ -3576,7 +3576,7 @@ return {
      * @fires getDefaultURL
      * @fires add
      */
-    mounted() {
+    beforeMount() {
       // All routers above (which constitute the fullBaseURL)
       this.parents = this.ancestors('bbn-router');
       // The closest
@@ -3642,9 +3642,11 @@ return {
       // ---- ADDED 16/12/20 (Mirko) ----
       // Adding bbns-container from the slot
       if ( this.$slots.default ){
-        for ( let node of this.$slots.default.items ){
-          bbn.fn.log("ROUTER SLOT");
-          if (node?.tag === 'bbn-container') {
+        for ( let item of this.$slots.default.items ){
+          let node = item.ele.bbnSchema;
+          bbn.fn.log("ROUTER SLOT", node, '-------------');
+          
+          if (['bbn-container', 'bbns-container'].includes(node?.tag)) {
             if (node.props.url === undefined) {
               throw new Error(bbn._("You cannot use containers in router without defining a URL property"));
             }
@@ -3660,7 +3662,9 @@ return {
                 obj[n] = a;
               }
             });
-            obj.real = true;
+            if (node.tag === 'bbn-container') {
+              obj.real = true;
+            }
             //let o = {real: true, load: false, loaded: true};
             //tmp.push(bbn.fn.extend({}, node.componentOptions.propsData, o));
             tmp.push(obj);
@@ -3776,6 +3780,16 @@ return {
       }
 
       this.ready = true;
+      this.$forceUpdate();
+
+      if ( this.$slots.default ){
+        for ( let item of this.$slots.default.items ){
+          if (item.ele?.tagName === 'BBN-CONTAINER') {
+            let el = this.getRef('ct-' + item.ele.bbnSchema.props.url);
+            el.parent.replaceChild(item.ele, el);
+          }
+        }
+      }
 
       if (!this.views.length) {
         this.init(url);

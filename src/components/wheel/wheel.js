@@ -24,7 +24,7 @@
         /**
          * @data {HTMLElement} [undefined] barElement
          */
-        barElement: undefined,
+        barElement: null,
         /**
          * @data {Boolean} [false] isScrolling
          */
@@ -186,7 +186,7 @@
       onScroll(){
         if (this.ready) {
           let barElement = this.getRef('bar')
-          this.barElement = barElement || undefined;
+          this.barElement = barElement || null;
           this.isScrolling = true;
         }
       },
