@@ -76,7 +76,7 @@
                         :title="getTabTitle(tab)"
                         v-html="tab.title.length > maxTitleLength ? cutTitle(tab.title) : tab.title"/>
                 </bbn-context>
-                <div class="bbn-tabs-selected"
+                <div class="bbn-tabs-selected bbn-primary"
                      :ref="'selector-' + tabIndex"
                      v-if="tabIndex === value"
                      :style="{backgroundColor: selectedBarColor}"/>

@@ -3786,7 +3786,9 @@ return {
         for ( let item of this.$slots.default.items ){
           if (item.ele?.tagName === 'BBN-CONTAINER') {
             let el = this.getRef('ct-' + item.ele.bbnSchema.props.url);
-            el.parent.replaceChild(item.ele, el);
+            if (el) {
+              el.parentNode.replaceChild(item.ele, el);
+            }
           }
         }
       }

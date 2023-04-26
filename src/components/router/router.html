@@ -158,7 +158,7 @@
               <bbn-portal :disabled="!routed || !getPane(a)"
                           bbn-forget="!splittable"
                           :selector="getPortalSelector(a)">
-                <div v-if="isVisual ? !a.view.real : !a.real"
+                <div v-if="isVisual ? a.view.real : a.real"
                      class="bbn-router-container-fake"
                      :ref="'ct-' + (isVisual ? !a.view.url : !a.url)"/>
                 <bbn-container v-else-if="!component && (!a.pane || routed)"

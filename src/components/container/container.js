@@ -1340,14 +1340,13 @@ return {
           return false;
         };
       }
-
     },
     beforeMount() {
       // The router is needed
       this.updateScreenshot()
       this._screenshotInterval = false;
       this.router = this.closest('bbn-router');
-      const cp = this.getRef('component');
+      //const cp = this.getRef('component');
     },
     /**
      * @event mounted
@@ -1368,6 +1367,7 @@ return {
         this.init();
         this.router.register(this);
       }
+      this.$el.title = '';
       //
       // The container is registered
     },
