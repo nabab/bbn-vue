@@ -1749,10 +1749,10 @@ return {
           }
           else if ( replace || (url !== bbn.env.path) ){
             if ( !replace ){
-              //bbn.fn.log("NO REPLAACE", this.getFullBaseURL() + url, bbn.env.path);
+              bbn.fn.log("NO REPLAACE", this.getFullBaseURL() + url, bbn.env.path);
             }
             if ( !replace && ((this.getFullBaseURL() + url).indexOf(bbn.env.path) === 0) ){
-              //bbn.fn.log("REPLACING");
+              bbn.fn.log("REPLACING");
               replace = true;
             }
             bbn.fn.setNavigationVars(this.getFullBaseURL() + url, this.currentTitle, {}, replace);
@@ -3656,7 +3656,7 @@ return {
             if (node.props.url === '') {
               this.hasEmptyURL = true;
             }
-            const obj = bbn.fn.extend(true, {}, node.props);
+            const obj = bbn.fn.createObject(bbn.fn.extend(true, {}, node.props));
             bbn.fn.iterate(this.getDefaultView(), (a, n) => {
               if ( obj[n] === undefined ){
                 obj[n] = a;
@@ -3782,20 +3782,24 @@ return {
       this.ready = true;
       this.$forceUpdate();
 
-      if ( this.$slots.default ){
-        for ( let item of this.$slots.default.items ){
-          if (item.ele?.tagName === 'BBN-CONTAINER') {
-            let el = this.getRef('ct-' + item.ele.bbnSchema.props.url);
-            if (el) {
-              el.parentNode.replaceChild(item.ele, el);
+      this.$nextTick(() => {
+        if ( this.$slots.default ){
+          for ( let item of this.$slots.default.items ){
+            if (item.ele.bbnSchema.tag === 'bbn-container') {
+              let el = this.$refsElements['ct-' + item.ele.bbnSchema.props.url];
+              if (el) {
+                bbn.fn.log("REPLACIIIIII");
+                el.parentNode.replaceChild(item.ele, el);
+              }
+              bbn.fn.log("NBOOOOOO REPLACIIIIII");
             }
           }
         }
-      }
 
-      if (!this.views.length) {
-        this.init(url);
-      }
+        if (!this.views.length) {
+          this.init(url);
+        }
+      });
 
     },
     /**

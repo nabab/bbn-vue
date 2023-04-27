@@ -1579,6 +1579,7 @@ return {
        */
       isVisible(nv) {
         let emit = true;
+
         if (!this.isPane && this.router?.isVisual) {
           if (nv) {
             this.setScreenshot()
@@ -1598,6 +1599,9 @@ return {
           }
           this.$nextTick(() => {
             this.onResize();
+            if (!this.ready) {
+              this.init();
+            }
           });
         }
       },

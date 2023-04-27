@@ -160,7 +160,7 @@
                           :selector="getPortalSelector(a)">
                 <div v-if="isVisual ? a.view.real : a.real"
                      class="bbn-router-container-fake"
-                     :ref="'ct-' + (isVisual ? !a.view.url : !a.url)"/>
+                     :ref="'ct-' + (isVisual ? a.view.url : a.url)"/>
                 <bbn-container v-else-if="!component && (!a.pane || routed)"
                               :visual="isVisual"
                               v-bind="isVisual ? a.view : a"/>
