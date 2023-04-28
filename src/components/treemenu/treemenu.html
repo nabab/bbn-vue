@@ -4,8 +4,8 @@
     <div class="bbn-block bbn-w-100 bbn-vpadded bbn-c" v-if="menus && menus.length">
       <bbn-dropdown v-model="currentMenu"
                     :source="menus"
-                    :storage="true"
-                    storage-full-name="appui-menu-main-dropdown"
+                    :storage="!!storageName"
+                    :storage-full-name="storageName"
                     style="width: 80%"
                     ref="dropdown"
       ></bbn-dropdown>

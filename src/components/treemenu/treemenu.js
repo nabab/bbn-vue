@@ -78,6 +78,13 @@
        */
       current: {
         type: String
+      },
+      /**
+       * The name used for the storage
+       * @prop {String} storageName
+       */
+      storageName: {
+        type: String
       }
     },
     data(){
