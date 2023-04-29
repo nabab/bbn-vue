@@ -2336,20 +2336,24 @@ return {
               }
 
               this.$nextTick(() => {
-                let o = bbn.fn.extend(view || {}, d, {loading: false, load: true, real: view?.real || false, loaded: true});
+                let o = bbn.fn.extend(view || bbn.fn.createObject(), d, {loading: false, load: true, real: view?.real || false, loaded: true});
                 let searchIndex = this.search(o.url);
                 bbn.fn.log("Looking for " + o.url);
                 if (searchIndex !== false) {
-                  bbn.fn.warning("FOUND AND REMOVED " + searchIndex);
-                  this.remove(idx, true);
-                  this.urls[this.views[searchIndex].url].isLoaded = true;
-                  this.urls[this.views[searchIndex].url].ready = false;
+                  //this.remove(searchIndex);
+                  //bbn.fn.warning("FOUND AND REMOVED " + searchIndex);
+                  //this.urls[this.views[searchIndex].url].isLoaded = true;
+                  //this.urls[this.views[searchIndex].url].dirty = false;
+                  //this.urls[this.views[searchIndex].url].ready = false;
+                  //this.urls[this.views[searchIndex].url].init();
+
                 }
                 else {
                   bbn.fn.warning("ADDEDD " + idx);
                   bbn.fn.log("ADDING AFTER LOAD");
                   this.add(o, idx);
                 }
+
                 if (o.title && !o.pane) {
                   this.currentTitle = o.title;
                 }
@@ -3832,7 +3836,9 @@ return {
           bbn.fn.map(bbn.fn.filter(this.views, {selected: true}), a => {
             if (a.idx !== idx) {
               a.selected = false;
-              this.urls[a.url].$tick();
+              if (this.urls[a.url]){
+                this.urls[a.url].$tick();
+              }
             }
           });
           if (!this.views[idx].selected && !this.views[idx].pane) {
