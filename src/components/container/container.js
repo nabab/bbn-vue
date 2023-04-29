@@ -1389,7 +1389,13 @@ return {
     },
 
     watch: {
-      currentView(v) {
+      currentView: {
+        deep: true,
+        handler(v) {
+          bbn.fn.log("DEEP HANDLER ON VIEW");
+          this.$tick();
+        }
+        /*
         bbn.fn.iterate(v, (a, n) => {
           let name = 'c' + bbn.fn.correctCase(n);
           if (Object.hasOwn(this, name) && !bbn.fn.isSame(this[name], a)) {
@@ -1397,7 +1403,7 @@ return {
             bbn.fn.log("***************** CHANGING " + name + " IN CURRENT VIEW FOR " + this.url + " *****************")
           }
         });
-
+        */
       },
       /**
        * The source of the component.
@@ -1578,6 +1584,7 @@ return {
        * @fires selfEmit
        */
       isVisible(nv) {
+        bbn.fn.log("Changing isVisible for " + this.currentURL);
         let emit = true;
 
         if (!this.isPane && this.router?.isVisual) {
@@ -1597,12 +1604,16 @@ return {
           if (!this.isLoaded && !this.isLoading) {
             this.router.load(this.currentURL, true)
           }
-          this.$nextTick(() => {
-            this.onResize();
-            if (!this.ready) {
+
+          if (!this.ready) {
+            this.$nextTick(() => {
+              this.onResize();
               this.init();
-            }
-          });
+            }); 
+          }
+          else {
+            this.$updateComponent();
+          }
         }
       },
       /**

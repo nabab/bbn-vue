@@ -1528,6 +1528,7 @@ return {
               if (st) {
                 if (this.urls[st]) {
                   this.urls[st].setCurrent(url);
+                  this.urls[st].$tick();
                 }
 
                 this.realRoute(url, st, force, bits[1]);
@@ -3831,6 +3832,7 @@ return {
           bbn.fn.map(bbn.fn.filter(this.views, {selected: true}), a => {
             if (a.idx !== idx) {
               a.selected = false;
+              this.urls[a.url].$tick();
             }
           });
           if (!this.views[idx].selected && !this.views[idx].pane) {
