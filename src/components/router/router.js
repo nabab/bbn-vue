@@ -2188,6 +2188,8 @@ return {
             }
 
             view = this.views[idx];
+            //bbn.fn.log(finalURL, idx, JSON.stringify(view, null, 2), force, index);
+            //alert("STOP");
             if (force) {
               let kept = {
                 loading: true,
@@ -2202,6 +2204,7 @@ return {
                 static: view.static,
                 pinned: view.pinned,
                 index: idx,
+                real: view.real || false,
                 last: bbn.fn.timestamp()
               };
               if (view.icon) {
@@ -2250,6 +2253,7 @@ return {
               hidden: false,
               last: bbn.fn.timestamp()
             }, idx);
+            view = this.views[this.search(url)];
           }
           else if (!this.views[idx].loading) {
             this.views[idx].loading = true;
@@ -2341,11 +2345,11 @@ return {
                 bbn.fn.log("Looking for " + o.url);
                 if (searchIndex !== false) {
                   //this.remove(searchIndex);
-                  //bbn.fn.warning("FOUND AND REMOVED " + searchIndex);
-                  //this.urls[this.views[searchIndex].url].isLoaded = true;
-                  //this.urls[this.views[searchIndex].url].dirty = false;
-                  //this.urls[this.views[searchIndex].url].ready = false;
-                  //this.urls[this.views[searchIndex].url].init();
+                  bbn.fn.warning("FOUND AND NOT REMOVED " + searchIndex);
+                  this.urls[this.views[searchIndex].url].isLoaded = true;
+                  this.urls[this.views[searchIndex].url].dirty = false;
+                  this.urls[this.views[searchIndex].url].ready = false;
+                  this.urls[this.views[searchIndex].url].init();
 
                 }
                 else {
@@ -2403,7 +2407,7 @@ return {
           // Otherwise the changes we just did on the props wont be taken into account at container level
           this.urls[url].init();
           bbn.fn.log("callRouter", this.urls[url], this.urls[url].currentView);
-          this.callRouter(this.urls[url].currentView.current, url);
+          this.callRouter(this.urls[url].currentURL || url, url);
           this.$emit('update', this.views);
         }
         else {

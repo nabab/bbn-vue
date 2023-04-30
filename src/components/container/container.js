@@ -726,14 +726,14 @@ return {
        * @data {Boolean} [false] isVisible
        */
       isPane() {
-        return !!this.currentView.pane;
+        return !!this.currentView?.pane;
       },
       currentView() {
         if (this.router) {
           return bbn.fn.getRow(this.router.views, {idx: this.currentIndex})
         }
 
-        return {};
+        return undefined;
       },
       /**
        * True if the container is shown.
@@ -1087,7 +1087,7 @@ return {
        * @method init
        */
       init() {
-        bbn.fn.log("INIT")
+        bbn.fn.log("INIT " + this.currentURL)
         if (this.isVisible && (this.real || (this.isLoaded && !this.ready))) {
           let res;
 

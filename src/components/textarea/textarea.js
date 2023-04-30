@@ -26,14 +26,14 @@ return {
        * @prop {Number} rows
        */
 			rows: {
-				type: Number
+				validator: bbn.fn.isNumber
       },
       /**
        * The number of columns of the textarea.
        * @prop {Number} cols
        */
 			cols: {
-				type: Number
+				validator: bbn.fn.isNumber
       },
       /**
        * The max length of the text inside the textarea.
@@ -41,9 +41,42 @@ return {
        */
 			maxlength: {
 				type: Number
+      },
+      /**
+       * Sets the textarea resizable
+       * @prop {Boolean} [true] resizable
+       */
+      resizable: {
+        type: Boolean,
+        default: true
       }
     },
+    computed: {
+      currentRows() {
+        if (this.rows) {
+          return this.rows;
+        }
+
+        if (this.autosize) {
+          return 1;
+        }
+
+        return undefined;
+      },
+    },
     methods: {
+      onInput(e) {
+        if (this.maxlength && (e.target.value.length > this.maxlength)) {
+          this.emitInput(this.value);
+          return;
+        }
+        if (this.autosize) {
+          e.target.style.height = 'auto';
+          e.target.style.height = e.target.scrollHeight+'px';
+        }
+
+        this.emitInput(e.target.value)
+      },
       /**
        * @method textareaKeydown
        * @param {Event} ev
@@ -70,7 +103,11 @@ return {
      * Sets the prop ready to true.
      * @event mounted
      */
-    mounted(){
+    mounted() {
       this.ready = true;
+      const el = this.getRef('element');
+      el.style.height = 'auto';
+      el.style.height = el.scrollHeight+'px';
+
     }
   };

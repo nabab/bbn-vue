@@ -3,6 +3,11 @@
   <div :class="containerClass"
        ref="scrollContainer"
        @scroll="onScroll"
+       @touchend="onTouchend"
+       @touchstart="onTouchstart"
+       @touchmove="onTouchmove"
+       @focus="isFocused = true"
+       @blur="isFocused = false"
        :tabindex="scrollable ? '0' : '-1'">
     <div :class="{
           'bbn-scroll-content': true,

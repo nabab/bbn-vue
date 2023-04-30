@@ -84,7 +84,7 @@ return {
        * @todo not used
        */
       scrollAlso: {
-        type: [ Array, Function],
+        type: [ HTMLElement, Array, Function],
         default(){
           return [];
         }
@@ -538,61 +538,38 @@ return {
        * @fires $refs.xScroller.scrollTo
        * @fires $refs.yScroller.scrollTo
        */
-      scrollTo(x, y, anim){
-        return new Promise(resolve => {
-          if (!this.hasScroll || !this.ready) {
-            return;
-          }
+      async scrollTo(x, y, anim){
+        if (!this.hasScroll || !this.ready) {
+          return;
+        }
 
-          if (
-            this.hasScrollX &&
-            (x !== undefined) &&
-            (x !== null) &&
-            this.$refs.xScroller
-          ) {
-            this.$refs.xScroller.scrollTo(x, anim).then(() => {
-              if (
-                this.hasScrollY &&
-                (y !== undefined) &&
-                (y !== null) &&
-                this.$refs.yScroller
-              ) {
-                this.$refs.yScroller.scrollTo(y, anim).then(() => {
-                  try {
-                    resolve();
-                  }
-                  catch(e) {
-    
-                  }
-                });
-              }
-              else {
-                try {
-                  resolve();
-                }
-                catch(e) {
-                  
-                }
-              }
-            });
+        if (
+          this.hasScrollX &&
+          (x !== false) &&
+          (x !== undefined) &&
+          (x !== null)
+        ) {
+          if (this.$refs.xScroller?.isConnected) {
+            await this.$refs.xScroller.scrollTo(x, anim);
           }
-
-          else if (
-            this.hasScrollY &&
-            (y !== undefined) &&
-            (y !== null) &&
-            this.$refs.yScroller
-          ) {
-            this.$refs.yScroller.scrollTo(y, anim).then(() => {
-              try {
-                resolve();
-              }
-              catch(e) {
-
-              }
-            });
+          else {
+            this.scrollX = x;
           }
-        })
+        }
+
+        if (
+          this.hasScrollY &&
+          (y !== false) &&
+          (y !== undefined) &&
+          (y !== null)
+        ) {
+          if (this.$refs.yScroller?.isConnected) {
+            await this.$refs.yScroller.scrollTo(y, anim);
+          }
+          else {
+            this.scrollY = y;
+          }
+        }
       },
       /**
        * @method scrollHorizontal
