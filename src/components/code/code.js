@@ -67,6 +67,14 @@
   };
 
   const modes = {
+    purephp: {
+      mode: {
+        name: 'text/x-php'
+      },
+      extraKeys: {
+        "Ctrl-Space": "autocomplete"
+      }
+    },
     php: {
       mode: {
         name: 'php',

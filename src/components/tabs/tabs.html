@@ -18,7 +18,9 @@
                      style="height: 100%"
                      @ready="onScrollReady">
             <ul ref="tabgroup"
-                class="bbn-alt bbn-tabs-tabs bbn-bordered-bottom bbn-flex-fill">
+                :class="['bbn-alt', 'bbn-tabs-tabs', 'bbn-bordered-bottom', 'bbn-flex-fill', {
+                  'bbn-flex-width': fill
+                }]">
               <li v-for="(tab, tabIndex) in source"
                   @click="!tab.disabled && (tabIndex !== value) ? emitInput(tabIndex) : false"
                   :ref="'tab-' + tabIndex"
@@ -34,6 +36,8 @@
                           'bbn-radius-left': position === 'left',
                           'bbn-radius-right': position === 'right',
                           'bbn-iblock': !isVertical,
+                          'bbn-flex-fill': fill,
+                          'bbn-c': fill,
                           'bbn-tabs-static': !!tab.static,
                           'bbn-background-effect-internal': tabIndex === value,
                           'bbn-tabs-active': tabIndex === value,
@@ -49,23 +53,23 @@
                     :style="{borderColor: tab.fcolor || null}"
                     v-if="tab.loading"/>
                 <bbn-context :context="true"
-                            @keydown.space.enter.prevent.stop="tabIndex !== selected ? emitInput(tabIndex) : false"
-                            @keydown.right.down.prevent.stop="getRef('menu-' + tabIndex) ? getRef('menu-' + tabIndex).$el.focus() : (getRef('closer-' + tabIndex) ? getRef('closer-' + tabIndex).focus() : null)"
-                            :source="getMenuFn"
-                            :source-index="tabIndex"
-                            :autobind="false"
-                            tag="div"
-                            :disabled="tabIndex !== value"
-                            min-width="10rem"
-                            :class="['bbn-tabs-tab', 'bbn-iblock', {
+                             @keydown.space.enter.prevent.stop="tabIndex !== selected ? emitInput(tabIndex) : false"
+                             @keydown.right.down.prevent.stop="getRef('menu-' + tabIndex) ? getRef('menu-' + tabIndex).$el.focus() : (getRef('closer-' + tabIndex) ? getRef('closer-' + tabIndex).focus() : null)"
+                             :source="getMenuFn"
+                             :source-index="tabIndex"
+                             :autobind="false"
+                             tag="div"
+                             :disabled="tabIndex !== value"
+                             min-width="10rem"
+                             :class="['bbn-tabs-tab', 'bbn-iblock', {
                                     'bbn-tabs-dirty': tab.dirty,
                                     'bbn-tabs-icononly': tab.notext
                                     }]"
-                            :ref="'title-' + tabIndex"
-                            :style="{
+                             :ref="'title-' + tabIndex"
+                             :style="{
                                     color: tab.fcolor ? tab.fcolor : null
-                                    }"
-                            tabindex="0">
+                                     }"
+                             tabindex="0">
                   <span v-if="tab.icon"
                         :title="tab.title"
                         :class="'bbn-tabs-main-icon bbn-iblock' + (tab.notext ? ' bbn-lg' : ' bbn-m')">

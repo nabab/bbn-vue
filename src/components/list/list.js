@@ -499,9 +499,7 @@
           }
           else{
             let v = item.data[this.sourceValue];
-            if (!this.selected.includes(v)) {
-              this.$emit("select", item.data, idx, item.index, ev);
-            }
+            this.$emit(this.isSelected(idx) ? "unselect" : "select", item.data, idx, item.index, ev);
             if (!ev.defaultPrevented) {
               if ( (this.mode === 'selection') && !item.selected ){
                 let prev = bbn.fn.getRow(this.filteredData, "selected", true);

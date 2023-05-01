@@ -16,83 +16,114 @@
 
   const toolbar = [
     {
-      "name": "bold",
-      "className": "nf nf-fa-bold",
-      "title": bbn._("Bold"),
-      "default": true
+      name: "bold",
+      className: "nf nf-fa-bold",
+      title: bbn._("Bold"),
+      action: EasyMDE.toggleBold
     },
     {
-      "name": "italic",
-      "className": "nf nf-fa-italic",
-      "title": bbn._("Italic"),
-      "default": true
+      name: "italic",
+      className: "nf nf-fa-italic",
+      title: bbn._("Italic"),
+      action: EasyMDE.toggleItalic
     },
     {
-      "name": "heading",
-      "className": "nf nf-fa-header",
-      "title": bbn._("Heading"),
-      "default": true
+      name: "heading",
+      className: "nf nf-fa-header",
+      title: bbn._("Heading"),
+      children: [
+        {
+          name: "heading-1",
+          className: "nf nf-md-format_header_1",
+          title: bbn._("Heading") + " 1",
+          action: EasyMDE.toggleHeading1
+        }, {
+          name: "heading-2",
+          className: "nf nf-md-format_header_2",
+          title: bbn._("Heading") + " 2",
+          action: EasyMDE.toggleHeading2
+        }, {
+          name: "heading-3",
+          className: "nf nf-md-format_header_3",
+          title: bbn._("Heading") + " 3",
+          action: EasyMDE.toggleHeading3
+        }, {
+          name: "heading-4",
+          className: "nf nf-md-format_header_4",
+          title: bbn._("Heading") + " 4",
+          action: EasyMDE.toggleHeading4
+        }, {
+          name: "heading-5",
+          className: "nf nf-md-format_header_5",
+          title: bbn._("Heading") + " 5",
+          action: EasyMDE.toggleHeading5
+        }, {
+          name: "heading-6",
+          className: "nf nf-md-format_header_6",
+          title: bbn._("Heading") + " 6",
+          action: EasyMDE.toggleHeading6
+        }
+      ]
     },
     "|",
     {
-      "name": "quote",
-      "className": "nf nf-fa-quote_left",
-      "title": bbn._("Quote"),
-      "default": true
+      name: "quote",
+      className: "nf nf-fa-quote_left",
+      title: bbn._("Quote"),
+      action: EasyMDE.toggleBlockquote
     },
     {
-      "name": "unordered-list",
-      "className": "nf nf-fa-list_ul",
-      "title": bbn._("Generic List"),
-      "default": true
+      name: "unordered-list",
+      className: "nf nf-fa-list_ul",
+      title: bbn._("Generic List"),
+      action: EasyMDE.toggleUnorderedList
     },
     {
-      "name": "ordered-list",
-      "className": "nf nf-fa-list_ol",
-      "title": bbn._("Numbered List"),
-      "default": true
-    },
-    "|",
-    {
-      "name": "link",
-      "className": "nf nf-fa-link",
-      "title": bbn._("Create Link"),
-      "default": true
-    },
-    {
-      "name": "image",
-      "className": "nf nf-fa-image",
-      "title": bbn._("Insert Image"),
-      "default": true
+      name: "ordered-list",
+      className: "nf nf-fa-list_ol",
+      title: bbn._("Numbered List"),
+      action: EasyMDE.toggleOrderedList
     },
     "|",
     {
-      "name": "preview",
-      "className": "nf nf-fa-eye no-disable",
-      "title": bbn._("Toggle Preview"),
-      "default": true
+      name: "link",
+      className: "nf nf-fa-link",
+      title: bbn._("Create Link"),
+      action: EasyMDE.drawLink
     },
     {
-      "name": "side-by-side",
-      "className": "nf nf-fa-columns no-disable no-mobile",
-      "title": bbn._("Toggle Side by Side"),
-      "default": true
+      name: "image",
+      className: "nf nf-fa-image",
+      title: bbn._("Insert Image"),
+      action: EasyMDE.drawImage
     },
-    {
-      "name": "fullscreen",
-      "className": "nf nf-fa-arrows_alt no-disable no-mobile",
-      "title": bbn._("Toggle Fullscreen"),
-      "default": true
-    }/*,
     "|",
     {
-      "name": "guide",
-      "action": "https://simplemde.com/markdown-guide",
-      "className": "nf nf-fa-question-circle",
-      "title": bbn._("Markdown Guide"),
-      "default": true
+      name: "preview",
+      className: "nf nf-fa-eye no-disable",
+      title: bbn._("Toggle Preview"),
+      action: EasyMDE.togglePreview
     },
-    "|" */
+    {
+      name: "side-by-side",
+      className: "nf nf-fa-columns no-disable no-mobile",
+      title: bbn._("Toggle Side by Side"),
+      action: EasyMDE.toggleSideBySide,
+      default: true
+    },
+    {
+      name: "fullscreen",
+      className: "nf nf-fa-arrows_alt no-disable no-mobile",
+      title: bbn._("Toggle Fullscreen"),
+      action: EasyMDE.toggleFullScreen
+    },
+    "|",
+    {
+      name: "guide",
+      action: () => bbn.fn.link("https://simplemde.com/markdown-guide"),
+      className: "nf nf-fa-question-circle",
+      title: bbn._("Markdown Guide")
+    },
   ];
 
   Vue.component('bbn-markdown', {
@@ -130,20 +161,23 @@
     data(){
       return {
         widgetName: "EasyMDE",
+        sideBySideFullscreen: false,
         nativeSpellcheck: this.cfg.nativeSpellCheck || false,
         spellChecker: this.cfg.spellChecker || false,
         indentWithTabs: this.cfg.indentWithTabs === undefined ? true : this.cfg.indentWithTabs,
-        initialValue: this.cfg.initialValue || '',
+        initialValue: this.value,
         insertTexts: {
           horizontalRule: ["", "\n\n-----\n\n"],
-          image: ["![](http://", ")"],
-          link: ["[", "](http://)"],
+          image: ["![](https://", ")"],
+          link: ["[", "](https://)"],
           table: ["", "\n\n| Column 1 | Column 2 | Column 3 |\n| -------- | -------- | -------- |\n| Text     | Text      | Text     |\n\n"],
         },
+        autoDownloadFontAwesome: false,
         renderingConfig: {
           singleLineBreaks: true,
           codeSyntaxHighlighting: true,
         },
+        minHeight: "100px",
         status: false,
         tabSize: this.cfg.tabSize || 2,
         toolbarTips: true,
@@ -160,7 +194,7 @@
         if (this.readonly) {
           return false;
         }
-        return this.toolBar || bbnMarkdownCreator.toolbar;
+        return this.toolBar || toolbar;
       }
     },
     methods: {
@@ -202,11 +236,13 @@
         }
       });*/
       this.widget = new EasyMDE(bbn.fn.extend({
-        element: this.$refs.element
-      }, {
+        element: this.$refs.element,
+        value: this.value,
+      }, this.$data, {
         toolbar
       }));
       this.widget.codemirror.on("change", () => {
+        bbn.fn.log
         this.emitInput(this.widget.value());
       });
       if ( this.isDisabled ){
