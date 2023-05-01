@@ -9,17 +9,17 @@
 
 return {
     /**
-     * @mixin bbn.vue.basicComponent
-     * @mixin bbn.vue.localStorageComponent
-     * @mixin bbn.vue.resizerComponent
-     * @mixin bbn.vue.serviceWorkerComponent
+     * @mixin bbn.wc.mixins.basic
+     * @mixin bbn.wc.mixins.localStorage
+     * @mixin bbn.wc.mixins.resizer
+     * @mixin bbn.wc.mixins.serviceWorker
      */
     mixins: 
     [
-      bbn.vue.basicComponent,
-      bbn.vue.localStorageComponent,
-      bbn.vue.resizerComponent,
-      bbn.vue.serviceWorkerComponent
+      bbn.wc.mixins.basic,
+      bbn.wc.mixins.localStorage,
+      bbn.wc.mixins.resizer,
+      bbn.wc.mixins.serviceWorker
     ],
     props: {
       /**
@@ -833,10 +833,10 @@ return {
       chat: {
         name: 'chat',
         /**
-         * @mixin bbn.vue.basicComponent
+         * @mixin bbn.wc.mixins.basic
          * @memberof chat
          */
-        mixins: [bbn.vue.basicComponent],
+        mixins: [bbn.wc.mixins.basic],
         props: {
           /**
            * @prop {Number} idx

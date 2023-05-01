@@ -10,13 +10,13 @@
   return {
     tag: 'button',
     /**
-     * @mixin bbn.vue.basicComponent
-     * @mixin bbn.vue.eventsComponent
+     * @mixin bbn.wc.mixins.basic
+     * @mixin bbn.wc.mixins.events
      */
     mixins: 
     [
-      bbn.vue.basicComponent,
-      bbn.vue.eventsComponent
+      bbn.wc.mixins.basic,
+      bbn.wc.mixins.events
     ],
     props: {
       /**

@@ -12,14 +12,14 @@
 return {
     name: 'bbn-window',
     /**
-     * @mixin bbn.vue.basicComponent
-     * @mixin bbn.vue.resizerComponent
-     * @mixin bbn.vue.dimensionsComponent
+     * @mixin bbn.wc.mixins.basic
+     * @mixin bbn.wc.mixins.resizer
+     * @mixin bbn.wc.mixins.dimensions
      */
     mixins: [
-      bbn.vue.basicComponent,
-      bbn.vue.resizerComponent,
-      bbn.vue.dimensionsComponent
+      bbn.wc.mixins.basic,
+      bbn.wc.mixins.resizer,
+      bbn.wc.mixins.dimensions
     ],
     props: {
       /**

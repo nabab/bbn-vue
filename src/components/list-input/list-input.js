@@ -9,17 +9,17 @@
  */
 return {
     /**
-     * @mixin bbn.vue.basicComponent
-     * @mixin bbn.vue.listComponent
-     * @mixin bbn.vue.keynavComponent
-     * @mixin bbn.vue.inputComponent
+     * @mixin bbn.wc.mixins.basic
+     * @mixin bbn.wc.mixins.list
+     * @mixin bbn.wc.mixins.keynav
+     * @mixin bbn.wc.mixins.input
      */
     mixins: 
     [
-      bbn.vue.basicComponent, 
-      bbn.vue.listComponent, 
-      bbn.vue.keynavComponent, 
-      bbn.vue.inputComponent
+      bbn.wc.mixins.basic, 
+      bbn.wc.mixins.list, 
+      bbn.wc.mixins.keynav, 
+      bbn.wc.mixins.input
     ],
     static() {
       let isClicked = false;

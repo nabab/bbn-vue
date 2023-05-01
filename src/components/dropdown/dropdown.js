@@ -13,27 +13,27 @@
 
 return {
     /**
-     * @mixin bbn.vue.basicComponent
-     * @mixin bbn.vue.eventsComponent
-     * @mixin bbn.vue.inputComponent
-     * @mixin bbn.vue.resizerComponent
-     * @mixin bbn.vue.listComponent
-     * @mixin bbn.vue.keynavComponent
-     * @mixin bbn.vue.urlComponent
-     * @mixin bbn.vue.dropdownComponent
-     * @mixin bbn.vue.localStorageComponent
+     * @mixin bbn.wc.mixins.basic
+     * @mixin bbn.wc.mixins.events
+     * @mixin bbn.wc.mixins.input
+     * @mixin bbn.wc.mixins.resizer
+     * @mixin bbn.wc.mixins.list
+     * @mixin bbn.wc.mixins.keynav
+     * @mixin bbn.wc.mixins.url
+     * @mixin bbn.wc.mixins.dropdown
+     * @mixin bbn.wc.mixins.localStorage
       */
     mixins: 
     [
-      bbn.vue.basicComponent,
-      bbn.vue.eventsComponent,
-      bbn.vue.inputComponent,
-      bbn.vue.resizerComponent,
-      bbn.vue.listComponent,
-      bbn.vue.keynavComponent,
-      bbn.vue.urlComponent,
-      bbn.vue.dropdownComponent,
-      bbn.vue.localStorageComponent
+      bbn.wc.mixins.basic,
+      bbn.wc.mixins.events,
+      bbn.wc.mixins.input,
+      bbn.wc.mixins.resizer,
+      bbn.wc.mixins.list,
+      bbn.wc.mixins.keynav,
+      bbn.wc.mixins.url,
+      bbn.wc.mixins.dropdown,
+      bbn.wc.mixins.localStorage
     ],
     props: {
       /**

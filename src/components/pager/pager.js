@@ -6,9 +6,9 @@
  */
 return {
     /**
-     * @mixin bbn.vue.basicComponent
+     * @mixin bbn.wc.mixins.basic
      */
-    mixins: [bbn.vue.basicComponent],
+    mixins: [bbn.wc.mixins.basic],
     props: {
       /**
        * The element to bond with

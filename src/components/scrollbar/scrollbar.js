@@ -11,13 +11,13 @@
  */
 return {
     /**
-     * @mixin bbn.vue.basicComponent
-     * @mixin bbn.vue.keepCoolComponent 
+     * @mixin bbn.wc.mixins.basic
+     * @mixin bbn.wc.mixins.keepCool 
      */
     mixins: 
     [
-      bbn.vue.basicComponent, 
-      bbn.vue.keepCoolComponent
+      bbn.wc.mixins.basic, 
+      bbn.wc.mixins.keepCool
     ],
     props: {
       /**

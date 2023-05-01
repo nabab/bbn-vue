@@ -13,15 +13,15 @@
 
 return {
     /**
-     * @mixin bbn.vue.basicComponent
-     * @mixin bbn.vue.resizerComponent
-     * @mixin bbn.vue.localStorageComponent
+     * @mixin bbn.wc.mixins.basic
+     * @mixin bbn.wc.mixins.resizer
+     * @mixin bbn.wc.mixins.localStorage
      */
     mixins: 
     [
-      bbn.vue.basicComponent, 
-      bbn.vue.resizerComponent, 
-      bbn.vue.localStorageComponent
+      bbn.wc.mixins.basic, 
+      bbn.wc.mixins.resizer, 
+      bbn.wc.mixins.localStorage
     ],
     static() {
       return {

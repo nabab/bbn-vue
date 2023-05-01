@@ -14,25 +14,25 @@
   return {
     name: 'bbn-floater',
     /**
-     * @mixin bbn.vue.basicComponent
-     * @mixin bbn.vue.listComponent
-     * @mixin bbn.vue.componentInsideComponent
-     * @mixin bbn.vue.resizerComponent
-     * @mixin bbn.vue.keepCoolComponent
-     * @mixin bbn.vue.toggleComponent
-     * @mixin bbn.vue.dimensionsComponent
-     * @mixin bbn.vue.positionComponent
+     * @mixin bbn.wc.mixins.basic
+     * @mixin bbn.wc.mixins.list
+     * @mixin bbn.wc.mixins.componentInside
+     * @mixin bbn.wc.mixins.resizer
+     * @mixin bbn.wc.mixins.keepCool
+     * @mixin bbn.wc.mixins.toggle
+     * @mixin bbn.wc.mixins.dimensions
+     * @mixin bbn.wc.mixins.position
      */
     mixins:
     [
-      bbn.vue.basicComponent,
-      bbn.vue.listComponent,
-      bbn.vue.componentInsideComponent,
-      bbn.vue.dimensionsComponent,
-      bbn.vue.resizerComponent,
-      bbn.vue.keepCoolComponent,
-      bbn.vue.toggleComponent,
-      bbn.vue.positionComponent
+      bbn.wc.mixins.basic,
+      bbn.wc.mixins.list,
+      bbn.wc.mixins.componentInside,
+      bbn.wc.mixins.dimensions,
+      bbn.wc.mixins.resizer,
+      bbn.wc.mixins.keepCool,
+      bbn.wc.mixins.toggle,
+      bbn.wc.mixins.position
     ],
     props: {
       /**
@@ -1399,7 +1399,7 @@
         if (this.component || this.$slots.default || this.content) {
           return this.$nextTick()
         }
-        return bbn.vue.listComponent.methods.updateData.apply(this);
+        return bbn.wc.mixins.list.methods.updateData.apply(this);
       }
     },
     /**

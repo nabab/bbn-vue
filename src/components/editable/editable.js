@@ -7,15 +7,15 @@
  */
 return {
     /**
-     * @mixin bbn.vue.basicComponent
-     * @mixin bbn.vue.inputComponent
-     * @mixin bbn.vue.componentInsideComponent
+     * @mixin bbn.wc.mixins.basic
+     * @mixin bbn.wc.mixins.input
+     * @mixin bbn.wc.mixins.componentInside
      */
     mixins:
     [
-      bbn.vue.basicComponent,
-      bbn.vue.inputComponent,
-      bbn.vue.componentInsideComponent
+      bbn.wc.mixins.basic,
+      bbn.wc.mixins.input,
+      bbn.wc.mixins.componentInside
     ],
     static() {
       const titleTemplates = {

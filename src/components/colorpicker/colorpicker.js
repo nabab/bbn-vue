@@ -15,17 +15,17 @@
 
 return {
     /**
-     * @mixin bbn.vue.basicComponent
-     * @mixin bbn.vue.inputComponent
-     * @mixin bbn.vue.eventsComponent
-     * @mixin bbn.vue.resizerComponent
+     * @mixin bbn.wc.mixins.basic
+     * @mixin bbn.wc.mixins.input
+     * @mixin bbn.wc.mixins.events
+     * @mixin bbn.wc.mixins.resizer
      */
     mixins: 
     [
-      bbn.vue.basicComponent, 
-      bbn.vue.inputComponent, 
-      bbn.vue.eventsComponent, 
-      bbn.vue.resizerComponent
+      bbn.wc.mixins.basic, 
+      bbn.wc.mixins.input, 
+      bbn.wc.mixins.events, 
+      bbn.wc.mixins.resizer
     ],
     props: {
       /**

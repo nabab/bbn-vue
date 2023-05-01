@@ -8,13 +8,13 @@
 
 return {
     /**
-     * @mixin bbn.vue.basicComponent
-     * @mixin bbn.vue.listComponent
+     * @mixin bbn.wc.mixins.basic
+     * @mixin bbn.wc.mixins.list
      */
     mixins: 
     [
-      bbn.vue.basicComponent, 
-      bbn.vue.listComponent
+      bbn.wc.mixins.basic, 
+      bbn.wc.mixins.list
     ],
     props: {
       /**

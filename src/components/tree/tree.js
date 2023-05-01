@@ -9,15 +9,15 @@
 
 return {
   /**
-   * @mixin bbn.vue.basicComponent
-   * @mixin bbn.vue.localStorageComponent
-   * @mixin bbn.vue.listComponent
+   * @mixin bbn.wc.mixins.basic
+   * @mixin bbn.wc.mixins.localStorage
+   * @mixin bbn.wc.mixins.list
    */
   mixins:
   [
-    bbn.vue.basicComponent,
-    bbn.vue.localStorageComponent,
-    bbn.vue.listComponent
+    bbn.wc.mixins.basic,
+    bbn.wc.mixins.localStorage,
+    bbn.wc.mixins.list
   ],
   static() {
     const NODE_PROPERTIES = [

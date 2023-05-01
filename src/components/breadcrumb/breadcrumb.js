@@ -10,25 +10,25 @@ return {
     name: 'bbn-breadcrumb',
     mixins: [
       /**
-       * @mixin bbn.vue.basicComponent
+       * @mixin bbn.wc.mixins.basic
        */
-      bbn.vue.basicComponent,
+      bbn.wc.mixins.basic,
       /**
-       * @mixin bbn.vue.resizerComponent
+       * @mixin bbn.wc.mixins.resizer
        */
-      bbn.vue.resizerComponent,
+      bbn.wc.mixins.resizer,
       /**
-       * @mixin bbn.vue.localStorageComponent
+       * @mixin bbn.wc.mixins.localStorage
        */
-      bbn.vue.localStorageComponent,
+      bbn.wc.mixins.localStorage,
       /**
-       * @mixin bbn.vue.closeComponent
+       * @mixin bbn.wc.mixins.close
        */
-      bbn.vue.closeComponent,
+      bbn.wc.mixins.close,
       /**
-       * @mixin bbn.vue.observerComponent
+       * @mixin bbn.wc.mixins.observer
        */
-      bbn.vue.observerComponent
+      bbn.wc.mixins.observer
     ],
     props: {
       /**

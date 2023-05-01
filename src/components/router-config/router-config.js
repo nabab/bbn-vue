@@ -6,13 +6,13 @@
  */
 return {
     /**
-     * @mixin bbn.vue.basicComponent
-     * @mixin bbn.vue.localStorageComponent
+     * @mixin bbn.wc.mixins.basic
+     * @mixin bbn.wc.mixins.localStorage
      */
     mixins: 
     [
-      bbn.vue.basicComponent,
-      bbn.vue.localStorageComponent,
+      bbn.wc.mixins.basic,
+      bbn.wc.mixins.localStorage,
     ],
     static() {
       const img = `<svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"

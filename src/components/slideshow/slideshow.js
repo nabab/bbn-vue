@@ -10,13 +10,13 @@
 
 return {
     /**
-     * @mixin bbn.vue.basicComponent
-     * @mixin bbn.vue.resizerComponent
+     * @mixin bbn.wc.mixins.basic
+     * @mixin bbn.wc.mixins.resizer
      */
     mixins: 
     [
-      bbn.vue.basicComponent,
-      bbn.vue.resizerComponent
+      bbn.wc.mixins.basic,
+      bbn.wc.mixins.resizer
     ],
     props: {
       /**

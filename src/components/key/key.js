@@ -11,10 +11,10 @@
 
 return {
     /**
-     * @mixin bbn.vue.basicComponent
+     * @mixin bbn.wc.mixins.basic
      */
     mixins: [
-      bbn.vue.basicComponent,
+      bbn.wc.mixins.basic,
     ],
     static() {
       const DIRECTIONS = ['left', 'right', 'up', 'down'];

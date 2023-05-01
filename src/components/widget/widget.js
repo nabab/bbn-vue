@@ -12,17 +12,17 @@
 return {
     name: 'bbn-widget',
     /**
-     * @mixin bbn.vue.basicComponent,
-     * @mixin bbn.vue.localStorageComponent,
-     * @mixin bbn.vue.observerComponent,
-     * @mixin bbn.vue.resizerComponent
+     * @mixin bbn.wc.mixins.basic,
+     * @mixin bbn.wc.mixins.localStorage,
+     * @mixin bbn.wc.mixins.observer,
+     * @mixin bbn.wc.mixins.resizer
      */
     mixins:
     [
-      bbn.vue.basicComponent,
-      bbn.vue.localStorageComponent,
-      bbn.vue.observerComponent,
-      bbn.vue.resizerComponent
+      bbn.wc.mixins.basic,
+      bbn.wc.mixins.localStorage,
+      bbn.wc.mixins.observer,
+      bbn.wc.mixins.resizer
     ],
     static() {
       var limits = [5, 10, 15, 20, 25, 30, 40, 50];

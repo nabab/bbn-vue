@@ -10,15 +10,15 @@
 return {
     name: 'bbn-editable-content',
     /**
-     * @mixin bbn.vue.basicComponent
-     * @mixin bbn.vue.inputComponent
-     * @mixin bbn.vue.fieldComponent
+     * @mixin bbn.wc.mixins.basic
+     * @mixin bbn.wc.mixins.input
+     * @mixin bbn.wc.mixins.field
      */
     mixins: 
     [
-      bbn.vue.basicComponent, 
-      bbn.vue.inputComponent, 
-      bbn.vue.fieldComponent
+      bbn.wc.mixins.basic, 
+      bbn.wc.mixins.input, 
+      bbn.wc.mixins.field
     ],
     props: {
       /**

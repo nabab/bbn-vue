@@ -12,10 +12,10 @@
 
 return {
     /**
-     * @mixin bbn.vue.basicComponent
-     * @mixin bbn.vue.localStorageComponent
+     * @mixin bbn.wc.mixins.basic
+     * @mixin bbn.wc.mixins.localStorage
      */
-    mixins: [bbn.vue.basicComponent, bbn.vue.localStorageComponent],
+    mixins: [bbn.wc.mixins.basic, bbn.wc.mixins.localStorage],
     props: {
       /**
        * @prop {String} ['right'] orientation

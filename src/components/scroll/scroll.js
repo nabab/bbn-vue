@@ -13,17 +13,17 @@
 return {
     name: 'bbn-scroll',
     /**
-     * @mixin bbn.vue.basicComponent
-     * @mixin bbn.vue.resizerComponent
-     * @mixin bbn.vue.keepCoolComponent
-     * @mixin bbn.vue.eventsComponent
+     * @mixin bbn.wc.mixins.basic
+     * @mixin bbn.wc.mixins.resizer
+     * @mixin bbn.wc.mixins.keepCool
+     * @mixin bbn.wc.mixins.events
      */
     mixins: 
     [
-      bbn.vue.basicComponent, 
-      bbn.vue.resizerComponent, 
-      bbn.vue.keepCoolComponent, 
-      bbn.vue.eventsComponent
+      bbn.wc.mixins.basic, 
+      bbn.wc.mixins.resizer, 
+      bbn.wc.mixins.keepCool, 
+      bbn.wc.mixins.events
     ],
     props: {
       /**

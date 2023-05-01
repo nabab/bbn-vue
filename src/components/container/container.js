@@ -34,9 +34,9 @@
 return {
     name: 'bbn-container',
     /**
-     * @mixin bbn.vue.basicComponent
-     * @mixin bbn.vue.resizerComponent
-     * @mixin bbn.vue.observerComponent
+     * @mixin bbn.wc.mixins.basic
+     * @mixin bbn.wc.mixins.resizer
+     * @mixin bbn.wc.mixins.observer
      */
     static() {
       return {
@@ -45,9 +45,9 @@ return {
     },
     mixins: 
     [
-      bbn.vue.basicComponent, 
-      bbn.vue.resizerComponent, 
-      bbn.vue.observerComponent
+      bbn.wc.mixins.basic, 
+      bbn.wc.mixins.resizer, 
+      bbn.wc.mixins.observer
     ],
     props: {
       /**
@@ -1078,7 +1078,7 @@ return {
       },
       onResize(){
         if (this.isVisible && this.ready) {
-          bbn.vue.resizerComponent.methods.onResize.apply(this, arguments);
+          bbn.wc.mixins.resizer.methods.onResize.apply(this, arguments);
         }
       },
       /**
@@ -1106,7 +1106,7 @@ return {
                   type: Object
                 }
               };
-              this.componentDefinition = bbn.components.normalizeComponent(res);
+              this.componentDefinition = bbn.wc.normalizeComponent(res);
               bbn.fn.log("YUUUU", res, this.componentDefinition, this.currentContent)
               this.componentDefinition.template = this.currentContent;
               this.isComponent = true;
@@ -1122,7 +1122,7 @@ return {
             // and the object returned as component definition
             // Adding also a few funciton to interact with the tab
             let cont = this;
-            this.$el.bbnCfg = bbn.components.normalizeComponent(bbn.fn.extend(true, res ? res : {}, {
+            this.$el.bbnCfg = bbn.wc.normalizeComponent(bbn.fn.extend(true, res ? res : {}, {
               template: '<div class="' + (this.router.scrollContent ? '' : 'bbn-w-100') + '">' + this.currentView.content + '</div>',
               methods: {
                 getContainer(){

@@ -2,10 +2,10 @@
 
 return {
       /**
-       * @mixin bbn.vue.listComponent
+       * @mixin bbn.wc.mixins.list
        */
       mixins: [
-        bbn.vue.listComponent,bbn.vue.basicComponent,
+        bbn.wc.mixins.list,bbn.wc.mixins.basic,
       ],
       props: {
 		  /**

@@ -8,12 +8,12 @@
 
 return {
     /**
-     * @mixin bbn.vue.basicComponent
-     * @mixin bbn.vue.listComponent
+     * @mixin bbn.wc.mixins.basic
+     * @mixin bbn.wc.mixins.list
      */
     mixins: [
-      bbn.vue.basicComponent,
-      bbn.vue.listComponent
+      bbn.wc.mixins.basic,
+      bbn.wc.mixins.list
     ],
     props: {
       /**
@@ -122,7 +122,7 @@ return {
     components: {
       column: {
         name: 'column',
-        mixins: [bbn.vue.listComponent],
+        mixins: [bbn.wc.mixins.list],
         props: {
           column: {
             type: Object

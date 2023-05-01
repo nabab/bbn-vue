@@ -10,9 +10,9 @@
 return {
     name: 'bbn-flag',
     /**
-     * @mixin bbn.vue.basicComponent
+     * @mixin bbn.wc.mixins.basic
      */
-    mixins: [bbn.vue.basicComponent],
+    mixins: [bbn.wc.mixins.basic],
     props: {
       value: {
         type: String,

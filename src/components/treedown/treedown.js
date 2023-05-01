@@ -13,21 +13,21 @@
 
 return {
     /**
-     * @mixin bbn.vue.basicComponent
-     * @mixin bbn.vue.inputComponent
-     * @mixin bbn.vue.resizerComponent
-     * @mixin bbn.vue.listComponent
-     * @mixin bbn.vue.keynavComponent
-     * @mixin bbn.vue.urlComponent
+     * @mixin bbn.wc.mixins.basic
+     * @mixin bbn.wc.mixins.input
+     * @mixin bbn.wc.mixins.resizer
+     * @mixin bbn.wc.mixins.list
+     * @mixin bbn.wc.mixins.keynav
+     * @mixin bbn.wc.mixins.url
       */
     mixins: 
     [
-      bbn.vue.basicComponent,
-      bbn.vue.eventsComponent,
-      bbn.vue.inputComponent,
-      bbn.vue.listComponent,
-      bbn.vue.keynavComponent,
-      bbn.vue.urlComponent
+      bbn.wc.mixins.basic,
+      bbn.wc.mixins.events,
+      bbn.wc.mixins.input,
+      bbn.wc.mixins.list,
+      bbn.wc.mixins.keynav,
+      bbn.wc.mixins.url
     ],
     props: {
       /**

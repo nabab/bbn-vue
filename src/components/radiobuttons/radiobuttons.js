@@ -7,18 +7,18 @@
  */
 return {
     /**
-     * @mixin bbn.vue.basicComponent
-     * @mixin bbn.vue.inputComponent
-     * @mixin bbn.vue.localStorageComponent
-     * @mixin bbn.vue.eventsComponent
+     * @mixin bbn.wc.mixins.basic
+     * @mixin bbn.wc.mixins.input
+     * @mixin bbn.wc.mixins.localStorage
+     * @mixin bbn.wc.mixins.events
      *
      */
     mixins: 
     [
-      bbn.vue.basicComponent,
-      bbn.vue.inputComponent,
-      bbn.vue.localStorageComponent,
-      bbn.vue.eventsComponent
+      bbn.wc.mixins.basic,
+      bbn.wc.mixins.input,
+      bbn.wc.mixins.localStorage,
+      bbn.wc.mixins.events
     ],
     props: {
       /**

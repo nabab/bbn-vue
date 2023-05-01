@@ -7,15 +7,15 @@
 return {
     name: 'bbn-range',
     /**
-     * @mixin bbn.vue.basicComponent
-     * @mixin bbn.vue.eventsComponent
-     * @mixin bbn.vue.inputComponent
+     * @mixin bbn.wc.mixins.basic
+     * @mixin bbn.wc.mixins.events
+     * @mixin bbn.wc.mixins.input
      */
     mixins:
     [
-      bbn.vue.basicComponent,
-      bbn.vue.eventsComponent,
-      bbn.vue.inputComponent
+      bbn.wc.mixins.basic,
+      bbn.wc.mixins.events,
+      bbn.wc.mixins.input
     ],
     props: {
       /**

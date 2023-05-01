@@ -7,9 +7,9 @@
 
 return {
     /**
-     * @mixin bbn.vue.basicComponent
+     * @mixin bbn.wc.mixins.basic
      */
-    mixins: [bbn.vue.basicComponent],
+    mixins: [bbn.wc.mixins.basic],
     static() {
       let config = {
         selector: "bbn-portal-target-" + bbn.fn.randomString(20, 30)

@@ -12,13 +12,13 @@
 
  return {
     /**
-     * @mixin bbn.vue.inputComponent
-     * @mixin bbn.vue.basicComponent
+     * @mixin bbn.wc.mixins.input
+     * @mixin bbn.wc.mixins.basic
      */
     mixins: 
     [
-      bbn.vue.basicComponent, 
-      bbn.vue.inputComponent
+      bbn.wc.mixins.basic, 
+      bbn.wc.mixins.input
     ],
     props: {
       /**

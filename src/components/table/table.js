@@ -17,27 +17,27 @@
 
 return {
     /**
-     * @mixin bbn.vue.basicComponent
-     * @mixin bbn.vue.resizerComponent
-     * @mixin bbn.vue.editableListComponent
-     * @mixin bbn.vue.listComponent
-     * @mixin bbn.vue.dataEditorComponent
-     * @mixin bbn.vue.localStorageComponent
-     * @mixin bbn.vue.observerComponent
-     * @mixin bbn.vue.keepCoolComponent
-     * @mixin bbn.vue.dataComponent
+     * @mixin bbn.wc.mixins.basic
+     * @mixin bbn.wc.mixins.resizer
+     * @mixin bbn.wc.mixins.editableList
+     * @mixin bbn.wc.mixins.list
+     * @mixin bbn.wc.mixins.dataEditor
+     * @mixin bbn.wc.mixins.localStorage
+     * @mixin bbn.wc.mixins.observer
+     * @mixin bbn.wc.mixins.keepCool
+     * @mixin bbn.wc.mixins.data
      */
     mixins:
     [
-      bbn.vue.basicComponent,
-      bbn.vue.resizerComponent,
-      bbn.vue.editableListComponent,
-      bbn.vue.listComponent,
-      bbn.vue.dataEditorComponent,
-      bbn.vue.localStorageComponent,
-      bbn.vue.observerComponent,
-      bbn.vue.keepCoolComponent,
-      bbn.vue.dataComponent
+      bbn.wc.mixins.basic,
+      bbn.wc.mixins.resizer,
+      bbn.wc.mixins.editableList,
+      bbn.wc.mixins.list,
+      bbn.wc.mixins.dataEditor,
+      bbn.wc.mixins.localStorage,
+      bbn.wc.mixins.observer,
+      bbn.wc.mixins.keepCool,
+      bbn.wc.mixins.data
     ],
     props: {
       /**
@@ -2150,7 +2150,7 @@ return {
         this.editedRow = false;
         this.editedIndex = false;
         this.$forceUpdate();
-        return bbn.vue.listComponent.methods.updateData.apply(this, [withoutOriginal]).then(() => {
+        return bbn.wc.mixins.list.methods.updateData.apply(this, [withoutOriginal]).then(() => {
           if (this.currentData.length && this.selection && this.currentSelected.length && !this.uid) {
             this.currentSelected = [];
           }
@@ -2988,7 +2988,7 @@ return {
        */
       defaultObject() {
         let o = {};
-        bbn.fn.iterate(bbn.vue.fieldComponent.props, (v, n) => {
+        bbn.fn.iterate(bbn.wc.mixins.field.props, (v, n) => {
           if (v.default !== undefined) {
             o[n] = bbn.fn.isFunction(v.default) ? v.default() : v.default;
           }

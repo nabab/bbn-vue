@@ -7,14 +7,14 @@
  */
 return {
     /**
-     * @mixin bbn.vue.basicComponent
-     * @mixin bbn.vue.listComponent
-     * @mixin bbn.vue.componentInsideComponent
+     * @mixin bbn.wc.mixins.basic
+     * @mixin bbn.wc.mixins.list
+     * @mixin bbn.wc.mixins.componentInside
      */
     mixins: [
-      bbn.vue.basicComponent,
-      bbn.vue.listComponent,
-      bbn.vue.componentInsideComponent
+      bbn.wc.mixins.basic,
+      bbn.wc.mixins.list,
+      bbn.wc.mixins.componentInside
     ],
     props: {
       /**

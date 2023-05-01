@@ -16,15 +16,15 @@
   */
 return {
     /**
-     * @mixin bbn.vue.basicComponent
-     * @mixin bbn.vue.fieldComponent
-     * @mixin bbn.vue.dataComponent
+     * @mixin bbn.wc.mixins.basic
+     * @mixin bbn.wc.mixins.field
+     * @mixin bbn.wc.mixins.data
      */
     mixins: 
     [
-      bbn.vue.basicComponent, 
-      bbn.vue.fieldComponent, 
-      bbn.vue.dataComponent
+      bbn.wc.mixins.basic, 
+      bbn.wc.mixins.field, 
+      bbn.wc.mixins.data
     ],
     props: {
       value: {},

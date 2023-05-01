@@ -8,19 +8,19 @@
  */
 return {
     /**
-     * @mixin bbn.vue.basicComponent
-     * @mixin bbn.vue.resizerComponent
-     * @mixin bbn.vue.localStorageComponent
-     * @mixin bbn.vue.observerComponent
-     * @mixin bbn.vue.browserNotificationComponent
+     * @mixin bbn.wc.mixins.basic
+     * @mixin bbn.wc.mixins.resizer
+     * @mixin bbn.wc.mixins.localStorage
+     * @mixin bbn.wc.mixins.observer
+     * @mixin bbn.wc.mixins.browserNotification
      */
     mixins:
     [
-      bbn.vue.basicComponent,
-      bbn.vue.resizerComponent,
-      bbn.vue.localStorageComponent,
-      bbn.vue.observerComponent,
-      bbn.vue.browserNotificationComponent
+      bbn.wc.mixins.basic,
+      bbn.wc.mixins.resizer,
+      bbn.wc.mixins.localStorage,
+      bbn.wc.mixins.observer,
+      bbn.wc.mixins.browserNotification
     ],
     props: {
       root: {
@@ -896,9 +896,9 @@ return {
         this.cool = true;
 
         bbn.fn.each(this.plugins, (path, name) => {
-          bbn.components.addPrefix(
+          bbn.wc.addPrefix(
             name,
-            (tag, resolve, reject) => bbn.components.queueComponent(
+            (tag, resolve, reject) => bbn.wc.queueComponent(
               tag,
               path + '/' + this.componentsPath + bbn.fn.replaceAll('-', '/', tag).substr(name.length + 1), null, resolve, reject
             )
@@ -906,9 +906,9 @@ return {
         });
     
         if (this.prefix) {
-          bbn.components.addPrefix(
+          bbn.wc.addPrefix(
             this.prefix,
-            (tag, resolve, reject, mixins) => bbn.components.queueComponent(
+            (tag, resolve, reject, mixins) => bbn.wc.queueComponent(
               tag,
               this.componentsPath + bbn.fn.replaceAll('-', '/', tag).substr((this.prefix + '-').length),
               mixins,

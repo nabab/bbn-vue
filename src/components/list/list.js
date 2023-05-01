@@ -9,24 +9,24 @@
  */
 return {
     /**
-     * @mixin bbn.vue.basicComponent
-     * @mixin bbn.vue.listComponent
-     * @mixin bbn.vue.keynavComponent
-     * @mixin bbn.vue.positionComponent
-     * @mixin bbn.vue.keepCoolComponent
-     * @mixin bbn.vue.resizerComponent
-     * @mixin bbn.vue.eventsComponent
-     * @mixin bbn.vue.componentInsideComponent
+     * @mixin bbn.wc.mixins.basic
+     * @mixin bbn.wc.mixins.list
+     * @mixin bbn.wc.mixins.keynav
+     * @mixin bbn.wc.mixins.position
+     * @mixin bbn.wc.mixins.keepCool
+     * @mixin bbn.wc.mixins.resizer
+     * @mixin bbn.wc.mixins.events
+     * @mixin bbn.wc.mixins.componentInside
      */
     mixins: [
-      bbn.vue.basicComponent,
-      bbn.vue.listComponent,
-      bbn.vue.keynavComponent,
-      bbn.vue.positionComponent,
-      bbn.vue.keepCoolComponent,
-      bbn.vue.resizerComponent,
-      bbn.vue.eventsComponent,
-      bbn.vue.componentInsideComponent
+      bbn.wc.mixins.basic,
+      bbn.wc.mixins.list,
+      bbn.wc.mixins.keynav,
+      bbn.wc.mixins.position,
+      bbn.wc.mixins.keepCool,
+      bbn.wc.mixins.resizer,
+      bbn.wc.mixins.events,
+      bbn.wc.mixins.componentInside
     ],
     static() {
       let isClicked = false;

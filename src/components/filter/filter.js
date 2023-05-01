@@ -12,13 +12,13 @@
   */
 return {
     /**
-     * @mixin bbn.vue.basicComponent
-     * @mixin bbn.vue.dataEditorComponent
+     * @mixin bbn.wc.mixins.basic
+     * @mixin bbn.wc.mixins.dataEditor
      */
     mixins: 
     [
-      bbn.vue.basicComponent, 
-      bbn.vue.dataEditorComponent
+      bbn.wc.mixins.basic, 
+      bbn.wc.mixins.dataEditor
     ],
     static() {
       const
@@ -415,10 +415,10 @@ return {
       'bbn-filter-form': {
         name: 'bbn-filter-form',
         /**
-         * @mixin bbn.vue.dataEditorComponent
+         * @mixin bbn.wc.mixins.dataEditor
          * @memberof bbn-filter-form
          */
-        mixins: [bbn.vue.basicComponent, bbn.vue.dataEditorComponent],
+        mixins: [bbn.wc.mixins.basic, bbn.wc.mixins.dataEditor],
         props: {
           /**
            * The list of fields available for the filter.

@@ -11,17 +11,17 @@
 
 return {
     /**
-     * @mixin bbn.vue.basicComponent
-     * @mixin bbn.vue.listComponent
-     * @mixin bbn.vue.dimensionsComponent
-     * @mixin bbn.vue.eventsComponent
+     * @mixin bbn.wc.mixins.basic
+     * @mixin bbn.wc.mixins.list
+     * @mixin bbn.wc.mixins.dimensions
+     * @mixin bbn.wc.mixins.events
      */
     mixins: 
     [
-      bbn.vue.basicComponent,
-      bbn.vue.listComponent,
-      bbn.vue.dimensionsComponent,
-      bbn.vue.eventsComponent
+      bbn.wc.mixins.basic,
+      bbn.wc.mixins.list,
+      bbn.wc.mixins.dimensions,
+      bbn.wc.mixins.events
     ],
     props: {
       /**

@@ -7,9 +7,9 @@
  */
 return {
     /**
-     * @mixin bbn.vue.basicComponent
+     * @mixin bbn.wc.mixins.basic
      */
-    mixins: [bbn.vue.basicComponent],
+    mixins: [bbn.wc.mixins.basic],
     props: {
       /**
        * The video's URL or the video's code (YouTube)

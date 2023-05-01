@@ -53,20 +53,20 @@ return {
       };
     },
     /**
-     * @mixin bbn.vue.basicComponent
-     * @mixin bbn.vue.localStorageComponent
-     * @mixin bbn.vue.closeComponent
-     * @mixin bbn.vue.observerComponent
-     * @mixin bbn.vue.resizerComponent
+     * @mixin bbn.wc.mixins.basic
+     * @mixin bbn.wc.mixins.localStorage
+     * @mixin bbn.wc.mixins.close
+     * @mixin bbn.wc.mixins.observer
+     * @mixin bbn.wc.mixins.resizer
      */
     mixins:
     [
-      bbn.vue.basicComponent,
-      bbn.vue.localStorageComponent,
-      bbn.vue.closeComponent,
-      bbn.vue.observerComponent,
-      bbn.vue.resizerComponent,
-      bbn.vue.keepCoolComponent
+      bbn.wc.mixins.basic,
+      bbn.wc.mixins.localStorage,
+      bbn.wc.mixins.close,
+      bbn.wc.mixins.observer,
+      bbn.wc.mixins.resizer,
+      bbn.wc.mixins.keepCool
     ],
     props: {
       /**
@@ -3084,7 +3084,7 @@ return {
       * @fires getIndex
       */
       observerEmit(newVal, obs){
-        if ( bbn.vue.observerComponent.methods.observerEmit.apply(this, [newVal, obs]) ){
+        if ( bbn.wc.mixins.observer.methods.observerEmit.apply(this, [newVal, obs]) ){
           let ele = this.$el.querySelector(".bbn-observer-" + obs.element);
           if ( ele ){
             let idx = this.getIndex(ele);

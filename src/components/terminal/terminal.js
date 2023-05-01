@@ -9,7 +9,7 @@
  * @author BBN Solutions
  */
 return {
-    mixins: [bbn.vue.basicComponent],
+    mixins: [bbn.wc.mixins.basic],
     props: {
     },
     data(){
