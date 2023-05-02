@@ -551,14 +551,17 @@ return {
           comp = false;
         }
         else {
-          comp = bbn.vue.find(this, comp);
+          comp = this.find(comp);
         }
+
         if ( comp && bbn.fn.isFunction(comp[name]) ){
           return comp[name]();
         }
+
         if (bbn.fn.isFunction(name) ){
           return name(this, this.items);
         }
+
         while ( tmp ){
           if (bbn.fn.isFunction(tmp[name]) ){
             return tmp[name]();
@@ -592,7 +595,7 @@ return {
      * @event beforeMount
      */
     beforeMount(){
-      this.dashboard = bbn.vue.closest(this, "bbn-dashboard");
+      this.dashboard = this.closest("bbn-dashboard");
     },
     /**
      * @event mounted

@@ -12,6 +12,7 @@ return {
      * @mixin bbn.wc.mixins.resizer
      * @mixin bbn.wc.mixins.localStorage
      * @mixin bbn.wc.mixins.observer
+     * @mixin bbn.wc.mixins.serviceWorker
      * @mixin bbn.wc.mixins.browserNotification
      */
     mixins:
@@ -20,6 +21,7 @@ return {
       bbn.wc.mixins.resizer,
       bbn.wc.mixins.localStorage,
       bbn.wc.mixins.observer,
+      bbn.wc.mixins.serviceWorker,
       bbn.wc.mixins.browserNotification
     ],
     props: {
@@ -213,6 +215,12 @@ return {
       },
       componentsMixin: {
         type: Object
+      },
+      header: {
+
+      },
+      nav: {
+        
       }
     },
     data(){
@@ -933,6 +941,7 @@ return {
           );
         }
 
+        /*
         let preloaded = [
           'container',
           'router',
@@ -1002,7 +1011,8 @@ return {
             'clipboard'
           );
         }
-        bbn.vue.preloadBBN(preloaded);
+        bbn.wc.preloadBBN(preloaded);
+        */
 
         this.$on('focusin', () => this.isFocused = true);
         this.$on('focusout', () => this.isFocused = false);

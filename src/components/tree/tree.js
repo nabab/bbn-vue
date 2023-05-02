@@ -890,12 +890,12 @@ return {
      * @return {Boolean}
      */
     isNodeOf(childNode, parentNode){
-      childNode = bbn.vue.closest(childNode, 'bbn-tree-node');
+      childNode = bbn.wc.closest(childNode, 'bbn-tree-node');
       while ( childNode ){
         if ( childNode === parentNode ){
           return true;
         }
-        childNode = bbn.vue.closest(childNode, 'bbn-tree-node');
+        childNode = bbn.wc.closest(childNode, 'bbn-tree-node');
       }
       return false;
     },
@@ -1419,7 +1419,7 @@ return {
          * @memberof bbn-tree-node
          */
         component: {
-          type: [String, Function, Vue, Object]
+          type: [String, Function, Object, Object]
         },
         /**
          * The list of children from the node

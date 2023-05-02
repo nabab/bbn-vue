@@ -212,10 +212,10 @@ return {
       this.$nextTick(() => {
         /*
         if ( !this.window ){
-          this.window = bbn.vue.closest(this, "bbn-floater");
+          this.window = this.closest("bbn-floater");
         }
         if ( !this.tab ){
-          this.tab = bbn.vue.closest(this, "bbns-tab");
+          this.tab = this.closest("bbns-tab");
         }
         this.widget = new qq.FineUploader(this.getCfg);
         if ( this.value && this.getSource ){

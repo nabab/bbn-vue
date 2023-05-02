@@ -438,7 +438,7 @@
           }];
           /*
           mounted(){
-            this.window = bbn.vue.closest(this, 'bbn-floater');
+            this.window = this.closest('bbn-floater');
             setTimeout(() => {
               let ele = this.getRef('click');
               if ( ele ){
@@ -566,9 +566,7 @@
             idx = this.popups.length - 1;
           }
           if (this.popups[idx]) {
-            //return bbn.vue.getChildByKey(this.$children[0], this.popups[idx].uid);
-            //return bbn.vue.getChildByKey(this, idx);
-            return bbn.vue.getChildByKey(this, this.popups[idx].uid);
+            return this.getChildByKey(this.popups[idx].uid);
           }
         }
         return false;

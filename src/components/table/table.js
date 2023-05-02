@@ -791,7 +791,7 @@ return {
        * @returns {Object}
        */
       scroller() {
-        return this.$refs.scroller instanceof Vue ? this.$refs.scroller : null;
+        return bbn.wc.isComponent(this.$refs.scroller) ? this.$refs.scroller : null;
       },
       /**
        * Return an array of objects containing the data of the row and other information about the current view of the table.
@@ -1733,14 +1733,14 @@ return {
       /**
        * Retuns the popup object.
        * @method getPopup
-       * @returns {Vue}
+       * @returns {Object}
        */
       getPopup() {
         if (this.popup) {
           return arguments.length ? this.popup.open(...arguments) : this.popup;
         }
 
-        return Vue.options.methods.getPopup.apply(this, arguments);
+        return bbn.wc.mixins.basic.getPopup.apply(this, arguments);
       },
       /**
        * Returns the options for the bind of the table filter.
@@ -2373,7 +2373,7 @@ return {
       /**
        * Resizes the table.
        * @method resizeWidth
-       * @returns {Vue}
+       * @returns {Object}
        */
       resizeWidth(){
         let currentTot = this.groupCols[0].width + this.groupCols[1].width + this.groupCols[2].width,

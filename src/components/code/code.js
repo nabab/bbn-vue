@@ -285,7 +285,7 @@ return {
         if ( themeIndex >= themes.length ){
           themeIndex = 0;
         }
-        bbn.vue.defaults.code.theme = themes[themeIndex];
+        bbn.wc.defaults.code.theme = themes[themeIndex];
         //this.theme = themes[themeIndex];
         this.widget.setOption("theme", themes[themeIndex]);
       },
@@ -429,8 +429,8 @@ return {
       },
       phpHint(str, cursor, token){
         bbn.fn.log(["----PHP HINT-----", cursor, token]);
-        // bbn.vue.phpLang must have been defined by an ajax call n mount
-        if (!bbn.vue.phpLang) {
+        // bbn.wc.phpLang must have been defined by an ajax call n mount
+        if (!bbn.wc.phpLang) {
           return;
         }
         // if ending with a single column (ex: X:)
@@ -491,7 +491,7 @@ return {
             bbn.fn.log(isFn ? "METH" : "CLASS", isFn ? method : cls);
 
             let res = [];
-            let doc = bbn.vue.phpLang;
+            let doc = bbn.wc.phpLang;
             for (let i = 0; i < words.length; i++) {
               // Last word, the result must come from here
               if (i === words.length - 1) {
@@ -515,7 +515,7 @@ return {
                     all.push(...tmp.items);
                   }
                   if (tmp.ref) {
-                    let row = bbn.fn.getRow(bbn.vue.phpLang, {name: tmp.ref});
+                    let row = bbn.fn.getRow(bbn.wc.phpLang, {name: tmp.ref});
                     if (row && row.items) {
                       all.push(...row.items);
                     }
@@ -554,7 +554,7 @@ return {
                   all.push(...tmp.items);
                 }
                 if (tmp.ref) {
-                  let row = bbn.fn.getRow(bbn.vue.phpLang, {name: tmp.ref});
+                  let row = bbn.fn.getRow(bbn.wc.phpLang, {name: tmp.ref});
                   if (row && row.items) {
                     all.push(...row.items);
                   }
@@ -576,27 +576,27 @@ return {
         //bbn.fn.log("----END OF PHP HINT-----");
       },
       addDefinition(className, varName) {
-        if (!bbn.fn.getRow(bbn.vue.phpLang, {"name": className})) {
+        if (!bbn.fn.getRow(bbn.wc.phpLang, {"name": className})) {
           if (this.definitionUrl) {
             // ... for now we add a static method with a static url in the props
             bbn.fn.post(this.definitionUrl, {"className": className}, d => {
               if (d.success && d.res) {
-                bbn.vue.phpLang.push(bbn.fn.extend(d.res, {"ref": varName}));
-                if (!bbn.fn.getRow(bbn.vue.phpLang, {"name": varName})) {
+                bbn.wc.phpLang.push(bbn.fn.extend(d.res, {"ref": varName}));
+                if (!bbn.fn.getRow(bbn.wc.phpLang, {"name": varName})) {
                   let ref = {
                     "name": varName,
                     "type": "class",
                     "items": [],
                   }
-                  bbn.vue.phpLang.push(ref);
+                  bbn.wc.phpLang.push(ref);
                 }
               }
             })
           }
         } else {
-          let obj = JSON.parse(JSON.stringify(bbn.fn.getRow(bbn.vue.phpLang, {"name": className})));
+          let obj = JSON.parse(JSON.stringify(bbn.fn.getRow(bbn.wc.phpLang, {"name": className})));
           let newObj = bbn.fn.extend(obj, {"name": varName});
-          bbn.vue.phpLang.push(newObj);
+          bbn.wc.phpLang.push(newObj);
         }
       },
 
@@ -911,11 +911,11 @@ return {
      * @emit  input
      */
     mounted(){
-      if ((this.mode === 'php') && !bbn.vue.phpLang) {
+      if ((this.mode === 'php') && !bbn.wc.phpLang) {
         bbn.fn.ajax({
           url: "https://raw.githubusercontent.com/nabab/bbn/master/code_ref_php.json",
           success: defs => {
-            bbn.vue.phpLang = defs;
+            bbn.wc.phpLang = defs;
           }
         })
       }

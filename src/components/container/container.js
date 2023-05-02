@@ -225,10 +225,10 @@ return {
         default: ""
       },
       /**
-       * @prop {String|Vue} advert
+       * @prop {String|Object} advert
        */
       advert: {
-        type: [String, Vue]
+        type: [String, Object]
       },
       /**
        * @prop {String} help
@@ -393,7 +393,7 @@ return {
         isOver: false,
         /**
          * The closest bbn-container if any.
-         * @data {Vue|null} _bbn_container
+         * @data {Object|null} _bbn_container
          */
         _bbn_container: null,
         /**
@@ -601,7 +601,7 @@ return {
         }
       },
       /**
-       * @prop {String|Vue} advert
+       * @prop {String|Object} advert
        */
       currentAdvert: {
         get() {
@@ -1106,7 +1106,7 @@ return {
                   type: Object
                 }
               };
-              this.componentDefinition = bbn.wc.normalizeComponent(res);
+              this.componentDefinition = bbn.wc.normalizeComponent(res, 'bbn-container-' + this.getFullURL());
               bbn.fn.log("YUUUU", res, this.componentDefinition, this.currentContent)
               this.componentDefinition.template = this.currentContent;
               this.isComponent = true;
@@ -1146,7 +1146,7 @@ return {
                   type: Object
                 }
               }
-            }));
+            }), 'bbn-container-' + this.getFullURL());
             // The local anonymous component gets defined
             this.$options.components[this.componentName] = this.$el.bbnCfg;
           }
@@ -1309,7 +1309,7 @@ return {
       },
       /**
        * @method registerRouter
-       * @param {Vue} bc
+       * @param {Object} bc
        * @param {String} url
        */
       registerRouter(router) {
@@ -1318,7 +1318,7 @@ return {
       },
       /**
        * @method unregisterRouter
-       * @param {Vue} bc
+       * @param {Object} bc
        * @param {String} url
        */
       unregisterRouter(router){
@@ -1490,7 +1490,7 @@ return {
         this.currentView.css = v;
       },
       /**
-       * @prop {String|Vue} advert
+       * @prop {String|Object} advert
        */
       advert(v) {
         this.currentView.advert = v;

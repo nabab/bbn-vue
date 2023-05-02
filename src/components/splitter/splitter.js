@@ -456,11 +456,11 @@ return {
               position: pos,
               pane1: {
                 obj: this.panes[assoc.index],
-                cp: bbn.vue.find(this, 'bbn-pane', assoc.index)
+                cp: this.find('bbn-pane', assoc.index)
               },
               pane2: {
                 obj: pane,
-                cp: bbn.vue.find(this, 'bbn-pane', i)
+                cp: this.find('bbn-pane', i)
               },
             });
             pos++;
@@ -751,8 +751,8 @@ return {
                 if ( a.pane2 ){
                   //bbn.fn.log("DRAGGABLE?", this.$refs.resizer[i]);
                   let prop = this.currentOrientation === 'horizontal' ? 'left' : 'top',
-                      pane1 = bbn.vue.find(this, 'bbn-pane', a.pane1),
-                      pane2 = bbn.vue.find(this, 'bbn-pane', a.pane2),
+                      pane1 = this.find('bbn-pane', a.pane1),
+                      pane2 = this.find('bbn-pane', a.pane2),
                       max,
                       min;
                   $(this.$refs.resizer[i]).draggable({

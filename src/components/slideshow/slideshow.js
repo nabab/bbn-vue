@@ -38,7 +38,7 @@ return {
        * @prop {Object} component
        */
       component: {
-        type: [String, Object, Vue]
+        type: [String, Object]
       },
       /**
        * Insert a checkbox in each slide.
@@ -879,7 +879,7 @@ return {
          return {
            /**
             * The parent component bbn-slideshow
-            * @data {Vue} mainComponent
+            * @data {Object} mainComponent
             */
            mainComponent: this.closest('bbn-slideshow')
 

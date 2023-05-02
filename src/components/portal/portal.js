@@ -1,5 +1,5 @@
 /**
- * @file bbn.vue implementation of https://github.com/LinusBorg/vue-simple-portal.
+ * @file bbn.wc implementation of https://github.com/LinusBorg/vue-simple-portal.
  * @created 10/10/2021
  */
 

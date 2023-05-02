@@ -511,7 +511,7 @@ return {
                 this.updateMenu();
               }
               if ( this.hasStorage ){
-                let cps = bbn.vue.findAll(this.$root, 'bbn-dashboard');
+                let cps = this.$root.findAll('bbn-dashboard');
                 bbn.fn.each(cps, (cp, i) => {
                   if ( (cp !== this) && (cp.storageFullName === this.storageFullName) ){
                     bbn.fn.iterate(params.cfg, (a, k) => {
@@ -581,7 +581,7 @@ return {
         let obj = obj_orig || {};
         obj.hidden = !!obj.hidden;
         if ( !obj.key ){
-          obj.key = obj.uid ? obj.uid : bbn.vue.makeUID();
+          obj.key = obj.uid ? obj.uid : bbn.wc.makeUID();
         }
         if ( !obj.uid ){
           obj.uid = obj.key;
@@ -717,7 +717,7 @@ return {
               this.move(this.sortOriginIndex, this.sortTargetIndex) &&
               this.storageFullName
             ){
-              let cps = bbn.vue.findAll(this.$root, 'bbn-dashboard');
+              let cps = this.$root.findAll('bbn-dashboard');
               bbn.fn.each(cps, (cp, i) => {
                 if ( (cp !== this) && (cp.storageFullName === this.storageFullName) ){
                   cp.move(this.sortOriginIndex, this.sortTargetIndex);

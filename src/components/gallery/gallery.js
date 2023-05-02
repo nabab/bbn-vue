@@ -28,10 +28,10 @@ return {
       },
       /**
        * The alternative component for the toolbar.
-       * @prop {(Vue|Object|Boolean)} toolbar
+       * @prop {(Object|Boolean)} toolbar
        */
       toolbar: {
-        type: [Vue, Object, Boolean],
+        type: [Object, Boolean],
         default: true
       },
       /**
@@ -194,10 +194,10 @@ return {
       },
       /**
        * The item component
-       * @prop {(String|Object|Vue)} itemComponent
+       * @prop {(String|Object)} itemComponent
        */
       itemComponent: {
-        type: [String, Object, Vue]
+        type: [String, Object]
       },
       /**
        * The context menu source of every image
@@ -208,10 +208,10 @@ return {
       },
       /**
        * The component used by the context menu items
-       * @prop {(String|Object|Vue)} contextComponent
+       * @prop {(String|Object)} contextComponent
        */
       buttonMenuComponent: {
-        type: [String, Object, Vue]
+        type: [String, Object]
       },
       /**
        * Enables the resize possibility
@@ -625,7 +625,7 @@ return {
                * The parent component 'gallery-col'.
                * @computed col
                * @memberof gallery-item
-               * @return {Vue}
+               * @return {Object}
                */
               col() {
                 return this.closest('gallery-col');
@@ -873,7 +873,7 @@ return {
            * @computed gallery
            * @memberof gallery-selected
            * @fires closest
-           * @return {Vue}
+           * @return {Object}
            */
           gallery() {
             return this.closest('bbn-gallery');

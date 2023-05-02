@@ -15,10 +15,10 @@ return {
     mixins: [bbn.wc.mixins.basic],
     props: {
       /**
-       * @prop {(String|Object|Vue)} component
+       * @prop {(String|Object|Object)} component
        */
       component: {
-        type: [String, Object, Vue]
+        type: [String, Object, Object]
       },
       /**
        * The source of the component tooltip.
