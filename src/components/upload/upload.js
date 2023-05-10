@@ -900,7 +900,15 @@
        * @return String
        */
       getFileExt(file){
-        return file.fromUser ? file.data.name.substring(file.data.name.lastIndexOf('.')+1) : bbn.fn.substr(file.data.extension, 1)
+        if (file.fromUser
+          || (file.data.extension === undefined)
+          || !file.data.extension.length
+        ) {
+          return file.data.name.substring(file.data.name.lastIndexOf('.') + 1);
+        }
+        else {
+          return bbn.fn.substr(file.data.extension, 1);
+        }
       },
       /**
        * Gets the thumb url of the given file
