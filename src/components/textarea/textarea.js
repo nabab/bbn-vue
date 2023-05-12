@@ -108,9 +108,10 @@
     mounted(){
       this.ready = true;
       const el = this.getRef('element');
-      el.style.height = 'auto';
-      el.style.height = el.scrollHeight+'px';
-
+      if (this.autosize) {
+        el.style.height = 'auto';
+        el.style.height = el.scrollHeight+'px';
+      }
     }
   });
 
