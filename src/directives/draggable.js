@@ -66,7 +66,7 @@
           endDrag(e, ele, options);
           document.removeEventListener('mousemove', fnDrag);
           setTimeout(() => {
-            document.removeEventListener('click', fnClick);
+            document.removeEventListener('click', fnClick, {once: true, capture: true});
           }, 100);
         };
         document.addEventListener('click', fnClick, {once: true, capture: true});
