@@ -1,6 +1,10 @@
 (() => {
+  let isDragging = false;
   const startDrag = (e, ele, options) => {
-    if (!!ele._bbn.directives.draggable.active) {
+    if (!!ele._bbn.directives.draggable.active
+      && !isDragging
+    ) {
+      isDragging = ele;
       let ev = new CustomEvent('dragstart', {
         cancelable: true,
         bubbles: true,
@@ -68,10 +72,16 @@
           setTimeout(() => {
             document.removeEventListener('click', fnClick, {once: true, capture: true});
           }, 100);
+          isDragging = false;
         };
         document.addEventListener('click', fnClick, {once: true, capture: true});
         document.addEventListener('mouseup', fnEnd, {once: true});
         document.addEventListener('mousemove', fnDrag);
+      }
+      else {
+        document.addEventListener('mouseup', () => {
+          isDragging = false;
+        }, {once: true});
       }
     }
   };
@@ -257,7 +267,9 @@
   };
 
   const endDrag = (e, ele, options) => {
-    if (!!ele._bbn.directives.draggable.active) {
+    if (!!ele._bbn.directives.draggable.active
+      && isDragging
+    ) {
       e.preventDefault();
       e.stopImmediatePropagation();
       options.helper.style.pointerEvents = ele._bbn.directives.draggable.pointerEvents;
