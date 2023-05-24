@@ -519,8 +519,10 @@
           inserted(el, binding);
         }
         else {
-          setOff(el);
-          inserted(el, binding);
+          el.dataset.bbn_draggable = true;
+          if (!el.classList.contains('bbn-draggable')) {
+            el.classList.add('bbn-draggable');
+          }
         }
       }
       else {

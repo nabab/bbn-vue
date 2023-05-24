@@ -379,8 +379,10 @@
           inserted(el, binding);
         }
         else {
-          setOff(el);
-          inserted(el, binding);
+          el.dataset.bbn_resizable = true;
+          if (!el.classList.contains('bbn-resizable')) {
+            el.classList.add('bbn-resizable');
+          }
         }
       }
       else {
