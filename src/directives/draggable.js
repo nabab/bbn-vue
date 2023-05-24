@@ -482,6 +482,33 @@
     }
   };
 
+  const setOff = el => {
+    el.dataset.bbn_draggable = false;
+    if (el._bbn === undefined) {
+      el._bbn = {};
+    }
+    if (el._bbn.directives === undefined) {
+      el._bbn.directives = {};
+    }
+    if (el._bbn.directives.draggable === undefined) {
+      el._bbn.directives.draggable = {};
+    }
+    if (!!el._bbn.directives.draggable.active) {
+      if (bbn.fn.isFunction(el._bbn.directives.draggable.onmousedown)) {
+        el.removeEventListener('mousedown', el._bbn.directives.draggable.onmousedown);
+      }
+      if (bbn.fn.isFunction(el._bbn.directives.draggable.onmouseup)) {
+        el.removeEventListener('mouseup', el._bbn.directives.draggable.onmouseup);
+      }
+    }
+    el._bbn.directives.draggable = {
+      active: false
+    };
+    if (el.classList.contains('bbn-draggable')) {
+      el.classList.remove('bbn-draggable');
+    }
+  };
+
   Vue.directive('draggable', {
     inserted: inserted,
     update: (el, binding) => {
@@ -492,37 +519,12 @@
           inserted(el, binding);
         }
         else {
-          el.dataset.bbn_draggable = true;
-          if (!el.classList.contains('bbn-draggable')) {
-            el.classList.add('bbn-draggable');
-          }
+          setOff(el);
+          inserted(el, binding);
         }
       }
       else {
-        el.dataset.bbn_draggable = false;
-        if (el._bbn === undefined) {
-          el._bbn = {};
-        }
-        if (el._bbn.directives === undefined) {
-          el._bbn.directives = {};
-        }
-        if (el._bbn.directives.draggable === undefined) {
-          el._bbn.directives.draggable = {};
-        }
-        if (!!el._bbn.directives.draggable.active) {
-          if (bbn.fn.isFunction(el._bbn.directives.draggable.onmousedown)) {
-            el.removeEventListener('mousedown', el._bbn.directives.draggable.onmousedown);
-          }
-          if (bbn.fn.isFunction(el._bbn.directives.draggable.onmouseup)) {
-            el.removeEventListener('mouseup', el._bbn.directives.draggable.onmouseup);
-          }
-        }
-        el._bbn.directives.draggable = {
-          active: false
-        };
-        if (el.classList.contains('bbn-draggable')) {
-          el.classList.remove('bbn-draggable');
-        }
+        setOff(el);
       }
     }
   });

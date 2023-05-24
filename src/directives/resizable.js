@@ -339,6 +339,36 @@
     }
   };
 
+  const setOff = el => {
+    el.dataset.bbn_resizable = false;
+    if (el._bbn === undefined) {
+      el._bbn = {};
+    }
+    if (el._bbn.directives === undefined) {
+      el._bbn.directives = {};
+    }
+    if (el._bbn.directives.resizable === undefined) {
+      el._bbn.directives.resizable = {};
+    }
+    if (!!el._bbn.directives.resizable.active) {
+      if (bbn.fn.isFunction(el._bbn.directives.resizable.onmousedown)) {
+        el.removeEventListener('mousedown', el._bbn.directives.resizable.onmousedown);
+      }
+      if (bbn.fn.isFunction(el._bbn.directives.resizable.onmouseup)) {
+        el.removeEventListener('mouseup', el._bbn.directives.resizable.onmouseup);
+      }
+      if (bbn.fn.isFunction(el._bbn.directives.resizable.onmousemove)) {
+        el.removeEventListener('mousemove', el._bbn.directives.resizable.onmousemove);
+      }
+    }
+    el._bbn.directives.resizable = {
+      active: false
+    };
+    if (el.classList.contains('bbn-resizable')) {
+      el.classList.remove('bbn-resizable');
+    }
+  };
+
   Vue.directive('resizable', {
     inserted: inserted,
     update: (el, binding) => {
@@ -349,40 +379,12 @@
           inserted(el, binding);
         }
         else {
-          el.dataset.bbn_resizable = true;
-          if (!el.classList.contains('bbn-resizable')) {
-            el.classList.add('bbn-resizable');
-          }
+          setOff(el);
+          inserted(el, binding);
         }
       }
       else {
-        el.dataset.bbn_resizable = false;
-        if (el._bbn === undefined) {
-          el._bbn = {};
-        }
-        if (el._bbn.directives === undefined) {
-          el._bbn.directives = {};
-        }
-        if (el._bbn.directives.resizable === undefined) {
-          el._bbn.directives.resizable = {};
-        }
-        if (!!el._bbn.directives.resizable.active) {
-          if (bbn.fn.isFunction(el._bbn.directives.resizable.onmousedown)) {
-            el.removeEventListener('mousedown', el._bbn.directives.resizable.onmousedown);
-          }
-          if (bbn.fn.isFunction(el._bbn.directives.resizable.onmouseup)) {
-            el.removeEventListener('mouseup', el._bbn.directives.resizable.onmouseup);
-          }
-          if (bbn.fn.isFunction(el._bbn.directives.resizable.onmousemove)) {
-            el.removeEventListener('mousemove', el._bbn.directives.resizable.onmousemove);
-          }
-        }
-        el._bbn.directives.resizable = {
-          active: false
-        };
-        if (el.classList.contains('bbn-resizable')) {
-          el.classList.remove('bbn-resizable');
-        }
+        setOff(el);
       }
     }
   });

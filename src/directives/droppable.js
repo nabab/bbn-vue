@@ -136,53 +136,55 @@
     }
   };
 
+  const setOff = el => {
+    el.dataset.bbn_droppable = false;
+    if (el._bbn === undefined) {
+      el._bbn = {};
+    }
+    if (el._bbn.directives === undefined) {
+      el._bbn.directives = {};
+    }
+    if (el._bbn.directives.droppable === undefined) {
+      el._bbn.directives.droppable = {};
+    }
+    if (!!el._bbn.directives.droppable.active) {
+      if (bbn.fn.isFunction(el._bbn.directives.droppable.onmouseenter)) {
+        el.removeEventListener('mouseenter', el._bbn.directives.droppable.onmouseenter);
+      }
+      if (bbn.fn.isFunction(el._bbn.directives.droppable.onmouseleave)) {
+        el.removeEventListener('mouseleave', el._bbn.directives.droppable.onmouseleave);
+      }
+      if (bbn.fn.isFunction(el._bbn.directives.droppable.ondragoverdroppable)) {
+        el.removeEventListener('dragoverdroppable', el._bbn.directives.droppable.ondragoverdroppable);
+      }
+      if (bbn.fn.isFunction(el._bbn.directives.droppable.onbeforedrop)) {
+        el.removeEventListener('beforedrop', el._bbn.directives.droppable.onbeforedrop);
+      }
+    }
+    el._bbn.directives.droppable = {
+      active: false
+    };
+    if (el.classList.contains('bbn-droppable')) {
+      el.classList.remove('bbn-droppable');
+    }
+  };
+
   Vue.directive('droppable', {
     inserted: inserted,
     update: (el, binding) => {
       if ((binding.value !== false)
-      && !el.classList.contains('bbn-undroppable')
+        && !el.classList.contains('bbn-undroppable')
       ) {
         if (binding.oldValue === false) {
           inserted(el, binding);
         }
         else {
-          el.dataset.bbn_droppable = true;
-          if (!el.classList.contains('bbn-droppable')) {
-            el.classList.add('bbn-droppable');
-          }
+          setOff(el);
+          inserted(el, binding);
         }
       }
       else {
-        el.dataset.bbn_droppable = false;
-        if (el._bbn === undefined) {
-          el._bbn = {};
-        }
-        if (el._bbn.directives === undefined) {
-          el._bbn.directives = {};
-        }
-        if (el._bbn.directives.droppable === undefined) {
-          el._bbn.directives.droppable = {};
-        }
-        if (!!el._bbn.directives.droppable.active) {
-          if (bbn.fn.isFunction(el._bbn.directives.droppable.onmouseenter)) {
-            el.removeEventListener('mouseenter', el._bbn.directives.droppable.onmouseenter);
-          }
-          if (bbn.fn.isFunction(el._bbn.directives.droppable.onmouseleave)) {
-            el.removeEventListener('mouseleave', el._bbn.directives.droppable.onmouseleave);
-          }
-          if (bbn.fn.isFunction(el._bbn.directives.droppable.ondragoverdroppable)) {
-            el.removeEventListener('dragoverdroppable', el._bbn.directives.droppable.ondragoverdroppable);
-          }
-          if (bbn.fn.isFunction(el._bbn.directives.droppable.onbeforedrop)) {
-            el.removeEventListener('beforedrop', el._bbn.directives.droppable.onbeforedrop);
-          }
-        }
-        el._bbn.directives.droppable = {
-          active: false
-        };
-        if (el.classList.contains('bbn-droppable')) {
-          el.classList.remove('bbn-droppable');
-        }
+        setOff(el);
       }
     }
   });
