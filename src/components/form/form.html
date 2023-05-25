@@ -4,7 +4,7 @@
       :class="currentClass"
       :style="currentStyle"
       @submit.prevent
-      @keydown.enter.prevent.stop="submit"
+      @keydown.enter.prevent.stop="submit(false)"
       @keyup.esc="cancel">
   <div :class="{
          'bbn-flex-fill': !window && isInit && scrollable || !!fullSize,
