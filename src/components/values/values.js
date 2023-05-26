@@ -62,6 +62,19 @@
       validator: {
         type: [String, Function]
       },
+      mode: {
+        type: String,
+        default: 'input',
+        validator: v => ['input', 'dropdown'].includes(v)
+      },
+      sourceText: {
+        type: String,
+        default: 'text'
+      },
+      sourceValue: {
+        type: String,
+        default: 'value'
+      }
     },
     data(){
       let isJSON = this.value && bbn.fn.isString(this.value);
@@ -148,6 +161,14 @@
         ) {
           this.obj.splice(idx, 1);
           this.emitInput(this.isJSON ? JSON.stringify(this.obj) : this.obj);
+        }
+      },
+      getText(val){
+        if (this.mode === 'dropdown') {
+          return bbn.fn.getField(this.source, this.sourceText, this.sourceValue, val);
+        }
+        else if (this.mode === 'input') {
+          return val;
         }
       }
     }

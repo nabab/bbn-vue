@@ -264,7 +264,7 @@
          * @returns {String}
          */
         currentTextValue() {
-          if ( (this.value !== undefined) && !bbn.fn.isNull(this.value) && this.sourceValue && this.sourceText && this.currentData.length ){
+          if ( (this.value !== undefined) && !bbn.fn.isNull(this.value) && this.sourceValue && this.sourceText && this.currentData?.length ){
             let idx = bbn.fn.search(this.currentData, a => {
               return a.data[this.sourceValue] === this.value;
             });
