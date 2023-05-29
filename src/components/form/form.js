@@ -615,6 +615,7 @@
               ev.preventDefault();
             }
             this.confirm(this.confirmLeave, () => {
+              this.$emit('confirmleave', true, this.source);
               this.reset();
               this.$nextTick(() => {
                 if (this.window) {
@@ -623,6 +624,7 @@
                 }
               });
             }, () => {
+              this.$emit('confirmleave', false, this.source);
               this.isClosing = false;
             });
           }
