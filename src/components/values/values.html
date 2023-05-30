@@ -14,7 +14,8 @@
               :action-right="add"
               button-right="nf nf-fa-plus"
               :button-right-disabled="(!!max && (value.length >= max)) || isDisabled || !!readonly"
-              :button-right-title="_('Add')"/>
+              :button-right-title="_('Add')"
+              @change="add"/>
     <div v-else-if="mode === 'dropdown'"
          class="bbn-bordered bbn-radius bbn-flex-width">
       <bbn-dropdown :source="source"
@@ -23,12 +24,8 @@
                     ref="input"
                     :placeholder="max && (value.length > max) ? _('Max number of') + ' ' + max : (this.placeholder || _('Value'))"
                     v-model="currentInput"
-                    class="bbn-values-dropdown bbn-no-border bbn-flex-fill"/>
-      <bbn-button class="bbn-values-dropdown-button bbn-no-vborder bbn-no-right-border"
-                  :notext="true"
-                  icon="nf nf-fa-plus"
-                  @click="add"
-                  :disabled="isDisabled || (max && (value.length > max)) || !currentInput.length"/>
+                    class="bbn-values-dropdown bbn-no-border bbn-flex-fill"
+                    @change="add"/>
     </div>
   </div>
   <div class="bbn-w-100">
