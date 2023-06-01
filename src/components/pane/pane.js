@@ -140,6 +140,15 @@
         this.splitter.init();
         setTimeout(() => {
           this.ready = true;
+          // This is for old Safari
+          this.$mnextTick(() => {
+            if (!this.$el.clientHeight) {
+              this.$el.style.position = 'static';
+              setTimeout(() => {
+                this.$el.style.position = '';
+              }, 100)
+            }
+          });
         }, 40)
       }
     },
