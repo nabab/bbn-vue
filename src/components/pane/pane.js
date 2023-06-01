@@ -141,7 +141,7 @@
         setTimeout(() => {
           this.ready = true;
           // This is for old Safari
-          this.$mnextTick(() => {
+          this.$nextTick(() => {
             if (!this.$el.clientHeight) {
               this.$el.style.position = 'static';
               setTimeout(() => {
