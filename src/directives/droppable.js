@@ -1,4 +1,7 @@
 (() => {
+  var dragOver = false;
+  var mouseOver = false;
+
   const inserted = (el, binding) => {
     if (el._bbn === undefined) {
       el._bbn = {};
@@ -23,9 +26,7 @@
           asArg = !!binding.arg && binding.arg.length,
           asMods = bbn.fn.isObject(binding.modifiers) && bbn.fn.numProperties(binding.modifiers),
           asDataFromMods = asMods && !!binding.modifiers.data,
-          data = {},
-          dragOver = false,
-          mouseOver = false;
+          data = {};
       if (asArg) {
         if (binding.arg === 'data') {
           data = binding.arg;

@@ -1,5 +1,30 @@
 (() => {
-  let isDragging = false;
+  var isDragging = false;
+  var currentEle = false;
+  var currentOptions = false;
+
+  const fnClick = e => {
+    e.stopImmediatePropagation();
+    e.preventDefault();
+  };
+
+  const fnDrag = e => {
+    drag(e, currentEle, currentOptions);
+  };
+
+  const fnEnd = e => {
+    endDrag(e, currentEle, currentOptions);
+    document.removeEventListener('mousemove', fnDrag);
+    setTimeout(() => {
+      document.removeEventListener('click', fnClick, {once: true, capture: true});
+    }, 100);
+    isDragging = false;
+  };
+
+  const fnUp = () => {
+    isDragging = false;
+  };
+
   const startDrag = (e, ele, options) => {
     if (!!ele._bbn.directives.draggable.active
       && !isDragging
@@ -59,29 +84,14 @@
         }
         ele._bbn.directives.draggable.pointerEvents = window.getComputedStyle(options.helper).pointerEvents;
         options.helper.style.pointerEvents = 'none';
-        let fnClick = e => {
-          e.stopImmediatePropagation();
-          e.preventDefault();
-        };
-        let fnDrag = e => {
-          drag(e, ele, options);
-        };
-        let fnEnd = e => {
-          endDrag(e, ele, options);
-          document.removeEventListener('mousemove', fnDrag);
-          setTimeout(() => {
-            document.removeEventListener('click', fnClick, {once: true, capture: true});
-          }, 100);
-          isDragging = false;
-        };
+        currentEle = ele;
+        currentOptions = options;
         document.addEventListener('click', fnClick, {once: true, capture: true});
         document.addEventListener('mouseup', fnEnd, {once: true});
         document.addEventListener('mousemove', fnDrag);
       }
       else {
-        document.addEventListener('mouseup', () => {
-          isDragging = false;
-        }, {once: true});
+        document.addEventListener('mouseup', fnUp, {once: true});
       }
     }
   };
@@ -304,6 +314,10 @@
           }
         }
       }
+      document.removeEventListener('click', fnClick, {once: true, capture: true});
+      document.removeEventListener('mouseup', fnEnd, {once: true});
+      document.removeEventListener('mousemove', fnDrag);
+      document.removeEventListener('mouseup', fnUp, {once: true});
       if (options.mode !== 'move') {
         options.helper.remove();
       }
@@ -500,6 +514,10 @@
       if (bbn.fn.isFunction(el._bbn.directives.draggable.onmouseup)) {
         el.removeEventListener('mouseup', el._bbn.directives.draggable.onmouseup);
       }
+      document.removeEventListener('click', fnClick, {once: true, capture: true});
+      document.removeEventListener('mouseup', fnEnd, {once: true});
+      document.removeEventListener('mousemove', fnDrag);
+      document.removeEventListener('mouseup', fnUp, {once: true});
     }
     el._bbn.directives.draggable = {
       active: false
