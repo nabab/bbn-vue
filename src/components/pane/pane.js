@@ -124,10 +124,11 @@
       onResize() {
         bbn.vue.resizerComponent.methods.onResize.call(this);
         if (!this.$el.clientHeight) {
-          this.$el.style.position = 'static';
+          /*this.$el.style.position = 'static';
           setTimeout(() => {
             this.$el.style.position = '';
           }, 100)
+          */
         }
       }
     },
@@ -153,7 +154,7 @@
           this.ready = true;
           // This is for old Safari
           this.$nextTick(() => {
-            this.onResize();
+            //this.onResize();
           });
         }, 40)
       }
