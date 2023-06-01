@@ -123,12 +123,12 @@
     methods: {
       onResize() {
         bbn.vue.resizerComponent.methods.onResize.call(this);
+        // Impoortant bugfix for old Safari versions (check 13.1)
         if (!this.$el.clientHeight) {
-          /*this.$el.style.position = 'static';
+          this.$el.style.position = 'static';
           setTimeout(() => {
             this.$el.style.position = '';
           }, 100)
-          */
         }
       }
     },
