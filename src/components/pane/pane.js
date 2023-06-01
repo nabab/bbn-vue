@@ -120,6 +120,17 @@
         return this.splitter && this.splitter.isHorizontal;
       }
     },
+    methods: {
+      onResize() {
+        bbn.vue.resizerComponent.methods.onResize.call(this);
+        if (!this.$el.clientHeight) {
+          this.$el.style.position = 'static';
+          setTimeout(() => {
+            this.$el.style.position = '';
+          }, 100)
+        }
+      }
+    },
     watch:{
       collapsed(val){
         this.currentHidden = val;
@@ -142,12 +153,7 @@
           this.ready = true;
           // This is for old Safari
           this.$nextTick(() => {
-            if (!this.$el.clientHeight) {
-              this.$el.style.position = 'static';
-              setTimeout(() => {
-                this.$el.style.position = '';
-              }, 100)
-            }
+            this.onResize();
           });
         }, 40)
       }
