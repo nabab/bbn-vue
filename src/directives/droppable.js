@@ -3,49 +3,7 @@
   var mouseOver = false;
 
   const inserted = (el, binding) => {
-    if (el._bbn === undefined) {
-      el._bbn = {};
-    }
-    if (el._bbn.directives === undefined) {
-      el._bbn.directives = {};
-    }
-    if (el._bbn.directives.droppable === undefined) {
-      el._bbn.directives.droppable = {};
-    }
-    if ((binding.value !== false)
-      && !el.classList.contains('bbn-undroppable')
-    ) {
-      el.dataset.bbn_droppable = true;
-      el._bbn.directives.droppable = {
-        active: true
-      };
-      if (!el.classList.contains('bbn-droppable')) {
-        el.classList.add('bbn-droppable');
-      }
-      let options = {},
-          asArg = !!binding.arg && binding.arg.length,
-          asMods = bbn.fn.isObject(binding.modifiers) && bbn.fn.numProperties(binding.modifiers),
-          asDataFromMods = asMods && !!binding.modifiers.data,
-          data = {};
-      if (asArg) {
-        if (binding.arg === 'data') {
-          data = binding.arg;
-        }
-      }
-      else if (bbn.fn.isObject(binding.value)) {
-        options = binding.value;
-        if (asDataFromMods) {
-          if ((options.data === undefined)
-            || !bbn.fn.isObject(options.data)
-          ) {
-            bbn.fn.error(bbn._('No "data" property found or not an object'));
-            throw bbn._('No "data" property found or not an object');
-          }
-          data = options.data;
-        }
-      }
-      options.data = data;
-      el._bbn.directives.droppable.options = options;
+    if (analyzeValue(el, binding)) {
       el._bbn.directives.droppable.onmouseenter = e => {
         if (!!el._bbn.directives.droppable.active) {
           mouseOver = true;
@@ -79,7 +37,7 @@
         ) {
           dragOver = {
             from: e.detail,
-            to: options
+            to: el._bbn.directives.droppable.options
           };
           let ev = new CustomEvent('dragover', {
             cancelable: true,
@@ -129,11 +87,60 @@
       };
       el.addEventListener('beforedrop', el._bbn.directives.droppable.onbeforedrop);
     }
+  };
+
+  const analyzeValue = (el, binding) => {
+    if (el._bbn === undefined) {
+      el._bbn = {};
+    }
+    if (el._bbn.directives === undefined) {
+      el._bbn.directives = {};
+    }
+    if (el._bbn.directives.droppable === undefined) {
+      el._bbn.directives.droppable = {};
+    }
+    if ((binding.value !== false)
+      && !el.classList.contains('bbn-undroppable')
+    ) {
+      el.dataset.bbn_droppable = true;
+      el._bbn.directives.droppable = {
+        active: true
+      };
+      if (!el.classList.contains('bbn-droppable')) {
+        el.classList.add('bbn-droppable');
+      }
+      let options = {},
+          asArg = !!binding.arg && binding.arg.length,
+          asMods = bbn.fn.isObject(binding.modifiers) && bbn.fn.numProperties(binding.modifiers),
+          asDataFromMods = asMods && !!binding.modifiers.data,
+          data = {};
+      if (asArg) {
+        if (binding.arg === 'data') {
+          data = binding.arg;
+        }
+      }
+      else if (bbn.fn.isObject(binding.value)) {
+        options = binding.value;
+        if (asDataFromMods) {
+          if ((options.data === undefined)
+            || !bbn.fn.isObject(options.data)
+          ) {
+            bbn.fn.error(bbn._('No "data" property found or not an object'));
+            throw bbn._('No "data" property found or not an object');
+          }
+          data = options.data;
+        }
+      }
+      options.data = data;
+      el._bbn.directives.droppable.options = options;
+      return true;
+    }
     else {
       el.dataset.bbn_droppable = false;
       el._bbn.directives.droppable = {
         active: false
       };
+      return false;
     }
   };
 
@@ -179,9 +186,8 @@
         if (binding.oldValue === false) {
           inserted(el, binding);
         }
-        else {
-          setOff(el);
-          inserted(el, binding);
+        else if (!el.dataset.bbn_droppable_over){
+          analyzeValue(el, binding);
         }
       }
       else {
