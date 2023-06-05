@@ -28,7 +28,8 @@
     if (!!ele._bbn.directives.draggable.active
       && !isDragging
     ) {
-      isDragging = ele;
+      isDragging = true;
+      currentEle = ele;
       var options = ele._bbn.directives.draggable.options;
       let ev = new CustomEvent('dragstart', {
         cancelable: true,
@@ -84,7 +85,6 @@
         }
         ele._bbn.directives.draggable.pointerEvents = window.getComputedStyle(options.helper).pointerEvents;
         options.helper.style.pointerEvents = 'none';
-        currentEle = ele;
         document.addEventListener('click', fnClick, {once: true, capture: true});
         document.addEventListener('mouseup', fnEnd, {once: true});
         document.addEventListener('mousemove', fnDrag);

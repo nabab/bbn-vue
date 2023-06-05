@@ -1,10 +1,26 @@
 (() => {
+  var isDragging = false;
+  var currentEle = false;
+
+  const fnDrag = e => {
+    drag(e, currentEle);
+  };
+
+  const fnEnd = e => {
+    endDrag(e, currentEle);
+    document.removeEventListener('mousemove', fnDrag);
+    isDragging = false;
+  };
+
   const startDrag = (e, ele) => {
-    if (!!ele._bbn.directives.resizable.active
+    if (!isDragging
+      && !!ele._bbn.directives.resizable.active
       && !ele._bbn.directives.resizable.resizing
       && !!ele._bbn.directives.resizable.modes
       && bbn.fn.numProperties(ele._bbn.directives.resizable.modes)
     ) {
+      isDragging = true;
+      currentEle = ele;
       ele._bbn.directives.resizable.resizing = true;
       let cursor = ''
           modes = ele._bbn.directives.resizable.modes;
@@ -39,13 +55,6 @@
       }
       if (!ev.defaultPrevented) {
         ev.stopImmediatePropagation();
-        let fnDrag = e => {
-          drag(e, ele);
-        };
-        let fnEnd = e => {
-          endDrag(e, ele);
-          document.removeEventListener('mousemove', fnDrag);
-        };
         document.addEventListener('mouseup', fnEnd, {once: true});
         document.addEventListener('mousemove', fnDrag);
       }
@@ -169,7 +178,8 @@
   };
 
   const endDrag = (e, ele) => {
-    if (!!ele._bbn.directives.resizable.active
+    if (isDragging
+      && !!ele._bbn.directives.resizable.active
       && !!ele._bbn.directives.resizable.resizing
     ) {
       ele._bbn.directives.resizable.resizing = false;
@@ -186,73 +196,21 @@
       if (ele.__vue__ !== undefined) {
         ele.__vue__.$emit('userresizestart', ev);
       }
+      document.removeEventListener('mouseup', fnEnd, {once: true});
+      document.removeEventListener('mousemove', fnDrag);
       delete ele._bbn.directives.resizable.mouseX;
       delete ele._bbn.directives.resizable.mouseY;
     }
   };
 
   const inserted = (el, binding) => {
-    if (el._bbn === undefined) {
-      el._bbn = {};
-    }
-    if (el._bbn.directives === undefined) {
-      el._bbn.directives = {};
-    }
-    if (el._bbn.directives.resizable === undefined) {
-      el._bbn.directives.resizable = {};
-    }
-    if ((binding.value !== false)
-      && !el.classList.contains('bbn-unresizable')
-    ) {
-      let options = {},
-          asMods = bbn.fn.isObject(binding.modifiers) && bbn.fn.numProperties(binding.modifiers),
-          asContainerFromMods = asMods && !!binding.modifiers.container,
-          asArg = !!binding.arg && binding.arg.length,
-          modes = {
-            top: !asMods || !!binding.modifiers.top,
-            right: !asMods || !!binding.modifiers.right,
-            bottom: !asMods || !!binding.modifiers.bottom,
-            left: !asMods || !!binding.modifiers.left
-          },
-          container = false;
-      el.dataset.bbn_resizable = true;
-      el._bbn.directives.resizable = {
-        active: true,
-        resizing: false,
-        enabledModes: modes
-      };
-      if (!el.classList.contains('bbn-resizable')) {
-        el.classList.add('bbn-resizable');
-      }
-
-      if (asArg) {
-        switch (binding.arg) {
-          case 'container':
-            container = binding.value;
-            break;
-        }
-      }
-      else {
-        if (bbn.fn.isObject(binding.value)) {
-          options = binding.value;
-          if (asContainerFromMods) {
-            if ((options.container === undefined)
-              || !bbn.fn.isDom(options.container)
-            ) {
-              bbn.fn.error(bbn._('No "container" property found or not a DOM element'));
-              throw bbn._('No "container" property found or not a DOM element');
-            }
-            container = options.container;
-          }
-        }
-      }
-      el._bbn.directives.resizable.container = container;
-      el._bbn.directives.resizable.options = options;
+    if (analyzeValue(el, binding)) {
       el._bbn.directives.resizable.onmousemove = ev => {
         if (!!el._bbn.directives.resizable.active
           && !el._bbn.directives.resizable.resizing
         ) {
           let rect = el.getBoundingClientRect(),
+              modes = el._bbn.directives.resizable.enabledModes,
               m = {};
           if (modes.left
             && (ev.x >= (rect.left - 2))
@@ -331,11 +289,73 @@
       };
       el.addEventListener('mouseup', el._bbn.directives.resizable.onmouseup);
     }
+  };
+
+  const analyzeValue = (el, binding) => {
+    if (el._bbn === undefined) {
+      el._bbn = {};
+    }
+    if (el._bbn.directives === undefined) {
+      el._bbn.directives = {};
+    }
+    if (el._bbn.directives.resizable === undefined) {
+      el._bbn.directives.resizable = {};
+    }
+    if ((binding.value !== false)
+      && !el.classList.contains('bbn-unresizable')
+    ) {
+      let options = {},
+          asMods = bbn.fn.isObject(binding.modifiers) && bbn.fn.numProperties(binding.modifiers),
+          asContainerFromMods = asMods && !!binding.modifiers.container,
+          asArg = !!binding.arg && binding.arg.length,
+          modes = {
+            top: !asMods || !!binding.modifiers.top,
+            right: !asMods || !!binding.modifiers.right,
+            bottom: !asMods || !!binding.modifiers.bottom,
+            left: !asMods || !!binding.modifiers.left
+          },
+          container = false;
+      el.dataset.bbn_resizable = true;
+      el._bbn.directives.resizable = {
+        active: true,
+        resizing: false,
+        enabledModes: modes
+      };
+      if (!el.classList.contains('bbn-resizable')) {
+        el.classList.add('bbn-resizable');
+      }
+
+      if (asArg) {
+        switch (binding.arg) {
+          case 'container':
+            container = binding.value;
+            break;
+        }
+      }
+      else {
+        if (bbn.fn.isObject(binding.value)) {
+          options = binding.value;
+          if (asContainerFromMods) {
+            if ((options.container === undefined)
+              || !bbn.fn.isDom(options.container)
+            ) {
+              bbn.fn.error(bbn._('No "container" property found or not a DOM element'));
+              throw bbn._('No "container" property found or not a DOM element');
+            }
+            container = options.container;
+          }
+        }
+      }
+      el._bbn.directives.resizable.container = container;
+      el._bbn.directives.resizable.options = options;
+      return true;
+    }
     else {
       el.dataset.resizable = false;
       el._bbn.directives.resizable = {
         active: false
       };
+      return false;
     }
   };
 
@@ -378,11 +398,8 @@
         if (binding.oldValue === false) {
           inserted(el, binding);
         }
-        else {
-          el.dataset.bbn_resizable = true;
-          if (!el.classList.contains('bbn-resizable')) {
-            el.classList.add('bbn-resizable');
-          }
+        else if (!isDragging){
+          analyzeValue(el, binding);
         }
       }
       else {
