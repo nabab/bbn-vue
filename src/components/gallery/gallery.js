@@ -742,7 +742,11 @@
                   }
                 }
                 if (src && bbn.fn.isString(src)) {
-                  return bbn.fn.escapeUrl(src, 'w=' + this.col.gallery.realItemWidth + '&thumb=1');
+                  let w = this.col.gallery.realItemWidth;
+                  if (this.col.gallery.isPercentageItemWidth) {
+                    w = this.col.gallery.lastKnownWidth / this.col.gallery.cols;
+                  }
+                  return bbn.fn.escapeUrl(src, 'w=' + w + '&thumb=1');
                 }
                 return null;
               },
