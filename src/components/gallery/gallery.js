@@ -110,6 +110,15 @@
         default: 150
       },
       /**
+       * The unit of measure of the items' width.
+       * @prop {String} ['px'] itemWidthUnit
+       */
+      itemWidthUnit: {
+        type: String,
+        default: 'px',
+        validator: u => ['px', '%'].includes(u)
+      },
+      /**
        * The min width of the items.
        * @prop {Number} minItemWidth
        */
@@ -317,13 +326,30 @@
       }
     },
     computed: {
+      isPercentageItemWidth(){
+        return this.itemWidthUnit === '%';
+      },
+      realItemWidth(){
+        let w = this.currentItemWidth;
+        if (w < this.currentMinItemWidth) {
+          w = this.currentMinItemWidth;
+        }
+        if (w > this.currentMaxItemWidth) {
+          w = this.currentMaxItemWidth;
+        }
+        return w;
+      },
       /**
        * The number of columns.
        * @computed cols
        * @return {Number}
        */
       cols() {
-        return parseInt(this.lastKnownWidth / (this.currentItemWidth + this.columnGap)) || 1
+        if (this.isPercentageItemWidth) {
+
+          return parseInt(this.lastKnownWidth / (this.lastKnownWidth * this.realItemWidth / 100)) || 1;
+        }
+        return parseInt(this.lastKnownWidth / (this.realItemWidth + this.columnGap)) || 1;
       },
       /**
        * The data of the current view
@@ -349,6 +375,9 @@
        * @return {Number}
        */
       currentMinItemWidth() {
+        if (this.isPercentageItemWidth) {
+          return this.minItemWidth || 1;
+        }
         let mw = this.itemWidth - 200;
         return this.minItemWidth || (mw > 50 ? mw : 50);
       },
@@ -358,7 +387,10 @@
        * @return {Number}
        */
       currentMaxItemWidth() {
-        return this.minItemWidth || (this.itemWidth + 200);
+        if (this.isPercentageItemWidth) {
+          return this.maxItemWidth || 100;
+        }
+        return this.maxItemWidth || (this.itemWidth + 200);
       }
     },
     methods: {
@@ -525,8 +557,8 @@
            */
           colStyle() {
             return {
-              width: `${this.gallery.currentItemWidth}px`,
-              margin: `0 ${this.gallery.columnGap / 2}px`,
+              width: `${this.gallery.realItemWidth}${this.gallery.itemWidthUnit}`,
+              margin: '0',
               verticalAlign: 'top',
               display: 'inline-block'
             }
@@ -710,7 +742,7 @@
                   }
                 }
                 if (src && bbn.fn.isString(src)) {
-                  return bbn.fn.escapeUrl(src, 'w=' + this.col.gallery.currentItemWidth + '&thumb=1');
+                  return bbn.fn.escapeUrl(src, 'w=' + this.col.gallery.realItemWidth + '&thumb=1');
                 }
                 return null;
               },

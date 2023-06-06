@@ -114,7 +114,11 @@
         <component :is="scrollable ? 'bbn-scroll' : 'div'"
                   v-else-if="total">
           <div class="bbn-gallery-columns-container"
-               :style="{margin: '0 auto', textAlign: align}">
+               :style="{
+                 margin: '0 auto',
+                 textAlign: align,
+                 columnGap: columnGap + 'px',
+               }">
             <gallery-col v-for="(col, index) in cols"
                         :key="'gallery-col-'+index"
                         :index="index"
