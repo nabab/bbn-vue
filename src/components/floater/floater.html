@@ -10,8 +10,9 @@
       ]"
       v-if="isVisible"
       @resize.stop="onResize"
-      @mouseleave="isOver = false"
-      @mouseenter="isOver = true"
+      @mouseover="ev => $emit('mouseover', ev)"
+      @mouseleave="ev => {$emit('mouseleave', ev); isOver = false}"
+      @mouseenter="ev => {$emit('mouseenter', ev); isOver = true}"
       @keydown.esc.prevent.stop="close()"
       @subready.stop
       :style="currentStyle"
