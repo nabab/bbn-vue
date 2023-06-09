@@ -297,7 +297,9 @@
        * @prop String mode Mode for buttons: normal or big
        */
        mode: {
-         type: String
+         type: String,
+         validator: v => ['small', 'normal', 'big'].includes(v),
+         default: 'normal'
        }
     },
     data(){
@@ -321,7 +323,8 @@
         isPosted: false,
         isLoading: false,
         currentSchema: currentSchema,
-        currentMode: this.mode ? this.mode : (this.closest('bbn-floater') ? 'big' : 'normal'),
+        //currentMode: this.mode ? this.mode : (this.closest('bbn-floater') ? 'big' : 'normal'),
+        currentMode: this.mode,
         _isSetting: false,
         window: null,
         isInit: false,
@@ -841,6 +844,7 @@
           if (!this.window && this.windowed) {
             this.window = this.closest("bbn-floater");
             if ( this.window ){
+              this.currentMode = 'big';
               this.window.addClose(this.closePopup);
             }
           }
