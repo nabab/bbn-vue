@@ -15,7 +15,7 @@
              :name="name"
              class="bbn-radio"
              type="radio"
-             :disabled="isDisabled || d.disabled || (readonly && (modelValue!== d[sourceValue]))"
+             :disabled="isDisabled || d.disabled || (readonly && (modelValue !== d[sourceValue]))"
              :required="required"
              :id="id + '_' + idx"
              @change="changed(d[sourceValue], d, $event)"
