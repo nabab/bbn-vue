@@ -56,7 +56,7 @@
               @click="isOpened = true"
               :disabled="!!isDisabled || !!readonly">
         <option :value="isNullable ? null : ''"
-                v-html="placeholder"
+                v-html="isNullable && !((value === '') || (value === null)) ? _('Clear') : placeholder"
                 :disabled="!isNullable"
                 :selected="(value === '') || (value === null)"/>
         <option v-for="d in filteredData"

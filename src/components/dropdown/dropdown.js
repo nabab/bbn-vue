@@ -50,7 +50,7 @@
     data() {
       return {
         startingTmpValue: '',
-        startingTmpTimeout: null      
+        startingTmpTimeout: null
       };
     },
     /**
