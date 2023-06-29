@@ -58,7 +58,7 @@
         <option value=""
                 v-html="placeholder"
                 :disabled="!isNullable"
-                :selected="!value"/>
+                :selected="(value === '') || (value === null)"/>
         <option v-for="d in filteredData"
                 :value="d.data[sourceValue]"
                 v-html="d.data[sourceText]"/>
