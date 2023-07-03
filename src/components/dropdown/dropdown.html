@@ -46,6 +46,11 @@
                @focus="focus"
                @blur="blur"/>
     <template v-else>
+      <bbn-button :icon="currentIcon"
+                  tabindex="-1"
+                  :class="['bbn-dropdown-select-button', 'bbn-button-right', 'bbn-no-vborder', 'bbn-m', 'bbn-top-right', {
+                    'bbn-disabled': !filteredData.length || !!isDisabled || !!readonly
+                  }]"/>
       <select v-model="currentSelectValue"
               class="bbn-textbox bbn-no-border bbn-flex-fill bbn-p"
               :required="required"
@@ -63,11 +68,6 @@
                 :value="d.data[sourceValue]"
                 v-html="d.data[sourceText]"/>
       </select>
-      <bbn-button :icon="currentIcon"
-                  tabindex="-1"
-                  :class="['bbn-dropdown-select-button', 'bbn-button-right', 'bbn-no-vborder', 'bbn-m', 'bbn-top-right', {
-                    'bbn-disabled': !filteredData.length || !!isDisabled || !!readonly
-                  }]"/>
     </template>
   </div>
   <input type="hidden"
