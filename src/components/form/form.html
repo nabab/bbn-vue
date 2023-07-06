@@ -47,7 +47,7 @@
           class="bbn-form-buttons bbn-middle bbn-vpadding">
         <bbn-button v-for="(button, i) in realButtons"
                     :key="i"
-                    :class="['bbn-hsmargin', {'bbn-primary': button.preset === 'submit'}]"
+                    :class="['bbn-hsmargin', button.class, {'bbn-primary': button.preset === 'submit'}]"
                     v-bind="button"/>
       </div>
       <!-- DEFAULT BUTTONS OUTSIDE WINDOW -->
@@ -56,14 +56,14 @@
            :style="'grid-template-columns: repeat(' + realButtons.length + ', 1fr);'">
         <bbn-button v-for="(button, i) in realButtons"
                     :key="i"
-                    :class="{'bbn-primary': button.preset === 'submit', 'bbn-spadded': true}"
+                    :class="[button.class, {'bbn-primary': button.preset === 'submit', 'bbn-spadded': true}]"
                     v-bind="button"/>
       </div>
       <!-- SMALL BUTTONS IN WINDOW -->
       <div v-else-if="!hasFooter && realButtons.length && (currentMode === 'small')"
           class="bbn-form-buttons bbn-w-100 bbn-vpadding bbn-c">
         <bbn-button v-for="(button, i) in realButtons"
-                    :class="{'bbn-primary': button.preset === 'submit'}"
+                    :class="[button.class, {'bbn-primary': button.preset === 'submit'}]"
                     :key="i"
                     class="bbn-hxspadded"
                     v-bind="button"/>
@@ -73,7 +73,7 @@
            class="bbn-form-buttons bbn-vpadding bbn-c bbn-button-group bbn-grid"
            :style="'grid-template-columns: repeat(' + realButtons.length + ', 1fr)'">
         <bbn-button v-for="(button, i) in realButtons"
-                    :class="{'bbn-primary': button.preset === 'submit'}"
+                    :class="[button.class, {'bbn-primary': button.preset === 'submit'}]"
                     :key="i"
                     :style="{width: '10em'}"
                     v-bind="button"/>
