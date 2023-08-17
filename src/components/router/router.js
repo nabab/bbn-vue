@@ -3552,7 +3552,7 @@
       if ( this.parent ){
         this.parentContainer = this.closest('bbn-container');
         let uri = this.parentContainer.url;
-        if (this.root && (uri !== this.root) && (uri.indexOf(this.root) === 0) ){
+        if (this.root && (uri !== this.root) && (this.root.indexOf(uri) === 0) ){
           uri = this.root;
         }
         this.baseURL = this.formatBaseURL(uri);
