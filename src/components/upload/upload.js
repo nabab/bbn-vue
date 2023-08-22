@@ -679,7 +679,7 @@
           });
         })
         this.emitInput(this.json ? JSON.stringify(value) : value)
-        this.$emit('change', this.value);
+        this.$nextTick(() => this.$emit('change', this.value));
       },
       /**
        * Sets the given progress value to to the file with the given id.
