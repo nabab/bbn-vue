@@ -66,7 +66,8 @@
                 :selected="(value === '') || (value === null)"/>
         <option v-for="d in filteredData"
                 :value="d.data[sourceValue]"
-                v-html="d.data[sourceText]"/>
+                v-html="d.data[sourceText]"
+                :disabled="!!d.data[sourceDisabled]"/>
       </select>
     </template>
   </div>
