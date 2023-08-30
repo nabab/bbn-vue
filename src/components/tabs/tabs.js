@@ -22,6 +22,10 @@
       bbn.vue.inputComponent
     ],
     props: {
+      noRouter: {
+        type: Boolean,
+        default: false
+      },
       /**
        * Set to true gives the component a rounded appearance.
        * @prop {Boolean} [false] radius
@@ -197,7 +201,10 @@
      * @emits input
      */
     mounted(){
-      this.router = this.closest('bbn-router');
+      if (!this.noRouter) {
+        this.router = this.closest('bbn-router');
+      }
+
       this.ready = true;
       // If no timeout color won't work
       setTimeout(() => {
