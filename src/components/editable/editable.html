@@ -3,11 +3,11 @@
      @mouseenter="over = true"
      @mouseleave="over = false"
      >
-  <component v-if="isEditing && component"
+  <component v-if="!disabled && isEditing && component"
             :is="component"
             v-model="currentValue"
             v-bind="componentOptions"/>
-  <component v-else-if="isEditing"
+  <component v-else-if="!disabled && isEditing"
             :is="componentObject"
             v-model="currentValue"
             :source="source"
@@ -27,7 +27,7 @@
       width: '8rem',
       paddingLeft: '1rem',
       textAlign: 'left',
-      display: isEditing || over ? 'block' : 'none'
+      display: !disabled && (isEditing || over) ? 'block' : 'none'
     }">
     <i :class="'bbn-p inline ' + editIcon"
       @click.stop="edit"
