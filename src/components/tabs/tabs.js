@@ -160,6 +160,10 @@
         if (this.router) {
           return this.router.getMenuFn(idx);
         }
+        else if (this.noRouter) {
+          return this.source[idx].menu || [];
+        }
+        return [];
       },
       onScrollReady() {
         bbn.fn.log("on scroll, ready");
