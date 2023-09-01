@@ -68,112 +68,186 @@
       // we prevent default from the event
       e.stopImmediatePropagation();
       e.preventDefault();
-      let rectContainer = ele._bbn.directives.resizable.container.getBoundingClientRect(),
+      let rectCont = ele._bbn.directives.resizable.container.getBoundingClientRect(),
           rectEle = ele.getBoundingClientRect(),
-          style = window.getComputedStyle(ele),
+          styleEle = window.getComputedStyle(ele),
+          styleContainer = window.getComputedStyle(ele._bbn.directives.resizable.container),
           x = bbn.fn.roundDecimal(e.x, 0),
           y = bbn.fn.roundDecimal(e.y, 0),
           modes = ele._bbn.directives.resizable.modes,
-          minWidth = parseFloat(style.minWidth) || 10,
-          maxWidth = parseFloat(style.maxWidth) || rectContainer.width,
-          minHeight = parseFloat(style.minHeight) || 10,
-          maxHeight = parseFloat(style.maxHeight) || rectContainer.height,
           xMovement = bbn.fn.roundDecimal(ele._bbn.directives.resizable.mouseX - x, 0),
           yMovement = bbn.fn.roundDecimal(ele._bbn.directives.resizable.mouseY - y, 0),
           width = rectEle.width + (!!modes.left ? xMovement : -xMovement),
           height = rectEle.height + (!!modes.top ? yMovement : -yMovement),
-          paddingLeft = parseFloat(style.paddingLeft) || 0,
-          paddingRight = parseFloat(style.paddingRight) || 0,
-          paddingTop = parseFloat(style.paddingTop) || 0,
-          paddingBottom = parseFloat(style.paddingBottom) || 0,
-          borderLeft = parseFloat(style.borderLeft) || 0,
-          borderRight = parseFloat(style.borderRight) || 0,
-          borderTop = parseFloat(style.borderTop) || 0,
-          borderBottom = parseFloat(style.borderBottom) || 0,
-          wt = paddingLeft + paddingRight + borderLeft + borderRight,
-          ht = paddingTop + paddingBottom + borderTop + borderBottom;
-      if (minWidth < wt) {
-        minWidth = wt;
-      }
-      if (minHeight < ht) {
-        minHeight = ht;
-      }
-      if (maxWidth > rectContainer.width) {
-        maxWidth = rectContainer.width;
-      }
-      if (maxHeight > rectContainer.height) {
-        maxHeight = rectContainer.height;
-      }
-      width = width < minWidth ? minWidth : (width > maxWidth ? maxWidth : width);
-      height = height < minHeight ? minHeight : (height > maxHeight ? maxHeight : height);
-      if (((!!modes.left && xMovement)
-          || (!!modes.top && yMovement)
-        )
-        && (style.position !== 'absolute')
-        && (style.position !== 'fixed')
-      ) {
-        ele.style.position = 'absolute';
-      }
-      if ((!!modes.left || !!modes.right) && (width !== rectEle.width)) {
-        let detail = {
-              from: !!modes.left ? 'left' : 'right',
-              movement: xMovement,
-              size: width,
-              oldSize: rectEle.width
+          isAbs = styleEle.position === 'absolute',
+          isFixed = styleEle.position === 'fixed',
+          toSetAbs = false,
+          element = {
+            minWidth: ((parseFloat(styleEle.paddingLeft) || 0) +
+              (parseFloat(styleEle.paddingRight) || 0) +
+              (parseFloat(styleEle.borderLeft) || 0) +
+              (parseFloat(styleEle.borderRight) || 0)) || 1,
+            maxWidth: rectCont.width,
+            minHeight: ((parseFloat(styleEle.paddingTop) || 0) +
+              (parseFloat(styleEle.paddingBottom) || 0) +
+              (parseFloat(styleEle.borderTop) || 0) +
+              (parseFloat(styleEle.borderBottom) || 0)) || 1,
+            maxHeight: rectCont.height,
+            margin: {
+              top: parseFloat(styleEle.marginTop) || 0,
+              right: parseFloat(styleEle.marginRight) || 0,
+              bottom: parseFloat(styleEle.marginBottom) || 0,
+              left: parseFloat(styleEle.marginLeft) || 0,
             },
-            ev = new CustomEvent('resize', {
-              cancelable: true,
-              bubbles: true,
-              detail: detail
-            });
-        ele.dispatchEvent(ev);
-        if (!ev.defaultPrevented) {
-          if (!!modes.left && xMovement) {
-            ele.style.left = ele.offsetLeft - xMovement + 'px';
-          }
-          ele.style.width = width + 'px';
-          if (ele.__vue__ !== undefined) {
-            ele.__vue__.$emit('userresize', ev, detail);
-            if (!ev.defaultPrevented
-              && (ele.__vue__.parentResizer !== undefined)
-              && bbn.fn.isFunction(ele.__vue__.parentResizer.onResize)
-            ) {
-              ele.__vue__.parentResizer.onResize();
+            padding : {
+              top: parseFloat(styleEle.paddingTop) || 0,
+              right: parseFloat(styleEle.paddingRight) || 0,
+              bottom: parseFloat(styleEle.paddingBottom) || 0,
+              left: parseFloat(styleEle.paddingLeft) || 0
+            },
+            border : {
+              top: parseFloat(styleEle.borderTop) || 0,
+              right: parseFloat(styleEle.borderRight) || 0,
+              bottom: parseFloat(styleEle.borderBottom) || 0,
+              left: parseFloat(styleEle.borderLeft) || 0
             }
+          },
+          container = {
+            margin: {
+              top: parseFloat(styleContainer.marginTop) || 0,
+              right: parseFloat(styleContainer.marginRight) || 0,
+              bottom: parseFloat(styleContainer.marginBottom) || 0,
+              left: parseFloat(styleContainer.marginLeft) || 0,
+            },
+            padding : {
+              top: parseFloat(styleContainer.paddingTop) || 0,
+              right: parseFloat(styleContainer.paddingRight) || 0,
+              bottom: parseFloat(styleContainer.paddingBottom) || 0,
+              left: parseFloat(styleContainer.paddingLeft) || 0
+            },
+            border : {
+              top: parseFloat(styleContainer.borderTop) || 0,
+              right: parseFloat(styleContainer.borderRight) || 0,
+              bottom: parseFloat(styleContainer.borderBottom) || 0,
+              left: parseFloat(styleContainer.borderLeft) || 0
+            }
+          };
+      element.margin.totalX = element.margin.left + element.margin.right;
+      element.margin.totalY = element.margin.top + element.margin.bottom;
+      container.margin.totalX = container.margin.left + container.margin.right;
+      container.margin.totalY = container.margin.top + container.margin.bottom;
+      container.padding.totalX = container.padding.left + container.padding.right;
+      container.padding.totalY = container.padding.top + container.padding.bottom;
+      if (element.maxWidth > (rectCont.width - container.padding.totalX - element.margin.totalX)) {
+        element.maxWidth = rectCont.width - container.padding.totalX - element.margin.totalX;
+      }
+
+      if (element.maxHeight > (rectCont.height - container.padding.totalY - element.margin.totalY)) {
+        element.maxHeight = rectCont.height - container.padding.totalY - element.margin.totalY;
+      }
+
+      width = width < element.minWidth ?
+        element.minWidth :
+        (width > element.maxWidth ? element.maxWidth : width);
+      height = height < element.minHeight ?
+        element.minHeight :
+        (height > element.maxHeight ? element.maxHeight : height);
+      if ((!!modes.left || !!modes.right) && xMovement) {
+        if (!!modes.left) {
+          const minLeft = rectCont.left +
+            container.padding.left +
+            container.border.left +
+            element.margin.left;
+          var tmpLeft = rectEle.left - xMovement;
+          if (tmpLeft < minLeft) {
+            xMovement = minLeft - tmpLeft;
+            width -= xMovement;
+            tmpLeft = minLeft;
+          }
+        }
+
+        if (width !== rectEle.width) {
+          let ev = makeEvent(!!modes.left ? 'left' : 'right', xMovement, width, rectEle.width);
+          ele.dispatchEvent(ev);
+          if (!ev.defaultPrevented) {
+            if (!!modes.left && xMovement) {
+              if (!isAbs && !isFixed) {
+                toSetAbs = true;
+                isAbs = true;
+              }
+              if (isAbs) {
+                tmpLeft -= rectCont.left;
+              }
+              ele.style.left = tmpLeft - element.margin.left + 'px';
+            }
+            setSize(ele, styleEle.height, width + 'px', toSetAbs);
           }
         }
       }
-      if ((!!modes.top || !!modes.bottom) && (height !== rectEle.height)) {
-        let detail = {
-              from: !!modes.top ? 'top' : 'bottom',
-              movement: yMovement,
-              size: height,
-              oldSize: rectEle.height
-            },
-            ev = new CustomEvent('userresize', {
-              cancelable: true,
-              bubbles: true,
-              detail: detail
-            });
-        ele.dispatchEvent(ev);
-        if (!ev.defaultPrevented) {
-          if (!!modes.top && yMovement) {
-            ele.style.top = ele.offsetTop - yMovement + 'px';
+      if ((!!modes.top || !!modes.bottom) && yMovement) {
+        if (!!modes.top) {
+          const minTop = rectCont.top +
+            container.padding.top +
+            container.border.top +
+            element.margin.top;
+          var tmpTop = rectEle.top - yMovement;
+          if (tmpTop < minTop) {
+            yMovement = minTop - tmpTop;
+            height -= yMovement;
+            tmpTop = minTop;
           }
-          ele.style.height = height + 'px';
-          if (ele.__vue__ !== undefined) {
-            ele.__vue__.$emit('userresize', ev, detail);
-            if (!ev.defaultPrevented
-              && (ele.__vue__.parentResizer !== undefined)
-              && bbn.fn.isFunction(ele.__vue__.parentResizer.onResize)
-            ) {
-              ele.__vue__.parentResizer.onResize();
+        }
+
+        if (height !== rectEle.height) {
+          let ev = makeEvent(!!modes.top ? 'top' : 'bottom', yMovement, height, rectEle.height);
+          ele.dispatchEvent(ev);
+          if (!ev.defaultPrevented) {
+            if (!!modes.top && yMovement) {
+              if (!isAbs && !isFixed) {
+                toSetAbs = true;
+                isAbs = true;
+              }
+              if (isAbs) {
+                tmpTop -= rectCont.top;
+              }
+              ele.style.top = tmpTop - element.margin.top + 'px';
             }
+            setSize(ele, height + 'px', styleEle.width, toSetAbs);
           }
         }
       }
       ele._bbn.directives.resizable.mouseX = x;
       ele._bbn.directives.resizable.mouseY = y;
+    }
+  };
+
+  const makeEvent = (from, movement, size, oldSize) => {
+    return new CustomEvent('userresize', {
+      cancelable: true,
+      bubbles: true,
+      detail: bbn.fn.createObject({
+        from: from,
+        movement: movement,
+        size: size,
+        oldSize: oldSize
+      })
+    });
+  };
+
+  const setSize = (ele, height, width, abs) => {
+    ele.style.height = height;
+    ele.style.width = width;
+    if (abs) {
+      ele.style.position = 'absolute';
+    }
+    if (ele.__vue__ !== undefined) {
+      ele.__vue__.$emit('userresize', ev, detail);
+      if (!ev.defaultPrevented
+        && (ele.__vue__.parentResizer !== undefined)
+        && bbn.fn.isFunction(ele.__vue__.parentResizer.onResize)
+      ) {
+        ele.__vue__.parentResizer.onResize();
+      }
     }
   };
 
