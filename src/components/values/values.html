@@ -53,4 +53,9 @@
                @close="isOpened = false"
                :source="filteredData"
   ></bbn-floater>
+  <input class="bbn-hidden"
+         ref="input"
+         :value="value"
+         :readonly="readonly"
+         :required="required">
 </div>
