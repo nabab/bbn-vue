@@ -180,6 +180,13 @@
       afterScrollDelay: {
         type: Number,
         default: 500
+      },
+      /**
+       * @prop {Boolean} [false] keepVisible
+       */
+      keepVisible: {
+        type: Boolean,
+        default: false
       }
     },
     data() {

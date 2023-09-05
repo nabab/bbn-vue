@@ -15,6 +15,7 @@
     <component :is="scrollable ? 'bbn-scroll' : 'div'"
                :class="{'bbn-overlay': !!fullSize, 'bbn-form-container': true}"
                :axis="scrollable ? 'y' : null"
+               :keep-visible="keepScrollVisible"
                ref="container">
       <fieldset class="bbn-form-fieldset bbn-no-border bbn-no-radius bbn-no-margin bbn-no-padding"
                 :disabled="disabled">
