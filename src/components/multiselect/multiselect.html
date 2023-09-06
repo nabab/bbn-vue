@@ -1,15 +1,27 @@
 <div :class="[componentClass, 'bbn-w-100', 'bbn-textbox']"
      tabindex="0"
      @keydown.stop="keydown($event)"
-     style="min-height: 6.5rem">
-  <input type="hidden"
-         ref="element"
-         v-model="value"
-         :disabled="isDisabled"
-         :required="required"
-         :readonly="readonly"
-  >
-  <bbn-scroll ref="scroll">
+     :style="{minHeight: mode === 'checkboxes' ? null : '6.5rem'}">
+  <div v-if="mode === 'checkboxes'"
+       class="bbn-w-100">
+    <bbn-checkbox v-for="it in source"
+                  :key="it.value"
+                  :value="it.value"
+                  :checked="value.includes(it.value)"
+                  :disabled="disabled || it.disabled"
+                  :readonly="readonly || it.readonly"
+                  @change="select(it)"
+                  :label="it.text"
+                  class="bbn-hsmargin"/>
+  </div>
+  <bbn-scroll v-else
+              ref="scroll">
+    <input type="hidden"
+          ref="element"
+          v-model="value"
+          :disabled="isDisabled"
+          :required="required"
+          :readonly="readonly">
     <bbn-list :source="source"
               :selection="true"
               class="bbn-reset"

@@ -130,6 +130,10 @@
         default(){
           return [];
         }
+      },
+      mode: {
+        type: String,
+        default: 'normal'
       }
 
     },
