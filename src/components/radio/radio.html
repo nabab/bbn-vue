@@ -24,6 +24,7 @@
              :for="id + '_' + idx">
         <component v-if="d.component"
                    :is="d.component"
+                   v-bind="d.componentOptions"
                    class="bbn-left-sspace"/>
         <span v-else
                class="bbn-left-sspace"
