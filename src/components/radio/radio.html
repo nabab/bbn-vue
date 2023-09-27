@@ -19,7 +19,8 @@
              :required="required"
              :id="id + '_' + idx"
              @change="changed(d[sourceValue], d, $event)"
-             :checked="d[sourceValue] === modelValue">
+             :checked="d[sourceValue] === modelValue"
+             style="display: none">
       <label class="bbn-radio-label bbn-iflex bbn-vmiddle"
              :for="id + '_' + idx">
         <component v-if="d.component"
