@@ -672,20 +672,33 @@
        * Checks if the form content is valid.
        * @method isValid
        */
-      isValid(force, callValidation = true) {
+      isValid(force, callValidation = true, onlyFirst = true) {
         let ok = true;
-        let elems = this.findAll('.bbn-input-component');
-        if (Array.isArray(elems)) {
-          bbn.fn.each(elems, a => {
-            if ((bbn.fn.isFunction(a.isValid) && !a.isValid(a, callValidation))
-              || (bbn.fn.isFunction(a.validation) && !a.validation())
-            ) {
-              ok = false;
-            }
-            if ( !ok ){
-              return false;
+        let elems = this.$el.querySelectorAll('.bbn-input-component');
+        let firstFound = null;
+        if (!!elems && elems.length) {
+          bbn.fn.each(elems, e => {
+            if (e.__vue__ !== undefined) {
+              let ele = e.__vue__;
+              if ((bbn.fn.isFunction(ele.isValid) && !ele.isValid(ele, callValidation))
+                  || (bbn.fn.isFunction(ele.validation) && !ele.validation())
+              ) {
+                ok = false;
+                if (bbn.fn.isNull(firstFound)) {
+                  firstFound = ele;
+                }
+              }
+              if (!ok && !!onlyFirst) {
+                return false;
+              }
             }
           });
+        }
+        if (!ok && bbn.fn.isFunction(firstFound.focus)) {
+          firstFound.focus();
+          if (this.scrollable) {
+            this.getRef('container').scrollTo(0, firstFound);
+          }
         }
         if (ok && this.validation && callValidation) {
           ok = this.validation(this.source, this.originalData, force)
