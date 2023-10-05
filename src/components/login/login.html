@@ -23,10 +23,13 @@
        :style="{maxHeight: clientHeight + 'px'}">
     <div class="bbn-login-logo bbn-c bbn-block">
       <div v-if="isLogoTag"
-                v-html="logo"></div>
+           v-html="logo"/>
       <img v-else-if="logo" :src="logo">
     </div>
-    <div class="bbn-vlmargin bbn-block bbn-c">
+    <div v-if="custom"
+         v-html="custom"
+         class="bbn-login-custom bbn-top-lspace bbn-block"/>
+    <div class="bbn-vlmargin bbn-c bbn-middle">
       <div v-if="currentMode === 'invalid'"
             class="bbn-block">
         <h3 class="bbn-c"
@@ -38,7 +41,8 @@
              v-text="_('Back to the login page')"/>
         </h3>
       </div>
-      <bbn-form :action="currentUrl"
+      <bbn-form v-else
+                :action="currentUrl"
                 :source="currentFormData"
                 :data="{mode: currentMode}"
                 :buttons="[]"
@@ -49,8 +53,7 @@
                 @success="onAfterSubmit"
                 key="form"
                 :validation="validation"
-                v-else
-      >
+                class="bbn-w-100">
         <div v-if="currentMode === 'login'"
              class="bbn-w-100">
           <div class="bbn-w-100 bbn-c bbn-vsmargin">
