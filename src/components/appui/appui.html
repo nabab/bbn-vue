@@ -387,4 +387,11 @@
       </template>
     </div>
   </bbn-slider>
+  <!-- LOADING MODAL -->
+  <div v-if="isLoading"
+       class="bbn-fixed bbn-pos-top bbn-pos-right bbn-pos-bottom bbn-pos-left"
+       style="z-index: 10000">
+    <bbn-loader :text="loadingText"
+                class="bbn-modal"/>
+  </div>
 </div>
