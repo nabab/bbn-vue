@@ -1017,7 +1017,7 @@
           width: 0,
           height: 0
         };
-        let parent = this.container || this.$root.$el;
+        let parent = bbn.fn.isDom(this.container) ? this.container : this.$root.$el;
 
         if (parent && (width || height)) {
           if (!parent.insertAdjacentElement) {

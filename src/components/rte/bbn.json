@@ -4,5 +4,8 @@
   "authors": [
     "Thomas Nabet <thomas.nabet@gmail.com>"
   ],
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "iro.js": "5.0.*"
+  }
 }
