@@ -7,7 +7,7 @@
     <div v-if="hasToolbar || search"
          class="bbn-table-toolbar bbn-w-100"
          ref="toolbar">
-      <bbn-toolbar v-if="toolbarButtons.length || search"
+      <bbn-toolbar v-if="toolbarButtons.length || (search && !isString(toolbar) && !isObject(toolbar))"
                    :source="toolbarButtons"
                    :slot-before="toolbarSlotBefore">
         <slot name="toolbar"></slot>

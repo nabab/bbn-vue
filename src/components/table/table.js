@@ -1274,6 +1274,8 @@
       }
     },
     methods: {
+      isString: bbn.fn.isString,
+      isObject: bbn.fn.isObject,
       buttonSource() {
         if (bbn.fn.isFunction(this.realButtons)) {
           return this.realButtons(...arguments);
