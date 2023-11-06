@@ -158,6 +158,14 @@
       radius: {
         type: Boolean,
         default: false
+      },
+      /**
+       * Set to true gives the component a squared appearance.
+       * @prop {Boolean} [false] squared
+       */
+      squared: {
+        type: Boolean,
+        default: false
       }
     },
     /**

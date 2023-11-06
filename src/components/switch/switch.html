@@ -8,7 +8,10 @@
          :checked="state"
          ref="element"
   >
-  <span :class="['bbn-switch-slider', 'bbn-primary', cls, {'bbn-switch-round': !!radius}]"
+  <span :class="['bbn-switch-slider', 'bbn-primary', cls, {
+          'bbn-switch-round': !!radius,
+          'bbn-switch-squared': !!squared
+        }]"
         tabindex="0"
         :for="id"
         @focus="focus"
