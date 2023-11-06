@@ -78,6 +78,13 @@
             step: 0.1,
             decimals: 1
           }, {
+            text: 'rem',
+            value: 'rem',
+            min: 0.1,
+            max: 200,
+            step: 0.1,
+            decimals: 1
+          }, {
             text: 'vh',
             value: 'vh',
             min: 1,
