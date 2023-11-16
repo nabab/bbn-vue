@@ -581,11 +581,15 @@
     v-droppable="!!col.gallery.isSorting && !!col.gallery.uid"
     @drop="changeOrder">
   <span :class="{
-          'bbn-spadded': !loaded,
-          'bbn-c': !loaded
+          'bbn-spadded': !loaded || ((source.data.is_image !== undefined) && !source.data.is_image),
+          'bbn-c': !loaded || ((source.data.is_image !== undefined) && !source.data.is_image)
         }"
         style="display: block">
-    <img :src="imgSrc"
+    <i v-if="(source.data.is_image !== undefined) && !source.data.is_image"
+       :class="['nf nf-fa-file', 'bbn-xxl', {'bbn-bottom-lspace': !!showOverlay}]"
+       style="display: block"/>
+    <img v-else
+         :src="imgSrc"
          @load="loaded = true"
          @error="error = true"
          :class="{
@@ -645,14 +649,14 @@
                  * @data {Boolean} [false] loaded
                  * @memberof gallery-item
                  */
-                loaded: false,
+                loaded: (this.source.data.is_image !== undefined) && !this.source.data.is_image,
                 /**
                  * The element to which the context menu is attached
                  * @data {HTMLElement} [undefined] buttonMenuElement
                  * @memberof gallery-item
                  */
                 buttonMenuElement: undefined,
-                error: false,
+                error: false
               }
             },
             computed: {
