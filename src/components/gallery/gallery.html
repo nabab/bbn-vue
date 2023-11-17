@@ -91,9 +91,9 @@
   <div :class="{'bbn-flex-fill': scrollable}">
     <div :class="['bbn-flex-width', {'bbn-overlay': scrollable}]">
       <div v-if="!!currentSelected && currentSelected.length && !!uid"
-           class="bbn-gallery-selected-panel bbn-rel">
+           class="bbn-gallery-selected-panel bbn-rel bbn-hxsspace">
         <bbn-scroll>
-          <div class="bbn-gallery-selected-panel-grid bbn-hxspadded">
+          <div class="bbn-gallery-selected-panel-grid">
             <gallery-selected v-for="(sel, idx) in currentSelected"
                               :source="sel"
                               :key="idx"/>
