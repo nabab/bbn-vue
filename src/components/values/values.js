@@ -119,7 +119,7 @@
           e.preventDefault();
           this.add();
         }
-        else if (this.commonKeydown(e)) {
+        else if ((e.key === ' ') || this.commonKeydown(e)) {
           return;
         }
         else if (e.key === 'Escape') {
