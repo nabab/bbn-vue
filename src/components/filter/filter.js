@@ -502,7 +502,7 @@
              * @data currentValue
              * @memberof bbn-filter-form
              */
-            currentValue: this.value || '',
+            currentValue: this.value !== undefined ? this.value : '',
             /**
              * The current component.
              * @data {String} currentComponent
@@ -659,7 +659,13 @@
            * @memberof bbn-filter-form
            */
           validate(cancel){
-            if ( this.currentField && this.currentOperator && (this.currentValue || this.editorHasNoValue(this.currentOperator)) ){
+            if (this.currentField
+              && this.currentOperator
+              && (this.currentValue
+                || bbn.fn.isNumber(this.currentValue)
+                || (bbn.fn.isString(this.currentValue) && this.currentValue.length)
+                || this.editorHasNoValue(this.currentOperator))
+            ) {
               var tmp = {
                 field: this.currentField,
                 operator: this.currentOperator
