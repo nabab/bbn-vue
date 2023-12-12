@@ -9,5 +9,12 @@
     "Unset condition": "Rimuovi il valore dalla condizione",
     "Are you sure you want to delete this group of conditions?": "Sei sicuro di voler eliminare questo gruppo di condizioni?",
     "Value is required. You should choose another operator if you want to look for an element empty or null": "Il valore è obbligatorio. Dovresti scegliere un altro operatore se vuoi cercare un elemento vuoto o nullo",
-    "Where the following conditions are true": "Dove sono vere le seguenti condizioni"
+    "Where the following conditions are true": "Dove sono vere le seguenti condizioni",
+    "seconds": "secondi",
+    "minutes": "minuti",
+    "hours": "ore",
+    "days": "giorni",
+    "weeks": "settimane",
+    "months": "mesi",
+    "years": "anni"
 }

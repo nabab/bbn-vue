@@ -2,6 +2,7 @@
   "use strict";
 
   const editorNoValueOperators = ['', 'isnull', 'isnotnull', 'isempty', 'isnotempty', 'istrue', 'isfalse'];
+  const fromNowOperators = ['gten', 'gtn', 'lten', 'ltn'];
 
   bbn.fn.autoExtend("vue", {
     /**
@@ -30,6 +31,16 @@
          */
         editorHasNoValue(operator){
           return editorNoValueOperators.indexOf(operator) > -1;
+        },
+        /**
+         * Returns true if the editor has from now operator.
+         * @memberof dataEditorComponent
+         * @method editorHasFromNowOperator
+         * @param {String} operator
+         * @returns {Boolean}
+         */
+        editorHasFromNowOperator(operator){
+          return fromNowOperators.includes(operator);
         },
         /**
          * Defines the correct editor for the given col.
@@ -126,9 +137,13 @@
               eq: bbn._('Is equal to'),
               neq: bbn._('Is not equal to'),
               gte: bbn._('Is after than or equal to'),
+              gten: bbn._('Is after than or equal to...from now'),
               gt: bbn._('Is after'),
+              gtn: bbn._('Is after than...from now'),
               lte: bbn._('Is prior to or equal to'),
+              lten: bbn._('Is prior to or equal to...from now'),
               lt: bbn._('Is older than'),
+              ltn: bbn._('Is older than...from now'),
             },
             enums: {
               eq: bbn._('Is equal to'),
