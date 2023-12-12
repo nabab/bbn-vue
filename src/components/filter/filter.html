@@ -111,7 +111,23 @@
                               :placeholder="_('Pick an operator')"/>
               </div>
               <div :class="[{'bbn-hidden': !!no_value}, 'bbn-block', 'bbn-filter-padding', 'bbn-db-value', 'bbn-top-xsspace']">
-                <component v-if="type && currentComponent"
+                <bbn-filter-fromnow v-if="currentType && currentOperator && editorHasFromNowOperator(currentOperator)"
+                                    inline-template
+                                    v-model="currentValue"
+                                    ref="value"
+                                    :disabled="no_value">
+                  <div class="bbn-filter-fromnow">
+                    <bbn-numeric v-model="val"
+                                 class="bbn-narrower"
+                                 :min="1"
+                                 :disabled="disabled"/>
+                    <bbn-dropdown :source="intervals"
+                                  v-model="interval"
+                                  class="bbn-narrow"
+                                  :disabled="disabled"/>
+                  </div>
+                </bbn-filter-fromnow>
+                <component v-else-if="type && currentComponent"
                            :is="currentComponent"
                            :disabled="no_value"
                            name="value"

@@ -1,4 +1,4 @@
- /**
+/**
   * @file bbn-filter component
   *
   * @description The purpose of this component is to apply filters to a complex structure of data.
@@ -68,7 +68,7 @@
    // var  borders = ['#414d40', '#5a6559', '#7f897e', '#6c7a78', '#515963']
    // var  borders = ['red', 'green', 'yellow', 'pink', 'blue']
   var borders = ['#e47777','#fa4a4a', '#8d0e0e','#b44f4f','#c16262'],
-    bg_colors = ['rgba(228,119,119,0.2)', 'rgba(250,74,74,0.2)', 'rgba(141,14,14,0.2)', 'rgba(180,79,79,0.2)', 'rgba(193,98,98,0.2)'];
+      bg_colors = ['rgba(228,119,119,0.2)', 'rgba(250,74,74,0.2)', 'rgba(141,14,14,0.2)', 'rgba(180,79,79,0.2)', 'rgba(193,98,98,0.2)'];
 
 
   Vue.component('bbn-filter', {
@@ -670,7 +670,10 @@
                 field: this.currentField,
                 operator: this.currentOperator
               };
-              if ( !this.editorHasNoValue(this.currentOperator) ){
+              if (this.editorHasFromNowOperator(this.currentOperator)) {
+                tmp.exp = this.currentValue;
+              }
+              else if ( !this.editorHasNoValue(this.currentOperator) ){
                 tmp.value = this.currentValue;
               }
               if ( (cancel === true) && this.currentCondition){
@@ -848,6 +851,95 @@
             }
           }
           */
+        },
+        components: {
+          'bbn-filter-fromnow': {
+            name: 'bbn-filter-fromnow',
+            mixins: [bbn.vue.basicComponent],
+            props: {
+              value: {
+                type: String
+              },
+              disabled: {
+                type: Boolean
+              }
+            },
+            data(){
+              return {
+                rex: /^(\d+)\s*(second|minute|hour|day|week|month|year)$/,
+                val: this.getVal(this.value),
+                interval: this.getInterval(this.value),
+                intervals: [{
+                  text: bbn._('seconds'),
+                  value: 'second'
+                }, {
+                  text: bbn._('minutes'),
+                  value: 'minute'
+                }, {
+                  text: bbn._('hours'),
+                  value: 'hour'
+                }, {
+                  text: bbn._('days'),
+                  value: 'day'
+                }, {
+                  text: bbn._('weeks'),
+                  value: 'week'
+                }, {
+                  text: bbn._('months'),
+                  value: 'month'
+                }, {
+                  text: bbn._('years'),
+                  value: 'year'
+                }]
+              }
+            },
+            methods: {
+              getVal(value){
+                const rv = value.match(this.rex);
+                if (bbn.fn.isArray(rv) && (rv[1] !== undefined)) {
+                  return rv[1];
+                }
+
+                return '';
+              },
+              getInterval(value){
+                const rv = value.match(this.rex);
+                if (bbn.fn.isArray(rv) && (rv[2] !== undefined)) {
+                  return rv[2];
+                }
+
+                return '';
+              }
+            },
+            watch: {
+              value(newVal){
+                this.$nextTick(() => {
+                  let val = this.getVal(newVal);
+                  let interval = this.getInterval(newVal);
+                  if (this.val !== val) {
+                    this.val = val;
+                  }
+                  if (this.interval !== interval) {
+                    this.interval = interval;
+                  }
+                });
+              },
+              val(newVal){
+                this.$nextTick(() => {
+                  if (newVal.toString().length && this.interval.length) {
+                    this.$emit('input', newVal + ' ' + this.interval);
+                  }
+                });
+              },
+              interval(newVal){
+                this.$nextTick(() => {
+                  if (newVal.length && this.val.toString().length) {
+                    this.$emit('input', this.val + ' ' + newVal);
+                  }
+                });
+              }
+            }
+          }
         }
       }
     }
