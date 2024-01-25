@@ -1058,35 +1058,48 @@
     },
     mounted(){
       if ( this.cool ){
-        if (this.$refs.app) {
-          this.app = this.$refs.app;
-        }
-        this.intervalBugChrome = setInterval(() => {
-          if (this.isFocused && this.$el.scrollLeft) {
-            this.$el.scrollLeft = 0;
+        // Dummy element for checking if bbn-css is loaded
+        let dummyElement = document.createElement('div');
+        dummyElement.className = 'bbn-hidden';
+        dummyElement.style.visibility = 'hidden';
+        dummyElement.style.width = '100%';
+        dummyElement.style.height = '100%';
+        document.body.appendChild(dummyElement);
+        const cssInterval = setInterval(() => {
+          if (!dummyElement.clientWidth) {
+            document.body.removeChild(dummyElement);
+            clearInterval(cssInterval);
+            if (this.$refs.app) {
+              this.app = this.$refs.app;
+            }
+            this.intervalBugChrome = setInterval(() => {
+              if (this.isFocused && this.$el.scrollLeft) {
+                this.$el.scrollLeft = 0;
+              }
+            }, 1000)
+            this.onResize();
+            setTimeout(() => {
+              this.ready = true;
+              this.opacity = 1;
+              setTimeout(() => {
+                this._postMessage({
+                  type: 'initCompleted'
+                });
+                this.updatePostIts();
+                this.registerChannel('appui', true);
+                if (this.plugins['appui-chat']){
+                  this.registerChannel('appui-chat');
+                }
+                if (this.plugins['appui-notification']) {
+                  this.registerChannel('appui-notification');
+                  this.browserNotificationURL = this.plugins['appui-notification'];
+                  this.browserNotificationSW = true;
+                }
+                this.poll();
+              }, 5000);
+            }, this.app && this.app.header ? 1000 : 10);
           }
-        }, 1000)
-        this.onResize();
-        setTimeout(() => {
-          this.ready = true;
-          this.opacity = 1;
-          setTimeout(() => {
-            this._postMessage({
-              type: 'initCompleted'
-            });
-            this.updatePostIts();
-            this.registerChannel('appui', true);
-            if (this.plugins['appui-chat']){
-              this.registerChannel('appui-chat');
-            }
-            if (this.plugins['appui-notification']) {
-              this.registerChannel('appui-notification');
-              this.browserNotificationURL = this.plugins['appui-notification'];
-              this.browserNotificationSW = true;
-            }
-            this.poll();
-          }, 5000);
-        }, this.app && this.app.header ? 1000 : 10);
+        }, 100)
       }
     },
     beforeDestroy(){
