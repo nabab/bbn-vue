@@ -245,6 +245,11 @@
             });
           }
         }
+        else if (!!d.saltError) {
+          this.alert(bbn._('The login session has expired, the page will be reloaded so you can log in again.'), false, () => {}, () => {
+            window.document.location.href = bbn.env.root;
+          });
+        }
         else {
           this.alert(d.errorMessage, false);
         }
@@ -338,6 +343,11 @@
             }
           }, this.expires);
         }
+        this.cookieInterval = setInterval(() => {
+          if (!document.cookie.includes('PHPSESSID')) {
+            this.hasExpired = true;
+          }
+        }, 1000);
       });
       window.addEventListener('resize', this.setHeight);
     },
@@ -346,6 +356,7 @@
      */
     beforeDestroy(){
       window.removeEventListener('resize', this.setHeight);
+      clearInterval(this.cookieInterval);
     },
     watch: {
       /**
