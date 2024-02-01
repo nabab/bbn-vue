@@ -14,6 +14,7 @@
            'bbn-flex-width': !collapsed,
            'bbn-flex-height': collapsed
          }]"
+         :style="{'padding-bottom': !!collapsed ? 'var(--sspace)' : 0}"
          v-if="headerVisible">
       <bbn-button v-if="collapsable && collapsed"
                   class="bbn-no-border"
