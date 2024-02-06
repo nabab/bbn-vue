@@ -525,7 +525,11 @@
         }
       },
 
-      error(obj, timeout){
+      error(obj, timeout) {
+        if (obj?.error) {
+          obj = {content: obj.error, title: obj.errorTitle || bbn._('Error')};
+        }
+
         return this.notify(obj, "error", timeout);
       },
 

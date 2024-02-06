@@ -2334,7 +2334,6 @@
                 if (this.urls[url]) {
                   this.urls[url].errorStatus = xhr;
                   this.urls[url].setTitle(bbn._("Error"));
-                  this.urls[url].setIcon("nf nf-fa-warning");
                   if (this.selected === idx) {
                     this.callRouter(finalURL, url);
                   }

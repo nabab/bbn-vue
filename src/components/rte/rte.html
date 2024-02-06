@@ -61,6 +61,7 @@
 					 :class="{'bbn-overlay': !!currentHeight}">
 				<bbn-code v-model="currentValue"
 									mode="html"
+									@input="emitInput(currentValue)"
 									:fill="!!currentHeight"/>
 			</div>
 		</div>
