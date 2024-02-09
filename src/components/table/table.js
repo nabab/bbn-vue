@@ -1883,7 +1883,7 @@
                 v-if="!col.fixed && (col.group === tg.value) && (col.showable !== false) && (col.title || col.ftitle)">
               <bbn-checkbox :checked="shownCols[i]"
                             @change="check(col, i)"
-                            :label="col.ftitle || col.title"
+                            :label="(col.title || '') + (col.title && col.ftitle ? ' - ' : '') + (col.ftitle || '')"
                             :contrary="true"/>
             </li>
           </ul>
