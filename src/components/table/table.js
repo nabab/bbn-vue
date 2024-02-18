@@ -1920,12 +1920,13 @@
                 bbn.fn.each(this.source.cols, (a, i) => {
                   if (a.hidden == this.shownCols[i]) {
                     if (this.shownCols[i]) {
-                      toShow.push(i);
+                      toShow.push(a.field || i);
                     } else {
-                      toHide.push(i);
+                      toHide.push(a.field || i);
                     }
                   }
                 });
+                bbn.fn.log(["HOW/HIDE", toShow, toHide])
                 if (toShow.length) {
                   table.show(toShow);
                 }
@@ -2059,11 +2060,27 @@
             }
           }
           if (this.showable) {
+            if (cfg.hidden) {
+              bbn.fn.log("HIDEN TEST", cfg.hidden.length, cfg.hidden.filter(a => bbn.fn.isNumber(a)).length);
+              // Old indexed system translation
+              if (cfg.hidden.length === cfg.hidden.filter(a => bbn.fn.isNumber(a)).length) {
+                const newHidden = [];
+                bbn.fn.each(cfg.hidden, idx => {
+                  if (this.cols[idx]) {
+                    newHidden.push(this.cols[idx].field || idx);
+                  }
+                });
+                cfg.hidden = newHidden;
+                bbn.fn.log("new hidden", newHidden)
+              }
+            }
+
             if ((cfg.hidden !== undefined) && (cfg.hidden !== this.currentHidden)) {
               this.currentHidden = cfg.hidden;
             }
+
             bbn.fn.each(this.cols, (a, i) => {
-              let hidden = (this.currentHidden.indexOf(i) > -1);
+              let hidden = (this.currentHidden.indexOf(a.field || i) > -1);
               if (a.hidden !== hidden) {
                 //bbn.fn.log("CHANGING HIDDEN");
                 this.$set(this.cols[i], 'hidden', hidden);
@@ -2888,12 +2905,14 @@
         if (!Array.isArray(colIndexes)) {
           colIndexes = [colIndexes];
         }
+
         bbn.fn.each(colIndexes, colIndex => {
-          if (this.cols[colIndex]) {
-            if ((this.cols[colIndex].hidden && !hide) || (!this.cols[colIndex].hidden && hide)) {
-              let idx = this.currentHidden.indexOf(colIndex);
+          let col = bbn.fn.isNumber(colIndex) ? this.cols[colIndex] : bbn.fn.getRow(this.cols, {field: colIndex})
+          if (col) {
+            if ((col.hidden && !hide) || (!col.hidden && hide)) {
+              let idx = this.currentHidden.indexOf(col.field || colIndex);
               if (hide && (idx === -1)) {
-                this.currentHidden.push(colIndex);
+                this.currentHidden.push(col.field || colIndex);
               } else if (!hide && (idx > -1)) {
                 this.currentHidden.splice(idx, 1);
               }
@@ -3240,7 +3259,7 @@
         let initColumn = [];
         bbn.fn.each(this.cols, (a, i) => {
           if (a.hidden) {
-            tmp.push(i);
+            tmp.push(a.field || i);
           }
           else if (initColumn.length <= 10) {
             initColumn.push(i);
@@ -3324,7 +3343,7 @@
             let initColumn = [];
             bbn.fn.each(this.cols, (a, i) => {
               if (a.hidden) {
-                tmp.push(i);
+                tmp.push(a.field || i);
               }
               else if (initColumn.length <= 10) {
                 initColumn.push(i);

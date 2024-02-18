@@ -49,7 +49,7 @@
   </div>
 
   <!-- MAIN CONTENT -->
-  <div :class="['bbn-content', 'bbn-radius-bottom', 'bbn-no-border', {'bbn-padded': !component || (contentPadding === true)}]"
+  <div :class="['bbn-content', 'bbn-radius-bottom', 'bbn-no-border', {'bbn-padding': !component || (contentPadding === true)}]"
        :style="{
          padding: contentPadding ? contentPadding : null,
          minHeight: isLoading && (!currentItems || !currentItems.length) ? '15em' : null
