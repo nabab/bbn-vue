@@ -2061,9 +2061,9 @@
           }
           if (this.showable) {
             if (cfg.hidden) {
-              bbn.fn.log("HIDEN TEST", cfg.hidden.length, cfg.hidden.filter(a => bbn.fn.isNumber(a)).length);
+              //bbn.fn.log("HIDsEN TEST", cfg.hidden.length, cfg.hidden.filter(a => bbn.fn.isNumber(a)).length);
               // Old indexed system translation
-              if (cfg.hidden.length === cfg.hidden.filter(a => bbn.fn.isNumber(a)).length) {
+              if (cfg.hidden.length && (cfg.hidden.length === cfg.hidden.filter(a => bbn.fn.isNumber(a)).length)) {
                 const newHidden = [];
                 bbn.fn.each(cfg.hidden, idx => {
                   if (this.cols[idx]) {
@@ -2071,7 +2071,8 @@
                   }
                 });
                 cfg.hidden = newHidden;
-                bbn.fn.log("new hidden", newHidden)
+                this.setConfig(cfg, true);
+                //bbn.fn.log("new hidden", newHidden)
               }
             }
 
@@ -2083,7 +2084,7 @@
               let hidden = (this.currentHidden.indexOf(a.field || i) > -1);
               if (a.hidden !== hidden) {
                 //bbn.fn.log("CHANGING HIDDEN");
-                this.$set(this.cols[i], 'hidden', hidden);
+                this.cols[i].hidden = hidden;
               }
             });
           }
