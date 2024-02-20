@@ -2084,7 +2084,8 @@
               let hidden = (this.currentHidden.indexOf(a.field || i) > -1);
               if (a.hidden !== hidden) {
                 //bbn.fn.log("CHANGING HIDDEN");
-                this.cols[i].hidden = hidden;
+                //this.cols[i].hidden = hidden;
+                this.$set(this.cols[i], 'hidden', hidden);
               }
             });
           }
