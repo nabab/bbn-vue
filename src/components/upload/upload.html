@@ -10,7 +10,7 @@
              'bbn-alt-dark': !!(idx % 2),
              'bbn-primary-text-alt': f.status === 'ready'
            }]"
-      >
+           v-if="!f.hidden">
         <div v-if="icons">
           <i :class="['bbn-large', getFileIcon(f)]"/>
         </div>
@@ -78,7 +78,7 @@
               @click="download(f)"
               :title="currentText.download"
             ></i>
-            <i v-if="(f.status === 'success') && editable && !uploading"
+            <i v-if="(f.status === 'success') && editable && !uploading && (!keepDisallowedExt || !!isExtAllowed(getExtension(f.data.name)))"
               class="bbn-large nf nf-fa-edit bbn-p bbn-right-sspace"
               @click="edit(f)"
               :title="currentText.editFilename"
@@ -88,7 +88,7 @@
               @click="retry(f)"
               :title="currentText.retry"
             ></i>
-            <i v-if="eliminable && (f.status !== 'progress') && !uploading"
+            <i v-if="eliminable && (f.status !== 'progress') && !uploading && (!keepDisallowedExt || !!isExtAllowed(getExtension(f.data.name)))"
               class="bbn-large nf nf-fa-trash bbn-p"
               @click="remove(f)"
               :title="currentText.remove"

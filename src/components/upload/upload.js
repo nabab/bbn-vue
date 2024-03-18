@@ -235,6 +235,22 @@
       showFilesize: {
         type: Boolean,
         default: true
+      },
+      /**
+       * Keeps files with disallowed extension in file list (read-only)
+       * @prop {Boolean} [false] keepDisallowedExt
+       */
+      keepDisallowedExt: {
+        type: Boolean,
+        default: false
+      },
+      /**
+       * Keeps, in hidden mode, files with disallowed extension in file list (read-only)
+       * @prop {Boolean} [false] hideDisallowedExt
+       */
+      hideDisallowedExt: {
+        type: Boolean,
+        default: false
       }
     },
     data(){
@@ -376,7 +392,8 @@
           fromUser: fromUser,
           fromPaste: !!fromPaste,
           edit: false,
-          progress: 0
+          progress: 0,
+          hidden: this.keepDisallowedExt && this.hideDisallowedExt && !this.isExtAllowed(this.getExtension(file.name))
         }
       },
       /**
@@ -450,6 +467,7 @@
           if ( !file.data.name || ((file.data.size !== undefined) && !file.data.size) ){
             return false
           }
+
           if ( bbn.fn.getRow(this.currentData, {'data.name': file.data.name}) ){
             if ( file.fromUser ){
               this.$emit('error', {file: file.data.name, message: bbn._('The file exists!')})
@@ -457,19 +475,19 @@
             }
             return false
           }
-          if ( bbn.fn.isArray(this.extensions) && this.extensions.length ){
-            let ext = file.data.name.substring(file.data.name.lastIndexOf('.')+1).toLowerCase(),
-                extensions = bbn.fn.map(this.extensions, e => {
-                  return e.toLowerCase();
-                });
-            if ( !extensions.includes(ext) ){
-              if ( file.fromUser ){
-                this.$emit('error', {file: file.data.name, message: bbn._('The extension') + ` "${ext}" ` + bbn._('is not allowed') + '!'})
-                this.alert(bbn._('The extension') + ` "${ext}" ` + bbn._('is not allowed') + '!')
-              }
+
+          let ext = this.getExtension(file.data.name);
+          if (!this.isExtAllowed(ext)) {
+            if (file.fromUser) {
+              this.$emit('error', {file: file.data.name, message: bbn._('The extension') + ` "${ext}" ` + bbn._('is not allowed') + '!'})
+              this.alert(bbn._('The extension') + ` "${ext}" ` + bbn._('is not allowed') + '!')
+              return false
+            }
+            else if (!this.keepDisallowedExt) {
               return false
             }
           }
+
           return true
         })
       },
@@ -932,6 +950,33 @@
        */
       isFile(file){
         return file.data instanceof File;
+      },
+      /**
+       * Gets the file's extension.
+       * @method getExtension
+       * @param {String} filename
+       * @return String
+       */
+      getExtension(filename){
+        return !!filename && filename.length ? filename.substring(filename.lastIndexOf('.')+1).toLowerCase() : '';
+      },
+      /**
+       * Checks if the given file extension is allowed
+       * @method isExtAllowed
+       * @param {String} ext
+       * @return Boolean
+       */
+      isExtAllowed(ext){
+        if (bbn.fn.isArray(this.extensions)
+          && this.extensions.length
+        ) {
+          let extensions = bbn.fn.map(this.extensions, e => {
+                return e.toLowerCase();
+              });
+          return extensions.includes(ext.toLowerCase());
+        }
+
+        return true;
       }
     },
     /**
