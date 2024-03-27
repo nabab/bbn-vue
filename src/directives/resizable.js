@@ -180,7 +180,7 @@
               }
               ele.style.left = tmpLeft - element.margin.left + 'px';
             }
-            setSize(ele, styleEle.height, width + 'px', toSetAbs);
+            setSize(ele, styleEle.height, width + 'px', toSetAbs, ev);
           }
         }
       }
@@ -212,7 +212,7 @@
               }
               ele.style.top = tmpTop - element.margin.top + 'px';
             }
-            setSize(ele, height + 'px', styleEle.width, toSetAbs);
+            setSize(ele, height + 'px', styleEle.width, toSetAbs, ev);
           }
         }
       }
@@ -234,14 +234,14 @@
     });
   };
 
-  const setSize = (ele, height, width, abs) => {
+  const setSize = (ele, height, width, abs, ev) => {
     ele.style.height = height;
     ele.style.width = width;
     if (abs) {
       ele.style.position = 'absolute';
     }
     if (ele.__vue__ !== undefined) {
-      ele.__vue__.$emit('userresize', ev, detail);
+      ele.__vue__.$emit('userresize', ev);
       if (!ev.defaultPrevented
         && (ele.__vue__.parentResizer !== undefined)
         && bbn.fn.isFunction(ele.__vue__.parentResizer.onResize)

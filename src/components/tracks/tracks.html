@@ -1,5 +1,5 @@
 <div class="bbn-tracks bbn-iflex-height bbn-100">
-  <div>
+  <div class="bbn-r bbn-bottom-sspace">
     <bbn-button @click="zoomIn">+</bbn-button>
     <bbn-button @click="zoomOut">-</bbn-button>
   </div>
@@ -15,14 +15,8 @@
                :style="{'grid-area': '1 / ' + i + ' / 1 / span 2'}"/>
           <div v-for="(c, i) in numCols"
                :class="['bbn-tracks-col-cell', 'bbn-bordered-right', 'bbn-c', 'bbn-bordered-bottom', {'bbn-bordered-left': i === 0}]"/>
-          <div v-for="e in currentEvents"
-               class="bbn-bordered bbn-tracks-event"
-               :style="{
-                 position: 'absolute',
-                 left: e.left,
-                 width: e.width,
-                 backgroundColor: e.bgColor
-               }"/>
+          <track v-for="e in currentEvents"
+                 :source="e"/>
         </template>
       </div>
     </bbn-scroll>

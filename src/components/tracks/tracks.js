@@ -40,7 +40,8 @@
     },
     data(){
       return {
-        secPerPx: 120,
+        secPerPx: 30,
+        currentEvents : []
       }
     },
     computed: {
@@ -81,42 +82,117 @@
           'grid-template-columns': 'repeat(' + this.numCols + ', ' + (this.step / this.secPerPx) + 'px)',
           'grid-template-rows': '2.5rem max-content',
         };
+      }
+    },
+    methods: {
+      zoomIn(){
+        this.secPerPx += 1;
       },
-      currentEvents(){
+      zoomOut(){
+        if (this.secPerPx > 1) {
+          this.secPerPx -= 1;
+        }
+      },
+      updateEvents(){
+        let events = [];
         if (this.events.length) {
-          return bbn.fn.map(
+          let tmpEvents = bbn.fn.order(
             bbn.fn.filter(this.events, e => {
               return !!e.start
                 && !!e.end
                 && (e.start < this.currentEnd)
                 && (e.start >= this.currentStart);
             }),
-            e => {
-              return {
-                start: dayjs(e.start).unix(),
-                end: dayjs(e.end).unix(),
-                left: (dayjs(e.start).unix() - this.currentStartUnix) / this.secPerPx + 'px',
-                width: (dayjs(e.end).unix() - dayjs(e.start).unix()) / this.secPerPx + 'px',
-                bgColor: "#"+((1<<24)*Math.random()|0).toString(16),
-                data: e,
-              }
-            }
+            'start',
+            'asc'
           );
+          bbn.fn.each(tmpEvents, (e, i) => {
+            let color = "#"+((1<<24)*Math.random()|0).toString(16);
+            let startUnix = dayjs(e.start).unix();
+            let endUnix = dayjs(e.end).unix();
+            let leftLocked = this.currentStartUnix > startUnix;
+            let rightLocked = this.currentEndUnix < endUnix;
+            let left = (leftLocked ? this.currentStartUnix : (startUnix - this.currentStartUnix)) / this.secPerPx;
+            let maxLeft = 0;
+            let maxRight = this.currentEndUnix / this.secPerPx;
+            if (!!tmpEvents[i-1]) {
+              maxLeft = (dayjs(tmpEvents[i-1].end).unix() - this.currentStartUnix) / this.secPerPx;
+            }
+            if (!!tmpEvents[i+1]) {
+              maxRight = (dayjs(tmpEvents[i+1].start).unix() - this.currentStartUnix) / this.secPerPx;
+            }
+            events.push({
+              start: startUnix,
+              end: endUnix,
+              left: left,
+              width: (endUnix - startUnix) / this.secPerPx,
+              maxLeft: maxLeft,
+              maxRight: maxRight,
+              leftLocked: true,
+              rightLocked: rightLocked,
+              bgColor: color,
+              data: e,
+            })
+          });
         }
 
-        return [];
+        this.currentEvents.splice(0, this.currentEvents.length, ...events);
       }
     },
-    methods: {
-      zoomIn(){
-        this.secPerPx += 30;
+    created(){
+      this.updateEvents();
+    },
+    watch: {
+      currentStartUnix(){
+        this.updateEvents();
       },
-      zoomOut(){
-        this.secPerPx -= 30;
-        if (this.secPerPx <= 0) {
-          this.secPerPx = 1;
+      currentEndUnix(){
+        this.updateEvents();
+      },
+      step(){
+        this.updateEvents();
+      },
+      events(){
+        this.updateEvents();
+      },
+      secPerPx(){
+        this.updateEvents();
+      }
+    },
+    components: {
+      track: {
+        name: 'track',
+        template: `
+        <div class="bbn-tracks-event"
+             :style="{
+               position: 'absolute',
+               left: source.left + 'px',
+               width: source.width + 'px',
+               backgroundColor: source.bgColor
+             }"
+             v-resizable.left.right="true"
+             @userresize="onResize"/>
+        `,
+        props: {
+          source: {
+            type: Object,
+            required: true
+          }
+        },
+        methods: {
+          onResize(event){
+            bbn.fn.log('resize', event)
+            if (((event.detail.from === 'left')
+                && !!this.source.leftLocked)
+              || ((event.detail.from === 'right')
+                && !!this.source.rightLocked)
+            ) {
+              event.preventDefault();
+              return;
+            }
+          }
         }
-      },
+      }
     }
   });
 })(bbn);
