@@ -31,7 +31,7 @@
         type: Number,
         default: 3600
       },
-      events: {
+      tracks: {
         type: Array,
         default(){
           return []
@@ -41,7 +41,7 @@
     data(){
       return {
         secPerPx: 30,
-        currentEvents : []
+        currentTracks : []
       }
     },
     computed: {
@@ -93,77 +93,79 @@
           this.secPerPx -= 1;
         }
       },
-      updateEvents(){
-        let events = [];
-        if (this.events.length) {
-          let tmpEvents = bbn.fn.order(
-            bbn.fn.filter(this.events, e => {
-              return !!e.start
-                && !!e.end
-                && (e.start < this.currentEnd)
-                && (e.start >= this.currentStart);
+      updateTracks(){
+        this.currentTracks.splice(0);
+        if (this.tracks.length) {
+          let tmpTracks = bbn.fn.order(
+            bbn.fn.filter(this.tracks, t => {
+              return !!t.start
+                && !!t.end
+                && (t.start < this.currentEnd)
+                && (t.start >= this.currentStart);
             }),
             'start',
             'asc'
           );
-          bbn.fn.each(tmpEvents, (e, i) => {
+          bbn.fn.each(tmpTracks, (track, index) => {
             let color = "#"+((1<<24)*Math.random()|0).toString(16);
-            let startUnix = dayjs(e.start).unix();
-            let endUnix = dayjs(e.end).unix();
+            let startUnix = dayjs(track.start).unix();
+            let endUnix = dayjs(track.end).unix();
             let leftLocked = this.currentStartUnix > startUnix;
             let rightLocked = this.currentEndUnix < endUnix;
             let left = (leftLocked ? this.currentStartUnix : (startUnix - this.currentStartUnix)) / this.secPerPx;
             let maxLeft = 0;
             let maxRight = this.currentEndUnix / this.secPerPx;
-            if (!!tmpEvents[i-1]) {
-              maxLeft = (dayjs(tmpEvents[i-1].end).unix() - this.currentStartUnix) / this.secPerPx;
+            if (!!tmpTracks[index-1]) {
+              maxLeft = (dayjs(tmpTracks[index-1].end).unix() - this.currentStartUnix) / this.secPerPx;
             }
-            if (!!tmpEvents[i+1]) {
-              maxRight = (dayjs(tmpEvents[i+1].start).unix() - this.currentStartUnix) / this.secPerPx;
+            if (!!tmpTracks[index+1]) {
+              maxRight = (dayjs(tmpTracks[index+1].start).unix() - this.currentStartUnix) / this.secPerPx;
             }
-            events.push({
+            this.currentTracks.push({
+              index: index,
               start: startUnix,
               end: endUnix,
               left: left,
               width: (endUnix - startUnix) / this.secPerPx,
               maxLeft: maxLeft,
               maxRight: maxRight,
-              leftLocked: true,
+              leftLocked: leftLocked,
               rightLocked: rightLocked,
               bgColor: color,
-              data: e,
+              data: track,
             })
           });
         }
-
-        this.currentEvents.splice(0, this.currentEvents.length, ...events);
-      }
+      },
     },
     created(){
-      this.updateEvents();
+      this.updateTracks();
     },
     watch: {
       currentStartUnix(){
-        this.updateEvents();
+        this.updateTracks();
       },
       currentEndUnix(){
-        this.updateEvents();
+        this.updateTracks();
       },
       step(){
-        this.updateEvents();
+        this.updateTracks();
       },
-      events(){
-        this.updateEvents();
+      tracks:{
+        deep: true,
+        handler(){
+          this.updateTracks();
+        }
       },
       secPerPx(){
-        this.updateEvents();
+        this.updateTracks();
       }
     },
     components: {
       track: {
         name: 'track',
         template: `
-        <div class="bbn-tracks-event"
+        <div class="bbn-tracks-track"
              :style="{
                position: 'absolute',
                left: source.left + 'px',
@@ -179,17 +181,42 @@
             required: true
           }
         },
+        data(){
+          return {
+            main: this.closest('bbn-tracks')
+          }
+        },
         methods: {
           onResize(event){
             bbn.fn.log('resize', event)
-            if (((event.detail.from === 'left')
-                && !!this.source.leftLocked)
-              || ((event.detail.from === 'right')
-                && !!this.source.rightLocked)
-            ) {
-              event.preventDefault();
-              return;
+            if (event.detail.from === 'left') {
+              if (!!this.source.leftLocked) {
+                event.preventDefault();
+                return;
+              }
+
+              bbn.fn.log('movement', event.detail.from + ' ' + event.detail.movement);
+              let left = this.source.left - event.detail.movement;
+              bbn.fn.log('currentLeft', this.source.left);
+              bbn.fn.log('newLeft', left);
+              if (left < this.source.maxLeft) {
+                event.preventDefault();
+                return;
+              }
+
+              this.source.left = left;
+              let start = this.source.start - (event.detail.movement * this.main.secPerPx);
+              bbn.fn.log('currentStart', this.source.start);
+              bbn.fn.log('newStart', start);
             }
+            else if (event.detail.from === 'right') {
+              if (!!this.source.rightLocked) {
+                event.preventDefault();
+                return;
+              }
+            }
+
+            this.source.width = (this.source.end - this.source.start) / this.main.secPerPx;
           }
         }
       }

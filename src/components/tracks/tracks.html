@@ -15,8 +15,8 @@
                :style="{'grid-area': '1 / ' + i + ' / 1 / span 2'}"/>
           <div v-for="(c, i) in numCols"
                :class="['bbn-tracks-col-cell', 'bbn-bordered-right', 'bbn-c', 'bbn-bordered-bottom', {'bbn-bordered-left': i === 0}]"/>
-          <track v-for="e in currentEvents"
-                 :source="e"/>
+          <track v-for="track in currentTracks"
+                 :source="track"/>
         </template>
       </div>
     </bbn-scroll>
