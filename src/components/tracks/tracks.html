@@ -1,22 +1,47 @@
-<div class="bbn-tracks bbn-iflex-height bbn-100">
-  <div class="bbn-r bbn-bottom-sspace">
-    <bbn-button @click="zoomIn">+</bbn-button>
-    <bbn-button @click="zoomOut">-</bbn-button>
+<div class="bbn-tracks bbn-iflex-height bbn-100 bbn-bordered bbn-radius">
+  <div class="bbn-flex-width bbn-spadded"
+       style="gap: var(--sspace)">
+    <div class="bbn-flex-fill bbn-vmiddle bbn-lg bbn-secondary bbn-xspadded bbn-radius"
+         style="gap: var(--sspace)">
+      <i class="nf nf-fa-calendar bbn-xl"/>
+      <span class="bbn-b"
+            v-text="currentStartTitle"/>
+      <i class="nf nf-fa-long_arrow_right bbn-xl"/>
+      <span class="bbn-b"
+            v-text="currentEndTitle"/>
+    </div>
+    <div class="bbn-vmiddle bbn-xspadded bbn-alt-background bbn-radius"
+         style="gap: var(--sspace)">
+      <bbn-button @click="zoomIn"
+                  icon="nf nf-fa-plus"
+                  :notext="true"
+                  class="bbn-tertiary bbn-lg"
+                  :disabled="secPerPx === 1"/>
+      <i class="nf nf-fa-search bbn-xl bbn-alt-text"/>
+      <bbn-button @click="zoomOut"
+                  icon="nf nf-fa-minus"
+                  :notext="true"
+                  class="bbn-tertiary bbn-lg"/>
+    </div>
   </div>
   <div class="bbn-flex-fill">
-    <bbn-scroll axis="x">
-      <div class="bbn-grid"
+    <bbn-scroll axis="x"
+                ref="scroll"
+                @ready="scrollToFirstTrack">
+      <div class="bbn-grid bbn-h-100"
            :style="gridStyle">
         <template v-if="numCols">
           <div v-for="(c, i) in cols"
                v-if="i % 2 !== 0"
-               :class="['bbn-tracks-col-header', 'bbn-bordered-top', 'bbn-bordered-bottom', 'bbn-bordered-right', 'bbn-middle', 'bbn-spadded', {'bbn-bordered-left': i === 1}]"
+               :class="['bbn-tracks-col-header', 'bbn-bordered-top', 'bbn-bordered-bottom', 'bbn-bordered-right', 'bbn-middle', 'bbn-spadded', {'bbn-bordered-right': !!cols[i + 1]}]"
                v-text="c.label"
                :style="{'grid-area': '1 / ' + i + ' / 1 / span 2'}"/>
           <div v-for="(c, i) in numCols"
-               :class="['bbn-tracks-col-cell', 'bbn-bordered-right', 'bbn-c', 'bbn-bordered-bottom', {'bbn-bordered-left': i === 0}]"/>
-          <track v-for="track in currentTracks"
-                 :source="track"/>
+               :class="['bbn-tracks-col-cell', 'bbn-c', {'bbn-bordered-right': c !== numCols}]"/>
+          <track v-for="(track, it) in currentTracks"
+                 :source="track"
+                 :key="it"
+                 :ref="'track-' + it"/>
         </template>
       </div>
     </bbn-scroll>

@@ -268,7 +268,7 @@
       });
       ele.dispatchEvent(ev);
       if (ele.__vue__ !== undefined) {
-        ele.__vue__.$emit('userresizestart', ev);
+        ele.__vue__.$emit('userresizeend', ev);
       }
       document.removeEventListener('mouseup', fnEnd, {once: true});
       document.removeEventListener('mousemove', fnDrag);
