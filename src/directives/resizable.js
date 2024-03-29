@@ -180,7 +180,7 @@
               }
               ele.style.left = tmpLeft - element.margin.left + 'px';
             }
-            setSize(ele, styleEle.height, width + 'px', toSetAbs, ev);
+            setSize(ele, null, width + 'px', toSetAbs, ev);
           }
         }
       }
@@ -212,7 +212,7 @@
               }
               ele.style.top = tmpTop - element.margin.top + 'px';
             }
-            setSize(ele, height + 'px', styleEle.width, toSetAbs, ev);
+            setSize(ele, height + 'px', null, toSetAbs, ev);
           }
         }
       }
@@ -235,11 +235,18 @@
   };
 
   const setSize = (ele, height, width, abs, ev) => {
-    ele.style.height = height;
-    ele.style.width = width;
+    if (!bbn.fn.isNull(height)) {
+      ele.style.height = height;
+    }
+
+    if (!bbn.fn.isNull(width)) {
+      ele.style.width = width;
+    }
+
     if (abs) {
       ele.style.position = 'absolute';
     }
+
     if (ele.__vue__ !== undefined) {
       ele.__vue__.$emit('userresize', ev);
       if (!ev.defaultPrevented

@@ -238,8 +238,10 @@
               title: this.tmpRow ? bbn._('Row insertion') : bbn._('Row edition'),
             }, winOptions ? winOptions : {});
             // A component is given as global editor (form)
-            if (this.editor) {
-              popup.component = bbn.fn.isFunction(this.editor) ? this.editor(row, index) : this.editor;
+            if (this.editor || !!popup.component) {
+              if (!popup.component) {
+                popup.component = bbn.fn.isFunction(this.editor) ? this.editor(row, index) : this.editor;
+              }
               if (this.editorOptions) {
                 popup.componentOptions = bbn.fn.extend({
                   source: row

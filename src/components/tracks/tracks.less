@@ -1,7 +1,17 @@
 .bbn-tracks {
-  .bbn-tracks-track {
+  .bbn-tracks-item {
     top: 3rem;
     bottom: 0.5rem;
+    position: absolute;
+    border-radius: 0.6rem;
+    .bbn-tracks-item-resizing-times {
+      position: absolute;
+      top: var(--sspace);
+      left: var(--sspace);
+    }
+    .bbn-tracks-item-overlay {
+      z-index: 1;
+    }
   }
   .bbn-tracks-label {
     position: sticky;
