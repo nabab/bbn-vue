@@ -418,7 +418,7 @@
             if ((d.success !== undefined) && !d.success) {
               if (window.appui) {
                 let ev = new Event('editFailure', {cancelable: true});
-                this.$emit('editFailfure', d, ev);
+                this.$emit('editFailure', d, ev);
                 if (!ev.defaultPrevented) {
                   appui.error();
                 }

@@ -1,15 +1,24 @@
 (() => {
   var isDragging = false;
   var currentEle = false;
+  var lastMouseUp = null;
 
   const fnDrag = e => {
     drag(e, currentEle);
   };
 
   const fnEnd = e => {
+    lastMouseUp = e.timeStamp;
     endDrag(e, currentEle);
     document.removeEventListener('mousemove', fnDrag);
     isDragging = false;
+  };
+
+  const fnClick = e => {
+    if (e.target.timeStamp === lastMouseUp) {
+      e.preventDefault();
+      e.stopImmediatePropagation();
+    }
   };
 
   const startDrag = (e, ele) => {
@@ -55,6 +64,7 @@
       }
       if (!ev.defaultPrevented) {
         ev.stopImmediatePropagation();
+        ele.addEventListener('click', fnClick, {once: true});
         document.addEventListener('mouseup', fnEnd, {once: true});
         document.addEventListener('mousemove', fnDrag);
       }
@@ -263,9 +273,6 @@
       && !!ele._bbn.directives.resizable.active
       && !!ele._bbn.directives.resizable.resizing
     ) {
-      ele._bbn.directives.resizable.resizing = false;
-      ele.classList.remove('bbn-resizable-resizing');
-      document.body.style.cursor = ele._bbn.directives.resizable.cursor;
       e.preventDefault();
       e.stopImmediatePropagation();
       let ev = new CustomEvent('userresizeend', {
@@ -277,10 +284,15 @@
       if (ele.__vue__ !== undefined) {
         ele.__vue__.$emit('userresizeend', ev);
       }
+      ele.classList.remove('bbn-resizable-resizing');
+      document.body.style.cursor = ele._bbn.directives.resizable.cursor;
       document.removeEventListener('mouseup', fnEnd, {once: true});
       document.removeEventListener('mousemove', fnDrag);
       delete ele._bbn.directives.resizable.mouseX;
       delete ele._bbn.directives.resizable.mouseY;
+      setTimeout(() => {
+        ele._bbn.directives.resizable.resizing = false;
+      }, 100);
     }
   };
 
@@ -397,11 +409,14 @@
           },
           container = false;
       el.dataset.bbn_resizable = true;
-      el._bbn.directives.resizable = {
+      /* el._bbn.directives.resizable = {
         active: true,
         resizing: false,
         enabledModes: modes
-      };
+      }; */
+      el._bbn.directives.resizable.active = true;
+      el._bbn.directives.resizable.enabledModes = modes;
+      el._bbn.directives.resizable.resizing = !!el._bbn.directives.resizable.resizing;
       if (!el.classList.contains('bbn-resizable')) {
         el.classList.add('bbn-resizable');
       }

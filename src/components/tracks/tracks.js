@@ -95,6 +95,10 @@
           }]
         }
       },
+      filterable: {
+        type: Boolean,
+        default: true
+      },
       sortable: {
         type: Boolean,
         default: true
@@ -108,7 +112,10 @@
           }];
         }
       },
-      filterable: true
+      limit: {
+        type: Number,
+        default: 0
+      }
     },
     data(){
       return {
@@ -246,37 +253,53 @@
       zoomOut(){
         this.secPerPx += this.secPerPx === 1 ? 1 : 2;
       },
-     afterUpdate(){
+      getPostData(){
+        let d = {
+          startDatetime: this.currentStartDatetime,
+          endDatetime: this.currentEndDatetime
+        };
+        if (this.data) {
+          d = bbn.fn.extend(true, {}, d, bbn.fn.isFunction(this.data) ? this.data(d) : this.data);
+        }
+
+        return d;
+      },
+      afterUpdate(){
         if (this.currentData.length) {
-          this.secPerPx = this.calcSecPerPx();
           bbn.fn.each(this.currentData, (item, index) => {
             let color = this.currentColors[index % this.currentColors.length];
             let startUnix = dayjs(item.data.start).unix();
             let endUnix = dayjs(item.data.end).unix();
-            let leftLocked = this.currentStartUnix > startUnix;
-            let rightLocked = this.currentEndUnix < endUnix;
-            let left = (leftLocked ? this.currentStartUnix : (startUnix - this.currentStartUnix)) / this.secPerPx;
+            this.$set(item, 'start', startUnix);
+            this.$set(item, 'end', endUnix);
+            this.$set(item, 'bgColor', color.background);
+            this.$set(item, 'fontColor', color.font);
+            this.$set(item, 'title', item.data.title || '');
+            if (((endUnix - startUnix) / 3) < this.secPerPx) {
+              this.secPerPx = (endUnix - startUnix) / 3;
+            }
+          });
+          this.secPerPx = this.secPerPx < 1 ? 1 : this.secPerPx;
+          bbn.fn.each(this.currentData, (item, index) => {
+            let leftLocked = this.currentStartUnix > item.start;
+            let rightLocked = this.currentEndUnix < item.end;
+            let left = (leftLocked ? this.currentStartUnix : (item.start - this.currentStartUnix)) / this.secPerPx;
             let maxLeft = 0;
             let maxRight = this.currentEndUnix / this.secPerPx;
             if (!!this.currentData[index-1]) {
-              maxLeft = (dayjs(this.currentData[index-1].data.end).unix() - this.currentStartUnix) / this.secPerPx;
+              maxLeft = (this.currentData[index-1].end - this.currentStartUnix) / this.secPerPx;
             }
 
             if (!!this.currentData[index+1]) {
-              maxRight = (dayjs(this.currentData[index+1].data.start).unix() - this.currentStartUnix) / this.secPerPx;
+              maxRight = (this.currentData[index+1].start - this.currentStartUnix) / this.secPerPx;
             }
 
-            this.$set(item, 'start', startUnix);
-            this.$set(item, 'end', endUnix);
             this.$set(item, 'left', left);
-            this.$set(item, 'width', ((!!rightLocked ? this.currentEndUnix : endUnix) - (!!leftLocked ? this.currentStartUnix : startUnix)) / this.secPerPx);
+            this.$set(item, 'width', ((!!rightLocked ? this.currentEndUnix : item.end) - (!!leftLocked ? this.currentStartUnix : item.start)) / this.secPerPx);
             this.$set(item, 'maxLeft', maxLeft);
             this.$set(item, 'maxRight', maxRight);
             this.$set(item, 'leftLocked', leftLocked);
             this.$set(item, 'rightLocked', rightLocked);
-            this.$set(item, 'bgColor', color.background);
-            this.$set(item, 'fontColor', color.font);
-            this.$set(item, 'title', item.data.title || '');
           });
         }
       },
@@ -296,32 +319,21 @@
           this.currentData[index].maxRight = maxRight;
         }
       },
-      calcSecPerPx(){
-        let secPerPx = this.secPerPx;
-        bbn.fn.each(this.currentData, item => {
-          let startUnix = bbn.fn.isSQLDate(item.start) ?
-            dayjs(item.start).unix() :
-            item.start;
-          let endUnix = bbn.fn.isSQLDate(item.end) ?
-            dayjs(item.end).unix() :
-            item.end;
-            if ((endUnix - startUnix) < secPerPx) {
-              secPerPx = endUnix - startUnix;
-            }
-        });
-        return secPerPx
-      },
       scrollToFirstItem(){
         this.$nextTick(() => {
           setTimeout(() => {
             if (!!this.filteredData.length) {
-              let firstItem = this.getRef('item-' + this.filteredData[0].key);
-              if (firstItem) {
-                this.getRef('scroll').scrollTo(firstItem);
-              }
+              let item = !!this.uid ? this.filteredData[0].data[this.uid] : this.filteredData[0].key;
+              this.scrollTo(item);
             }
           }, 300);
         });
+      },
+      scrollTo(item){
+        let itemRef = this.getRef('item-' + item);
+        if (itemRef) {
+          this.getRef('scroll').scrollTo(itemRef);
+        }
       }
     },
     created(){
@@ -374,7 +386,7 @@
                 @mouseleave="isMouseOver = false"
                 @click="edit">
             <div v-if="isResizing"
-                 class="bbn-tracks-item-resizing-times bbn-background bbn-text bbn-spadded bbn-radius">
+                 class="bbn-tracks-item-resizing-times bbn-alt-background bbn-alt-text bbn-spadded bbn-radius">
               <div class="bbn-vmiddle bbn-no-wrap">
                 <i class="nf nf-md-calendar_start bbn-right-sspace bbn-lg"/>
                 <span v-text="currentStart"/>
@@ -439,7 +451,6 @@
             this.isResizing = true;
           },
           onResize(event){
-            bbn.fn.log('resize', event)
             if (!this.isEditable) {
               event.preventDefault();
               return;
@@ -483,7 +494,8 @@
             this.source.width = ((!!this.source.rightLocked ? this.main.currentEndUnix : this.source.end) - (!!this.source.leftLocked ? this.main.currentStartUnix : this.source.start)) / this.main.secPerPx;
             this.main.updateItemMax(this.source.index - 1);
             this.main.updateItemMax(this.source.index + 1);
-            this.main.$emit('edit', this.source);
+            this.source.data.start = dayjs.unix(this.source.start).format('YYYY-MM-DD HH:mm:ss');
+            this.source.data.end = dayjs.unix(this.source.end).format('YYYY-MM-DD HH:mm:ss');
           },
           onResizeEnd(event){
             if (!this.isEditable) {
@@ -491,13 +503,18 @@
               return;
             }
 
+            this.main.$emit('edit', this.source.data);
             this.isResizing = false;
           },
-          edit(){
-            if (this.isEditable){
-              this.main.edit(this.source, {
+          edit(event){
+            if (this.isEditable
+              && !this.isResizing
+              && !event.defaultPrevented
+              && !event.target._bbn.directives.resizable.resizing
+            ) {
+              this.main.edit(this.source.data, {
                 title: bbn._('Edit'),
-                component: this.main.$options.components.form,
+                component: !this.main.editor ? this.main.$options.components.form : undefined,
                 minWidth: 500
               }, this.source.index);
             }
@@ -511,6 +528,8 @@
                     :action="main.url"
                     :scrollable="false"
                     @success="success"
+                    @failure="failure"
+                    @cancel="cancel"
                     ref="form">
             <div class="bbn-padded bbn-grid-fields">
               <span class="bbn-label">` + bbn._('Start') + `</span>
@@ -536,8 +555,25 @@
           }
         },
         methods: {
-          success(d){
-            this.main.updateData();
+          success(d, e) {
+            e.preventDefault();
+            if (this.main.successEdit
+              && bbn.fn.isFunction(this.main.successEdit)
+              && this.main.successEdit(d)
+            ) {
+              this.main.getPopup().close();
+              this.main.updateData();
+            }
+          },
+          failure(d) {
+            this.main.$emit('editFailure', d);
+          },
+          cancel() {
+            if (this.main
+              && bbn.fn.isFunction(this.main.cancel)
+            ) {
+              this.main.cancel();
+            }
           }
         }
       }

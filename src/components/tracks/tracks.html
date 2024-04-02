@@ -41,7 +41,7 @@
           <item v-for="item in filteredData"
                  :source="item"
                  :key="item.key"
-                 :ref="'item-' + item.key"/>
+                 :ref="'item-' + (!!uid ? item.data[uid] : item.key)"/>
         </template>
       </div>
     </bbn-scroll>
