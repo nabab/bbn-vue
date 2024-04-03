@@ -422,7 +422,8 @@
           return {
             main: this.closest('bbn-tracks'),
             isResizing: false,
-            isMouseOver: false
+            isMouseOver: false,
+            originalSource: bbn.fn.clone(this.source)
           }
         },
         computed: {
@@ -448,6 +449,7 @@
               return;
             }
 
+            this.originalSource = bbn.fn.clone(this.source);
             this.isResizing = true;
           },
           onResize(event){
@@ -503,8 +505,10 @@
               return;
             }
 
-            this.main.$emit('edit', this.source.data);
             this.isResizing = false;
+            if (!bbn.fn.isSame(this.source, this.originalSource)) {
+              this.main.$emit('edit', this.source.data);
+            }
           },
           edit(event){
             if (this.isEditable
