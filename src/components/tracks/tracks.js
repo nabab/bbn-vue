@@ -122,7 +122,8 @@
         secPerPx: 30,
         currentStartDatetime: this.getStartDatetime(),
         currentEndDatetime: this.getEndDatetime(),
-        currentFilters: this.getCurrentFilters()
+        currentFilters: this.getCurrentFilters(),
+        isResizing: false
       }
     },
     computed: {
@@ -159,9 +160,8 @@
       },
       gridStyle(){
         return {
-          display: 'grid',
           'grid-template-columns': 'repeat(' + this.numCols + ', ' + (this.step / this.secPerPx) + 'px)',
-          'grid-template-rows': '2.5rem',
+          'grid-template-rows': '2.5rem auto',
         };
       },
       /**
@@ -396,7 +396,7 @@
                 <span v-text="currentEnd"/>
               </div>
             </div>
-            <div v-else-if="isMouseOver"
+            <div v-else-if="isMouseOver && !main.isResizing"
                  class="bbn-tracks-item-overlay bbn-c bbn-alt-background bbn-alt-text bbn-spadded bbn-radius">
               <div v-if="source.title"
                    v-html="source.title"
@@ -444,7 +444,7 @@
         },
         methods: {
           onResizeStart(event){
-            if (!this.isEditable) {
+            if (!this.isEditable || this.main.isResizing) {
               event.preventDefault();
               return;
             }
@@ -513,19 +513,31 @@
           edit(event){
             if (this.isEditable
               && !this.isResizing
+              && !this.main.isResizing
               && !event.defaultPrevented
               && !event.target._bbn.directives.resizable.resizing
             ) {
-              this.main.edit(this.source.data, {
-                title: bbn._('Edit'),
-                component: !this.main.editor ? this.main.$options.components.form : undefined,
-                minWidth: 500
-              }, this.source.index);
+              if (!!this.main.editedRow) {
+                this.main.editedRow = false;
+              }
+
+              this.$nextTick(() => {
+                this.main.edit(this.source.data, {
+                  title: bbn._('Edit'),
+                  component: !this.main.editor ? this.main.$options.components.popupEditor : undefined,
+                  minWidth: 500
+                }, this.source.index);
+              });
             }
+          }
+        },
+        watch: {
+          isResizing(newVal){
+            this.main.isResizing = newVal;
           }
         }
       },
-      form: {
+      popupEditor: {
         template: `
           <bbn-form :source="source.row"
                     :data="source.data"
@@ -537,11 +549,11 @@
                     ref="form">
             <div class="bbn-padded bbn-grid-fields">
               <span class="bbn-label">` + bbn._('Start') + `</span>
-              <bbn-datetimepicker v-model="source.row.data.start"
+              <bbn-datetimepicker v-model="source.row.start"
                                   :show-second="true"
                                   required/>
               <span class="bbn-label">` + bbn._('End') + `</span>
-              <bbn-datetimepicker v-model="source.row.data.end"
+              <bbn-datetimepicker v-model="source.row.end"
                                   :show-second="true"
                                   required/>
             </div>
@@ -573,6 +585,129 @@
             this.main.$emit('editFailure', d);
           },
           cancel() {
+            if (this.main
+              && bbn.fn.isFunction(this.main.cancel)
+            ) {
+              this.main.cancel();
+            }
+          }
+        }
+      },
+      toolbarEditor: {
+        template: `
+          <bbn-form :source="source"
+                    :data="getData()"
+                    :action="main.url"
+                    :scrollable="false"
+                    @success="onSuccess"
+                    @failure="onFailure"
+                    @cancel="onCancel"
+                    ref="form"
+                    :buttons="[]"
+                    @hook:mounted="setForm"
+                    :validation="validation">
+            <div class="bbn-hspadded bbn-bottom-spadded bbn-vmiddle bbn-flex-width"
+                 style="gap: var(--space); align-items: flex-end">
+              <div class="bbn-flex-fill bbn-flex-wrap bbn-vmiddle"
+                   style="gap: var(--space); align-items: flex-end">
+                <span>
+                  <span class="bbn-toplabel">` + bbn._('Start') + `</span>
+                  <bbn-datetimepicker v-model="source.start"
+                                      :show-second="true"
+                                      required/>
+                </span>
+                <span  class="bbn-toplabel">
+                  <span class="bbn-left-space">` + bbn._('End') + `</span>
+                  <bbn-datetimepicker v-model="source.end"
+                                      :show-second="true"
+                                      required/>
+                </span>
+                <div class="bbn-flex"
+                     style="gap: var(--sspace)">
+                  <bbn-button @click="save"
+                              text="` + bbn._('Save') + `"
+                              :notext="true"
+                              icon="nf nf-fa-check_circle"
+                              class="bbn-primary bbn-xl"
+                              :disabled="!form || !form.canSubmit"/>
+                  <bbn-button @click="cancel"
+                              text="` + bbn._('Cancel') + `"
+                              :notext="true"
+                              icon="nf nf-fa-times_circle"
+                              class="bbn-xl"/>
+                </div>
+              </div>
+              <bbn-button @click="remove"
+                          icon="nf nf-fa-trash"
+                          class="bbn-bg-red bbn-white bbn-xl"
+                          text="` + bbn._('Delete') + `"
+                          :notext="true"/>
+            </div>
+          </bbn-form>
+        `,
+        props: {
+          source: {
+            type: Object,
+            required: true
+          }
+        },
+        data(){
+          return {
+            main: this.closest('bbn-tracks'),
+            form: false
+          }
+        },
+        methods: {
+          validation(){
+            if (dayjs(this.source.end).unix() < dayjs(this.source.start).unix()) {
+              this.alert(bbn._('The end date must be more recent than the start date'));
+              return false;
+            }
+            return true;
+          },
+          setForm(){
+            this.form = this.getRef('form');
+          },
+          getData(){
+            return bbn.fn.isFunction(this.main.data) ? this.main.data() : this.main.data;
+          },
+          save(){
+            if (this.form) {
+              this.form.submit();
+            }
+          },
+          cancel(){
+            if (this.form) {
+              this.form.cancel();
+            }
+          },
+          remove(){
+            this.confirm(bbn._('Are you sure you want to delete this item?'), () => {
+              this.post(this.main.url, {
+                action: 'delete',
+                id: this.source.id
+              }, d => {
+                if (d.success) {
+                  this.main.updateData();
+                  this.main.editedRow = false;
+                }
+              });
+            });
+          },
+          onSuccess(d, e) {
+            e.preventDefault();
+            if (this.main.successEdit
+              && bbn.fn.isFunction(this.main.successEdit)
+              && this.main.successEdit(d)
+            ) {
+              this.main.getPopup().close();
+              this.main.updateData();
+            }
+          },
+          onFailure(d) {
+            this.main.$emit('editFailure', d);
+          },
+          onCancel() {
             if (this.main
               && bbn.fn.isFunction(this.main.cancel)
             ) {

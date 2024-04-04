@@ -1,4 +1,4 @@
-<div class="bbn-tracks bbn-iflex-height bbn-100 bbn-bordered bbn-radius">
+<div class="bbn-tracks bbn-iflex-height bbn-100">
   <div class="bbn-flex-width bbn-spadded"
        style="gap: var(--sspace)">
     <div class="bbn-flex-fill bbn-vmiddle bbn-lg bbn-background-secondary bbn-secondary-text bbn-xspadded bbn-radius"
@@ -16,13 +16,21 @@
                   icon="nf nf-fa-plus"
                   :notext="true"
                   class="bbn-tertiary bbn-lg"
-                  :disabled="secPerPx === 1"/>
+                  :disabled="secPerPx === 1"
+                  :title="_('Zoom in')"/>
       <i class="nf nf-fa-search bbn-xl bbn-alt-text"/>
       <bbn-button @click="zoomOut"
                   icon="nf nf-fa-minus"
                   :notext="true"
-                  class="bbn-tertiary bbn-lg"/>
+                  class="bbn-tertiary bbn-lg"
+                  :title="_('Zoom out')"/>
     </div>
+  </div>
+  <div v-if="editMode === 'inline'"
+       class="bbn-tracks-toolbar">
+    <component v-if="!!editedRow"
+               :is="editor || $options.components.toolbarEditor"
+               :source="editedRow"/>
   </div>
   <div class="bbn-flex-fill">
     <bbn-scroll axis="x"
