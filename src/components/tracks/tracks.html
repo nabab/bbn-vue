@@ -1,6 +1,6 @@
 <div class="bbn-tracks bbn-iflex-height bbn-100">
-  <div class="bbn-flex-width bbn-spadded"
-       style="gap: var(--sspace)">
+  <div class="bbn-flex-width bbn-spadded bbn-vmiddle"
+       style="gap: var(--sspace); flex-wrap: wrap">
     <div class="bbn-flex-fill bbn-vmiddle bbn-lg bbn-background-secondary bbn-secondary-text bbn-xspadded bbn-radius"
          style="gap: var(--sspace)">
       <i class="nf nf-fa-calendar bbn-xl"/>
@@ -24,6 +24,14 @@
                   :notext="true"
                   class="bbn-tertiary bbn-lg"
                   :title="_('Zoom out')"/>
+    </div>
+    <div class="bbn-vmiddle bbn-xspadded bbn-alt-background bbn-radius"
+         style="gap: var(--sspace)">
+      <bbn-button @click="updateData"
+                  icon="nf nf-fa-refresh"
+                  :notext="true"
+                  class="bbn-secondary bbn-lg"
+                  :title="_('Refresh')"/>
     </div>
   </div>
   <div v-if="editMode === 'inline'"

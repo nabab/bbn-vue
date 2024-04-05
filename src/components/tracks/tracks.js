@@ -618,7 +618,7 @@
             <div class="bbn-hspadded bbn-bottom-spadded bbn-vmiddle bbn-flex-width"
                  style="gap: var(--space); align-items: flex-end">
               <div class="bbn-flex-fill bbn-flex-wrap bbn-vmiddle"
-                   style="gap: var(--space); align-items: flex-end">
+                   style="gap: var(--space); align-items: flex-end; flex-wrap: wrap !important">
                 <span>
                   <span class="bbn-toplabel">` + bbn._('Start') + `</span>
                   <bbn-datetimepicker v-model="source.start"
