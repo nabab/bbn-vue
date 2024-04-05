@@ -68,6 +68,10 @@
         document.addEventListener('mouseup', fnEnd, {once: true});
         document.addEventListener('mousemove', fnDrag);
       }
+      else {
+        endDrag(e, ele, true);
+        isDragging = false;
+      }
     }
   };
 
@@ -268,28 +272,32 @@
     }
   };
 
-  const endDrag = (e, ele) => {
+  const endDrag = (e, ele, force = false) => {
     if (isDragging
       && !!ele._bbn.directives.resizable.active
       && !!ele._bbn.directives.resizable.resizing
     ) {
       e.preventDefault();
       e.stopImmediatePropagation();
-      let ev = new CustomEvent('userresizeend', {
-        cancelable: true,
-        bubbles: true,
-        detail: ele._bbn.directives.resizable
-      });
-      ele.dispatchEvent(ev);
-      if (ele.__vue__ !== undefined) {
-        ele.__vue__.$emit('userresizeend', ev);
+      if (!force) {
+        let ev = new CustomEvent('userresizeend', {
+          cancelable: true,
+          bubbles: true,
+          detail: ele._bbn.directives.resizable
+        });
+        ele.dispatchEvent(ev);
+        if (ele.__vue__ !== undefined) {
+          ele.__vue__.$emit('userresizeend', ev);
+        }
+
+        document.removeEventListener('mouseup', fnEnd, {once: true});
+        document.removeEventListener('mousemove', fnDrag);
+        delete ele._bbn.directives.resizable.mouseX;
+        delete ele._bbn.directives.resizable.mouseY;
       }
+
       ele.classList.remove('bbn-resizable-resizing');
       document.body.style.cursor = ele._bbn.directives.resizable.cursor;
-      document.removeEventListener('mouseup', fnEnd, {once: true});
-      document.removeEventListener('mousemove', fnDrag);
-      delete ele._bbn.directives.resizable.mouseX;
-      delete ele._bbn.directives.resizable.mouseY;
       setTimeout(() => {
         ele._bbn.directives.resizable.resizing = false;
       }, 100);

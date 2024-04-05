@@ -386,7 +386,8 @@
                 @mouseleave="isMouseOver = false"
                 @click="edit">
             <div v-if="isResizing"
-                 class="bbn-tracks-item-resizing-times bbn-alt-background bbn-alt-text bbn-spadded bbn-radius">
+                 class="bbn-tracks-item-resizing-times bbn-alt-background bbn-alt-text bbn-spadded bbn-radius"
+                 style="z-index: 1">
               <div class="bbn-vmiddle bbn-no-wrap">
                 <i class="nf nf-md-calendar_start bbn-right-sspace bbn-lg"/>
                 <span v-text="currentStart"/>
@@ -416,6 +417,12 @@
           source: {
             type: Object,
             required: true
+          },
+          resizable: {
+            type: Boolean
+          },
+          selected: {
+            type: Boolean
           }
         },
         data(){
@@ -439,12 +446,14 @@
           currentBgColor(){
             return !!this.isResizing ?
               this.source.bgColor + '66' :
-              (this.isMouseOver ? this.source.bgColor + 'E6' : this.source.bgColor);
+              ((this.isMouseOver && !this.main.isResizing) || this.selected ?
+                this.source.bgColor :
+                this.source.bgColor + 'B3');
           }
         },
         methods: {
           onResizeStart(event){
-            if (!this.isEditable || this.main.isResizing) {
+            if (!this.resizable || !this.isEditable || this.main.isResizing) {
               event.preventDefault();
               return;
             }

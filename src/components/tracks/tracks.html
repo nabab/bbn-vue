@@ -47,9 +47,11 @@
           <div v-for="(c, i) in numCols"
                :class="['bbn-tracks-col-cell', 'bbn-c', {'bbn-bordered-right': c !== numCols}]"/>
           <item v-for="item in filteredData"
-                 :source="item"
-                 :key="item.key"
-                 :ref="'item-' + (!!uid ? item.data[uid] : item.key)"/>
+                :source="item"
+                :key="item.key"
+                :ref="'item-' + (!!uid ? item.data[uid] : item.key)"
+                :resizable="!editedRow"
+                :selected="!!editedRow && (editedIndex === item.index)"/>
         </template>
       </div>
     </bbn-scroll>
