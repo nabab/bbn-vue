@@ -104,6 +104,16 @@
       }
     },
     methods: {
+      onClickSave() {
+        if (this.element) {
+          if (bbn.fn.isFunction(this.element.onSave)) {
+            this.element.onSave()
+          }
+          else {
+            this.element.$emit('save', this.element.currentConfig)
+          }
+        }
+      },
       updatePager() {
         this.currentNumericPage = this.element.currentPage;
         this.numPages = this.element.numPages;

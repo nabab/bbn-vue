@@ -141,7 +141,7 @@
 			<bbn-button v-if="element.saveable"
 									:disabled="element.isSaved"
 									:title="_('Save current configuration')"
-									@click="element.$emit('save', element.currentConfig)"
+									@click="onClickSave"
 									icon="nf nf-fa-save"
 									:notext="true"
 									class="bbn-left-xsspace"/>
